@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, AlertTriangle, Clock, BookOpen, TrendingUp } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Clock, BookOpen, TrendingUp, Lock } from 'lucide-react';
 import { calculateLevel, getTitleForLevel } from '@/lib/game-utils';
+
+const COACH_CODE = 'coach2025';
 
 const STUDENTS = [
   { id: '1', pseudo: 'Théo', avatar: '🐺', totalXp: 2800, streak: 5, completionRate: 85, totalHours: 42, lastActive: "Aujourd'hui" },
