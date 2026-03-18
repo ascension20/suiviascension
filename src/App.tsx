@@ -46,6 +46,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <LoginPage />} />
+      <Route path="/setup" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <SetupPage />} />
       <Route path="/student" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
       <Route path="/coach" element={<ProtectedRoute requiredRole="coach"><CoachDashboard /></ProtectedRoute>} />
       <Route path="/" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <Navigate to="/login" replace />} />
