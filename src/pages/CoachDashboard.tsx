@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, AlertTriangle, Clock, BookOpen, TrendingUp } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Clock, BookOpen, TrendingUp, Lock } from 'lucide-react';
 import { calculateLevel, getTitleForLevel } from '@/lib/game-utils';
+
+const COACH_CODE = 'coach2025';
 
 const STUDENTS = [
   { id: '1', pseudo: 'Théo', avatar: '🐺', totalXp: 2800, streak: 5, completionRate: 85, totalHours: 42, lastActive: "Aujourd'hui" },
@@ -38,6 +41,55 @@ function CompletionBadge({ rate }: { rate: number }) {
 }
 
 export default function CoachDashboard() {
+  const [authenticated, setAuthenticated] = useState(false);
+  const [code, setCode] = useState('');
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (code === COACH_CODE) {
+      setAuthenticated(true);
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
+
+  if (!authenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-card border border-border rounded-lg p-8 max-w-sm w-full text-center"
+        >
+          <Lock className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
+          <h2 className="font-display text-xl font-semibold mb-2">Accès Coach</h2>
+          <p className="text-muted-foreground text-sm mb-6">Entrez le code d'accès pour continuer.</p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              type="password"
+              value={code}
+              onChange={e => setCode(e.target.value)}
+              placeholder="Code d'accès"
+              className="w-full bg-secondary border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+            {error && <p className="text-destructive text-xs">Code incorrect.</p>}
+            <button
+              type="submit"
+              className="w-full bg-primary text-primary-foreground rounded-lg py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors"
+            >
+              Accéder
+            </button>
+          </form>
+          <Link to="/" className="text-muted-foreground text-xs mt-4 inline-block hover:text-foreground transition-colors">
+            ← Retour à l'accueil
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
+
   const dangerCount = STUDENTS.filter(s => s.completionRate < 50 || s.streak === 0).length;
   const completedToday = 12;
 

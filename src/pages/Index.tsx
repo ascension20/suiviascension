@@ -11,8 +11,8 @@ const Index = () => {
         transition={{ duration: 0.6 }}
         className="text-center mb-14"
       >
-        <h1 className="font-display text-5xl md:text-6xl font-bold text-foreground mb-4 tracking-tight">
-          L'Académie de Fer
+        <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
+          Ascension Académique
         </h1>
         <p className="text-muted-foreground text-lg max-w-md mx-auto">
           Gagne des XP, monte de niveau et deviens <span className="font-display font-semibold" style={{ color: 'hsl(var(--xp))' }}>Maître</span>.
