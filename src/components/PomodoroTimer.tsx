@@ -1,29 +1,29 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, Minus, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SUBJECTS, Subject, playBeep } from '@/lib/game-utils';
 
-const MODES = {
-  focus25: { label: '25 min', seconds: 25 * 60 },
-  break5: { label: '5 min', seconds: 5 * 60 },
-  focus50: { label: '50 min', seconds: 50 * 60 },
-} as const;
-
-type ModeKey = keyof typeof MODES;
+const PRESETS = [
+  { label: '25 min', minutes: 25 },
+  { label: '50 min', minutes: 50 },
+  { label: '5 min', minutes: 5, isBreak: true },
+];
 
 interface Props {
   onSessionComplete?: (subject: Subject, durationMinutes: number) => void;
 }
 
 export function PomodoroTimer({ onSessionComplete }: Props) {
-  const [mode, setMode] = useState<ModeKey>('focus25');
-  const [timeLeft, setTimeLeft] = useState(MODES.focus25.seconds);
+  const [customMinutes, setCustomMinutes] = useState(25);
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
+  const [isBreak, setIsBreak] = useState(false);
   const [subject, setSubject] = useState<Subject>('Maths');
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [hasStarted, setHasStarted] = useState(false);
 
-  const totalSeconds = MODES[mode].seconds;
+  const totalSeconds = customMinutes * 60;
 
   useEffect(() => {
     if (!isRunning || timeLeft <= 0) return;
@@ -32,8 +32,8 @@ export function PomodoroTimer({ onSessionComplete }: Props) {
         if (prev <= 1) {
           setIsRunning(false);
           if (soundEnabled) playBeep();
-          if (mode !== 'break5') {
-            onSessionComplete?.(subject, totalSeconds / 60);
+          if (!isBreak) {
+            onSessionComplete?.(subject, customMinutes);
           }
           return 0;
         }
@@ -41,23 +41,42 @@ export function PomodoroTimer({ onSessionComplete }: Props) {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [isRunning, timeLeft, mode, subject, onSessionComplete, totalSeconds, soundEnabled]);
+  }, [isRunning, timeLeft, isBreak, subject, onSessionComplete, customMinutes, soundEnabled]);
 
-  const handleModeChange = useCallback((newMode: ModeKey) => {
-    setMode(newMode);
-    setTimeLeft(MODES[newMode].seconds);
+  const applyPreset = useCallback((minutes: number, brk: boolean = false) => {
+    setCustomMinutes(minutes);
+    setTimeLeft(minutes * 60);
     setIsRunning(false);
+    setIsBreak(brk);
+    setHasStarted(false);
   }, []);
 
-  const toggleTimer = useCallback(() => setIsRunning(r => !r), []);
+  const adjustMinutes = useCallback((delta: number) => {
+    if (isRunning) return;
+    setCustomMinutes(prev => {
+      const next = Math.max(1, Math.min(180, prev + delta));
+      setTimeLeft(next * 60);
+      return next;
+    });
+    setHasStarted(false);
+  }, [isRunning]);
+
+  const toggleTimer = useCallback(() => {
+    setIsRunning(r => {
+      if (!r) setHasStarted(true);
+      return !r;
+    });
+  }, []);
+
   const resetTimer = useCallback(() => {
     setIsRunning(false);
-    setTimeLeft(MODES[mode].seconds);
-  }, [mode]);
+    setTimeLeft(customMinutes * 60);
+    setHasStarted(false);
+  }, [customMinutes]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  const progress = timeLeft / totalSeconds;
+  const progress = totalSeconds > 0 ? timeLeft / totalSeconds : 0;
 
   const radius = 110;
   const circumference = 2 * Math.PI * radius;
@@ -104,10 +123,42 @@ export function PomodoroTimer({ onSessionComplete }: Props) {
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-display text-6xl font-bold tabular-nums text-foreground">
-            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+          {/* Duration adjuster (only when not running and not started) */}
+          {!hasStarted && (
+            <div className="flex items-center gap-3 mb-2">
+              <button
+                onClick={() => adjustMinutes(-5)}
+                className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors"
+              >
+                <Minus size={14} />
+              </button>
+              <input
+                type="number"
+                value={customMinutes}
+                onChange={e => {
+                  const v = Math.max(1, Math.min(180, parseInt(e.target.value) || 1));
+                  setCustomMinutes(v);
+                  setTimeLeft(v * 60);
+                }}
+                className="w-16 text-center bg-transparent font-display text-2xl font-bold text-foreground focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <span className="text-sm text-muted-foreground -ml-2">min</span>
+              <button
+                onClick={() => adjustMinutes(5)}
+                className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          )}
+          {hasStarted && (
+            <span className="font-display text-6xl font-bold tabular-nums text-foreground">
+              {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+            </span>
+          )}
+          <span className="text-sm text-muted-foreground mt-2">
+            {subject} · {isBreak ? 'Pause' : 'Focus'} · {customMinutes} min
           </span>
-          <span className="text-sm text-muted-foreground mt-2">{subject} · {MODES[mode].label}</span>
         </div>
       </div>
 
@@ -148,20 +199,20 @@ export function PomodoroTimer({ onSessionComplete }: Props) {
         </button>
       </div>
 
-      {/* Mode selector */}
+      {/* Preset selector */}
       <div className="flex gap-2">
-        {(Object.keys(MODES) as ModeKey[]).map(m => (
+        {PRESETS.map(p => (
           <button
-            key={m}
-            onClick={() => handleModeChange(m)}
+            key={p.label}
+            onClick={() => applyPreset(p.minutes, p.isBreak || false)}
             className={cn(
               "px-4 py-1.5 rounded-md text-xs font-medium transition-all",
-              mode === m
+              customMinutes === p.minutes && isBreak === !!p.isBreak
                 ? "bg-secondary text-foreground"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            {MODES[m].label}
+            {p.label}{p.isBreak ? ' ☕' : ''}
           </button>
         ))}
       </div>

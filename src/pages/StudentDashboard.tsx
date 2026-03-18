@@ -1,87 +1,177 @@
-import { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Flame, ArrowLeft } from 'lucide-react';
+import { Flame, LogOut } from 'lucide-react';
 import { PomodoroTimer } from '@/components/PomodoroTimer';
 import { XPBar } from '@/components/XPBar';
 import { QuestList, Quest } from '@/components/QuestList';
 import { WeeklyLeaderboard, LeaderboardEntry } from '@/components/WeeklyLeaderboard';
 import { LevelUpOverlay } from '@/components/LevelUpOverlay';
 import { calculateLevel, getTitleForLevel, Subject } from '@/lib/game-utils';
-
-// --- Mock Data ---
-const INITIAL_QUESTS: Quest[] = [
-  { id: '1', title: 'Exercices chapitre 5 — Fonctions', subject: 'Maths', deadline: new Date(Date.now() + 2 * 86400000).toISOString(), difficulty: 2, xp: 100, isCoachQuest: true, completed: false },
-  { id: '2', title: 'Dissertation sur Molière', subject: 'Français', deadline: new Date(Date.now() + 5 * 86400000).toISOString(), difficulty: 1, xp: 50, isCoachQuest: true, completed: false },
-  { id: '3', title: 'Réviser formules cinématique', subject: 'Physique', deadline: new Date(Date.now() + 1 * 86400000).toISOString(), difficulty: 3, xp: 150, isCoachQuest: true, completed: false },
-  { id: '4', title: 'Fiche vocabulaire unit 8', subject: 'Anglais', deadline: new Date(Date.now() + 7 * 86400000).toISOString(), difficulty: 1, xp: 35, isCoachQuest: false, completed: false },
-];
-
-const XP_LEADERBOARD: LeaderboardEntry[] = [
-  { rank: 1, pseudo: 'Enzo', avatar: '🐻', value: 5100 },
-  { rank: 2, pseudo: 'Luna', avatar: '🦊', value: 4500 },
-  { rank: 3, pseudo: 'Axel', avatar: '🦅', value: 3200 },
-  { rank: 4, pseudo: 'Théo', avatar: '🐺', value: 2800, isCurrentUser: true },
-  { rank: 5, pseudo: 'Jade', avatar: '🐱', value: 1900 },
-];
-
-const TIMER_LEADERBOARD: LeaderboardEntry[] = [
-  { rank: 1, pseudo: 'Enzo', avatar: '🐻', value: 320, subjectBreakdown: { Maths: 140, Physique: 100, SES: 80 } },
-  { rank: 2, pseudo: 'Luna', avatar: '🦊', value: 280, subjectBreakdown: { Français: 130, Anglais: 90, Maths: 60 } },
-  { rank: 3, pseudo: 'Théo', avatar: '🐺', value: 250, isCurrentUser: true, subjectBreakdown: { Maths: 120, Physique: 80, Français: 50 } },
-  { rank: 4, pseudo: 'Jade', avatar: '🐱', value: 195, subjectBreakdown: { SES: 100, Français: 55, Anglais: 40 } },
-  { rank: 5, pseudo: 'Axel', avatar: '🦅', value: 150, subjectBreakdown: { Maths: 90, Physique: 60 } },
-];
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function StudentDashboard() {
-  const [totalXp, setTotalXp] = useState(2800);
-  const [streak] = useState(5);
-  const [quests, setQuests] = useState(INITIAL_QUESTS);
+  const { user, profile, signOut, refreshProfile } = useAuth();
+  const [quests, setQuests] = useState<Quest[]>([]);
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; xpGained: number } | null>(null);
+  const [xpLeaderboard, setXpLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [timerLeaderboard, setTimerLeaderboard] = useState<LeaderboardEntry[]>([]);
 
+  const totalXp = profile?.total_xp ?? 0;
+  const streak = profile?.streak ?? 0;
   const { level, currentXp, requiredXp } = calculateLevel(totalXp);
   const title = getTitleForLevel(level);
 
-  const addXp = useCallback((amount: number) => {
-    setTotalXp(prev => {
-      const oldLevel = calculateLevel(prev).level;
-      const newTotal = prev + amount;
-      const newLevel = calculateLevel(newTotal).level;
-      if (newLevel > oldLevel) {
-        setLevelUpData({ level: newLevel, title: getTitleForLevel(newLevel), xpGained: amount });
+  // Load quests
+  useEffect(() => {
+    if (!user) return;
+    const loadQuests = async () => {
+      const { data } = await supabase
+        .from('quests')
+        .select('*')
+        .eq('assigned_to', user.id)
+        .order('deadline', { ascending: true });
+      if (data) {
+        setQuests(data.map(q => ({
+          id: q.id,
+          title: q.title,
+          subject: q.subject as Subject,
+          deadline: q.deadline || '',
+          difficulty: q.difficulty === 'easy' ? 1 : q.difficulty === 'hard' ? 3 : 2,
+          xp: q.xp_reward,
+          isCoachQuest: true,
+          completed: q.completed,
+        })));
       }
-      return newTotal;
-    });
-  }, []);
+    };
+    loadQuests();
 
-  const handleSessionComplete = useCallback((subject: Subject, durationMinutes: number) => {
+    // Real-time subscription
+    const channel = supabase
+      .channel('student-quests')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'quests', filter: `assigned_to=eq.${user.id}` }, () => {
+        loadQuests();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user]);
+
+  // Load leaderboards
+  useEffect(() => {
+    const loadLeaderboards = async () => {
+      // XP leaderboard
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, pseudo, avatar, total_xp')
+        .order('total_xp', { ascending: false })
+        .limit(10);
+
+      if (profiles) {
+        setXpLeaderboard(profiles.map((p, i) => ({
+          rank: i + 1,
+          pseudo: p.pseudo,
+          avatar: p.avatar,
+          value: p.total_xp,
+          isCurrentUser: p.user_id === user?.id,
+        })));
+      }
+
+      // Timer leaderboard - weekly
+      const startOfWeek = new Date();
+      startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      const { data: sessions } = await supabase
+        .from('timer_sessions')
+        .select('user_id, subject, duration_minutes')
+        .gte('created_at', startOfWeek.toISOString());
+
+      if (sessions) {
+        const byUser: Record<string, { total: number; subjects: Record<string, number> }> = {};
+        sessions.forEach(s => {
+          if (!byUser[s.user_id]) byUser[s.user_id] = { total: 0, subjects: {} };
+          byUser[s.user_id].total += s.duration_minutes;
+          byUser[s.user_id].subjects[s.subject] = (byUser[s.user_id].subjects[s.subject] || 0) + s.duration_minutes;
+        });
+
+        // Get profiles for these users
+        const userIds = Object.keys(byUser);
+        if (userIds.length > 0) {
+          const { data: timerProfiles } = await supabase
+            .from('profiles')
+            .select('user_id, pseudo, avatar')
+            .in('user_id', userIds);
+
+          if (timerProfiles) {
+            const entries = timerProfiles
+              .map(p => ({
+                pseudo: p.pseudo,
+                avatar: p.avatar,
+                value: byUser[p.user_id]?.total || 0,
+                isCurrentUser: p.user_id === user?.id,
+                subjectBreakdown: byUser[p.user_id]?.subjects as Record<Subject, number>,
+                rank: 0,
+              }))
+              .sort((a, b) => b.value - a.value)
+              .map((e, i) => ({ ...e, rank: i + 1 }));
+            setTimerLeaderboard(entries);
+          }
+        }
+      }
+    };
+    loadLeaderboards();
+  }, [user]);
+
+  const addXp = useCallback(async (amount: number) => {
+    if (!user) return;
+    const oldLevel = calculateLevel(totalXp).level;
+    const newTotal = totalXp + amount;
+    const newLevel = calculateLevel(newTotal).level;
+
+    if (newLevel > oldLevel) {
+      setLevelUpData({ level: newLevel, title: getTitleForLevel(newLevel), xpGained: amount });
+    }
+
+    await supabase.from('profiles').update({ total_xp: newTotal }).eq('user_id', user.id);
+    await refreshProfile();
+  }, [user, totalXp, refreshProfile]);
+
+  const handleSessionComplete = useCallback(async (subject: Subject, durationMinutes: number) => {
+    if (!user) return;
     const xp = Math.floor(durationMinutes / 25) * 10;
-    if (xp > 0) addXp(xp);
-  }, [addXp]);
 
-  const handleQuestComplete = useCallback((questId: string) => {
-    setQuests(prev => {
-      const quest = prev.find(q => q.id === questId);
-      if (quest && !quest.completed) {
-        addXp(quest.xp);
-        return prev.map(q => q.id === questId ? { ...q, completed: true } : q);
-      }
-      return prev;
+    await supabase.from('timer_sessions').insert({
+      user_id: user.id,
+      subject,
+      duration_minutes: durationMinutes,
+      xp_earned: xp,
     });
-  }, [addXp]);
+
+    if (xp > 0) await addXp(xp);
+  }, [user, addXp]);
+
+  const handleQuestComplete = useCallback(async (questId: string) => {
+    const quest = quests.find(q => q.id === questId);
+    if (!quest || quest.completed) return;
+
+    await supabase.from('quests').update({
+      completed: true,
+      completed_at: new Date().toISOString(),
+    }).eq('id', questId);
+
+    setQuests(prev => prev.map(q => q.id === questId ? { ...q, completed: true } : q));
+    await addXp(quest.xp);
+  }, [quests, addXp]);
 
   const activeQuests = quests.filter(q => !q.completed);
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-border px-4 md:px-6 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft size={20} />
-            </Link>
-            <h1 className="font-display text-lg font-semibold hidden sm:block">L'Académie de Fer</h1>
+            <h1 className="font-display text-lg font-semibold hidden sm:block">Ascension Académique</h1>
           </div>
           <div className="flex items-center gap-4">
             <div
@@ -94,24 +184,25 @@ export default function StudentDashboard() {
             <XPBar current={currentXp} max={requiredXp} level={level} title={title} className="hidden md:flex" />
             <XPBar current={currentXp} max={requiredXp} level={level} title={title} compact className="md:hidden" />
             <div className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center text-lg">
-              🐺
+              {profile?.avatar ?? '🐺'}
             </div>
+            <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors" title="Déconnexion">
+              <LogOut size={18} />
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Main */}
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="text-muted-foreground mb-6"
         >
-          Prêt pour ta prochaine quête, <span className="text-foreground font-medium">Théo</span> ?
+          Prêt pour ta prochaine quête, <span className="text-foreground font-medium">{profile?.pseudo ?? 'Élève'}</span> ?
           {' '}Ta série de <span className="text-streak font-semibold">{streak} jours</span> t'attend.
         </motion.p>
 
-        {/* Timer + Quests */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
           <div className="lg:col-span-3 bg-card border border-border rounded-lg p-6"
             style={{ background: 'linear-gradient(180deg, hsl(var(--card)) 0%, hsl(225, 28%, 12%) 100%)' }}
@@ -127,10 +218,9 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        {/* Leaderboards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <WeeklyLeaderboard title="🏆 Classement XP" data={XP_LEADERBOARD} unit="XP" />
-          <WeeklyLeaderboard title="⏱ Classement Chrono" data={TIMER_LEADERBOARD} unit="min" />
+          <WeeklyLeaderboard title="🏆 Classement XP" data={xpLeaderboard} unit="XP" />
+          <WeeklyLeaderboard title="⏱ Classement Chrono" data={timerLeaderboard} unit="min" />
         </div>
       </main>
 
