@@ -25,7 +25,7 @@ const container = {
 
 const item = {
   hidden: { x: -20, opacity: 0 },
-  show: { x: 0, opacity: 1, transition: { type: 'spring', bounce: 0 } },
+  show: { x: 0, opacity: 1, transition: { type: 'spring' as const, bounce: 0 } },
 };
 
 export function QuestList({ quests, onComplete }: Props) {
