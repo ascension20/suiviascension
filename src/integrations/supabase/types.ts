@@ -14,16 +14,286 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      badges: {
+        Row: {
+          badge_key: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          badge_key: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          badge_key?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      difficulties: {
+        Row: {
+          coach_reply: string | null
+          created_at: string
+          description: string
+          id: string
+          resolved: boolean
+          severity: Database["public"]["Enums"]["issue_severity"]
+          subject: Database["public"]["Enums"]["subject_type"]
+          user_id: string
+        }
+        Insert: {
+          coach_reply?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          resolved?: boolean
+          severity?: Database["public"]["Enums"]["issue_severity"]
+          subject: Database["public"]["Enums"]["subject_type"]
+          user_id: string
+        }
+        Update: {
+          coach_reply?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          resolved?: boolean
+          severity?: Database["public"]["Enums"]["issue_severity"]
+          subject?: Database["public"]["Enums"]["subject_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      exams: {
+        Row: {
+          chapters: string | null
+          created_at: string
+          exam_date: string
+          grade: number | null
+          id: string
+          stress_level: Database["public"]["Enums"]["stress_level"]
+          subject: Database["public"]["Enums"]["subject_type"]
+          user_id: string
+        }
+        Insert: {
+          chapters?: string | null
+          created_at?: string
+          exam_date: string
+          grade?: number | null
+          id?: string
+          stress_level?: Database["public"]["Enums"]["stress_level"]
+          subject: Database["public"]["Enums"]["subject_type"]
+          user_id: string
+        }
+        Update: {
+          chapters?: string | null
+          created_at?: string
+          exam_date?: string
+          grade?: number | null
+          id?: string
+          stress_level?: Database["public"]["Enums"]["stress_level"]
+          subject?: Database["public"]["Enums"]["subject_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar: string
+          created_at: string
+          id: string
+          last_activity_date: string | null
+          pseudo: string
+          streak: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar?: string
+          created_at?: string
+          id?: string
+          last_activity_date?: string | null
+          pseudo: string
+          streak?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar?: string
+          created_at?: string
+          id?: string
+          last_activity_date?: string | null
+          pseudo?: string
+          streak?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quests: {
+        Row: {
+          assigned_to: string | null
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          deadline: string | null
+          description: string | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          id: string
+          subject: Database["public"]["Enums"]["subject_type"]
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          description?: string | null
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          id?: string
+          subject: Database["public"]["Enums"]["subject_type"]
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          assigned_to?: string | null
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          description?: string | null
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          id?: string
+          subject?: Database["public"]["Enums"]["subject_type"]
+          title?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      student_tasks: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          deadline: string | null
+          description: string
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          estimated_minutes: number | null
+          id: string
+          subject: Database["public"]["Enums"]["subject_type"]
+          user_id: string
+          xp_reward: number
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          description: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          estimated_minutes?: number | null
+          id?: string
+          subject: Database["public"]["Enums"]["subject_type"]
+          user_id: string
+          xp_reward?: number
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          estimated_minutes?: number | null
+          id?: string
+          subject?: Database["public"]["Enums"]["subject_type"]
+          user_id?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      timer_sessions: {
+        Row: {
+          created_at: string
+          duration_minutes: number
+          id: string
+          subject: Database["public"]["Enums"]["subject_type"]
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes: number
+          id?: string
+          subject: Database["public"]["Enums"]["subject_type"]
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          subject?: Database["public"]["Enums"]["subject_type"]
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "coach" | "student"
+      difficulty_level: "easy" | "medium" | "hard"
+      issue_severity: "blocking" | "fragile" | "ok"
+      stress_level: "stressed" | "neutral" | "calm"
+      subject_type:
+        | "Maths"
+        | "Français"
+        | "Physique"
+        | "SES"
+        | "Anglais"
+        | "Autre"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +420,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["coach", "student"],
+      difficulty_level: ["easy", "medium", "hard"],
+      issue_severity: ["blocking", "fragile", "ok"],
+      stress_level: ["stressed", "neutral", "calm"],
+      subject_type: [
+        "Maths",
+        "Français",
+        "Physique",
+        "SES",
+        "Anglais",
+        "Autre",
+      ],
+    },
   },
 } as const
