@@ -82,13 +82,8 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
   const completedTasks = tasks.filter(t => t.completed);
 
   return (
-    <div className="bg-card border border-border rounded-lg p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-display text-base font-semibold flex items-center gap-2">
-          <ListTodo size={16} className="text-primary" />
-          Mes tâches
-          <span className="text-xs text-muted-foreground font-normal">({activeTasks.length})</span>
-        </h2>
+    <div>
+      <div className="flex items-center justify-end mb-3">
         <Button variant="ghost" size="sm" onClick={() => setShowForm(!showForm)}>
           {showForm ? <X size={14} /> : <Plus size={14} />}
         </Button>
