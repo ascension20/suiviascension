@@ -75,6 +75,7 @@ export type Database = {
           exam_date: string
           grade: number | null
           id: string
+          photo_url: string | null
           stress_level: Database["public"]["Enums"]["stress_level"]
           subject: Database["public"]["Enums"]["subject_type"]
           user_id: string
@@ -85,6 +86,7 @@ export type Database = {
           exam_date: string
           grade?: number | null
           id?: string
+          photo_url?: string | null
           stress_level?: Database["public"]["Enums"]["stress_level"]
           subject: Database["public"]["Enums"]["subject_type"]
           user_id: string
@@ -95,6 +97,7 @@ export type Database = {
           exam_date?: string
           grade?: number | null
           id?: string
+          photo_url?: string | null
           stress_level?: Database["public"]["Enums"]["stress_level"]
           subject?: Database["public"]["Enums"]["subject_type"]
           user_id?: string
