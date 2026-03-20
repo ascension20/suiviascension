@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X, Zap, Image, Filter } from 'lucide-react';
 import { calculateLevel, getTitleForLevel, SUBJECTS, AVATARS, Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,58 +8,34 @@ import type { Database } from '@/integrations/supabase/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
-interface Alert {
-  type: 'danger' | 'warning' | 'info';
-  message: string;
-  icon: typeof AlertTriangle;
+interface UrgentAlert {
+  studentName: string;
+  avatar: string;
+  reasons: string[];
+  userId: string;
 }
 
 interface StudentDifficulty {
-  id: string;
-  user_id: string;
-  subject: string;
-  severity: string;
-  description: string;
-  resolved: boolean;
-  coach_reply: string | null;
-  created_at: string;
-  pseudo?: string;
-  avatar?: string;
+  id: string; user_id: string; subject: string; severity: string;
+  description: string; resolved: boolean; coach_reply: string | null; created_at: string;
+  pseudo?: string; avatar?: string;
 }
 
 interface StudentExam {
-  id: string;
-  user_id: string;
-  subject: string;
-  exam_date: string;
-  chapters: string | null;
-  stress_level: string;
-  grade: number | null;
-  pseudo?: string;
-  avatar?: string;
+  id: string; user_id: string; subject: string; exam_date: string;
+  chapters: string | null; stress_level: string; grade: number | null; photo_url?: string | null;
+  pseudo?: string; avatar?: string;
 }
 
 interface StudentTask {
-  id: string;
-  user_id: string;
-  description: string;
-  subject: string;
-  difficulty: string;
-  xp_reward: number;
-  completed: boolean;
-  deadline: string | null;
-  pseudo?: string;
-  avatar?: string;
+  id: string; user_id: string; description: string; subject: string;
+  difficulty: string; xp_reward: number; completed: boolean; deadline: string | null;
+  pseudo?: string; avatar?: string;
 }
-
-const alertStyles = {
-  danger: { bg: 'hsl(var(--destructive) / 0.08)', border: 'hsl(var(--destructive) / 0.25)', color: 'hsl(var(--destructive))' },
-  warning: { bg: 'hsl(var(--xp) / 0.08)', border: 'hsl(var(--xp) / 0.25)', color: 'hsl(var(--xp))' },
-  info: { bg: 'hsl(var(--primary) / 0.08)', border: 'hsl(var(--primary) / 0.25)', color: 'hsl(var(--primary))' },
-};
 
 const SEVERITY_LABELS: Record<string, { label: string; color: string }> = {
   blocking: { label: '🔴 Bloquant', color: 'hsl(0 84% 60%)' },
@@ -68,9 +44,7 @@ const SEVERITY_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 const STRESS_LABELS: Record<string, string> = {
-  stressed: '😰 Stressé',
-  neutral: '😐 Neutre',
-  calm: '😊 Serein',
+  stressed: '😰 Stressé', neutral: '😐 Neutre', calm: '😊 Serein',
 };
 
 function CompletionBadge({ rate }: { rate: number }) {
@@ -85,7 +59,6 @@ function CompletionBadge({ rate }: { rate: number }) {
 export default function CoachDashboard() {
   const { signOut } = useAuth();
   const [students, setStudents] = useState<(Profile & { completionRate: number; totalHours: number; lastActive: string })[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateStudent, setShowCreateStudent] = useState(false);
   const [showCreateQuest, setShowCreateQuest] = useState(false);
@@ -94,18 +67,23 @@ export default function CoachDashboard() {
   const [creating, setCreating] = useState(false);
   const [questStudents, setQuestStudents] = useState<Profile[]>([]);
 
-  // New state for student data
   const [difficulties, setDifficulties] = useState<StudentDifficulty[]>([]);
   const [exams, setExams] = useState<StudentExam[]>([]);
   const [studentTasks, setStudentTasks] = useState<StudentTask[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [expandedStudent, setExpandedStudent] = useState<string | null>(null);
+  const [subjectFilter, setSubjectFilter] = useState<string>('all');
+  const [urgentAlerts, setUrgentAlerts] = useState<UrgentAlert[]>([]);
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+
+  // Quick quest from difficulty
+  const [quickQuestFor, setQuickQuestFor] = useState<{ diffId: string; userId: string; subject: string } | null>(null);
+  const [quickQuestTitle, setQuickQuestTitle] = useState('');
 
   const loadData = async () => {
     const { data: profiles } = await supabase.from('profiles').select('*');
     const { data: roles } = await supabase.from('user_roles').select('user_id, role');
-
     if (!profiles || !roles) { setLoading(false); return; }
 
     const studentUserIds = roles.filter(r => r.role === 'student').map(r => r.user_id);
@@ -115,34 +93,15 @@ export default function CoachDashboard() {
     const { data: allQuests } = await supabase.from('quests').select('*');
     const { data: allSessions } = await supabase.from('timer_sessions').select('user_id, duration_minutes');
 
-    // Load difficulties, exams, student_tasks
     const [{ data: diffs }, { data: examsData }, { data: tasksData }] = await Promise.all([
       supabase.from('difficulties').select('*').order('created_at', { ascending: false }),
       supabase.from('exams').select('*').order('exam_date', { ascending: true }),
       supabase.from('student_tasks').select('*').order('created_at', { ascending: false }),
     ]);
 
-    if (diffs) {
-      setDifficulties(diffs.map(d => ({
-        ...d,
-        pseudo: profileMap[d.user_id]?.pseudo,
-        avatar: profileMap[d.user_id]?.avatar,
-      })));
-    }
-    if (examsData) {
-      setExams(examsData.map(e => ({
-        ...e,
-        pseudo: profileMap[e.user_id]?.pseudo,
-        avatar: profileMap[e.user_id]?.avatar,
-      })));
-    }
-    if (tasksData) {
-      setStudentTasks(tasksData.map(t => ({
-        ...t,
-        pseudo: profileMap[t.user_id]?.pseudo,
-        avatar: profileMap[t.user_id]?.avatar,
-      })));
-    }
+    if (diffs) setDifficulties(diffs.map(d => ({ ...d, pseudo: profileMap[d.user_id]?.pseudo, avatar: profileMap[d.user_id]?.avatar })));
+    if (examsData) setExams(examsData.map(e => ({ ...e, photo_url: (e as any).photo_url, pseudo: profileMap[e.user_id]?.pseudo, avatar: profileMap[e.user_id]?.avatar })));
+    if (tasksData) setStudentTasks(tasksData.map(t => ({ ...t, pseudo: profileMap[t.user_id]?.pseudo, avatar: profileMap[t.user_id]?.avatar })));
 
     const enriched = studentProfiles.map(p => {
       const userQuests = (allQuests || []).filter(q => q.assigned_to === p.user_id);
@@ -160,42 +119,40 @@ export default function CoachDashboard() {
     setStudents(enriched);
     setQuestStudents(studentProfiles);
 
-    // Alerts
-    const newAlerts: Alert[] = [];
-    enriched.forEach(s => {
-      if (s.streak === 0) newAlerts.push({ type: 'danger', message: `${s.pseudo} — Série à 0`, icon: AlertTriangle });
-      if (s.completionRate < 50) newAlerts.push({ type: 'warning', message: `${s.pseudo} — Complétion à ${s.completionRate}%`, icon: Clock });
-    });
-
-    // Urgent difficulties
-    const unresolvedBlocking = (diffs || []).filter(d => !d.resolved && d.severity === 'blocking');
-    unresolvedBlocking.forEach(d => {
-      const name = profileMap[d.user_id]?.pseudo || 'Élève';
-      newAlerts.push({ type: 'danger', message: `${name} — Difficulté bloquante en ${d.subject}`, icon: AlertTriangle });
-    });
-
-    // Upcoming exams within 3 days
+    // Build urgent alerts grouped by student
     const now = new Date();
-    const upcomingExams = (examsData || []).filter(e => {
+    const alertMap: Record<string, UrgentAlert> = {};
+    const ensureAlert = (userId: string) => {
+      if (!alertMap[userId]) {
+        const p = profileMap[userId];
+        alertMap[userId] = { studentName: p?.pseudo || 'Élève', avatar: p?.avatar || '🐺', reasons: [], userId };
+      }
+    };
+
+    enriched.forEach(s => {
+      if (s.streak === 0) { ensureAlert(s.user_id); alertMap[s.user_id].reasons.push('Série à 0 🔥'); }
+      if (s.completionRate < 50) { ensureAlert(s.user_id); alertMap[s.user_id].reasons.push(`Complétion à ${s.completionRate}%`); }
+    });
+    (diffs || []).filter(d => !d.resolved && d.severity === 'blocking').forEach(d => {
+      ensureAlert(d.user_id); alertMap[d.user_id].reasons.push(`Difficulté bloquante en ${d.subject}`);
+    });
+    (examsData || []).forEach(e => {
       const diff = (new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-      return diff >= 0 && diff <= 3 && e.grade === null;
-    });
-    upcomingExams.forEach(e => {
-      const name = profileMap[e.user_id]?.pseudo || 'Élève';
-      newAlerts.push({ type: 'warning', message: `${name} — DS ${e.subject} dans ${Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))}j`, icon: BookOpen });
+      if (diff >= 0 && diff <= 3 && e.grade === null) {
+        ensureAlert(e.user_id); alertMap[e.user_id].reasons.push(`DS ${e.subject} dans ${Math.ceil(diff)}j`);
+      }
+      if (diff < 0 && e.grade === null) {
+        ensureAlert(e.user_id); alertMap[e.user_id].reasons.push(`Résultat manquant : DS ${e.subject}`);
+      }
     });
 
-    const todayCompleted = (allQuests || []).filter(q => q.completed && q.completed_at && new Date(q.completed_at).toDateString() === new Date().toDateString()).length;
-    if (todayCompleted > 0) newAlerts.push({ type: 'info', message: `${todayCompleted} quête${todayCompleted > 1 ? 's' : ''} complétée${todayCompleted > 1 ? 's' : ''} aujourd'hui`, icon: BookOpen });
-
-    setAlerts(newAlerts);
+    setUrgentAlerts(Object.values(alertMap).sort((a, b) => b.reasons.length - a.reasons.length));
     setLoading(false);
   };
 
   useEffect(() => {
     loadData();
-    const channel = supabase
-      .channel('coach-realtime')
+    const channel = supabase.channel('coach-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'quests' }, () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'timer_sessions' }, () => loadData())
@@ -209,64 +166,58 @@ export default function CoachDashboard() {
   const handleReply = async (diffId: string) => {
     if (!replyText.trim()) return;
     await supabase.from('difficulties').update({ coach_reply: replyText.trim(), resolved: true }).eq('id', diffId);
-    setReplyText('');
-    setReplyingTo(null);
-    loadData();
+    setReplyText(''); setReplyingTo(null); loadData();
+  };
+
+  const handleQuickQuest = async () => {
+    if (!quickQuestFor || !quickQuestTitle.trim()) return;
+    setCreating(true);
+    await supabase.from('quests').insert({
+      assigned_to: quickQuestFor.userId,
+      title: quickQuestTitle.trim(),
+      subject: quickQuestFor.subject as Database['public']['Enums']['subject_type'],
+      difficulty: 'medium' as Database['public']['Enums']['difficulty_level'],
+      xp_reward: 100,
+    });
+    setQuickQuestFor(null); setQuickQuestTitle(''); setCreating(false); loadData();
   };
 
   const handleCreateStudent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setCreating(true);
+    e.preventDefault(); setCreating(true);
     const { data, error } = await supabase.auth.signUp({
-      email: newStudent.email,
-      password: newStudent.password,
+      email: newStudent.email, password: newStudent.password,
       options: { data: { pseudo: newStudent.pseudo, avatar: newStudent.avatar } },
     });
-    if (error || !data.user) {
-      alert('Erreur: ' + (error?.message || 'Impossible de créer le compte'));
-      setCreating(false);
-      return;
-    }
+    if (error || !data.user) { alert('Erreur: ' + (error?.message || 'Impossible de créer le compte')); setCreating(false); return; }
     await supabase.from('user_roles').insert({ user_id: data.user.id, role: 'student' as Database['public']['Enums']['app_role'] });
-    setNewStudent({ pseudo: '', email: '', password: '', avatar: '🐺' });
-    setShowCreateStudent(false);
-    setCreating(false);
-    loadData();
+    setNewStudent({ pseudo: '', email: '', password: '', avatar: '🐺' }); setShowCreateStudent(false); setCreating(false); loadData();
   };
 
   const handleCreateQuest = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setCreating(true);
+    e.preventDefault(); setCreating(true);
     const targets = newQuest.assigned_to === 'all' ? questStudents.map(s => s.user_id) : [newQuest.assigned_to];
     for (const userId of targets) {
       await supabase.from('quests').insert({
-        assigned_to: userId,
-        title: newQuest.title,
-        description: newQuest.description || null,
+        assigned_to: userId, title: newQuest.title, description: newQuest.description || null,
         subject: newQuest.subject as Database['public']['Enums']['subject_type'],
         difficulty: newQuest.difficulty as Database['public']['Enums']['difficulty_level'],
-        xp_reward: newQuest.xp_reward,
-        deadline: newQuest.deadline || null,
+        xp_reward: newQuest.xp_reward, deadline: newQuest.deadline || null,
       });
     }
     setNewQuest({ title: '', description: '', subject: 'Maths', difficulty: 'medium', xp_reward: 100, deadline: '', assigned_to: '' });
-    setShowCreateQuest(false);
-    setCreating(false);
-    loadData();
+    setShowCreateQuest(false); setCreating(false); loadData();
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
 
-  const dangerCount = students.filter(s => s.completionRate < 50 || s.streak === 0).length;
   const unresolvedDiffs = difficulties.filter(d => !d.resolved);
   const now = new Date();
   const upcomingExams = exams.filter(e => new Date(e.exam_date) >= now && e.grade === null);
+  const missingGradeExams = exams.filter(e => new Date(e.exam_date) < now && e.grade === null);
+
+  const filteredDiffs = subjectFilter === 'all' ? difficulties : difficulties.filter(d => d.subject === subjectFilter);
 
   return (
     <div className="min-h-screen bg-background">
@@ -280,45 +231,47 @@ export default function CoachDashboard() {
             <button onClick={() => setShowCreateQuest(true)} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm hover:bg-primary/90 transition-colors">
               <Plus size={14} /> Quête
             </button>
-            <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors" title="Déconnexion">
-              <LogOut size={18} />
-            </button>
+            <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors" title="Déconnexion"><LogOut size={18} /></button>
           </div>
         </div>
       </header>
 
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-muted-foreground mb-6">
-          <span className="text-destructive font-medium">{dangerCount} élève{dangerCount > 1 ? 's' : ''}</span> {dangerCount > 1 ? 'ont' : 'a'} besoin d'attention.
-          {unresolvedDiffs.length > 0 && (
-            <span className="ml-2 text-streak">· {unresolvedDiffs.length} difficulté{unresolvedDiffs.length > 1 ? 's' : ''} en attente</span>
-          )}
-        </motion.p>
-
-        {/* Alerts */}
-        {alerts.length > 0 && (
-          <div className="space-y-2 mb-6">
-            {alerts.map((alert, i) => {
-              const s = alertStyles[alert.type];
-              return (
-                <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg border text-sm"
-                  style={{ backgroundColor: s.bg, borderColor: s.border, color: s.color }}>
-                  <alert.icon size={16} />
-                  <span>{alert.message}</span>
-                </motion.div>
-              );
-            })}
+        {/* Urgent Alerts Banner */}
+        {urgentAlerts.length > 0 && (
+          <div className="mb-6 p-4 rounded-lg border" style={{ backgroundColor: 'hsl(var(--destructive) / 0.06)', borderColor: 'hsl(var(--destructive) / 0.2)' }}>
+            <h2 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: 'hsl(var(--destructive))' }}>
+              <AlertTriangle size={16} />
+              {urgentAlerts.length} élève{urgentAlerts.length > 1 ? 's' : ''} {urgentAlerts.length > 1 ? 'nécessitent' : 'nécessite'} ton attention
+            </h2>
+            <div className="space-y-2">
+              {urgentAlerts.map(alert => (
+                <div key={alert.userId} className="flex items-start gap-3 p-2.5 rounded-lg bg-card border border-border">
+                  <span className="text-lg">{alert.avatar}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium">{alert.studentName}</span>
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {alert.reasons.map((r, i) => (
+                        <span key={i} className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: 'hsl(var(--destructive) / 0.12)', color: 'hsl(var(--destructive))' }}>
+                          {r}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Quick stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           {[
             { label: 'Élèves', value: students.length, icon: '👥' },
             { label: 'XP moyen', value: students.length > 0 ? Math.round(students.reduce((a, s) => a + s.total_xp, 0) / students.length).toLocaleString() : '0', icon: '⚡' },
             { label: 'Série moyenne', value: students.length > 0 ? Math.round(students.reduce((a, s) => a + s.streak, 0) / students.length) : 0, icon: '🔥' },
             { label: 'Heures totales', value: students.reduce((a, s) => a + s.totalHours, 0), icon: '⏱' },
+            { label: 'Notes manquantes', value: missingGradeExams.length, icon: '📋' },
           ].map(stat => (
             <div key={stat.label} className="bg-card border border-border rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
@@ -330,24 +283,18 @@ export default function CoachDashboard() {
           ))}
         </div>
 
-        {/* Tabs: Élèves / Difficultés / DS / Tâches */}
+        {/* Tabs */}
         <Tabs defaultValue="students" className="mb-6">
           <TabsList className="mb-4">
             <TabsTrigger value="students">👥 Élèves</TabsTrigger>
             <TabsTrigger value="difficulties" className="relative">
               ⚠️ Difficultés
-              {unresolvedDiffs.length > 0 && (
-                <span className="ml-1.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center">
-                  {unresolvedDiffs.length}
-                </span>
-              )}
+              {unresolvedDiffs.length > 0 && <span className="ml-1.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center">{unresolvedDiffs.length}</span>}
             </TabsTrigger>
             <TabsTrigger value="exams">
               📝 DS
-              {upcomingExams.length > 0 && (
-                <span className="ml-1.5 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] flex items-center justify-center">
-                  {upcomingExams.length}
-                </span>
+              {(upcomingExams.length + missingGradeExams.length) > 0 && (
+                <span className="ml-1.5 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] flex items-center justify-center">{upcomingExams.length + missingGradeExams.length}</span>
               )}
             </TabsTrigger>
             <TabsTrigger value="tasks">✏️ Tâches perso</TabsTrigger>
@@ -385,10 +332,15 @@ export default function CoachDashboard() {
                         const sDiffs = difficulties.filter(d => d.user_id === student.user_id);
                         const sExams = exams.filter(e => e.user_id === student.user_id);
                         const sTasks = studentTasks.filter(t => t.user_id === student.user_id);
+                        const sMissing = sExams.filter(e => new Date(e.exam_date) < now && e.grade === null);
+
+                        // Compute averages per subject for this student
+                        const gradesBySubject: Record<string, number[]> = {};
+                        sExams.forEach(e => { if (e.grade !== null) { if (!gradesBySubject[e.subject]) gradesBySubject[e.subject] = []; gradesBySubject[e.subject].push(e.grade); } });
 
                         return (
-                          <>
-                            <tr key={student.id} className="border-b border-border/50 hover:bg-secondary/40 transition-colors cursor-pointer" onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}>
+                          <AnimatePresence key={student.id}>
+                            <tr className="border-b border-border/50 hover:bg-secondary/40 transition-colors cursor-pointer" onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}>
                               <td className="px-5 py-3.5">
                                 <div className="flex items-center gap-2">
                                   <span className="text-lg">{student.avatar}</span>
@@ -401,9 +353,7 @@ export default function CoachDashboard() {
                               </td>
                               <td className="px-5 py-3.5 tabular-nums text-sm">{student.total_xp.toLocaleString()}</td>
                               <td className="px-5 py-3.5">
-                                <span style={{ color: student.streak > 0 ? 'hsl(var(--streak))' : 'hsl(var(--destructive))' }}>
-                                  🔥 {student.streak}
-                                </span>
+                                <span style={{ color: student.streak > 0 ? 'hsl(var(--streak))' : 'hsl(var(--destructive))' }}>🔥 {student.streak}</span>
                               </td>
                               <td className="px-5 py-3.5"><CompletionBadge rate={student.completionRate} /></td>
                               <td className="px-5 py-3.5 tabular-nums text-sm">{student.totalHours}h</td>
@@ -411,9 +361,10 @@ export default function CoachDashboard() {
                               <td className="px-5 py-3.5">
                                 <div className="flex items-center gap-2">
                                   {sDiffs.filter(d => !d.resolved).length > 0 && (
-                                    <span className="w-5 h-5 rounded-full bg-destructive/20 text-destructive text-[10px] flex items-center justify-center">
-                                      {sDiffs.filter(d => !d.resolved).length}
-                                    </span>
+                                    <span className="w-5 h-5 rounded-full bg-destructive/20 text-destructive text-[10px] flex items-center justify-center">{sDiffs.filter(d => !d.resolved).length}</span>
+                                  )}
+                                  {sMissing.length > 0 && (
+                                    <span className="w-5 h-5 rounded-full text-[10px] flex items-center justify-center" style={{ backgroundColor: 'hsl(var(--streak) / 0.2)', color: 'hsl(var(--streak))' }}>{sMissing.length}</span>
                                   )}
                                   {isExpanded ? <ChevronUp size={14} className="text-muted-foreground" /> : <ChevronDown size={14} className="text-muted-foreground" />}
                                 </div>
@@ -422,15 +373,27 @@ export default function CoachDashboard() {
                             {isExpanded && (
                               <tr key={`${student.id}-detail`}>
                                 <td colSpan={8} className="px-5 py-4 bg-secondary/20">
+                                  {/* Grade averages for this student */}
+                                  {Object.keys(gradesBySubject).length > 0 && (
+                                    <div className="flex flex-wrap gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
+                                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Moyennes :</span>
+                                      {Object.entries(gradesBySubject).map(([subj, grades]) => {
+                                        const avg = Math.round((grades.reduce((a, b) => a + b, 0) / grades.length) * 10) / 10;
+                                        return (
+                                          <span key={subj} className="flex items-center gap-1.5 text-xs">
+                                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[subj as Subject] || '--muted'}))` }} />
+                                            {subj}:
+                                            <span className="font-semibold" style={{ color: avg >= 14 ? 'hsl(var(--success))' : avg >= 10 ? 'hsl(var(--xp))' : 'hsl(var(--destructive))' }}>{avg}/20</span>
+                                          </span>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
                                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {/* Difficulties */}
                                     <div>
-                                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                                        Difficultés ({sDiffs.length})
-                                      </h4>
-                                      {sDiffs.length === 0 ? (
-                                        <p className="text-xs text-muted-foreground">Aucune</p>
-                                      ) : (
+                                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Difficultés ({sDiffs.length})</h4>
+                                      {sDiffs.length === 0 ? <p className="text-xs text-muted-foreground">Aucune</p> : (
                                         <div className="space-y-2">
                                           {sDiffs.map(d => (
                                             <div key={d.id} className={`p-2 rounded border text-xs ${d.resolved ? 'border-border/50 opacity-60' : 'border-border'}`}>
@@ -440,27 +403,22 @@ export default function CoachDashboard() {
                                                 <span style={{ color: SEVERITY_LABELS[d.severity]?.color }}>{SEVERITY_LABELS[d.severity]?.label}</span>
                                               </div>
                                               <p className="text-foreground">{d.description}</p>
-                                              {d.coach_reply && (
-                                                <div className="mt-1 p-1.5 rounded bg-primary/10 text-primary text-[11px]">
-                                                  💬 {d.coach_reply}
+                                              {d.coach_reply && <div className="mt-1 p-1.5 rounded bg-primary/10 text-primary text-[11px]">💬 {d.coach_reply}</div>}
+                                              {!d.resolved && !d.coach_reply && (
+                                                <div className="mt-2 flex gap-1">
+                                                  <button onClick={(e) => { e.stopPropagation(); setReplyingTo(d.id); setReplyText(''); }}
+                                                    className="flex items-center gap-1 text-primary text-[11px] hover:underline"><MessageCircle size={10} /> Répondre</button>
+                                                  <button onClick={(e) => { e.stopPropagation(); setQuickQuestFor({ diffId: d.id, userId: d.user_id, subject: d.subject }); setQuickQuestTitle(''); }}
+                                                    className="flex items-center gap-1 text-[11px] hover:underline" style={{ color: 'hsl(var(--xp))' }}><Zap size={10} /> Quête</button>
                                                 </div>
                                               )}
-                                              {!d.resolved && !d.coach_reply && (
-                                                <div className="mt-2">
-                                                  {replyingTo === d.id ? (
-                                                    <div className="space-y-1">
-                                                      <Textarea value={replyText} onChange={e => setReplyText(e.target.value)} placeholder="Répondre..." className="min-h-[40px] text-xs" />
-                                                      <div className="flex gap-1">
-                                                        <Button size="sm" variant="ghost" onClick={() => setReplyingTo(null)} className="h-6 text-[10px]">Annuler</Button>
-                                                        <Button size="sm" onClick={() => handleReply(d.id)} className="h-6 text-[10px]">Envoyer</Button>
-                                                      </div>
-                                                    </div>
-                                                  ) : (
-                                                    <button onClick={(e) => { e.stopPropagation(); setReplyingTo(d.id); setReplyText(''); }}
-                                                      className="flex items-center gap-1 text-primary text-[11px] hover:underline">
-                                                      <MessageCircle size={10} /> Répondre
-                                                    </button>
-                                                  )}
+                                              {replyingTo === d.id && (
+                                                <div className="space-y-1 mt-2">
+                                                  <Textarea value={replyText} onChange={e => setReplyText(e.target.value)} placeholder="Répondre..." className="min-h-[40px] text-xs" />
+                                                  <div className="flex gap-1">
+                                                    <Button size="sm" variant="ghost" onClick={() => setReplyingTo(null)} className="h-6 text-[10px]">Annuler</Button>
+                                                    <Button size="sm" onClick={() => handleReply(d.id)} className="h-6 text-[10px]">Envoyer</Button>
+                                                  </div>
                                                 </div>
                                               )}
                                             </div>
@@ -468,48 +426,43 @@ export default function CoachDashboard() {
                                         </div>
                                       )}
                                     </div>
-
                                     {/* Exams */}
                                     <div>
-                                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                                        DS ({sExams.length})
-                                      </h4>
-                                      {sExams.length === 0 ? (
-                                        <p className="text-xs text-muted-foreground">Aucun</p>
-                                      ) : (
+                                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">DS ({sExams.length})</h4>
+                                      {sExams.length === 0 ? <p className="text-xs text-muted-foreground">Aucun</p> : (
                                         <div className="space-y-2">
                                           {sExams.map(e => {
                                             const daysUntil = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                                             const isPast = daysUntil < 0;
+                                            const isMissing = isPast && e.grade === null;
                                             return (
-                                              <div key={e.id} className={`p-2 rounded border text-xs ${isPast ? 'border-border/50 opacity-60' : daysUntil <= 3 ? 'border-destructive/50' : 'border-border'}`}>
+                                              <div key={e.id} className={`p-2 rounded border text-xs ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 3 ? 'border-destructive/50' : 'border-border'}`}>
                                                 <div className="flex items-center gap-2">
                                                   <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[e.subject as Subject] || '--muted'}))` }} />
                                                   <span className="font-medium">{e.subject}</span>
-                                                  <span className="text-muted-foreground ml-auto">
-                                                    {new Date(e.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                                                  </span>
+                                                  <span className="text-muted-foreground ml-auto">{new Date(e.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-1">
                                                   <span>{STRESS_LABELS[e.stress_level] || e.stress_level}</span>
                                                   {e.chapters && <span className="text-muted-foreground truncate">· {e.chapters}</span>}
                                                   {e.grade !== null && <span className="ml-auto font-medium">{e.grade}/20</span>}
+                                                  {isMissing && <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'hsl(var(--streak) / 0.15)', color: 'hsl(var(--streak))' }}>Résultat manquant</span>}
                                                 </div>
+                                                {e.photo_url && (
+                                                  <button onClick={() => setPreviewPhoto(e.photo_url!)} className="flex items-center gap-1 text-[10px] text-primary hover:underline mt-1">
+                                                    <Image size={10} /> Voir le contrôle
+                                                  </button>
+                                                )}
                                               </div>
                                             );
                                           })}
                                         </div>
                                       )}
                                     </div>
-
                                     {/* Tasks */}
                                     <div>
-                                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                                        Tâches perso ({sTasks.length})
-                                      </h4>
-                                      {sTasks.length === 0 ? (
-                                        <p className="text-xs text-muted-foreground">Aucune</p>
-                                      ) : (
+                                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Tâches perso ({sTasks.length})</h4>
+                                      {sTasks.length === 0 ? <p className="text-xs text-muted-foreground">Aucune</p> : (
                                         <div className="space-y-2">
                                           {sTasks.map(t => (
                                             <div key={t.id} className={`p-2 rounded border text-xs ${t.completed ? 'border-border/50 opacity-60' : 'border-border'}`}>
@@ -518,9 +471,7 @@ export default function CoachDashboard() {
                                                 <span className={t.completed ? 'line-through' : ''}>{t.description}</span>
                                               </div>
                                               <div className="flex items-center gap-2 mt-1 text-muted-foreground">
-                                                <span>{t.subject}</span>
-                                                <span>·</span>
-                                                <span>+{t.xp_reward} XP</span>
+                                                <span>{t.subject}</span><span>·</span><span>+{t.xp_reward} XP</span>
                                               </div>
                                             </div>
                                           ))}
@@ -531,7 +482,7 @@ export default function CoachDashboard() {
                                 </td>
                               </tr>
                             )}
-                          </>
+                          </AnimatePresence>
                         );
                       })}
                     </tbody>
@@ -541,17 +492,28 @@ export default function CoachDashboard() {
             </div>
           </TabsContent>
 
-          {/* Difficulties Tab */}
+          {/* Difficulties Tab with subject filter */}
           <TabsContent value="difficulties">
             <div className="bg-card border border-border rounded-lg p-5">
-              <h2 className="font-display text-base font-semibold mb-4">
-                Toutes les difficultés ({unresolvedDiffs.length} non résolues)
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-display text-base font-semibold">
+                  Toutes les difficultés ({unresolvedDiffs.length} non résolues)
+                </h2>
+                <Select value={subjectFilter} onValueChange={setSubjectFilter}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs">
+                    <Filter size={12} className="mr-1" /><SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes</SelectItem>
+                    {SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-3">
-                {difficulties.length === 0 ? (
-                  <p className="text-muted-foreground text-sm text-center py-4">Aucune difficulté signalée 🎉</p>
+                {filteredDiffs.length === 0 ? (
+                  <p className="text-muted-foreground text-sm text-center py-4">Aucune difficulté {subjectFilter !== 'all' ? `en ${subjectFilter}` : ''} 🎉</p>
                 ) : (
-                  difficulties.map(d => (
+                  filteredDiffs.map(d => (
                     <div key={d.id} className={`p-4 rounded-lg border ${d.resolved ? 'border-border/50 opacity-60' : d.severity === 'blocking' ? 'border-destructive/40 bg-destructive/5' : 'border-border'}`}>
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-lg">{d.avatar}</span>
@@ -559,9 +521,7 @@ export default function CoachDashboard() {
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[d.subject as Subject] || '--muted'}))` }} />
                         <span className="text-xs text-muted-foreground">{d.subject}</span>
                         <span className="text-xs" style={{ color: SEVERITY_LABELS[d.severity]?.color }}>{SEVERITY_LABELS[d.severity]?.label}</span>
-                        <span className="text-xs text-muted-foreground ml-auto">
-                          {new Date(d.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                        </span>
+                        <span className="text-xs text-muted-foreground ml-auto">{new Date(d.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
                         {d.resolved && <span className="text-xs text-success">✓ Résolu</span>}
                       </div>
                       <p className="text-sm mb-2">{d.description}</p>
@@ -571,9 +531,9 @@ export default function CoachDashboard() {
                         </div>
                       )}
                       {!d.resolved && !d.coach_reply && (
-                        <div className="mt-2">
+                        <div className="mt-2 flex gap-3">
                           {replyingTo === d.id ? (
-                            <div className="space-y-2">
+                            <div className="space-y-2 flex-1">
                               <Textarea value={replyText} onChange={e => setReplyText(e.target.value)} placeholder="Ta réponse..." className="min-h-[50px] text-sm" />
                               <div className="flex gap-2">
                                 <Button size="sm" variant="ghost" onClick={() => setReplyingTo(null)}>Annuler</Button>
@@ -581,10 +541,16 @@ export default function CoachDashboard() {
                               </div>
                             </div>
                           ) : (
-                            <button onClick={() => { setReplyingTo(d.id); setReplyText(''); }}
-                              className="flex items-center gap-1.5 text-primary text-sm hover:underline">
-                              <MessageCircle size={14} /> Répondre
-                            </button>
+                            <>
+                              <button onClick={() => { setReplyingTo(d.id); setReplyText(''); }}
+                                className="flex items-center gap-1.5 text-primary text-sm hover:underline">
+                                <MessageCircle size={14} /> Répondre
+                              </button>
+                              <button onClick={() => { setQuickQuestFor({ diffId: d.id, userId: d.user_id, subject: d.subject }); setQuickQuestTitle(''); }}
+                                className="flex items-center gap-1.5 text-sm hover:underline" style={{ color: 'hsl(var(--xp))' }}>
+                                <Zap size={14} /> Assigner une quête
+                              </button>
+                            </>
                           )}
                         </div>
                       )}
@@ -599,7 +565,7 @@ export default function CoachDashboard() {
           <TabsContent value="exams">
             <div className="bg-card border border-border rounded-lg p-5">
               <h2 className="font-display text-base font-semibold mb-4">
-                Tous les DS ({upcomingExams.length} à venir)
+                Tous les DS ({upcomingExams.length} à venir · {missingGradeExams.length} résultat{missingGradeExams.length > 1 ? 's' : ''} manquant{missingGradeExams.length > 1 ? 's' : ''})
               </h2>
               <div className="space-y-3">
                 {exams.length === 0 ? (
@@ -608,22 +574,27 @@ export default function CoachDashboard() {
                   exams.map(e => {
                     const daysUntil = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                     const isPast = daysUntil < 0;
+                    const isMissing = isPast && e.grade === null;
                     return (
-                      <div key={e.id} className={`p-4 rounded-lg border ${isPast ? 'border-border/50 opacity-60' : daysUntil <= 3 ? 'border-destructive/40 bg-destructive/5' : 'border-border'}`}>
+                      <div key={e.id} className={`p-4 rounded-lg border ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 3 ? 'border-destructive/40 bg-destructive/5' : 'border-border'}`}>
                         <div className="flex items-center gap-3">
                           <span className="text-lg">{e.avatar}</span>
                           <span className="font-medium text-sm">{e.pseudo}</span>
                           <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[e.subject as Subject] || '--muted'}))` }} />
                           <span className="text-sm">{e.subject}</span>
-                          <span className="text-sm text-muted-foreground ml-auto">
-                            {new Date(e.exam_date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
-                          </span>
+                          <span className="text-sm text-muted-foreground ml-auto">{new Date(e.exam_date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
                           {!isPast && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary">{daysUntil === 0 ? "Aujourd'hui" : `${daysUntil}j`}</span>}
+                          {isMissing && <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'hsl(var(--streak) / 0.15)', color: 'hsl(var(--streak))' }}>Résultat manquant</span>}
                         </div>
                         <div className="flex items-center gap-3 mt-2 text-sm">
                           <span>{STRESS_LABELS[e.stress_level] || e.stress_level}</span>
                           {e.chapters && <span className="text-muted-foreground">Chapitres : {e.chapters}</span>}
                           {e.grade !== null && <span className="ml-auto font-display font-semibold">{e.grade}/20</span>}
+                          {e.photo_url && (
+                            <button onClick={() => setPreviewPhoto(e.photo_url!)} className="flex items-center gap-1 text-xs text-primary hover:underline ml-auto">
+                              <Image size={12} /> Voir le contrôle
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
@@ -654,11 +625,7 @@ export default function CoachDashboard() {
                         <span className="text-xs ml-auto" style={{ color: 'hsl(var(--xp))' }}>+{t.xp_reward} XP</span>
                       </div>
                       <p className={`text-sm mt-1 ${t.completed ? 'line-through text-muted-foreground' : ''}`}>{t.description}</p>
-                      {t.deadline && (
-                        <span className="text-xs text-muted-foreground mt-1 block">
-                          Échéance : {new Date(t.deadline).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                        </span>
-                      )}
+                      {t.deadline && <span className="text-xs text-muted-foreground mt-1 block">Échéance : {new Date(t.deadline).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>}
                     </div>
                   ))
                 )}
@@ -667,6 +634,24 @@ export default function CoachDashboard() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Quick Quest Modal */}
+      {quickQuestFor && (
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setQuickQuestFor(null)}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-card border border-border rounded-lg p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+            <h2 className="font-display text-base font-semibold mb-1">⚡ Quête rapide</h2>
+            <p className="text-xs text-muted-foreground mb-4">En {quickQuestFor.subject} · 100 XP · Difficulté moyenne</p>
+            <input type="text" placeholder="Titre de la quête..." value={quickQuestTitle} onChange={e => setQuickQuestTitle(e.target.value)}
+              className="w-full bg-secondary border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 mb-4" autoFocus />
+            <div className="flex gap-3">
+              <button type="button" onClick={() => setQuickQuestFor(null)} className="flex-1 py-2.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground transition-colors">Annuler</button>
+              <button onClick={handleQuickQuest} disabled={creating || !quickQuestTitle.trim()} className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+                {creating && <Loader2 size={14} className="animate-spin" />} Assigner
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Create Student Modal */}
       {showCreateStudent && (
@@ -690,9 +675,7 @@ export default function CoachDashboard() {
                 <label className="text-xs text-muted-foreground mb-1 block">Avatar</label>
                 <div className="flex gap-2 flex-wrap">
                   {AVATARS.map(a => (
-                    <button key={a} type="button" onClick={() => setNewStudent(p => ({ ...p, avatar: a }))} className={`w-10 h-10 rounded-full flex items-center justify-center text-lg border ${newStudent.avatar === a ? 'border-primary bg-primary/10' : 'border-border'}`}>
-                      {a}
-                    </button>
+                    <button key={a} type="button" onClick={() => setNewStudent(p => ({ ...p, avatar: a }))} className={`w-10 h-10 rounded-full flex items-center justify-center text-lg border ${newStudent.avatar === a ? 'border-primary bg-primary/10' : 'border-border'}`}>{a}</button>
                   ))}
                 </div>
               </div>
@@ -763,6 +746,15 @@ export default function CoachDashboard() {
               </div>
             </form>
           </motion.div>
+        </div>
+      )}
+
+      {/* Photo preview */}
+      {previewPhoto && (
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setPreviewPhoto(null)}>
+          <div className="max-w-2xl max-h-[80vh] overflow-auto rounded-lg border border-border" onClick={e => e.stopPropagation()}>
+            <img src={previewPhoto} alt="Contrôle" className="w-full h-auto" />
+          </div>
         </div>
       )}
     </div>
