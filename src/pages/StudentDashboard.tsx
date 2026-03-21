@@ -160,6 +160,12 @@ export default function StudentDashboard() {
           {user && <GradeAverages userId={user.id} />}
         </div>
 
+        {/* Weekly Plan + Progress Comparison */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {user && <WeeklyPlanView userId={user.id} />}
+          {user && <ProgressComparison userId={user.id} totalXp={totalXp} streak={streak} />}
+        </div>
+
         {/* DS + Difficultés + Planning */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {user && <ExamsSection userId={user.id} />}
