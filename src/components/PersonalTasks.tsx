@@ -129,6 +129,9 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                   className="h-9 text-sm"
                 />
               </div>
+              {subject === 'Autre' && (
+                <Input placeholder="Précise la matière..." value={customSubject} onChange={e => setCustomSubject(e.target.value)} className="h-9 text-sm" />
+              )}
               <Button size="sm" onClick={handleAdd} disabled={!description.trim()} className="w-full">
                 Ajouter
               </Button>
