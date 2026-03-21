@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X, Zap, Image, Filter, Trash2 } from 'lucide-react';
+import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X, Zap, Image, Filter, Trash2, Sparkles, Check, Camera } from 'lucide-react';
 import { calculateLevel, getTitleForLevel, SUBJECTS, AVATARS, Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -79,6 +79,14 @@ export default function CoachDashboard() {
   const [deletingStudent, setDeletingStudent] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ userId: string; pseudo: string } | null>(null);
 
+  // AI Plan state
+  const [generatingPlan, setGeneratingPlan] = useState<string | null>(null);
+  const [generatedPlan, setGeneratedPlan] = useState<{ userId: string; content: string } | null>(null);
+  const [validatingPlan, setValidatingPlan] = useState(false);
+
+  // Baselines
+  const [baselines, setBaselines] = useState<Record<string, boolean>>({});
+
   // Quick quest from difficulty
   const [quickQuestFor, setQuickQuestFor] = useState<{ diffId: string; userId: string; subject: string } | null>(null);
   const [quickQuestTitle, setQuickQuestTitle] = useState('');
@@ -149,6 +157,15 @@ export default function CoachDashboard() {
     });
 
     setUrgentAlerts(Object.values(alertMap).sort((a, b) => b.reasons.length - a.reasons.length));
+
+    // Load baselines
+    const { data: blData } = await supabase.from('student_baselines').select('user_id');
+    if (blData) {
+      const blMap: Record<string, boolean> = {};
+      blData.forEach((b: any) => { blMap[b.user_id] = true; });
+      setBaselines(blMap);
+    }
+
     setLoading(false);
   };
 
@@ -227,6 +244,56 @@ export default function CoachDashboard() {
     setDeletingStudent(null);
     setConfirmDelete(null);
     loadData();
+  };
+
+  const handleGeneratePlan = async (studentUserId: string) => {
+    setGeneratingPlan(studentUserId);
+    setGeneratedPlan(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-plan', {
+        body: { studentUserId },
+      });
+      if (error) {
+        alert('Erreur: ' + (error.message || 'Impossible de générer le plan'));
+      } else if (data?.plan) {
+        setGeneratedPlan({ userId: studentUserId, content: data.plan });
+      }
+    } catch (e) {
+      alert('Erreur lors de la génération');
+    }
+    setGeneratingPlan(null);
+  };
+
+  const handleValidatePlan = async () => {
+    if (!generatedPlan) return;
+    setValidatingPlan(true);
+    const { data: plans } = await supabase.from('weekly_plans').select('id').eq('user_id', generatedPlan.userId).eq('validated', false).order('created_at', { ascending: false }).limit(1);
+    if (plans?.[0]) {
+      await supabase.from('weekly_plans').update({ validated: true, validated_at: new Date().toISOString() }).eq('id', plans[0].id);
+    }
+    setValidatingPlan(false);
+    setGeneratedPlan(null);
+    loadData();
+  };
+
+  const handleCreateBaseline = async (studentUserId: string) => {
+    const student = students.find(s => s.user_id === studentUserId);
+    if (!student) return;
+    const studentExams = exams.filter(e => e.user_id === studentUserId && e.grade !== null);
+    const gradesBySubject: Record<string, number[]> = {};
+    studentExams.forEach(e => {
+      if (!gradesBySubject[e.subject]) gradesBySubject[e.subject] = [];
+      gradesBySubject[e.subject].push(e.grade!);
+    });
+    await supabase.from('student_baselines').upsert({
+      user_id: studentUserId,
+      initial_total_xp: student.total_xp,
+      initial_streak: student.streak,
+      initial_total_hours: student.totalHours,
+      initial_grades: gradesBySubject,
+      initial_quest_completion_rate: student.completionRate,
+    }, { onConflict: 'user_id' });
+    setBaselines(prev => ({ ...prev, [studentUserId]: true }));
   };
 
   if (loading) {
@@ -401,6 +468,29 @@ export default function CoachDashboard() {
                             {isExpanded && (
                               <tr key={`${student.id}-detail`}>
                                 <td colSpan={8} className="px-5 py-4 bg-secondary/20">
+                                  {/* Action buttons */}
+                                  <div className="flex flex-wrap gap-2 mb-4">
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleGeneratePlan(student.user_id); }}
+                                      disabled={generatingPlan === student.user_id}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+                                    >
+                                      {generatingPlan === student.user_id ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                      {generatingPlan === student.user_id ? 'Génération...' : 'Générer un plan IA'}
+                                    </button>
+                                    {!baselines[student.user_id] ? (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); handleCreateBaseline(student.user_id); }}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-border hover:bg-secondary transition-colors"
+                                      >
+                                        <Camera size={12} /> Prendre le snapshot initial
+                                      </button>
+                                    ) : (
+                                      <span className="flex items-center gap-1 px-3 py-1.5 text-xs text-muted-foreground">
+                                        <Check size={12} className="text-success" /> Snapshot initial pris
+                                      </span>
+                                    )}
+                                  </div>
                                   {/* Grade averages for this student */}
                                   {Object.keys(gradesBySubject).length > 0 && (
                                     <div className="flex flex-wrap gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
@@ -773,6 +863,32 @@ export default function CoachDashboard() {
                 </button>
               </div>
             </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* AI Plan Preview Modal */}
+      {generatedPlan && (
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setGeneratedPlan(null)}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-card border border-border rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+                <Sparkles size={18} className="text-primary" /> Plan de la semaine
+              </h2>
+              <button onClick={() => setGeneratedPlan(null)} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
+            </div>
+            <div className="prose prose-sm prose-invert max-w-none mb-6 text-sm whitespace-pre-wrap">{generatedPlan.content}</div>
+            <div className="flex gap-3">
+              <button onClick={() => setGeneratedPlan(null)} className="flex-1 py-2.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground transition-colors">Modifier / Rejeter</button>
+              <button
+                onClick={handleValidatePlan}
+                disabled={validatingPlan}
+                className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {validatingPlan ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                Valider et envoyer à l'élève
+              </button>
+            </div>
           </motion.div>
         </div>
       )}

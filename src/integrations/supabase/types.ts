@@ -191,6 +191,39 @@ export type Database = {
         }
         Relationships: []
       }
+      student_baselines: {
+        Row: {
+          created_at: string
+          id: string
+          initial_grades: Json
+          initial_quest_completion_rate: number
+          initial_streak: number
+          initial_total_hours: number
+          initial_total_xp: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          initial_grades?: Json
+          initial_quest_completion_rate?: number
+          initial_streak?: number
+          initial_total_hours?: number
+          initial_total_xp?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          initial_grades?: Json
+          initial_quest_completion_rate?: number
+          initial_streak?: number
+          initial_total_hours?: number
+          initial_total_xp?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       student_tasks: {
         Row: {
           completed: boolean
@@ -278,6 +311,39 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_plans: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          plan_content: string
+          user_id: string
+          validated: boolean
+          validated_at: string | null
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          plan_content: string
+          user_id: string
+          validated?: boolean
+          validated_at?: string | null
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          plan_content?: string
+          user_id?: string
+          validated?: boolean
+          validated_at?: string | null
+          week_start?: string
         }
         Relationships: []
       }
