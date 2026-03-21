@@ -468,6 +468,29 @@ export default function CoachDashboard() {
                             {isExpanded && (
                               <tr key={`${student.id}-detail`}>
                                 <td colSpan={8} className="px-5 py-4 bg-secondary/20">
+                                  {/* Action buttons */}
+                                  <div className="flex flex-wrap gap-2 mb-4">
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleGeneratePlan(student.user_id); }}
+                                      disabled={generatingPlan === student.user_id}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+                                    >
+                                      {generatingPlan === student.user_id ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                      {generatingPlan === student.user_id ? 'Génération...' : 'Générer un plan IA'}
+                                    </button>
+                                    {!baselines[student.user_id] ? (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); handleCreateBaseline(student.user_id); }}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-border hover:bg-secondary transition-colors"
+                                      >
+                                        <Camera size={12} /> Prendre le snapshot initial
+                                      </button>
+                                    ) : (
+                                      <span className="flex items-center gap-1 px-3 py-1.5 text-xs text-muted-foreground">
+                                        <Check size={12} className="text-success" /> Snapshot initial pris
+                                      </span>
+                                    )}
+                                  </div>
                                   {/* Grade averages for this student */}
                                   {Object.keys(gradesBySubject).length > 0 && (
                                     <div className="flex flex-wrap gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
