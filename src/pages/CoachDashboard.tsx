@@ -246,6 +246,56 @@ export default function CoachDashboard() {
     loadData();
   };
 
+  const handleGeneratePlan = async (studentUserId: string) => {
+    setGeneratingPlan(studentUserId);
+    setGeneratedPlan(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-plan', {
+        body: { studentUserId },
+      });
+      if (error) {
+        alert('Erreur: ' + (error.message || 'Impossible de générer le plan'));
+      } else if (data?.plan) {
+        setGeneratedPlan({ userId: studentUserId, content: data.plan });
+      }
+    } catch (e) {
+      alert('Erreur lors de la génération');
+    }
+    setGeneratingPlan(null);
+  };
+
+  const handleValidatePlan = async () => {
+    if (!generatedPlan) return;
+    setValidatingPlan(true);
+    const { data: plans } = await supabase.from('weekly_plans').select('id').eq('user_id', generatedPlan.userId).eq('validated', false).order('created_at', { ascending: false }).limit(1);
+    if (plans?.[0]) {
+      await supabase.from('weekly_plans').update({ validated: true, validated_at: new Date().toISOString() }).eq('id', plans[0].id);
+    }
+    setValidatingPlan(false);
+    setGeneratedPlan(null);
+    loadData();
+  };
+
+  const handleCreateBaseline = async (studentUserId: string) => {
+    const student = students.find(s => s.user_id === studentUserId);
+    if (!student) return;
+    const studentExams = exams.filter(e => e.user_id === studentUserId && e.grade !== null);
+    const gradesBySubject: Record<string, number[]> = {};
+    studentExams.forEach(e => {
+      if (!gradesBySubject[e.subject]) gradesBySubject[e.subject] = [];
+      gradesBySubject[e.subject].push(e.grade!);
+    });
+    await supabase.from('student_baselines').upsert({
+      user_id: studentUserId,
+      initial_total_xp: student.total_xp,
+      initial_streak: student.streak,
+      initial_total_hours: student.totalHours,
+      initial_grades: gradesBySubject,
+      initial_quest_completion_rate: student.completionRate,
+    }, { onConflict: 'user_id' });
+    setBaselines(prev => ({ ...prev, [studentUserId]: true }));
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
