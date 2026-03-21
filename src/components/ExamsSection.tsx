@@ -17,6 +17,7 @@ interface Exam {
   stress_level: StressLevel;
   grade: number | null;
   photo_url: string | null;
+  custom_subject: string | null;
 }
 
 const STRESS_LABELS: Record<StressLevel, { label: string; emoji: string }> = {
