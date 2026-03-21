@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X, Zap, Image, Filter } from 'lucide-react';
+import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X, Zap, Image, Filter, Trash2 } from 'lucide-react';
 import { calculateLevel, getTitleForLevel, SUBJECTS, AVATARS, Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
