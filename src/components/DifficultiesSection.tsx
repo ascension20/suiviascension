@@ -60,8 +60,10 @@ export function DifficultiesSection({ userId }: { userId: string }) {
       subject,
       severity,
       description: description.trim(),
+      custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,
     });
     setDescription('');
+    setCustomSubject('');
     setShowForm(false);
     setLoading(false);
     loadDifficulties();
