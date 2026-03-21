@@ -31,6 +31,7 @@ export function DifficultiesSection({ userId }: { userId: string }) {
   const [subject, setSubject] = useState<Subject>('Maths');
   const [severity, setSeverity] = useState<Severity>('fragile');
   const [description, setDescription] = useState('');
+  const [customSubject, setCustomSubject] = useState('');
   const [loading, setLoading] = useState(false);
 
   const loadDifficulties = async () => {

@@ -31,6 +31,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
   const [description, setDescription] = useState('');
   const [subject, setSubject] = useState<Subject>('Maths');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [customSubject, setCustomSubject] = useState('');
   const [deadline, setDeadline] = useState('');
 
   const loadTasks = useCallback(async () => {

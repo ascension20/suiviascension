@@ -32,6 +32,7 @@ export function ExamsSection({ userId }: { userId: string }) {
   const [examDate, setExamDate] = useState('');
   const [chapters, setChapters] = useState('');
   const [stressLevel, setStressLevel] = useState<StressLevel>('neutral');
+  const [customSubject, setCustomSubject] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
