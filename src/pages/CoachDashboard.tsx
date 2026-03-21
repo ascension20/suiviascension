@@ -867,6 +867,32 @@ export default function CoachDashboard() {
         </div>
       )}
 
+      {/* AI Plan Preview Modal */}
+      {generatedPlan && (
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setGeneratedPlan(null)}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-card border border-border rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+                <Sparkles size={18} className="text-primary" /> Plan de la semaine
+              </h2>
+              <button onClick={() => setGeneratedPlan(null)} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
+            </div>
+            <div className="prose prose-sm prose-invert max-w-none mb-6 text-sm whitespace-pre-wrap">{generatedPlan.content}</div>
+            <div className="flex gap-3">
+              <button onClick={() => setGeneratedPlan(null)} className="flex-1 py-2.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground transition-colors">Modifier / Rejeter</button>
+              <button
+                onClick={handleValidatePlan}
+                disabled={validatingPlan}
+                className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {validatingPlan ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                Valider et envoyer à l'élève
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Photo preview */}
       {previewPhoto && (
         <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setPreviewPhoto(null)}>
