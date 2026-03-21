@@ -387,6 +387,13 @@ export default function CoachDashboard() {
                                   {sMissing.length > 0 && (
                                     <span className="w-5 h-5 rounded-full text-[10px] flex items-center justify-center" style={{ backgroundColor: 'hsl(var(--streak) / 0.2)', color: 'hsl(var(--streak))' }}>{sMissing.length}</span>
                                   )}
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); setConfirmDelete({ userId: student.user_id, pseudo: student.pseudo }); }}
+                                    className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-50 hover:!opacity-100 hover:bg-destructive hover:text-destructive-foreground transition-all"
+                                    title="Supprimer l'élève"
+                                  >
+                                    <Trash2 size={12} />
+                                  </button>
                                   {isExpanded ? <ChevronUp size={14} className="text-muted-foreground" /> : <ChevronDown size={14} className="text-muted-foreground" />}
                                 </div>
                               </td>
