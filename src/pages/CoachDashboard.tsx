@@ -79,6 +79,14 @@ export default function CoachDashboard() {
   const [deletingStudent, setDeletingStudent] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ userId: string; pseudo: string } | null>(null);
 
+  // AI Plan state
+  const [generatingPlan, setGeneratingPlan] = useState<string | null>(null);
+  const [generatedPlan, setGeneratedPlan] = useState<{ userId: string; content: string } | null>(null);
+  const [validatingPlan, setValidatingPlan] = useState(false);
+
+  // Baselines
+  const [baselines, setBaselines] = useState<Record<string, boolean>>({});
+
   // Quick quest from difficulty
   const [quickQuestFor, setQuickQuestFor] = useState<{ diffId: string; userId: string; subject: string } | null>(null);
   const [quickQuestTitle, setQuickQuestTitle] = useState('');
