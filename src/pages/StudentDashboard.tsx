@@ -129,6 +129,9 @@ export default function StudentDashboard() {
       </header>
 
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
+        {/* Smart contextual notifications */}
+        {user && <SmartNotifications userId={user.id} />}
+
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-muted-foreground mb-6">
           Prêt pour ta prochaine quête, <span className="text-foreground font-medium">{profile?.pseudo ?? 'Élève'}</span> ?
           {' '}Ta série de <span className="text-streak font-semibold">{streak} jours</span> t'attend.
