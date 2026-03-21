@@ -155,7 +155,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                 <div className="flex-1 min-w-0">
                   <span className="font-medium text-sm">{task.description}</span>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-muted-foreground">{task.subject}</span>
+                    <span className="text-xs text-muted-foreground">{task.custom_subject || task.subject}</span>
                     <span className="text-xs text-muted-foreground">·</span>
                     <span className="text-xs text-muted-foreground">{DIFF_LABELS[task.difficulty]}</span>
                     {task.deadline && (

@@ -165,7 +165,7 @@ export function ExamsSection({ userId }: { userId: string }) {
                     <div key={exam.id} className={`p-2 rounded border ${exam.grade === null ? 'border-streak/40 bg-streak/5' : 'border-border/50 opacity-60'}`}>
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[exam.subject]}))` }} />
-                        <span className="text-xs">{exam.subject}</span>
+                        <span className="text-xs">{exam.custom_subject || exam.subject}</span>
                         <span className="text-xs text-muted-foreground">
                           {new Date(exam.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                         </span>
