@@ -785,6 +785,29 @@ export default function CoachDashboard() {
           </div>
         </div>
       )}
+
+      {/* Delete student confirmation */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setConfirmDelete(null)}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-card border border-border rounded-lg p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+            <h2 className="font-display text-base font-semibold mb-2 text-destructive">⚠️ Supprimer l'élève</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Es-tu sûr de vouloir supprimer <strong className="text-foreground">{confirmDelete.pseudo}</strong> ? Toutes ses données (quêtes, DS, difficultés, tâches, sessions) seront supprimées définitivement.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setConfirmDelete(null)} className="flex-1 py-2.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground transition-colors">Annuler</button>
+              <button
+                onClick={() => handleDeleteStudent(confirmDelete.userId)}
+                disabled={deletingStudent === confirmDelete.userId}
+                className="flex-1 py-2.5 rounded-lg bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deletingStudent === confirmDelete.userId && <Loader2 size={14} className="animate-spin" />}
+                Supprimer
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
