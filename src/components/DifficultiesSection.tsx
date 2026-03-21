@@ -96,7 +96,7 @@ export function DifficultiesSection({ userId }: { userId: string }) {
           >
             <div className="space-y-3 p-3 rounded-lg border border-border bg-secondary/30">
               <div className="grid grid-cols-2 gap-2">
-                <Select value={subject} onValueChange={(v) => setSubject(v as Subject)}>
+                <Select value={subject} onValueChange={(v) => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -111,6 +111,14 @@ export function DifficultiesSection({ userId }: { userId: string }) {
                   </SelectContent>
                 </Select>
               </div>
+              {subject === 'Autre' && (
+                <Input
+                  placeholder="Précise la matière..."
+                  value={customSubject}
+                  onChange={e => setCustomSubject(e.target.value)}
+                  className="h-9 text-sm"
+                />
+              )}
               <Textarea
                 placeholder="Décris ta difficulté..."
                 value={description}
