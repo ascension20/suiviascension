@@ -17,6 +17,7 @@ interface Exam {
   stress_level: StressLevel;
   grade: number | null;
   photo_url: string | null;
+  custom_subject: string | null;
 }
 
 const STRESS_LABELS: Record<StressLevel, { label: string; emoji: string }> = {
@@ -32,6 +33,7 @@ export function ExamsSection({ userId }: { userId: string }) {
   const [examDate, setExamDate] = useState('');
   const [chapters, setChapters] = useState('');
   const [stressLevel, setStressLevel] = useState<StressLevel>('neutral');
+  const [customSubject, setCustomSubject] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
@@ -53,8 +55,9 @@ export function ExamsSection({ userId }: { userId: string }) {
     await supabase.from('exams').insert({
       user_id: userId, subject, exam_date: examDate,
       chapters: chapters.trim() || null, stress_level: stressLevel,
+      custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,
     });
-    setExamDate(''); setChapters(''); setShowForm(false); setLoading(false);
+    setExamDate(''); setChapters(''); setCustomSubject(''); setShowForm(false); setLoading(false);
     loadExams();
   };
 
@@ -100,12 +103,15 @@ export function ExamsSection({ userId }: { userId: string }) {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-4">
             <div className="space-y-3 p-3 rounded-lg border border-border bg-secondary/30">
               <div className="grid grid-cols-2 gap-2">
-                <Select value={subject} onValueChange={v => setSubject(v as Subject)}>
+                <Select value={subject} onValueChange={v => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>{SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                 </Select>
                 <Input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} className="h-9 text-sm" />
               </div>
+              {subject === 'Autre' && (
+                <Input placeholder="Précise la matière..." value={customSubject} onChange={e => setCustomSubject(e.target.value)} className="h-9 text-sm" />
+              )}
               <Input placeholder="Chapitres (optionnel)..." value={chapters} onChange={e => setChapters(e.target.value)} className="h-9 text-sm" />
               <div className="flex gap-2">
                 {(Object.entries(STRESS_LABELS) as [StressLevel, { label: string; emoji: string }][]).map(([key, val]) => (
@@ -133,7 +139,7 @@ export function ExamsSection({ userId }: { userId: string }) {
                 <div key={exam.id} className={`p-3 rounded-lg border transition-colors ${isUrgent ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}>
                   <div className="flex items-center gap-2 mb-1">
                     <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[exam.subject]}))` }} />
-                    <span className="text-sm font-medium">{exam.subject}</span>
+                    <span className="text-sm font-medium">{exam.custom_subject || exam.subject}</span>
                     <span className="text-xs text-muted-foreground ml-auto">
                       {new Date(exam.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                     </span>
@@ -159,7 +165,7 @@ export function ExamsSection({ userId }: { userId: string }) {
                     <div key={exam.id} className={`p-2 rounded border ${exam.grade === null ? 'border-streak/40 bg-streak/5' : 'border-border/50 opacity-60'}`}>
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[exam.subject]}))` }} />
-                        <span className="text-xs">{exam.subject}</span>
+                        <span className="text-xs">{exam.custom_subject || exam.subject}</span>
                         <span className="text-xs text-muted-foreground">
                           {new Date(exam.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                         </span>

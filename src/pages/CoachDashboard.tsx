@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X, Zap, Image, Filter } from 'lucide-react';
+import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X, Zap, Image, Filter, Trash2 } from 'lucide-react';
 import { calculateLevel, getTitleForLevel, SUBJECTS, AVATARS, Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,6 +76,8 @@ export default function CoachDashboard() {
   const [subjectFilter, setSubjectFilter] = useState<string>('all');
   const [urgentAlerts, setUrgentAlerts] = useState<UrgentAlert[]>([]);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+  const [deletingStudent, setDeletingStudent] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ userId: string; pseudo: string } | null>(null);
 
   // Quick quest from difficulty
   const [quickQuestFor, setQuickQuestFor] = useState<{ diffId: string; userId: string; subject: string } | null>(null);
@@ -206,6 +208,25 @@ export default function CoachDashboard() {
     }
     setNewQuest({ title: '', description: '', subject: 'Maths', difficulty: 'medium', xp_reward: 100, deadline: '', assigned_to: '' });
     setShowCreateQuest(false); setCreating(false); loadData();
+  };
+
+  const handleDeleteStudent = async (userId: string) => {
+    setDeletingStudent(userId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const res = await supabase.functions.invoke('delete-student', {
+        body: { studentUserId: userId },
+      });
+      if (res.error) {
+        alert('Erreur: ' + (res.error.message || 'Impossible de supprimer'));
+      }
+    } catch (e) {
+      alert('Erreur lors de la suppression');
+    }
+    setDeletingStudent(null);
+    setConfirmDelete(null);
+    loadData();
   };
 
   if (loading) {
@@ -340,7 +361,7 @@ export default function CoachDashboard() {
 
                         return (
                           <AnimatePresence key={student.id}>
-                            <tr className="border-b border-border/50 hover:bg-secondary/40 transition-colors cursor-pointer" onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}>
+                            <tr className="border-b border-border/50 hover:bg-secondary/40 transition-colors cursor-pointer group" onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}>
                               <td className="px-5 py-3.5">
                                 <div className="flex items-center gap-2">
                                   <span className="text-lg">{student.avatar}</span>
@@ -366,6 +387,13 @@ export default function CoachDashboard() {
                                   {sMissing.length > 0 && (
                                     <span className="w-5 h-5 rounded-full text-[10px] flex items-center justify-center" style={{ backgroundColor: 'hsl(var(--streak) / 0.2)', color: 'hsl(var(--streak))' }}>{sMissing.length}</span>
                                   )}
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); setConfirmDelete({ userId: student.user_id, pseudo: student.pseudo }); }}
+                                    className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-50 hover:!opacity-100 hover:bg-destructive hover:text-destructive-foreground transition-all"
+                                    title="Supprimer l'élève"
+                                  >
+                                    <Trash2 size={12} />
+                                  </button>
                                   {isExpanded ? <ChevronUp size={14} className="text-muted-foreground" /> : <ChevronDown size={14} className="text-muted-foreground" />}
                                 </div>
                               </td>
@@ -755,6 +783,29 @@ export default function CoachDashboard() {
           <div className="max-w-2xl max-h-[80vh] overflow-auto rounded-lg border border-border" onClick={e => e.stopPropagation()}>
             <img src={previewPhoto} alt="Contrôle" className="w-full h-auto" />
           </div>
+        </div>
+      )}
+
+      {/* Delete student confirmation */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setConfirmDelete(null)}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-card border border-border rounded-lg p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+            <h2 className="font-display text-base font-semibold mb-2 text-destructive">⚠️ Supprimer l'élève</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Es-tu sûr de vouloir supprimer <strong className="text-foreground">{confirmDelete.pseudo}</strong> ? Toutes ses données (quêtes, DS, difficultés, tâches, sessions) seront supprimées définitivement.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setConfirmDelete(null)} className="flex-1 py-2.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground transition-colors">Annuler</button>
+              <button
+                onClick={() => handleDeleteStudent(confirmDelete.userId)}
+                disabled={deletingStudent === confirmDelete.userId}
+                className="flex-1 py-2.5 rounded-lg bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deletingStudent === confirmDelete.userId && <Loader2 size={14} className="animate-spin" />}
+                Supprimer
+              </button>
+            </div>
+          </motion.div>
         </div>
       )}
     </div>

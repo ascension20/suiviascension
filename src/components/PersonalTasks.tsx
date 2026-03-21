@@ -15,6 +15,7 @@ interface StudentTask {
   xp_reward: number;
   completed: boolean;
   deadline: string | null;
+  custom_subject: string | null;
 }
 
 const DIFF_LABELS: Record<string, string> = { easy: '★☆☆', medium: '★★☆', hard: '★★★' };
@@ -31,6 +32,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
   const [description, setDescription] = useState('');
   const [subject, setSubject] = useState<Subject>('Maths');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [customSubject, setCustomSubject] = useState('');
   const [deadline, setDeadline] = useState('');
 
   const loadTasks = useCallback(async () => {
@@ -56,9 +58,11 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
       difficulty,
       xp_reward: DIFF_XP[difficulty],
       deadline: deadline || null,
+      custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,
     });
     setDescription('');
     setDeadline('');
+    setCustomSubject('');
     setShowForm(false);
     loadTasks();
   };
@@ -105,7 +109,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                 className="h-9 text-sm"
               />
               <div className="grid grid-cols-3 gap-2">
-                <Select value={subject} onValueChange={v => setSubject(v as Subject)}>
+                <Select value={subject} onValueChange={v => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -126,6 +130,9 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                   className="h-9 text-sm"
                 />
               </div>
+              {subject === 'Autre' && (
+                <Input placeholder="Précise la matière..." value={customSubject} onChange={e => setCustomSubject(e.target.value)} className="h-9 text-sm" />
+              )}
               <Button size="sm" onClick={handleAdd} disabled={!description.trim()} className="w-full">
                 Ajouter
               </Button>
@@ -148,7 +155,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                 <div className="flex-1 min-w-0">
                   <span className="font-medium text-sm">{task.description}</span>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-muted-foreground">{task.subject}</span>
+                    <span className="text-xs text-muted-foreground">{task.custom_subject || task.subject}</span>
                     <span className="text-xs text-muted-foreground">·</span>
                     <span className="text-xs text-muted-foreground">{DIFF_LABELS[task.difficulty]}</span>
                     {task.deadline && (

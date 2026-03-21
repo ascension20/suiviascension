@@ -4,6 +4,7 @@ import { AlertTriangle, Plus, X, MessageCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Subject, SUBJECTS, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -16,6 +17,7 @@ interface Difficulty {
   description: string;
   resolved: boolean;
   coach_reply: string | null;
+  custom_subject: string | null;
   created_at: string;
 }
 
@@ -31,6 +33,7 @@ export function DifficultiesSection({ userId }: { userId: string }) {
   const [subject, setSubject] = useState<Subject>('Maths');
   const [severity, setSeverity] = useState<Severity>('fragile');
   const [description, setDescription] = useState('');
+  const [customSubject, setCustomSubject] = useState('');
   const [loading, setLoading] = useState(false);
 
   const loadDifficulties = async () => {
@@ -59,8 +62,10 @@ export function DifficultiesSection({ userId }: { userId: string }) {
       subject,
       severity,
       description: description.trim(),
+      custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,
     });
     setDescription('');
+    setCustomSubject('');
     setShowForm(false);
     setLoading(false);
     loadDifficulties();
@@ -93,7 +98,7 @@ export function DifficultiesSection({ userId }: { userId: string }) {
           >
             <div className="space-y-3 p-3 rounded-lg border border-border bg-secondary/30">
               <div className="grid grid-cols-2 gap-2">
-                <Select value={subject} onValueChange={(v) => setSubject(v as Subject)}>
+                <Select value={subject} onValueChange={(v) => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -108,6 +113,14 @@ export function DifficultiesSection({ userId }: { userId: string }) {
                   </SelectContent>
                 </Select>
               </div>
+              {subject === 'Autre' && (
+                <Input
+                  placeholder="Précise la matière..."
+                  value={customSubject}
+                  onChange={e => setCustomSubject(e.target.value)}
+                  className="h-9 text-sm"
+                />
+              )}
               <Textarea
                 placeholder="Décris ta difficulté..."
                 value={description}
@@ -136,7 +149,7 @@ export function DifficultiesSection({ userId }: { userId: string }) {
                   className="w-2 h-2 rounded-full shrink-0"
                   style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[d.subject as Subject]}))` }}
                 />
-                <span className="text-xs text-muted-foreground">{d.subject}</span>
+                <span className="text-xs text-muted-foreground">{d.custom_subject || d.subject}</span>
                 <span className="text-xs" style={{ color: SEVERITY_LABELS[d.severity]?.color }}>
                   {SEVERITY_LABELS[d.severity]?.label}
                 </span>

@@ -39,6 +39,7 @@ export type Database = {
         Row: {
           coach_reply: string | null
           created_at: string
+          custom_subject: string | null
           description: string
           id: string
           resolved: boolean
@@ -49,6 +50,7 @@ export type Database = {
         Insert: {
           coach_reply?: string | null
           created_at?: string
+          custom_subject?: string | null
           description: string
           id?: string
           resolved?: boolean
@@ -59,6 +61,7 @@ export type Database = {
         Update: {
           coach_reply?: string | null
           created_at?: string
+          custom_subject?: string | null
           description?: string
           id?: string
           resolved?: boolean
@@ -72,6 +75,7 @@ export type Database = {
         Row: {
           chapters: string | null
           created_at: string
+          custom_subject: string | null
           exam_date: string
           grade: number | null
           id: string
@@ -83,6 +87,7 @@ export type Database = {
         Insert: {
           chapters?: string | null
           created_at?: string
+          custom_subject?: string | null
           exam_date: string
           grade?: number | null
           id?: string
@@ -94,6 +99,7 @@ export type Database = {
         Update: {
           chapters?: string | null
           created_at?: string
+          custom_subject?: string | null
           exam_date?: string
           grade?: number | null
           id?: string
@@ -190,6 +196,7 @@ export type Database = {
           completed: boolean
           completed_at: string | null
           created_at: string
+          custom_subject: string | null
           deadline: string | null
           description: string
           difficulty: Database["public"]["Enums"]["difficulty_level"]
@@ -203,6 +210,7 @@ export type Database = {
           completed?: boolean
           completed_at?: string | null
           created_at?: string
+          custom_subject?: string | null
           deadline?: string | null
           description: string
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
@@ -216,6 +224,7 @@ export type Database = {
           completed?: boolean
           completed_at?: string | null
           created_at?: string
+          custom_subject?: string | null
           deadline?: string | null
           description?: string
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
