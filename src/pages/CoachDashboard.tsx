@@ -76,6 +76,8 @@ export default function CoachDashboard() {
   const [subjectFilter, setSubjectFilter] = useState<string>('all');
   const [urgentAlerts, setUrgentAlerts] = useState<UrgentAlert[]>([]);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+  const [deletingStudent, setDeletingStudent] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ userId: string; pseudo: string } | null>(null);
 
   // Quick quest from difficulty
   const [quickQuestFor, setQuickQuestFor] = useState<{ diffId: string; userId: string; subject: string } | null>(null);
