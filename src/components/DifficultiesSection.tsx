@@ -4,6 +4,7 @@ import { AlertTriangle, Plus, X, MessageCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Subject, SUBJECTS, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
