@@ -157,6 +157,15 @@ export default function CoachDashboard() {
     });
 
     setUrgentAlerts(Object.values(alertMap).sort((a, b) => b.reasons.length - a.reasons.length));
+
+    // Load baselines
+    const { data: blData } = await supabase.from('student_baselines').select('user_id');
+    if (blData) {
+      const blMap: Record<string, boolean> = {};
+      blData.forEach((b: any) => { blMap[b.user_id] = true; });
+      setBaselines(blMap);
+    }
+
     setLoading(false);
   };
 
