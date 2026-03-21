@@ -361,7 +361,7 @@ export default function CoachDashboard() {
 
                         return (
                           <AnimatePresence key={student.id}>
-                            <tr className="border-b border-border/50 hover:bg-secondary/40 transition-colors cursor-pointer" onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}>
+                            <tr className="border-b border-border/50 hover:bg-secondary/40 transition-colors cursor-pointer group" onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}>
                               <td className="px-5 py-3.5">
                                 <div className="flex items-center gap-2">
                                   <span className="text-lg">{student.avatar}</span>
