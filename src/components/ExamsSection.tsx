@@ -55,8 +55,9 @@ export function ExamsSection({ userId }: { userId: string }) {
     await supabase.from('exams').insert({
       user_id: userId, subject, exam_date: examDate,
       chapters: chapters.trim() || null, stress_level: stressLevel,
+      custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,
     });
-    setExamDate(''); setChapters(''); setShowForm(false); setLoading(false);
+    setExamDate(''); setChapters(''); setCustomSubject(''); setShowForm(false); setLoading(false);
     loadExams();
   };
 
