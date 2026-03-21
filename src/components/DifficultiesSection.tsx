@@ -149,7 +149,7 @@ export function DifficultiesSection({ userId }: { userId: string }) {
                   className="w-2 h-2 rounded-full shrink-0"
                   style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[d.subject as Subject]}))` }}
                 />
-                <span className="text-xs text-muted-foreground">{d.subject}</span>
+                <span className="text-xs text-muted-foreground">{d.custom_subject || d.subject}</span>
                 <span className="text-xs" style={{ color: SEVERITY_LABELS[d.severity]?.color }}>
                   {SEVERITY_LABELS[d.severity]?.label}
                 </span>

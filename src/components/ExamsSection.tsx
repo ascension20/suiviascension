@@ -139,7 +139,7 @@ export function ExamsSection({ userId }: { userId: string }) {
                 <div key={exam.id} className={`p-3 rounded-lg border transition-colors ${isUrgent ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}>
                   <div className="flex items-center gap-2 mb-1">
                     <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[exam.subject]}))` }} />
-                    <span className="text-sm font-medium">{exam.subject}</span>
+                    <span className="text-sm font-medium">{exam.custom_subject || exam.subject}</span>
                     <span className="text-xs text-muted-foreground ml-auto">
                       {new Date(exam.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                     </span>
