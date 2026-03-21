@@ -15,6 +15,7 @@ interface StudentTask {
   xp_reward: number;
   completed: boolean;
   deadline: string | null;
+  custom_subject: string | null;
 }
 
 const DIFF_LABELS: Record<string, string> = { easy: '★☆☆', medium: '★★☆', hard: '★★★' };
