@@ -103,12 +103,15 @@ export function ExamsSection({ userId }: { userId: string }) {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-4">
             <div className="space-y-3 p-3 rounded-lg border border-border bg-secondary/30">
               <div className="grid grid-cols-2 gap-2">
-                <Select value={subject} onValueChange={v => setSubject(v as Subject)}>
+                <Select value={subject} onValueChange={v => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>{SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                 </Select>
                 <Input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} className="h-9 text-sm" />
               </div>
+              {subject === 'Autre' && (
+                <Input placeholder="Précise la matière..." value={customSubject} onChange={e => setCustomSubject(e.target.value)} className="h-9 text-sm" />
+              )}
               <Input placeholder="Chapitres (optionnel)..." value={chapters} onChange={e => setChapters(e.target.value)} className="h-9 text-sm" />
               <div className="flex gap-2">
                 {(Object.entries(STRESS_LABELS) as [StressLevel, { label: string; emoji: string }][]).map(([key, val]) => (

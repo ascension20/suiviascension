@@ -108,7 +108,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                 className="h-9 text-sm"
               />
               <div className="grid grid-cols-3 gap-2">
-                <Select value={subject} onValueChange={v => setSubject(v as Subject)}>
+                <Select value={subject} onValueChange={v => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}

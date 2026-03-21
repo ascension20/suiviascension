@@ -17,6 +17,7 @@ interface Difficulty {
   description: string;
   resolved: boolean;
   coach_reply: string | null;
+  custom_subject: string | null;
   created_at: string;
 }
 
