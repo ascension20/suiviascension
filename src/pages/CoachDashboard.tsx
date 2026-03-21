@@ -210,6 +210,25 @@ export default function CoachDashboard() {
     setShowCreateQuest(false); setCreating(false); loadData();
   };
 
+  const handleDeleteStudent = async (userId: string) => {
+    setDeletingStudent(userId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const res = await supabase.functions.invoke('delete-student', {
+        body: { studentUserId: userId },
+      });
+      if (res.error) {
+        alert('Erreur: ' + (res.error.message || 'Impossible de supprimer'));
+      }
+    } catch (e) {
+      alert('Erreur lors de la suppression');
+    }
+    setDeletingStudent(null);
+    setConfirmDelete(null);
+    loadData();
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
