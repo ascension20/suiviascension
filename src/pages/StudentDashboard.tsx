@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Flame, LogOut } from 'lucide-react';
+import { Flame, LogOut, WifiOff, Clock } from 'lucide-react';
 import { PomodoroTimer } from '@/components/PomodoroTimer';
 import { XPBar } from '@/components/XPBar';
 import { QuestList, Quest } from '@/components/QuestList';
@@ -17,6 +17,8 @@ import { ProgressComparison } from '@/components/ProgressComparison';
 import { WeeklyPlanView } from '@/components/WeeklyPlanView';
 import { calculateLevel, getTitleForLevel, Subject } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useOnlineTracker, updateStreak } from '@/hooks/useOnlineTracker';
+import { useOfflineQueue } from '@/hooks/useOfflineQueue';
 import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -26,6 +28,13 @@ export default function StudentDashboard() {
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; xpGained: number } | null>(null);
   const [xpLeaderboard, setXpLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [timerLeaderboard, setTimerLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [totalWorkMinutes, setTotalWorkMinutes] = useState(0);
+  const [weeklyChampion, setWeeklyChampion] = useState<string | null>(null);
+
+  const { isOnline, pendingCount, enqueue } = useOfflineQueue();
+
+  // Track online presence
+  useOnlineTracker(user?.id);
 
   const totalXp = profile?.total_xp ?? 0;
   const streak = profile?.streak ?? 0;
@@ -52,16 +61,25 @@ export default function StudentDashboard() {
   }, [user]);
 
   useEffect(() => {
+    if (!user) return;
     const loadLeaderboards = async () => {
+      // XP leaderboard - all profiles
       const { data: profiles } = await supabase.from('profiles').select('user_id, pseudo, avatar, total_xp').order('total_xp', { ascending: false }).limit(10);
       if (profiles) {
-        setXpLeaderboard(profiles.map((p, i) => ({ rank: i + 1, pseudo: p.pseudo, avatar: p.avatar, value: p.total_xp, isCurrentUser: p.user_id === user?.id })));
+        setXpLeaderboard(profiles.map((p, i) => ({
+          rank: i + 1, pseudo: p.pseudo, avatar: p.avatar,
+          value: p.total_xp, isCurrentUser: p.user_id === user.id,
+        })));
       }
+
+      // Timer leaderboard - this week
       const startOfWeek = new Date();
-      startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
+      const day = startOfWeek.getDay();
+      startOfWeek.setDate(startOfWeek.getDate() - (day === 0 ? 6 : day - 1));
       startOfWeek.setHours(0, 0, 0, 0);
+
       const { data: sessions } = await supabase.from('timer_sessions').select('user_id, subject, duration_minutes').gte('created_at', startOfWeek.toISOString());
-      if (sessions) {
+      if (sessions && sessions.length > 0) {
         const byUser: Record<string, { total: number; subjects: Record<string, number> }> = {};
         sessions.forEach(s => {
           if (!byUser[s.user_id]) byUser[s.user_id] = { total: 0, subjects: {} };
@@ -69,15 +87,30 @@ export default function StudentDashboard() {
           byUser[s.user_id].subjects[s.subject] = (byUser[s.user_id].subjects[s.subject] || 0) + s.duration_minutes;
         });
         const userIds = Object.keys(byUser);
-        if (userIds.length > 0) {
-          const { data: timerProfiles } = await supabase.from('profiles').select('user_id, pseudo, avatar').in('user_id', userIds);
-          if (timerProfiles) {
-            const entries = timerProfiles
-              .map(p => ({ pseudo: p.pseudo, avatar: p.avatar, value: byUser[p.user_id]?.total || 0, isCurrentUser: p.user_id === user?.id, subjectBreakdown: byUser[p.user_id]?.subjects as Record<Subject, number>, rank: 0 }))
-              .sort((a, b) => b.value - a.value).map((e, i) => ({ ...e, rank: i + 1 }));
-            setTimerLeaderboard(entries);
+        const { data: timerProfiles } = await supabase.from('profiles').select('user_id, pseudo, avatar').in('user_id', userIds);
+        if (timerProfiles) {
+          const entries = timerProfiles
+            .map(p => ({
+              pseudo: p.pseudo, avatar: p.avatar,
+              value: byUser[p.user_id]?.total || 0,
+              isCurrentUser: p.user_id === user.id,
+              subjectBreakdown: byUser[p.user_id]?.subjects as Record<Subject, number>,
+              rank: 0,
+            }))
+            .sort((a, b) => b.value - a.value)
+            .map((e, i) => ({ ...e, rank: i + 1 }));
+          setTimerLeaderboard(entries);
+          // Weekly champion = rank 1
+          if (entries.length > 0) {
+            setWeeklyChampion(entries[0].pseudo);
           }
         }
+      }
+
+      // Total work time
+      const { data: allSessions } = await supabase.from('timer_sessions').select('duration_minutes').eq('user_id', user.id);
+      if (allSessions) {
+        setTotalWorkMinutes(allSessions.reduce((a, s) => a + s.duration_minutes, 0));
       }
     };
     loadLeaderboards();
@@ -90,25 +123,45 @@ export default function StudentDashboard() {
     const newLevel = calculateLevel(newTotal).level;
     if (newLevel > oldLevel) setLevelUpData({ level: newLevel, title: getTitleForLevel(newLevel), xpGained: amount });
     await supabase.from('profiles').update({ total_xp: newTotal }).eq('user_id', user.id);
+    // Update streak
+    await updateStreak(user.id);
     await refreshProfile();
   }, [user, totalXp, refreshProfile]);
 
   const handleSessionComplete = useCallback(async (subject: Subject, durationMinutes: number) => {
     if (!user) return;
     const xp = Math.floor(durationMinutes / 25) * 10;
-    await supabase.from('timer_sessions').insert({ user_id: user.id, subject, duration_minutes: durationMinutes, xp_earned: xp });
+    const payload = { user_id: user.id, subject, duration_minutes: durationMinutes, xp_earned: xp };
+
+    if (!navigator.onLine) {
+      enqueue('timer_session', payload);
+      if (xp > 0) await addXp(xp);
+      return;
+    }
+
+    await supabase.from('timer_sessions').insert(payload);
     if (xp > 0) await addXp(xp);
-  }, [user, addXp]);
+  }, [user, addXp, enqueue]);
 
   const handleQuestComplete = useCallback(async (questId: string) => {
     const quest = quests.find(q => q.id === questId);
     if (!quest || quest.completed) return;
+
+    if (!navigator.onLine) {
+      enqueue('quest_complete', { id: questId });
+      setQuests(prev => prev.map(q => q.id === questId ? { ...q, completed: true } : q));
+      await addXp(quest.xp);
+      return;
+    }
+
     await supabase.from('quests').update({ completed: true, completed_at: new Date().toISOString() }).eq('id', questId);
     setQuests(prev => prev.map(q => q.id === questId ? { ...q, completed: true } : q));
     await addXp(quest.xp);
-  }, [quests, addXp]);
+  }, [quests, addXp, enqueue]);
 
   const activeQuests = quests.filter(q => !q.completed);
+  const totalWorkHours = Math.floor(totalWorkMinutes / 60);
+  const totalWorkMins = totalWorkMinutes % 60;
 
   return (
     <div className="min-h-screen bg-background">
@@ -116,13 +169,27 @@ export default function StudentDashboard() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h1 className="font-display text-lg font-semibold hidden sm:block">Ascension Académique</h1>
           <div className="flex items-center gap-4">
+            {/* Offline indicator */}
+            {!isOnline && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-secondary text-xs text-muted-foreground">
+                <WifiOff size={12} />
+                <span>Hors ligne{pendingCount > 0 ? ` (${pendingCount})` : ''}</span>
+              </div>
+            )}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border" style={{ backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
               <Flame size={14} className="text-streak" />
               <span className="font-display text-sm font-semibold text-streak">{streak}</span>
             </div>
             <XPBar current={currentXp} max={requiredXp} level={level} title={title} className="hidden md:flex" />
             <XPBar current={currentXp} max={requiredXp} level={level} title={title} compact className="md:hidden" />
-            <div className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center text-lg">{profile?.avatar ?? '🐺'}</div>
+            <div className="relative">
+              <div className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center text-lg">
+                {profile?.avatar ?? '🐺'}
+              </div>
+              {weeklyChampion === profile?.pseudo && (
+                <span className="absolute -top-1 -right-1 text-sm" title="Premier du classement chrono cette semaine !">👑</span>
+              )}
+            </div>
             <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors" title="Déconnexion"><LogOut size={18} /></button>
           </div>
         </div>
@@ -136,6 +203,20 @@ export default function StudentDashboard() {
           Prêt pour ta prochaine quête, <span className="text-foreground font-medium">{profile?.pseudo ?? 'Élève'}</span> ?
           {' '}Ta série de <span className="text-streak font-semibold">{streak} jours</span> t'attend.
         </motion.p>
+
+        {/* Cumulative work time banner */}
+        {totalWorkMinutes > 0 && (
+          <div className="mb-6 p-3.5 rounded-lg border border-border bg-card flex items-center gap-3">
+            <Clock size={16} className="text-primary shrink-0" />
+            <p className="text-sm">
+              Depuis que tu as rejoint l'Ascension, tu as travaillé{' '}
+              <span className="font-display font-semibold text-foreground">
+                {totalWorkHours > 0 ? `${totalWorkHours}h` : ''}{totalWorkMins > 0 ? `${totalWorkMins}min` : ''}
+              </span>
+              . Continue comme ça ! 💪
+            </p>
+          </div>
+        )}
 
         {/* Timer + Quests */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
@@ -176,7 +257,7 @@ export default function StudentDashboard() {
         {/* Leaderboards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <WeeklyLeaderboard title="🏆 Classement XP" data={xpLeaderboard} unit="XP" />
-          <WeeklyLeaderboard title="⏱ Classement Chrono" data={timerLeaderboard} unit="min" />
+          <WeeklyLeaderboard title="⏱ Classement Chrono" data={timerLeaderboard} unit="min" weeklyChampion={weeklyChampion} />
         </div>
       </main>
 
