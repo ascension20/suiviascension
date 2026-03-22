@@ -113,9 +113,11 @@ export type Database = {
       profiles: {
         Row: {
           avatar: string
+          class_level: string | null
           created_at: string
           id: string
           last_activity_date: string | null
+          last_seen_at: string | null
           pseudo: string
           streak: number
           total_xp: number
@@ -124,9 +126,11 @@ export type Database = {
         }
         Insert: {
           avatar?: string
+          class_level?: string | null
           created_at?: string
           id?: string
           last_activity_date?: string | null
+          last_seen_at?: string | null
           pseudo: string
           streak?: number
           total_xp?: number
@@ -135,9 +139,11 @@ export type Database = {
         }
         Update: {
           avatar?: string
+          class_level?: string | null
           created_at?: string
           id?: string
           last_activity_date?: string | null
+          last_seen_at?: string | null
           pseudo?: string
           streak?: number
           total_xp?: number
