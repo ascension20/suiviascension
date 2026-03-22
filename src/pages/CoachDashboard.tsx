@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X, Zap, Image, Filter, Trash2, Sparkles, Check, Camera } from 'lucide-react';
+import { AlertTriangle, Clock, BookOpen, TrendingUp, LogOut, Plus, UserPlus, Loader2, MessageCircle, ChevronDown, ChevronUp, X, Zap, Image, Filter, Trash2, Sparkles, Check, Camera, Circle } from 'lucide-react';
 import { calculateLevel, getTitleForLevel, SUBJECTS, AVATARS, Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +11,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
+
+const CLASS_LEVELS = ['3ème', '2nde', '1ère', 'Tle'] as const;
 
 interface UrgentAlert {
   studentName: string;
@@ -56,13 +58,45 @@ function CompletionBadge({ rate }: { rate: number }) {
   return <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={style}>{rate}%</span>;
 }
 
+function OnlineIndicator({ lastSeenAt }: { lastSeenAt: string | null }) {
+  if (!lastSeenAt) return <span className="text-xs text-muted-foreground">Jamais</span>;
+  const diff = (Date.now() - new Date(lastSeenAt).getTime()) / 1000;
+  const isOnline = diff < 120; // 2 min
+  const isRecent = diff < 300; // 5 min
+
+  if (isOnline) {
+    return (
+      <span className="flex items-center gap-1 text-xs" style={{ color: 'hsl(var(--success))' }}>
+        <Circle size={8} fill="currentColor" /> En ligne
+      </span>
+    );
+  }
+
+  // Format last seen
+  const minutes = Math.floor(diff / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  let label = '';
+  if (days > 0) label = `il y a ${days}j`;
+  else if (hours > 0) label = `il y a ${hours}h`;
+  else if (minutes > 0) label = `il y a ${minutes}min`;
+  else label = 'à l\'instant';
+
+  return (
+    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+      <Circle size={8} fill={isRecent ? 'hsl(var(--xp))' : 'currentColor'} className={isRecent ? '' : 'opacity-30'} /> {label}
+    </span>
+  );
+}
+
 export default function CoachDashboard() {
   const { signOut } = useAuth();
-  const [students, setStudents] = useState<(Profile & { completionRate: number; totalHours: number; lastActive: string })[]>([]);
+  const [students, setStudents] = useState<(Profile & { completionRate: number; totalHours: number; lastActive: string; last_seen_at: string | null; class_level: string | null })[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateStudent, setShowCreateStudent] = useState(false);
   const [showCreateQuest, setShowCreateQuest] = useState(false);
-  const [newStudent, setNewStudent] = useState({ pseudo: '', email: '', password: '', avatar: '🐺' });
+  const [newStudent, setNewStudent] = useState({ pseudo: '', email: '', password: '', avatar: '🐺', class_level: '' });
   const [newQuest, setNewQuest] = useState({ title: '', description: '', subject: 'Maths' as string, difficulty: 'medium' as string, xp_reward: 100, deadline: '', assigned_to: '' });
   const [creating, setCreating] = useState(false);
   const [questStudents, setQuestStudents] = useState<Profile[]>([]);
@@ -123,7 +157,7 @@ export default function CoachDashboard() {
       const lastActive = p.last_activity_date
         ? (new Date(p.last_activity_date).toDateString() === new Date().toDateString() ? "Aujourd'hui" : p.last_activity_date)
         : 'Jamais';
-      return { ...p, completionRate, totalHours, lastActive };
+      return { ...p, completionRate, totalHours, lastActive, last_seen_at: (p as any).last_seen_at, class_level: (p as any).class_level };
     });
 
     setStudents(enriched);
@@ -182,6 +216,15 @@ export default function CoachDashboard() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
+  // Refresh online status every 30s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Force re-render to update relative time
+      setStudents(prev => [...prev]);
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleReply = async (diffId: string) => {
     if (!replyText.trim()) return;
     await supabase.from('difficulties').update({ coach_reply: replyText.trim(), resolved: true }).eq('id', diffId);
@@ -209,7 +252,11 @@ export default function CoachDashboard() {
     });
     if (error || !data.user) { alert('Erreur: ' + (error?.message || 'Impossible de créer le compte')); setCreating(false); return; }
     await supabase.from('user_roles').insert({ user_id: data.user.id, role: 'student' as Database['public']['Enums']['app_role'] });
-    setNewStudent({ pseudo: '', email: '', password: '', avatar: '🐺' }); setShowCreateStudent(false); setCreating(false); loadData();
+    // Set class level if selected
+    if (newStudent.class_level) {
+      await supabase.from('profiles').update({ class_level: newStudent.class_level } as any).eq('user_id', data.user.id);
+    }
+    setNewStudent({ pseudo: '', email: '', password: '', avatar: '🐺', class_level: '' }); setShowCreateStudent(false); setCreating(false); loadData();
   };
 
   const handleCreateQuest = async (e: React.FormEvent) => {
@@ -244,6 +291,11 @@ export default function CoachDashboard() {
     setDeletingStudent(null);
     setConfirmDelete(null);
     loadData();
+  };
+
+  const handleUpdateClassLevel = async (userId: string, classLevel: string) => {
+    await supabase.from('profiles').update({ class_level: classLevel || null } as any).eq('user_id', userId);
+    setStudents(prev => prev.map(s => s.user_id === userId ? { ...s, class_level: classLevel || null } : s));
   };
 
   const handleGeneratePlan = async (studentUserId: string) => {
@@ -307,6 +359,8 @@ export default function CoachDashboard() {
 
   const filteredDiffs = subjectFilter === 'all' ? difficulties : difficulties.filter(d => d.subject === subjectFilter);
 
+  const onlineCount = students.filter(s => s.last_seen_at && (Date.now() - new Date(s.last_seen_at).getTime()) < 120_000).length;
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border px-4 md:px-6 py-3">
@@ -353,9 +407,10 @@ export default function CoachDashboard() {
         )}
 
         {/* Quick stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
           {[
             { label: 'Élèves', value: students.length, icon: '👥' },
+            { label: 'En ligne', value: onlineCount, icon: '🟢' },
             { label: 'XP moyen', value: students.length > 0 ? Math.round(students.reduce((a, s) => a + s.total_xp, 0) / students.length).toLocaleString() : '0', icon: '⚡' },
             { label: 'Série moyenne', value: students.length > 0 ? Math.round(students.reduce((a, s) => a + s.streak, 0) / students.length) : 0, icon: '🔥' },
             { label: 'Heures totales', value: students.reduce((a, s) => a + s.totalHours, 0), icon: '⏱' },
@@ -403,12 +458,13 @@ export default function CoachDashboard() {
                     <thead>
                       <tr className="border-b border-border text-left text-[11px] text-muted-foreground uppercase tracking-wider">
                         <th className="px-5 py-3">Élève</th>
+                        <th className="px-5 py-3">Classe</th>
                         <th className="px-5 py-3">Niveau</th>
                         <th className="px-5 py-3">XP</th>
                         <th className="px-5 py-3">Série</th>
                         <th className="px-5 py-3">Complétion</th>
                         <th className="px-5 py-3">Heures</th>
-                        <th className="px-5 py-3">Activité</th>
+                        <th className="px-5 py-3">Statut</th>
                         <th className="px-5 py-3"></th>
                       </tr>
                     </thead>
@@ -436,6 +492,17 @@ export default function CoachDashboard() {
                                 </div>
                               </td>
                               <td className="px-5 py-3.5">
+                                <select
+                                  value={student.class_level || ''}
+                                  onChange={(e) => { e.stopPropagation(); handleUpdateClassLevel(student.user_id, e.target.value); }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="bg-secondary border border-border rounded px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                                >
+                                  <option value="">—</option>
+                                  {CLASS_LEVELS.map(cl => <option key={cl} value={cl}>{cl}</option>)}
+                                </select>
+                              </td>
+                              <td className="px-5 py-3.5">
                                 <span className="font-display text-sm">{level}</span>
                                 <span className="text-[11px] text-muted-foreground ml-1">{studentTitle}</span>
                               </td>
@@ -445,7 +512,9 @@ export default function CoachDashboard() {
                               </td>
                               <td className="px-5 py-3.5"><CompletionBadge rate={student.completionRate} /></td>
                               <td className="px-5 py-3.5 tabular-nums text-sm">{student.totalHours}h</td>
-                              <td className="px-5 py-3.5 text-sm text-muted-foreground">{student.lastActive}</td>
+                              <td className="px-5 py-3.5">
+                                <OnlineIndicator lastSeenAt={student.last_seen_at} />
+                              </td>
                               <td className="px-5 py-3.5">
                                 <div className="flex items-center gap-2">
                                   {sDiffs.filter(d => !d.resolved).length > 0 && (
@@ -467,7 +536,7 @@ export default function CoachDashboard() {
                             </tr>
                             {isExpanded && (
                               <tr key={`${student.id}-detail`}>
-                                <td colSpan={8} className="px-5 py-4 bg-secondary/20">
+                                <td colSpan={9} className="px-5 py-4 bg-secondary/20">
                                   {/* Action buttons */}
                                   <div className="flex flex-wrap gap-2 mb-4">
                                     <button
@@ -487,9 +556,15 @@ export default function CoachDashboard() {
                                       </button>
                                     ) : (
                                       <span className="flex items-center gap-1 px-3 py-1.5 text-xs text-muted-foreground">
-                                        <Check size={12} className="text-success" /> Snapshot initial pris
+                                        <Check size={12} style={{ color: 'hsl(var(--success))' }} /> Snapshot initial pris
                                       </span>
                                     )}
+                                  </div>
+                                  {/* Cumulative work time */}
+                                  <div className="mb-4 p-3 rounded-lg border border-border bg-card flex items-center gap-2">
+                                    <Clock size={14} className="text-primary" />
+                                    <span className="text-xs text-muted-foreground">Temps total travaillé :</span>
+                                    <span className="text-sm font-display font-semibold">{student.totalHours}h</span>
                                   </div>
                                   {/* Grade averages for this student */}
                                   {Object.keys(gradesBySubject).length > 0 && (
@@ -585,7 +660,7 @@ export default function CoachDashboard() {
                                           {sTasks.map(t => (
                                             <div key={t.id} className={`p-2 rounded border text-xs ${t.completed ? 'border-border/50 opacity-60' : 'border-border'}`}>
                                               <div className="flex items-center gap-2">
-                                                {t.completed && <span className="text-success">✓</span>}
+                                                {t.completed && <span style={{ color: 'hsl(var(--success))' }}>✓</span>}
                                                 <span className={t.completed ? 'line-through' : ''}>{t.description}</span>
                                               </div>
                                               <div className="flex items-center gap-2 mt-1 text-muted-foreground">
@@ -640,7 +715,7 @@ export default function CoachDashboard() {
                         <span className="text-xs text-muted-foreground">{d.subject}</span>
                         <span className="text-xs" style={{ color: SEVERITY_LABELS[d.severity]?.color }}>{SEVERITY_LABELS[d.severity]?.label}</span>
                         <span className="text-xs text-muted-foreground ml-auto">{new Date(d.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
-                        {d.resolved && <span className="text-xs text-success">✓ Résolu</span>}
+                        {d.resolved && <span className="text-xs" style={{ color: 'hsl(var(--success))' }}>✓ Résolu</span>}
                       </div>
                       <p className="text-sm mb-2">{d.description}</p>
                       {d.coach_reply && (
@@ -737,7 +812,7 @@ export default function CoachDashboard() {
                       <div className="flex items-center gap-3">
                         <span className="text-lg">{t.avatar}</span>
                         <span className="font-medium text-sm">{t.pseudo}</span>
-                        {t.completed && <span className="text-success text-xs">✓</span>}
+                        {t.completed && <span className="text-xs" style={{ color: 'hsl(var(--success))' }}>✓</span>}
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[t.subject as Subject] || '--muted'}))` }} />
                         <span className="text-xs text-muted-foreground">{t.subject}</span>
                         <span className="text-xs ml-auto" style={{ color: 'hsl(var(--xp))' }}>+{t.xp_reward} XP</span>
@@ -789,12 +864,21 @@ export default function CoachDashboard() {
                 <label className="text-xs text-muted-foreground mb-1 block">Mot de passe</label>
                 <input type="password" required minLength={6} value={newStudent.password} onChange={e => setNewStudent(p => ({ ...p, password: e.target.value }))} className="w-full bg-secondary border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
               </div>
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Avatar</label>
-                <div className="flex gap-2 flex-wrap">
-                  {AVATARS.map(a => (
-                    <button key={a} type="button" onClick={() => setNewStudent(p => ({ ...p, avatar: a }))} className={`w-10 h-10 rounded-full flex items-center justify-center text-lg border ${newStudent.avatar === a ? 'border-primary bg-primary/10' : 'border-border'}`}>{a}</button>
-                  ))}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Avatar</label>
+                  <div className="flex gap-2 flex-wrap">
+                    {AVATARS.map(a => (
+                      <button key={a} type="button" onClick={() => setNewStudent(p => ({ ...p, avatar: a }))} className={`w-10 h-10 rounded-full flex items-center justify-center text-lg border ${newStudent.avatar === a ? 'border-primary bg-primary/10' : 'border-border'}`}>{a}</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Classe</label>
+                  <select value={newStudent.class_level} onChange={e => setNewStudent(p => ({ ...p, class_level: e.target.value }))} className="w-full bg-secondary border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none">
+                    <option value="">Non définie</option>
+                    {CLASS_LEVELS.map(cl => <option key={cl} value={cl}>{cl}</option>)}
+                  </select>
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
