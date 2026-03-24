@@ -191,14 +191,6 @@ export function ExamsSection({ userId }: { userId: string }) {
         )}
       </div>
 
-      {/* Photo preview modal */}
-      {previewPhoto && (
-        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setPreviewPhoto(null)}>
-          <div className="max-w-2xl max-h-[80vh] overflow-auto rounded-lg border border-border" onClick={e => e.stopPropagation()}>
-            <img src={previewPhoto} alt="Contrôle" className="w-full h-auto" />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -88,45 +88,50 @@ export function XPProgressionChart({ userId, totalXp }: Props) {
         </div>
       </div>
       <div className="h-[160px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData}>
-            <defs>
-              <linearGradient id="xpGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(217, 91%, 64%)" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="hsl(217, 91%, 64%)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <XAxis
-              dataKey="label"
-              tick={{ fontSize: 10, fill: 'hsl(215, 15%, 55%)' }}
-              tickLine={false}
-              axisLine={false}
-              interval={4}
-            />
-            <YAxis hide />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'hsl(225, 28%, 14%)',
-                border: '1px solid hsl(225, 20%, 22%)',
-                borderRadius: '8px',
-                fontSize: '12px',
-                color: 'hsl(210, 20%, 90%)',
-              }}
-              formatter={(value: number, name: string) => [
-                `${value.toLocaleString()} XP`,
-                name === 'cumulative' ? 'Total' : 'Jour',
-              ]}
-            />
-            <Area
-              type="monotone"
-              dataKey="cumulative"
-              stroke="hsl(217, 91%, 64%)"
-              strokeWidth={2}
-              fill="url(#xpGrad)"
-              dot={false}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+        {chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 0 }}>
+              <defs>
+                <linearGradient id="xpGradStudent" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(217, 91%, 64%)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(217, 91%, 64%)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis
+                dataKey="label"
+                tick={{ fontSize: 10, fill: 'hsl(215, 15%, 55%)' }}
+                tickLine={false}
+                axisLine={false}
+                interval={4}
+              />
+              <YAxis hide domain={['dataMin', 'dataMax']} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'hsl(225, 28%, 14%)',
+                  border: '1px solid hsl(225, 20%, 22%)',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  color: 'hsl(210, 20%, 90%)',
+                }}
+                formatter={(value: number, name: string) => [
+                  `${value.toLocaleString()} XP`,
+                  name === 'cumulative' ? 'Total' : 'Jour',
+                ]}
+              />
+              <Area
+                type="monotone"
+                dataKey="cumulative"
+                stroke="hsl(217, 91%, 64%)"
+                strokeWidth={2}
+                fill="url(#xpGradStudent)"
+                dot={false}
+                isAnimationActive={false}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <p className="text-muted-foreground text-sm text-center py-8">Pas encore de données</p>
+        )}
       </div>
       {trend === 'down' && (
         <p className="text-xs mt-2" style={{ color: 'hsl(var(--destructive))' }}>

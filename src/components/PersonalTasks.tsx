@@ -132,9 +132,9 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                 <Select value={priority} onValueChange={v => setPriority(v as 'low' | 'medium' | 'high')}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Importance" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">🟢 Faible</SelectItem>
-                    <SelectItem value="medium">🟡 Moyenne</SelectItem>
-                    <SelectItem value="high">🔴 Haute</SelectItem>
+                    <SelectItem value="low">🟢 Importance faible</SelectItem>
+                    <SelectItem value="medium">🟡 Importance moyenne</SelectItem>
+                    <SelectItem value="high">🔴 Importance haute</SelectItem>
                   </SelectContent>
                 </Select>
                 <Input
