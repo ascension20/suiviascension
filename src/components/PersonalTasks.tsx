@@ -36,6 +36,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [customSubject, setCustomSubject] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
 
   const loadTasks = useCallback(async () => {
     const { data } = await supabase
