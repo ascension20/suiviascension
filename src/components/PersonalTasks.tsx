@@ -62,6 +62,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
       xp_reward: DIFF_XP[difficulty],
       deadline: deadline || null,
       custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,
+      priority,
     });
     setDescription('');
     setDeadline('');
