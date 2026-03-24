@@ -64,18 +64,6 @@ export function ExamsSection({ userId }: { userId: string }) {
     loadExams();
   };
 
-  const handlePhotoUpload = async (examId: string, file: File) => {
-    setUploadingFor(examId);
-    const ext = file.name.split('.').pop();
-    const path = `${userId}/${examId}.${ext}`;
-    const { error } = await supabase.storage.from('exam-photos').upload(path, file, { upsert: true });
-    if (!error) {
-      const { data: urlData } = supabase.storage.from('exam-photos').getPublicUrl(path);
-      await supabase.from('exams').update({ photo_url: urlData.publicUrl }).eq('id', examId);
-      loadExams();
-    }
-    setUploadingFor(null);
-  };
 
   const now = new Date();
   const upcoming = exams.filter(e => new Date(e.exam_date) >= now && e.grade === null);
