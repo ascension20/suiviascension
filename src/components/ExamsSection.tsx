@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Plus, X, AlertCircle, Camera, Image } from 'lucide-react';
+import { BookOpen, Plus, X, AlertCircle, MessageCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Subject, SUBJECTS, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { Button } from '@/components/ui/button';
@@ -35,8 +35,6 @@ export function ExamsSection({ userId }: { userId: string }) {
   const [stressLevel, setStressLevel] = useState<StressLevel>('neutral');
   const [customSubject, setCustomSubject] = useState('');
   const [loading, setLoading] = useState(false);
-  const [uploadingFor, setUploadingFor] = useState<string | null>(null);
-  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
 
   const loadExams = async () => {
     const { data } = await supabase
@@ -66,18 +64,6 @@ export function ExamsSection({ userId }: { userId: string }) {
     loadExams();
   };
 
-  const handlePhotoUpload = async (examId: string, file: File) => {
-    setUploadingFor(examId);
-    const ext = file.name.split('.').pop();
-    const path = `${userId}/${examId}.${ext}`;
-    const { error } = await supabase.storage.from('exam-photos').upload(path, file, { upsert: true });
-    if (!error) {
-      const { data: urlData } = supabase.storage.from('exam-photos').getPublicUrl(path);
-      await supabase.from('exams').update({ photo_url: urlData.publicUrl }).eq('id', examId);
-      loadExams();
-    }
-    setUploadingFor(null);
-  };
 
   const now = new Date();
   const upcoming = exams.filter(e => new Date(e.exam_date) >= now && e.grade === null);
@@ -187,21 +173,15 @@ export function ExamsSection({ userId }: { userId: string }) {
                           </div>
                         )}
                       </div>
-                      {/* Photo upload */}
-                      <div className="flex items-center gap-2 mt-1.5">
-                        {exam.photo_url ? (
-                          <button onClick={() => setPreviewPhoto(exam.photo_url)} className="flex items-center gap-1 text-[10px] text-primary hover:underline">
-                            <Image size={10} /> Voir le contrôle
-                          </button>
-                        ) : (
-                          <label className={`flex items-center gap-1 text-[10px] cursor-pointer transition-colors ${uploadingFor === exam.id ? 'text-muted-foreground' : 'text-primary hover:underline'}`}>
-                            <Camera size={10} />
-                            {uploadingFor === exam.id ? 'Envoi...' : 'Ajouter photo'}
-                            <input type="file" accept="image/*" className="hidden" disabled={uploadingFor === exam.id}
-                              onChange={e => { if (e.target.files?.[0]) handlePhotoUpload(exam.id, e.target.files[0]); }} />
-                          </label>
-                        )}
-                      </div>
+                      {/* WhatsApp reminder */}
+                      {exam.grade === null && (
+                        <div className="mt-1.5">
+                          <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                            <MessageCircle size={10} />
+                            Pense à m'envoyer ta note sur WhatsApp 📱
+                          </span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -211,14 +191,6 @@ export function ExamsSection({ userId }: { userId: string }) {
         )}
       </div>
 
-      {/* Photo preview modal */}
-      {previewPhoto && (
-        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setPreviewPhoto(null)}>
-          <div className="max-w-2xl max-h-[80vh] overflow-auto rounded-lg border border-border" onClick={e => e.stopPropagation()}>
-            <img src={previewPhoto} alt="Contrôle" className="w-full h-auto" />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

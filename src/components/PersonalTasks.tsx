@@ -20,7 +20,7 @@ interface StudentTask {
 
 const DIFF_LABELS: Record<string, string> = { easy: '★☆☆', medium: '★★☆', hard: '★★★' };
 const DIFF_XP: Record<string, number> = { easy: 35, medium: 70, hard: 105 };
-const PRIORITY_LABELS: Record<string, string> = { low: '🟢 Faible', medium: '🟡 Moyenne', high: '🔴 Haute' };
+const PRIORITY_LABELS: Record<string, string> = { low: '🟢 Imp. faible', medium: '🟡 Imp. moyenne', high: '🔴 Imp. haute' };
 const PRIORITY_COLORS: Record<string, string> = { low: 'text-green-400', medium: 'text-yellow-400', high: 'text-red-400' };
 
 interface Props {
@@ -132,9 +132,9 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                 <Select value={priority} onValueChange={v => setPriority(v as 'low' | 'medium' | 'high')}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Importance" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">🟢 Faible</SelectItem>
-                    <SelectItem value="medium">🟡 Moyenne</SelectItem>
-                    <SelectItem value="high">🔴 Haute</SelectItem>
+                    <SelectItem value="low">🟢 Importance faible</SelectItem>
+                    <SelectItem value="medium">🟡 Importance moyenne</SelectItem>
+                    <SelectItem value="high">🔴 Importance haute</SelectItem>
                   </SelectContent>
                 </Select>
                 <Input
