@@ -173,21 +173,15 @@ export function ExamsSection({ userId }: { userId: string }) {
                           </div>
                         )}
                       </div>
-                      {/* Photo upload */}
-                      <div className="flex items-center gap-2 mt-1.5">
-                        {exam.photo_url ? (
-                          <button onClick={() => setPreviewPhoto(exam.photo_url)} className="flex items-center gap-1 text-[10px] text-primary hover:underline">
-                            <Image size={10} /> Voir le contrôle
-                          </button>
-                        ) : (
-                          <label className={`flex items-center gap-1 text-[10px] cursor-pointer transition-colors ${uploadingFor === exam.id ? 'text-muted-foreground' : 'text-primary hover:underline'}`}>
-                            <Camera size={10} />
-                            {uploadingFor === exam.id ? 'Envoi...' : 'Ajouter photo'}
-                            <input type="file" accept="image/*" className="hidden" disabled={uploadingFor === exam.id}
-                              onChange={e => { if (e.target.files?.[0]) handlePhotoUpload(exam.id, e.target.files[0]); }} />
-                          </label>
-                        )}
-                      </div>
+                      {/* WhatsApp reminder */}
+                      {exam.grade === null && (
+                        <div className="mt-1.5">
+                          <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                            <MessageCircle size={10} />
+                            Pense à m'envoyer ta note sur WhatsApp 📱
+                          </span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
