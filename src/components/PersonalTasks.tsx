@@ -172,6 +172,8 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                     <span className="text-xs text-muted-foreground">{task.custom_subject || task.subject}</span>
                     <span className="text-xs text-muted-foreground">·</span>
                     <span className="text-xs text-muted-foreground">{DIFF_LABELS[task.difficulty]}</span>
+                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className={`text-xs ${PRIORITY_COLORS[(task as any).priority || 'medium']}`}>{PRIORITY_LABELS[(task as any).priority || 'medium']}</span>
                     {task.deadline && (
                       <>
                         <span className="text-xs text-muted-foreground">·</span>
