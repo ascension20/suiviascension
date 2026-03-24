@@ -112,7 +112,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                 onChange={e => setDescription(e.target.value)}
                 className="h-9 text-sm"
               />
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Select value={subject} onValueChange={v => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -125,6 +125,16 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                     <SelectItem value="easy">Facile (35 XP)</SelectItem>
                     <SelectItem value="medium">Moyen (70 XP)</SelectItem>
                     <SelectItem value="hard">Difficile (105 XP)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Select value={priority} onValueChange={v => setPriority(v as 'low' | 'medium' | 'high')}>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Importance" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">🟢 Faible</SelectItem>
+                    <SelectItem value="medium">🟡 Moyenne</SelectItem>
+                    <SelectItem value="high">🔴 Haute</SelectItem>
                   </SelectContent>
                 </Select>
                 <Input
