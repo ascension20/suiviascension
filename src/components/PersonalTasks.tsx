@@ -20,7 +20,7 @@ interface StudentTask {
 
 const DIFF_LABELS: Record<string, string> = { easy: '★☆☆', medium: '★★☆', hard: '★★★' };
 const DIFF_XP: Record<string, number> = { easy: 35, medium: 70, hard: 105 };
-const PRIORITY_LABELS: Record<string, string> = { low: '🟢 Faible', medium: '🟡 Moyenne', high: '🔴 Haute' };
+const PRIORITY_LABELS: Record<string, string> = { low: '🟢 Imp. faible', medium: '🟡 Imp. moyenne', high: '🔴 Imp. haute' };
 const PRIORITY_COLORS: Record<string, string> = { low: 'text-green-400', medium: 'text-yellow-400', high: 'text-red-400' };
 
 interface Props {
