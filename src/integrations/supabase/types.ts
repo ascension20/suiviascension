@@ -241,6 +241,7 @@ export type Database = {
           difficulty: Database["public"]["Enums"]["difficulty_level"]
           estimated_minutes: number | null
           id: string
+          priority: Database["public"]["Enums"]["task_priority"]
           subject: Database["public"]["Enums"]["subject_type"]
           user_id: string
           xp_reward: number
@@ -255,6 +256,7 @@ export type Database = {
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
           estimated_minutes?: number | null
           id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
           subject: Database["public"]["Enums"]["subject_type"]
           user_id: string
           xp_reward?: number
@@ -269,6 +271,7 @@ export type Database = {
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
           estimated_minutes?: number | null
           id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
           subject?: Database["public"]["Enums"]["subject_type"]
           user_id?: string
           xp_reward?: number
@@ -378,6 +381,7 @@ export type Database = {
         | "SES"
         | "Anglais"
         | "Autre"
+      task_priority: "low" | "medium" | "high"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -517,6 +521,7 @@ export const Constants = {
         "Anglais",
         "Autre",
       ],
+      task_priority: ["low", "medium", "high"],
     },
   },
 } as const

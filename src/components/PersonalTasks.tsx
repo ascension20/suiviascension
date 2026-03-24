@@ -20,6 +20,8 @@ interface StudentTask {
 
 const DIFF_LABELS: Record<string, string> = { easy: '★☆☆', medium: '★★☆', hard: '★★★' };
 const DIFF_XP: Record<string, number> = { easy: 35, medium: 70, hard: 105 };
+const PRIORITY_LABELS: Record<string, string> = { low: '🟢 Faible', medium: '🟡 Moyenne', high: '🔴 Haute' };
+const PRIORITY_COLORS: Record<string, string> = { low: 'text-green-400', medium: 'text-yellow-400', high: 'text-red-400' };
 
 interface Props {
   userId: string;
@@ -34,6 +36,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [customSubject, setCustomSubject] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
 
   const loadTasks = useCallback(async () => {
     const { data } = await supabase
@@ -59,6 +62,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
       xp_reward: DIFF_XP[difficulty],
       deadline: deadline || null,
       custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,
+      priority,
     });
     setDescription('');
     setDeadline('');
@@ -108,7 +112,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                 onChange={e => setDescription(e.target.value)}
                 className="h-9 text-sm"
               />
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Select value={subject} onValueChange={v => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -121,6 +125,16 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                     <SelectItem value="easy">Facile (35 XP)</SelectItem>
                     <SelectItem value="medium">Moyen (70 XP)</SelectItem>
                     <SelectItem value="hard">Difficile (105 XP)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Select value={priority} onValueChange={v => setPriority(v as 'low' | 'medium' | 'high')}>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Importance" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">🟢 Faible</SelectItem>
+                    <SelectItem value="medium">🟡 Moyenne</SelectItem>
+                    <SelectItem value="high">🔴 Haute</SelectItem>
                   </SelectContent>
                 </Select>
                 <Input
@@ -158,6 +172,8 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                     <span className="text-xs text-muted-foreground">{task.custom_subject || task.subject}</span>
                     <span className="text-xs text-muted-foreground">·</span>
                     <span className="text-xs text-muted-foreground">{DIFF_LABELS[task.difficulty]}</span>
+                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className={`text-xs ${PRIORITY_COLORS[(task as any).priority || 'medium']}`}>{PRIORITY_LABELS[(task as any).priority || 'medium']}</span>
                     {task.deadline && (
                       <>
                         <span className="text-xs text-muted-foreground">·</span>
