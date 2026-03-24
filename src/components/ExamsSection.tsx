@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Plus, X, AlertCircle, Camera, Image } from 'lucide-react';
+import { BookOpen, Plus, X, AlertCircle, MessageCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Subject, SUBJECTS, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { Button } from '@/components/ui/button';
