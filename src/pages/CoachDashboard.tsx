@@ -36,6 +36,7 @@ interface StudentExam {
 interface StudentTask {
   id: string; user_id: string; description: string; subject: string;
   difficulty: string; xp_reward: number; completed: boolean; deadline: string | null;
+  completed_at: string | null; created_at: string; priority: string;
   pseudo?: string; avatar?: string;
 }
 
@@ -157,7 +158,7 @@ export default function CoachDashboard() {
       const lastActive = p.last_activity_date
         ? (new Date(p.last_activity_date).toDateString() === new Date().toDateString() ? "Aujourd'hui" : p.last_activity_date)
         : 'Jamais';
-      return { ...p, completionRate, totalHours, lastActive, last_seen_at: (p as any).last_seen_at, class_level: (p as any).class_level };
+      return { ...p, completionRate, totalHours, lastActive, last_seen_at: p.last_seen_at, class_level: p.class_level };
     });
 
     setStudents(enriched);
@@ -254,7 +255,7 @@ export default function CoachDashboard() {
     await supabase.from('user_roles').insert({ user_id: data.user.id, role: 'student' as Database['public']['Enums']['app_role'] });
     // Set class level if selected
     if (newStudent.class_level) {
-      await supabase.from('profiles').update({ class_level: newStudent.class_level } as any).eq('user_id', data.user.id);
+      await supabase.from('profiles').update({ class_level: newStudent.class_level }).eq('user_id', data.user.id);
     }
     setNewStudent({ pseudo: '', email: '', password: '', avatar: '🐺', class_level: '' }); setShowCreateStudent(false); setCreating(false); loadData();
   };
@@ -294,7 +295,7 @@ export default function CoachDashboard() {
   };
 
   const handleUpdateClassLevel = async (userId: string, classLevel: string) => {
-    await supabase.from('profiles').update({ class_level: classLevel || null } as any).eq('user_id', userId);
+    await supabase.from('profiles').update({ class_level: classLevel || null }).eq('user_id', userId);
     setStudents(prev => prev.map(s => s.user_id === userId ? { ...s, class_level: classLevel || null } : s));
   };
 
@@ -797,32 +798,62 @@ export default function CoachDashboard() {
             </div>
           </TabsContent>
 
-          {/* Tasks Tab */}
+          {/* Tasks Tab - grouped by day */}
           <TabsContent value="tasks">
             <div className="bg-card border border-border rounded-lg p-5">
               <h2 className="font-display text-base font-semibold mb-4">
                 Tâches personnelles des élèves ({studentTasks.filter(t => !t.completed).length} actives)
               </h2>
-              <div className="space-y-3">
-                {studentTasks.length === 0 ? (
-                  <p className="text-muted-foreground text-sm text-center py-4">Aucune tâche personnelle ✏️</p>
-                ) : (
-                  studentTasks.map(t => (
-                    <div key={t.id} className={`p-4 rounded-lg border ${t.completed ? 'border-border/50 opacity-60' : 'border-border'}`}>
-                      <div className="flex items-center gap-3">
-                        <span className="text-lg">{t.avatar}</span>
-                        <span className="font-medium text-sm">{t.pseudo}</span>
-                        {t.completed && <span className="text-xs" style={{ color: 'hsl(var(--success))' }}>✓</span>}
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[t.subject as Subject] || '--muted'}))` }} />
-                        <span className="text-xs text-muted-foreground">{t.subject}</span>
-                        <span className="text-xs ml-auto" style={{ color: 'hsl(var(--xp))' }}>+{t.xp_reward} XP</span>
+              {(() => {
+                // Group tasks by day (completed_at or created_at)
+                const PRIORITY_COLORS: Record<string, string> = { high: 'hsl(0 84% 60%)', medium: 'hsl(38 92% 55%)', low: 'hsl(142 71% 45%)' };
+                const PRIORITY_LABELS: Record<string, string> = { high: '🔴 Haute', medium: '🟡 Moyenne', low: '🟢 Faible' };
+                const sorted = [...studentTasks].sort((a, b) => {
+                  const dateA = a.completed_at || a.created_at;
+                  const dateB = b.completed_at || b.created_at;
+                  return new Date(dateB).getTime() - new Date(dateA).getTime();
+                });
+                const grouped: Record<string, typeof sorted> = {};
+                sorted.forEach(t => {
+                  const date = t.completed_at || t.created_at;
+                  const day = new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+                  if (!grouped[day]) grouped[day] = [];
+                  grouped[day].push(t);
+                });
+
+                const days = Object.keys(grouped);
+                if (days.length === 0) {
+                  return <p className="text-muted-foreground text-sm text-center py-4">Aucune tâche personnelle ✏️</p>;
+                }
+                return (
+                  <div className="space-y-6">
+                    {days.map(day => (
+                      <div key={day}>
+                        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 capitalize">{day}</h3>
+                        <div className="space-y-2">
+                          {grouped[day].map(t => (
+                            <div key={t.id} className={`p-4 rounded-lg border ${t.completed ? 'border-border/50 opacity-60' : 'border-border'}`}>
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">{t.avatar}</span>
+                                <span className="font-medium text-sm">{t.pseudo}</span>
+                                {t.completed && <span className="text-xs" style={{ color: 'hsl(var(--success))' }}>✓</span>}
+                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[t.subject as Subject] || '--muted'}))` }} />
+                                <span className="text-xs text-muted-foreground">{t.subject}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ color: PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.medium, backgroundColor: `${PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.medium}15` }}>
+                                  {PRIORITY_LABELS[t.priority] || PRIORITY_LABELS.medium}
+                                </span>
+                                <span className="text-xs ml-auto" style={{ color: 'hsl(var(--xp))' }}>+{t.xp_reward} XP</span>
+                              </div>
+                              <p className={`text-sm mt-1 ${t.completed ? 'line-through text-muted-foreground' : ''}`}>{t.description}</p>
+                              {t.deadline && <span className="text-xs text-muted-foreground mt-1 block">Échéance : {new Date(t.deadline).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <p className={`text-sm mt-1 ${t.completed ? 'line-through text-muted-foreground' : ''}`}>{t.description}</p>
-                      {t.deadline && <span className="text-xs text-muted-foreground mt-1 block">Échéance : {new Date(t.deadline).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>}
-                    </div>
-                  ))
-                )}
-              </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
           </TabsContent>
         </Tabs>

@@ -12,7 +12,7 @@ export function useOnlineTracker(userId: string | undefined) {
     const updatePresence = async () => {
       await supabase.from('profiles').update({
         last_seen_at: new Date().toISOString(),
-      } as any).eq('user_id', userId);
+      }).eq('user_id', userId);
     };
 
     // Update immediately on mount
