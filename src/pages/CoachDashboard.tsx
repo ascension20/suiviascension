@@ -158,7 +158,7 @@ export default function CoachDashboard() {
       const lastActive = p.last_activity_date
         ? (new Date(p.last_activity_date).toDateString() === new Date().toDateString() ? "Aujourd'hui" : p.last_activity_date)
         : 'Jamais';
-      return { ...p, completionRate, totalHours, lastActive, last_seen_at: (p as any).last_seen_at, class_level: (p as any).class_level };
+      return { ...p, completionRate, totalHours, lastActive, last_seen_at: p.last_seen_at, class_level: p.class_level };
     });
 
     setStudents(enriched);
