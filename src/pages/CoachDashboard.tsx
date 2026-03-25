@@ -255,7 +255,7 @@ export default function CoachDashboard() {
     await supabase.from('user_roles').insert({ user_id: data.user.id, role: 'student' as Database['public']['Enums']['app_role'] });
     // Set class level if selected
     if (newStudent.class_level) {
-      await supabase.from('profiles').update({ class_level: newStudent.class_level } as any).eq('user_id', data.user.id);
+      await supabase.from('profiles').update({ class_level: newStudent.class_level }).eq('user_id', data.user.id);
     }
     setNewStudent({ pseudo: '', email: '', password: '', avatar: '🐺', class_level: '' }); setShowCreateStudent(false); setCreating(false); loadData();
   };
