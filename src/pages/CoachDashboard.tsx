@@ -295,7 +295,7 @@ export default function CoachDashboard() {
   };
 
   const handleUpdateClassLevel = async (userId: string, classLevel: string) => {
-    await supabase.from('profiles').update({ class_level: classLevel || null } as any).eq('user_id', userId);
+    await supabase.from('profiles').update({ class_level: classLevel || null }).eq('user_id', userId);
     setStudents(prev => prev.map(s => s.user_id === userId ? { ...s, class_level: classLevel || null } : s));
   };
 
