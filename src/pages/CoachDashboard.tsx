@@ -36,6 +36,7 @@ interface StudentExam {
 interface StudentTask {
   id: string; user_id: string; description: string; subject: string;
   difficulty: string; xp_reward: number; completed: boolean; deadline: string | null;
+  completed_at: string | null; created_at: string; priority: string;
   pseudo?: string; avatar?: string;
 }
 
