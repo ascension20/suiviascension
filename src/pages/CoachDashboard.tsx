@@ -456,6 +456,7 @@ export default function CoachDashboard() {
               )}
             </TabsTrigger>
             <TabsTrigger value="tasks">✏️ Tâches perso</TabsTrigger>
+            <TabsTrigger value="daily">🎯 Tâches du jour</TabsTrigger>
           </TabsList>
 
           {/* Students Tab */}
