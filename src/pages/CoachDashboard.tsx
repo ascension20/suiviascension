@@ -193,6 +193,16 @@ export default function CoachDashboard() {
         ensureAlert(e.user_id); alertMap[e.user_id].reasons.push(`Résultat manquant : DS ${e.subject}`);
       }
     });
+    // Alert: students who haven't set daily tasks by 14h
+    const todayStr = now.toISOString().split('T')[0];
+    const todayDailyUserIds = new Set((dailyData || []).filter((d: any) => d.task_date === todayStr).map((d: any) => d.user_id));
+    if (now.getHours() >= 14) {
+      studentProfiles.forEach(p => {
+        if (!todayDailyUserIds.has(p.user_id)) {
+          ensureAlert(p.user_id); alertMap[p.user_id].reasons.push('Pas de tâches du jour définies');
+        }
+      });
+    }
 
     setUrgentAlerts(Object.values(alertMap).sort((a, b) => b.reasons.length - a.reasons.length));
 
