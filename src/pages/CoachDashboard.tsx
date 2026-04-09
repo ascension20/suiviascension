@@ -488,7 +488,6 @@ export default function CoachDashboard() {
                                     )}
                                   </div>
                                 </div>
-                                </div>
                               </td>
                               <td className="px-5 py-3.5">
                                 <select
