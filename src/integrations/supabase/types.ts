@@ -35,6 +35,39 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_tasks: {
+        Row: {
+          completed: boolean
+          created_at: string
+          description: string
+          id: string
+          subject: string
+          task_date: string
+          task_number: number
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          description: string
+          id?: string
+          subject?: string
+          task_date?: string
+          task_number: number
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          subject?: string
+          task_date?: string
+          task_number?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       difficulties: {
         Row: {
           coach_reply: string | null

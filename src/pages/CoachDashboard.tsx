@@ -105,6 +105,7 @@ export default function CoachDashboard() {
   const [difficulties, setDifficulties] = useState<StudentDifficulty[]>([]);
   const [exams, setExams] = useState<StudentExam[]>([]);
   const [studentTasks, setStudentTasks] = useState<StudentTask[]>([]);
+  const [dailyTasks, setDailyTasks] = useState<{ id: string; user_id: string; task_date: string; task_number: number; description: string; subject: string; completed: boolean; created_at: string; pseudo?: string; avatar?: string }[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [expandedStudent, setExpandedStudent] = useState<string | null>(null);
@@ -138,15 +139,17 @@ export default function CoachDashboard() {
     const { data: allQuests } = await supabase.from('quests').select('*');
     const { data: allSessions } = await supabase.from('timer_sessions').select('user_id, duration_minutes');
 
-    const [{ data: diffs }, { data: examsData }, { data: tasksData }] = await Promise.all([
+    const [{ data: diffs }, { data: examsData }, { data: tasksData }, { data: dailyData }] = await Promise.all([
       supabase.from('difficulties').select('*').order('created_at', { ascending: false }),
       supabase.from('exams').select('*').order('exam_date', { ascending: true }),
       supabase.from('student_tasks').select('*').order('created_at', { ascending: false }),
+      supabase.from('daily_tasks').select('*').order('task_date', { ascending: false }).limit(200),
     ]);
 
     if (diffs) setDifficulties(diffs.map(d => ({ ...d, pseudo: profileMap[d.user_id]?.pseudo, avatar: profileMap[d.user_id]?.avatar })));
     if (examsData) setExams(examsData.map(e => ({ ...e, photo_url: (e as any).photo_url, pseudo: profileMap[e.user_id]?.pseudo, avatar: profileMap[e.user_id]?.avatar })));
     if (tasksData) setStudentTasks(tasksData.map(t => ({ ...t, pseudo: profileMap[t.user_id]?.pseudo, avatar: profileMap[t.user_id]?.avatar })));
+    if (dailyData) setDailyTasks((dailyData as any[]).map(d => ({ ...d, pseudo: profileMap[d.user_id]?.pseudo, avatar: profileMap[d.user_id]?.avatar })));
 
     const enriched = studentProfiles.map(p => {
       const userQuests = (allQuests || []).filter(q => q.assigned_to === p.user_id);
@@ -190,6 +193,16 @@ export default function CoachDashboard() {
         ensureAlert(e.user_id); alertMap[e.user_id].reasons.push(`Résultat manquant : DS ${e.subject}`);
       }
     });
+    // Alert: students who haven't set daily tasks by 14h
+    const todayStr = now.toISOString().split('T')[0];
+    const todayDailyUserIds = new Set((dailyData || []).filter((d: any) => d.task_date === todayStr).map((d: any) => d.user_id));
+    if (now.getHours() >= 14) {
+      studentProfiles.forEach(p => {
+        if (!todayDailyUserIds.has(p.user_id)) {
+          ensureAlert(p.user_id); alertMap[p.user_id].reasons.push('Pas de tâches du jour définies');
+        }
+      });
+    }
 
     setUrgentAlerts(Object.values(alertMap).sort((a, b) => b.reasons.length - a.reasons.length));
 
@@ -213,6 +226,7 @@ export default function CoachDashboard() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'difficulties' }, () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'exams' }, () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'student_tasks' }, () => loadData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_tasks' }, () => loadData())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, []);
@@ -442,6 +456,7 @@ export default function CoachDashboard() {
               )}
             </TabsTrigger>
             <TabsTrigger value="tasks">✏️ Tâches perso</TabsTrigger>
+            <TabsTrigger value="daily">🎯 Tâches du jour</TabsTrigger>
           </TabsList>
 
           {/* Students Tab */}
@@ -851,6 +866,131 @@ export default function CoachDashboard() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                );
+              })()}
+            </div>
+          </TabsContent>
+
+          {/* Daily Tasks Tab */}
+          <TabsContent value="daily">
+            <div className="bg-card border border-border rounded-lg p-5">
+              <h2 className="font-display text-base font-semibold mb-4">🎯 Tâches du jour par élève</h2>
+              {(() => {
+                const today = new Date().toISOString().split('T')[0];
+                const todayTasks = dailyTasks.filter(t => t.task_date === today);
+                
+                // Group by student
+                const byStudent: Record<string, typeof todayTasks> = {};
+                todayTasks.forEach(t => {
+                  if (!byStudent[t.user_id]) byStudent[t.user_id] = [];
+                  byStudent[t.user_id].push(t);
+                });
+
+                // Completion rate per student (all time)
+                const allByStudent: Record<string, { total: number; done: number }> = {};
+                dailyTasks.forEach(t => {
+                  if (!allByStudent[t.user_id]) allByStudent[t.user_id] = { total: 0, done: 0 };
+                  allByStudent[t.user_id].total++;
+                  if (t.completed) allByStudent[t.user_id].done++;
+                });
+
+                // Students who haven't set tasks today
+                const studentsWithTasks = new Set(Object.keys(byStudent));
+                const missingStudents = students.filter(s => !studentsWithTasks.has(s.user_id));
+
+                return (
+                  <div className="space-y-6">
+                    {/* Missing students alert */}
+                    {missingStudents.length > 0 && new Date().getHours() >= 14 && (
+                      <div className="p-3 rounded-lg border" style={{ backgroundColor: 'hsl(var(--xp) / 0.08)', borderColor: 'hsl(var(--xp) / 0.2)' }}>
+                        <p className="text-xs font-medium mb-2" style={{ color: 'hsl(var(--xp))' }}>
+                          ⚠️ {missingStudents.length} élève{missingStudents.length > 1 ? 's' : ''} n'{missingStudents.length > 1 ? 'ont' : 'a'} pas encore défini ses tâches aujourd'hui
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {missingStudents.map(s => (
+                            <span key={s.user_id} className="text-xs px-2 py-1 rounded-full bg-card border border-border">
+                              {s.avatar} {s.pseudo}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Students with tasks today */}
+                    {Object.entries(byStudent).map(([userId, tasks]) => {
+                      const completedCount = tasks.filter(t => t.completed).length;
+                      const allTime = allByStudent[userId];
+                      const rate = allTime ? Math.round((allTime.done / allTime.total) * 100) : 0;
+                      return (
+                        <div key={userId} className="p-4 rounded-lg border border-border">
+                          <div className="flex items-center gap-3 mb-3">
+                            <span className="text-lg">{tasks[0]?.avatar}</span>
+                            <span className="font-medium text-sm">{tasks[0]?.pseudo}</span>
+                            <span className="text-xs text-muted-foreground">{completedCount}/3 faites</span>
+                            <CompletionBadge rate={rate} />
+                            <span className="text-[10px] text-muted-foreground ml-auto">Taux global</span>
+                          </div>
+                          <div className="space-y-2">
+                            {tasks.sort((a, b) => a.task_number - b.task_number).map(t => (
+                              <div key={t.id} className={`flex items-center gap-3 p-2 rounded-lg ${t.completed ? 'bg-secondary/30' : 'bg-secondary/60'}`}>
+                                <span className="text-xs font-bold w-5 text-center" style={{ color: t.completed ? 'hsl(var(--success))' : 'hsl(var(--muted-foreground))' }}>
+                                  {t.completed ? '✓' : t.task_number}
+                                </span>
+                                <p className={`text-sm flex-1 ${t.completed ? 'line-through text-muted-foreground' : ''}`}>{t.description}</p>
+                                <span className="text-[10px] text-muted-foreground">{t.subject}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {todayTasks.length === 0 && missingStudents.length === 0 && (
+                      <p className="text-muted-foreground text-sm text-center py-4">Aucune tâche du jour enregistrée</p>
+                    )}
+
+                    {/* Historical feed */}
+                    {(() => {
+                      const pastTasks = dailyTasks.filter(t => t.task_date !== today);
+                      const byDate: Record<string, typeof pastTasks> = {};
+                      pastTasks.forEach(t => {
+                        if (!byDate[t.task_date]) byDate[t.task_date] = [];
+                        byDate[t.task_date].push(t);
+                      });
+                      const dates = Object.keys(byDate).sort().reverse().slice(0, 7);
+                      if (dates.length === 0) return null;
+                      return (
+                        <div className="mt-4 pt-4 border-t border-border">
+                          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Historique récent</h3>
+                          {dates.map(date => {
+                            const dateTasks = byDate[date];
+                            const byUser: Record<string, typeof dateTasks> = {};
+                            dateTasks.forEach(t => { if (!byUser[t.user_id]) byUser[t.user_id] = []; byUser[t.user_id].push(t); });
+                            return (
+                              <div key={date} className="mb-3">
+                                <p className="text-xs text-muted-foreground capitalize mb-1.5">
+                                  {new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                </p>
+                                <div className="space-y-1.5">
+                                  {Object.entries(byUser).map(([uid, ut]) => {
+                                    const done = ut.filter(t => t.completed).length;
+                                    return (
+                                      <div key={uid} className="flex items-center gap-2 text-xs">
+                                        <span>{ut[0]?.avatar}</span>
+                                        <span className="font-medium">{ut[0]?.pseudo}</span>
+                                        <span className="text-muted-foreground">— {done}/3 faites</span>
+                                        {done === 3 && <span style={{ color: 'hsl(var(--success))' }}>✓</span>}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
                   </div>
                 );
               })()}
