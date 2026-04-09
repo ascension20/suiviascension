@@ -627,7 +627,7 @@ export default function CoachDashboard() {
                                             const isPast = daysUntil < 0;
                                             const isMissing = isPast && e.grade === null;
                                             return (
-                                              <div key={e.id} className={`p-2 rounded border text-xs ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 3 ? 'border-destructive/50' : 'border-border'}`}>
+                                              <div key={e.id} className={`p-2 rounded border text-xs ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 7 ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}>
                                                 <div className="flex items-center gap-2">
                                                   <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[e.subject as Subject] || '--muted'}))` }} />
                                                   <span className="font-medium">{e.subject}</span>
