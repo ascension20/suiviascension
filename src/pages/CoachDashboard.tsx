@@ -216,6 +216,7 @@ export default function CoachDashboard() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'difficulties' }, () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'exams' }, () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'student_tasks' }, () => loadData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_tasks' }, () => loadData())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, []);
