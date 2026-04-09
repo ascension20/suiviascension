@@ -167,31 +167,19 @@ export default function CoachDashboard() {
     setStudents(enriched);
     setQuestStudents(studentProfiles);
 
-    // Build urgent alerts grouped by student
+    // Build alert reasons per student (used to highlight rows, no banner)
     const now = new Date();
-    const alertMap: Record<string, UrgentAlert> = {};
+    const alertMap: Record<string, string[]> = {};
     const ensureAlert = (userId: string) => {
-      if (!alertMap[userId]) {
-        const p = profileMap[userId];
-        alertMap[userId] = { studentName: p?.pseudo || 'Élève', avatar: p?.avatar || '🐺', reasons: [], userId };
-      }
+      if (!alertMap[userId]) alertMap[userId] = [];
     };
 
     enriched.forEach(s => {
-      if (s.streak === 0) { ensureAlert(s.user_id); alertMap[s.user_id].reasons.push('Série à 0 🔥'); }
-      if (s.completionRate < 50) { ensureAlert(s.user_id); alertMap[s.user_id].reasons.push(`Complétion à ${s.completionRate}%`); }
+      if (s.streak === 0) { ensureAlert(s.user_id); alertMap[s.user_id].push('Série à 0 🔥'); }
+      if (s.completionRate < 50) { ensureAlert(s.user_id); alertMap[s.user_id].push(`Complétion à ${s.completionRate}%`); }
     });
     (diffs || []).filter(d => !d.resolved && d.severity === 'blocking').forEach(d => {
-      ensureAlert(d.user_id); alertMap[d.user_id].reasons.push(`Difficulté bloquante en ${d.subject}`);
-    });
-    (examsData || []).forEach(e => {
-      const diff = (new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-      if (diff >= 0 && diff <= 3 && e.grade === null) {
-        ensureAlert(e.user_id); alertMap[e.user_id].reasons.push(`DS ${e.subject} dans ${Math.ceil(diff)}j`);
-      }
-      if (diff < 0 && e.grade === null) {
-        ensureAlert(e.user_id); alertMap[e.user_id].reasons.push(`Résultat manquant : DS ${e.subject}`);
-      }
+      ensureAlert(d.user_id); alertMap[d.user_id].push(`Difficulté bloquante en ${d.subject}`);
     });
     // Alert: students who haven't set daily tasks by 14h
     const todayStr = now.toISOString().split('T')[0];
@@ -199,12 +187,15 @@ export default function CoachDashboard() {
     if (now.getHours() >= 14) {
       studentProfiles.forEach(p => {
         if (!todayDailyUserIds.has(p.user_id)) {
-          ensureAlert(p.user_id); alertMap[p.user_id].reasons.push('Pas de tâches du jour définies');
+          ensureAlert(p.user_id); alertMap[p.user_id].push('Pas de tâches du jour définies');
         }
       });
     }
 
-    setUrgentAlerts(Object.values(alertMap).sort((a, b) => b.reasons.length - a.reasons.length));
+    setUrgentAlerts(Object.entries(alertMap).filter(([_, r]) => r.length > 0).map(([userId, reasons]) => {
+      const p = profileMap[userId];
+      return { studentName: p?.pseudo || 'Élève', avatar: p?.avatar || '🐺', reasons, userId };
+    }).sort((a, b) => b.reasons.length - a.reasons.length));
 
     // Load baselines
     const { data: blData } = await supabase.from('student_baselines').select('user_id');
@@ -394,33 +385,6 @@ export default function CoachDashboard() {
       </header>
 
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
-        {/* Urgent Alerts Banner */}
-        {urgentAlerts.length > 0 && (
-          <div className="mb-6 p-4 rounded-lg border" style={{ backgroundColor: 'hsl(var(--destructive) / 0.06)', borderColor: 'hsl(var(--destructive) / 0.2)' }}>
-            <h2 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: 'hsl(var(--destructive))' }}>
-              <AlertTriangle size={16} />
-              {urgentAlerts.length} élève{urgentAlerts.length > 1 ? 's' : ''} {urgentAlerts.length > 1 ? 'nécessitent' : 'nécessite'} ton attention
-            </h2>
-            <div className="space-y-2">
-              {urgentAlerts.map(alert => (
-                <div key={alert.userId} className="flex items-start gap-3 p-2.5 rounded-lg bg-card border border-border">
-                  <span className="text-lg">{alert.avatar}</span>
-                  <div className="flex-1 min-w-0">
-                    <span className="text-sm font-medium">{alert.studentName}</span>
-                    <div className="flex flex-wrap gap-1.5 mt-1">
-                      {alert.reasons.map((r, i) => (
-                        <span key={i} className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: 'hsl(var(--destructive) / 0.12)', color: 'hsl(var(--destructive))' }}>
-                          {r}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Quick stats */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
           {[
@@ -498,13 +462,31 @@ export default function CoachDashboard() {
                         const gradesBySubject: Record<string, number[]> = {};
                         sExams.forEach(e => { if (e.grade !== null) { if (!gradesBySubject[e.subject]) gradesBySubject[e.subject] = []; gradesBySubject[e.subject].push(e.grade); } });
 
+                        const studentAlert = urgentAlerts.find(a => a.userId === student.user_id);
+                        const isAlerted = !!studentAlert;
+
                         return (
                           <AnimatePresence key={student.id}>
-                            <tr className="border-b border-border/50 hover:bg-secondary/40 transition-colors cursor-pointer group" onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}>
+                            <tr
+                              className={`border-b border-border/50 transition-colors cursor-pointer group ${isAlerted ? '' : 'hover:bg-secondary/40'}`}
+                              style={isAlerted ? { backgroundColor: 'hsl(var(--destructive) / 0.06)' } : undefined}
+                              onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}
+                            >
                               <td className="px-5 py-3.5">
                                 <div className="flex items-center gap-2">
                                   <span className="text-lg">{student.avatar}</span>
-                                  <span className="font-medium text-sm">{student.pseudo}</span>
+                                  <div>
+                                    <span className="font-medium text-sm">{student.pseudo}</span>
+                                    {isAlerted && (
+                                      <div className="flex flex-wrap gap-1 mt-0.5">
+                                        {studentAlert!.reasons.map((r, i) => (
+                                          <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ backgroundColor: 'hsl(var(--destructive) / 0.12)', color: 'hsl(var(--destructive))' }}>
+                                            {r}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               </td>
                               <td className="px-5 py-3.5">
@@ -645,7 +627,7 @@ export default function CoachDashboard() {
                                             const isPast = daysUntil < 0;
                                             const isMissing = isPast && e.grade === null;
                                             return (
-                                              <div key={e.id} className={`p-2 rounded border text-xs ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 3 ? 'border-destructive/50' : 'border-border'}`}>
+                                              <div key={e.id} className={`p-2 rounded border text-xs ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 7 ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}>
                                                 <div className="flex items-center gap-2">
                                                   <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[e.subject as Subject] || '--muted'}))` }} />
                                                   <span className="font-medium">{e.subject}</span>

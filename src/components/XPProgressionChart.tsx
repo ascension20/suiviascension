@@ -104,7 +104,7 @@ export function XPProgressionChart({ userId, totalXp }: Props) {
                 axisLine={false}
                 interval={4}
               />
-              <YAxis hide domain={['dataMin', 'dataMax']} />
+              <YAxis hide domain={[(dataMin: number) => Math.max(0, dataMin - 10), (dataMax: number) => dataMax + 10]} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: 'hsl(225, 28%, 14%)',
