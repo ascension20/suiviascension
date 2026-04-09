@@ -167,31 +167,19 @@ export default function CoachDashboard() {
     setStudents(enriched);
     setQuestStudents(studentProfiles);
 
-    // Build urgent alerts grouped by student
+    // Build alert reasons per student (used to highlight rows, no banner)
     const now = new Date();
-    const alertMap: Record<string, UrgentAlert> = {};
+    const alertMap: Record<string, string[]> = {};
     const ensureAlert = (userId: string) => {
-      if (!alertMap[userId]) {
-        const p = profileMap[userId];
-        alertMap[userId] = { studentName: p?.pseudo || 'Élève', avatar: p?.avatar || '🐺', reasons: [], userId };
-      }
+      if (!alertMap[userId]) alertMap[userId] = [];
     };
 
     enriched.forEach(s => {
-      if (s.streak === 0) { ensureAlert(s.user_id); alertMap[s.user_id].reasons.push('Série à 0 🔥'); }
-      if (s.completionRate < 50) { ensureAlert(s.user_id); alertMap[s.user_id].reasons.push(`Complétion à ${s.completionRate}%`); }
+      if (s.streak === 0) { ensureAlert(s.user_id); alertMap[s.user_id].push('Série à 0 🔥'); }
+      if (s.completionRate < 50) { ensureAlert(s.user_id); alertMap[s.user_id].push(`Complétion à ${s.completionRate}%`); }
     });
     (diffs || []).filter(d => !d.resolved && d.severity === 'blocking').forEach(d => {
-      ensureAlert(d.user_id); alertMap[d.user_id].reasons.push(`Difficulté bloquante en ${d.subject}`);
-    });
-    (examsData || []).forEach(e => {
-      const diff = (new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-      if (diff >= 0 && diff <= 3 && e.grade === null) {
-        ensureAlert(e.user_id); alertMap[e.user_id].reasons.push(`DS ${e.subject} dans ${Math.ceil(diff)}j`);
-      }
-      if (diff < 0 && e.grade === null) {
-        ensureAlert(e.user_id); alertMap[e.user_id].reasons.push(`Résultat manquant : DS ${e.subject}`);
-      }
+      ensureAlert(d.user_id); alertMap[d.user_id].push(`Difficulté bloquante en ${d.subject}`);
     });
     // Alert: students who haven't set daily tasks by 14h
     const todayStr = now.toISOString().split('T')[0];
@@ -199,12 +187,15 @@ export default function CoachDashboard() {
     if (now.getHours() >= 14) {
       studentProfiles.forEach(p => {
         if (!todayDailyUserIds.has(p.user_id)) {
-          ensureAlert(p.user_id); alertMap[p.user_id].reasons.push('Pas de tâches du jour définies');
+          ensureAlert(p.user_id); alertMap[p.user_id].push('Pas de tâches du jour définies');
         }
       });
     }
 
-    setUrgentAlerts(Object.values(alertMap).sort((a, b) => b.reasons.length - a.reasons.length));
+    setUrgentAlerts(Object.entries(alertMap).filter(([_, r]) => r.length > 0).map(([userId, reasons]) => {
+      const p = profileMap[userId];
+      return { studentName: p?.pseudo || 'Élève', avatar: p?.avatar || '🐺', reasons, userId };
+    }).sort((a, b) => b.reasons.length - a.reasons.length));
 
     // Load baselines
     const { data: blData } = await supabase.from('student_baselines').select('user_id');
