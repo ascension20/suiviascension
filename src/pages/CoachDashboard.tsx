@@ -462,9 +462,16 @@ export default function CoachDashboard() {
                         const gradesBySubject: Record<string, number[]> = {};
                         sExams.forEach(e => { if (e.grade !== null) { if (!gradesBySubject[e.subject]) gradesBySubject[e.subject] = []; gradesBySubject[e.subject].push(e.grade); } });
 
+                        const studentAlert = urgentAlerts.find(a => a.userId === student.user_id);
+                        const isAlerted = !!studentAlert;
+
                         return (
                           <AnimatePresence key={student.id}>
-                            <tr className="border-b border-border/50 hover:bg-secondary/40 transition-colors cursor-pointer group" onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}>
+                            <tr
+                              className={`border-b border-border/50 transition-colors cursor-pointer group ${isAlerted ? '' : 'hover:bg-secondary/40'}`}
+                              style={isAlerted ? { backgroundColor: 'hsl(var(--destructive) / 0.06)' } : undefined}
+                              onClick={() => setExpandedStudent(isExpanded ? null : student.user_id)}
+                            >
                               <td className="px-5 py-3.5">
                                 <div className="flex items-center gap-2">
                                   <span className="text-lg">{student.avatar}</span>
