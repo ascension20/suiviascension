@@ -2,6 +2,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Flame, LogOut, WifiOff, Clock } from 'lucide-react';
 import { PomodoroTimer } from '@/components/PomodoroTimer';
+import { DailyTaskGate } from '@/components/DailyTaskGate';
+import { EndOfDayReview } from '@/components/EndOfDayReview';
 import { XPBar } from '@/components/XPBar';
 import { QuestList, Quest } from '@/components/QuestList';
 import { WeeklyLeaderboard, LeaderboardEntry } from '@/components/WeeklyLeaderboard';
@@ -30,6 +32,7 @@ export default function StudentDashboard() {
   const [timerLeaderboard, setTimerLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [totalWorkMinutes, setTotalWorkMinutes] = useState(0);
   const [weeklyChampion, setWeeklyChampion] = useState<string | null>(null);
+  const [dailyGatePassed, setDailyGatePassed] = useState(false);
 
   const { isOnline, pendingCount, enqueue } = useOfflineQueue();
 
@@ -163,6 +166,10 @@ export default function StudentDashboard() {
   const totalWorkHours = Math.floor(totalWorkMinutes / 60);
   const totalWorkMins = totalWorkMinutes % 60;
 
+  if (user && !dailyGatePassed) {
+    return <DailyTaskGate userId={user.id} onComplete={() => setDailyGatePassed(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border px-4 md:px-6 py-3">
@@ -262,6 +269,7 @@ export default function StudentDashboard() {
       </main>
 
       <LevelUpOverlay data={levelUpData} onDismiss={() => setLevelUpData(null)} />
+      {user && <EndOfDayReview userId={user.id} />}
     </div>
   );
 }
