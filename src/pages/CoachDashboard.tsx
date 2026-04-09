@@ -385,33 +385,6 @@ export default function CoachDashboard() {
       </header>
 
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
-        {/* Urgent Alerts Banner */}
-        {urgentAlerts.length > 0 && (
-          <div className="mb-6 p-4 rounded-lg border" style={{ backgroundColor: 'hsl(var(--destructive) / 0.06)', borderColor: 'hsl(var(--destructive) / 0.2)' }}>
-            <h2 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: 'hsl(var(--destructive))' }}>
-              <AlertTriangle size={16} />
-              {urgentAlerts.length} élève{urgentAlerts.length > 1 ? 's' : ''} {urgentAlerts.length > 1 ? 'nécessitent' : 'nécessite'} ton attention
-            </h2>
-            <div className="space-y-2">
-              {urgentAlerts.map(alert => (
-                <div key={alert.userId} className="flex items-start gap-3 p-2.5 rounded-lg bg-card border border-border">
-                  <span className="text-lg">{alert.avatar}</span>
-                  <div className="flex-1 min-w-0">
-                    <span className="text-sm font-medium">{alert.studentName}</span>
-                    <div className="flex flex-wrap gap-1.5 mt-1">
-                      {alert.reasons.map((r, i) => (
-                        <span key={i} className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: 'hsl(var(--destructive) / 0.12)', color: 'hsl(var(--destructive))' }}>
-                          {r}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Quick stats */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
           {[
