@@ -475,7 +475,19 @@ export default function CoachDashboard() {
                               <td className="px-5 py-3.5">
                                 <div className="flex items-center gap-2">
                                   <span className="text-lg">{student.avatar}</span>
-                                  <span className="font-medium text-sm">{student.pseudo}</span>
+                                  <div>
+                                    <span className="font-medium text-sm">{student.pseudo}</span>
+                                    {isAlerted && (
+                                      <div className="flex flex-wrap gap-1 mt-0.5">
+                                        {studentAlert!.reasons.map((r, i) => (
+                                          <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ backgroundColor: 'hsl(var(--destructive) / 0.12)', color: 'hsl(var(--destructive))' }}>
+                                            {r}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                                 </div>
                               </td>
                               <td className="px-5 py-3.5">
