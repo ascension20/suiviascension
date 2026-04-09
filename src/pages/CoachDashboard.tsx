@@ -105,6 +105,7 @@ export default function CoachDashboard() {
   const [difficulties, setDifficulties] = useState<StudentDifficulty[]>([]);
   const [exams, setExams] = useState<StudentExam[]>([]);
   const [studentTasks, setStudentTasks] = useState<StudentTask[]>([]);
+  const [dailyTasks, setDailyTasks] = useState<{ id: string; user_id: string; task_date: string; task_number: number; description: string; subject: string; completed: boolean; created_at: string; pseudo?: string; avatar?: string }[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [expandedStudent, setExpandedStudent] = useState<string | null>(null);
@@ -138,15 +139,17 @@ export default function CoachDashboard() {
     const { data: allQuests } = await supabase.from('quests').select('*');
     const { data: allSessions } = await supabase.from('timer_sessions').select('user_id, duration_minutes');
 
-    const [{ data: diffs }, { data: examsData }, { data: tasksData }] = await Promise.all([
+    const [{ data: diffs }, { data: examsData }, { data: tasksData }, { data: dailyData }] = await Promise.all([
       supabase.from('difficulties').select('*').order('created_at', { ascending: false }),
       supabase.from('exams').select('*').order('exam_date', { ascending: true }),
       supabase.from('student_tasks').select('*').order('created_at', { ascending: false }),
+      supabase.from('daily_tasks').select('*').order('task_date', { ascending: false }).limit(200),
     ]);
 
     if (diffs) setDifficulties(diffs.map(d => ({ ...d, pseudo: profileMap[d.user_id]?.pseudo, avatar: profileMap[d.user_id]?.avatar })));
     if (examsData) setExams(examsData.map(e => ({ ...e, photo_url: (e as any).photo_url, pseudo: profileMap[e.user_id]?.pseudo, avatar: profileMap[e.user_id]?.avatar })));
     if (tasksData) setStudentTasks(tasksData.map(t => ({ ...t, pseudo: profileMap[t.user_id]?.pseudo, avatar: profileMap[t.user_id]?.avatar })));
+    if (dailyData) setDailyTasks((dailyData as any[]).map(d => ({ ...d, pseudo: profileMap[d.user_id]?.pseudo, avatar: profileMap[d.user_id]?.avatar })));
 
     const enriched = studentProfiles.map(p => {
       const userQuests = (allQuests || []).filter(q => q.assigned_to === p.user_id);
