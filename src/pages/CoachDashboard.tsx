@@ -30,6 +30,7 @@ interface StudentDifficulty {
 interface StudentExam {
   id: string; user_id: string; subject: string; exam_date: string;
   chapters: string | null; stress_level: string; grade: number | null; photo_url?: string | null;
+  grade_received: boolean;
   pseudo?: string; avatar?: string;
 }
 
