@@ -770,7 +770,7 @@ export default function CoachDashboard() {
                   exams.map(e => {
                     const daysUntil = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                     const isPast = daysUntil < 0;
-                    const isMissing = isPast && e.grade === null;
+                    const isMissing = isPast && e.grade === null && !e.grade_received;
                     return (
                       <div key={e.id} className={`p-4 rounded-lg border ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 7 ? 'border-destructive/40 bg-destructive/5' : 'border-border'}`}>
                         <div className="flex items-center gap-3">
@@ -781,6 +781,7 @@ export default function CoachDashboard() {
                           <span className="text-sm text-muted-foreground ml-auto">{new Date(e.exam_date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
                           {!isPast && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary">{daysUntil === 0 ? "Aujourd'hui" : `${daysUntil}j`}</span>}
                           {isMissing && <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'hsl(var(--streak) / 0.15)', color: 'hsl(var(--streak))' }}>Résultat manquant</span>}
+                          {e.grade_received && e.grade === null && <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'hsl(var(--success) / 0.15)', color: 'hsl(var(--success))' }}>✓ Résultat reçu</span>}
                         </div>
                         <div className="flex items-center gap-3 mt-2 text-sm">
                           <span>{STRESS_LABELS[e.stress_level] || e.stress_level}</span>
@@ -790,6 +791,17 @@ export default function CoachDashboard() {
                             <button onClick={() => setPreviewPhoto(e.photo_url!)} className="flex items-center gap-1 text-xs text-primary hover:underline ml-auto">
                               <Image size={12} /> Voir le contrôle
                             </button>
+                          )}
+                          {isPast && e.grade === null && (
+                            <label className="flex items-center gap-1.5 ml-auto cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={e.grade_received}
+                                onChange={(ev) => handleMarkGradeReceived(e.id, ev.target.checked)}
+                                className="w-3.5 h-3.5 rounded border-border accent-primary"
+                              />
+                              Résultat donné
+                            </label>
                           )}
                         </div>
                       </div>
