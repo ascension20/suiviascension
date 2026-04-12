@@ -41,6 +41,7 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          method: string
           subject: string
           task_date: string
           task_number: number
@@ -51,6 +52,7 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          method?: string
           subject?: string
           task_date?: string
           task_number: number
@@ -61,6 +63,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          method?: string
           subject?: string
           task_date?: string
           task_number?: number
@@ -111,6 +114,7 @@ export type Database = {
           custom_subject: string | null
           exam_date: string
           grade: number | null
+          grade_received: boolean
           id: string
           photo_url: string | null
           stress_level: Database["public"]["Enums"]["stress_level"]
@@ -123,6 +127,7 @@ export type Database = {
           custom_subject?: string | null
           exam_date: string
           grade?: number | null
+          grade_received?: boolean
           id?: string
           photo_url?: string | null
           stress_level?: Database["public"]["Enums"]["stress_level"]
@@ -135,6 +140,7 @@ export type Database = {
           custom_subject?: string | null
           exam_date?: string
           grade?: number | null
+          grade_received?: boolean
           id?: string
           photo_url?: string | null
           stress_level?: Database["public"]["Enums"]["stress_level"]
