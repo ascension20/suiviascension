@@ -105,7 +105,7 @@ export default function CoachDashboard() {
   const [difficulties, setDifficulties] = useState<StudentDifficulty[]>([]);
   const [exams, setExams] = useState<StudentExam[]>([]);
   const [studentTasks, setStudentTasks] = useState<StudentTask[]>([]);
-  const [dailyTasks, setDailyTasks] = useState<{ id: string; user_id: string; task_date: string; task_number: number; description: string; subject: string; completed: boolean; created_at: string; pseudo?: string; avatar?: string }[]>([]);
+  const [dailyTasks, setDailyTasks] = useState<{ id: string; user_id: string; task_date: string; task_number: number; description: string; subject: string; completed: boolean; created_at: string; method: string; pseudo?: string; avatar?: string }[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [expandedStudent, setExpandedStudent] = useState<string | null>(null);
@@ -361,7 +361,7 @@ export default function CoachDashboard() {
   const unresolvedDiffs = difficulties.filter(d => !d.resolved);
   const now = new Date();
   const upcomingExams = exams.filter(e => new Date(e.exam_date) >= now && e.grade === null);
-  const missingGradeExams = exams.filter(e => new Date(e.exam_date) < now && e.grade === null);
+  const missingGradeExams = exams.filter(e => new Date(e.exam_date) < now && e.grade === null && !(e as any).grade_received);
 
   const filteredDiffs = subjectFilter === 'all' ? difficulties : difficulties.filter(d => d.subject === subjectFilter);
 
@@ -420,7 +420,6 @@ export default function CoachDashboard() {
               )}
             </TabsTrigger>
             <TabsTrigger value="tasks">✏️ Tâches perso</TabsTrigger>
-            <TabsTrigger value="daily">🎯 Tâches du jour</TabsTrigger>
           </TabsList>
 
           {/* Students Tab */}
@@ -767,7 +766,7 @@ export default function CoachDashboard() {
                     const isPast = daysUntil < 0;
                     const isMissing = isPast && e.grade === null;
                     return (
-                      <div key={e.id} className={`p-4 rounded-lg border ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 3 ? 'border-destructive/40 bg-destructive/5' : 'border-border'}`}>
+                      <div key={e.id} className={`p-4 rounded-lg border ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 7 ? 'border-destructive/40 bg-destructive/5' : 'border-border'}`}>
                         <div className="flex items-center gap-3">
                           <span className="text-lg">{e.avatar}</span>
                           <span className="font-medium text-sm">{e.pseudo}</span>
