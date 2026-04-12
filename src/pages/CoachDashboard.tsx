@@ -355,6 +355,11 @@ export default function CoachDashboard() {
     setBaselines(prev => ({ ...prev, [studentUserId]: true }));
   };
 
+  const handleMarkGradeReceived = async (examId: string, received: boolean) => {
+    await supabase.from('exams').update({ grade_received: received } as any).eq('id', examId);
+    setExams(prev => prev.map(e => e.id === examId ? { ...e, grade_received: received } : e));
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
