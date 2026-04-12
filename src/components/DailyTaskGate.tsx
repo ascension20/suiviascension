@@ -7,6 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
+const METHODS = [
+  'Exercices',
+  'Cours / Relecture',
+  'Fiches',
+  'Vidéos',
+  'Annales',
+  'Autre',
+] as const;
+
 interface DailyTaskGateProps {
   userId: string;
   onComplete: () => void;
@@ -14,9 +23,9 @@ interface DailyTaskGateProps {
 
 export function DailyTaskGate({ userId, onComplete }: DailyTaskGateProps) {
   const [tasks, setTasks] = useState([
-    { description: '', subject: 'Maths' },
-    { description: '', subject: 'Maths' },
-    { description: '', subject: 'Maths' },
+    { description: '', subject: 'Maths', method: 'Exercices' },
+    { description: '', subject: 'Maths', method: 'Exercices' },
+    { description: '', subject: 'Maths', method: 'Exercices' },
   ]);
   const [submitting, setSubmitting] = useState(false);
   const [alreadyDone, setAlreadyDone] = useState<boolean | null>(null);
@@ -40,7 +49,7 @@ export function DailyTaskGate({ userId, onComplete }: DailyTaskGateProps) {
     checkToday();
   }, [userId, onComplete]);
 
-  if (alreadyDone === null) return null; // loading
+  if (alreadyDone === null) return null;
   if (alreadyDone) return null;
 
   const allFilled = tasks.every(t => t.description.trim().length > 0);
@@ -55,8 +64,9 @@ export function DailyTaskGate({ userId, onComplete }: DailyTaskGateProps) {
       task_number: i + 1,
       description: t.description.trim().slice(0, 100),
       subject: t.subject,
+      method: t.method,
     }));
-    await supabase.from('daily_tasks').insert(inserts);
+    await supabase.from('daily_tasks').insert(inserts as any);
     setSubmitting(false);
     onComplete();
   };
@@ -87,34 +97,51 @@ export function DailyTaskGate({ userId, onComplete }: DailyTaskGateProps) {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 + i * 0.1 }}
-              className="flex gap-2"
+              className="space-y-2"
             >
-              <span className="flex items-center justify-center w-8 h-10 rounded-lg text-sm font-bold shrink-0" style={{ backgroundColor: 'hsl(var(--primary) / 0.15)', color: 'hsl(var(--primary))' }}>
-                {i + 1}
-              </span>
-              <Input
-                placeholder={`Tâche ${i + 1}`}
-                value={task.description}
-                onChange={(e) => {
-                  const v = e.target.value.slice(0, 100);
-                  setTasks(prev => prev.map((t, j) => j === i ? { ...t, description: v } : t));
-                }}
-                maxLength={100}
-                className="flex-1"
-              />
-              <Select
-                value={task.subject}
-                onValueChange={(v) => setTasks(prev => prev.map((t, j) => j === i ? { ...t, subject: v } : t))}
-              >
-                <SelectTrigger className="w-[120px] shrink-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SUBJECTS.map(s => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <span className="flex items-center justify-center w-8 h-10 rounded-lg text-sm font-bold shrink-0" style={{ backgroundColor: 'hsl(var(--primary) / 0.15)', color: 'hsl(var(--primary))' }}>
+                  {i + 1}
+                </span>
+                <Input
+                  placeholder={`Tâche ${i + 1}`}
+                  value={task.description}
+                  onChange={(e) => {
+                    const v = e.target.value.slice(0, 100);
+                    setTasks(prev => prev.map((t, j) => j === i ? { ...t, description: v } : t));
+                  }}
+                  maxLength={100}
+                  className="flex-1"
+                />
+              </div>
+              <div className="flex gap-2 ml-10">
+                <Select
+                  value={task.subject}
+                  onValueChange={(v) => setTasks(prev => prev.map((t, j) => j === i ? { ...t, subject: v } : t))}
+                >
+                  <SelectTrigger className="w-[120px] shrink-0 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SUBJECTS.map(s => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={task.method}
+                  onValueChange={(v) => setTasks(prev => prev.map((t, j) => j === i ? { ...t, method: v } : t))}
+                >
+                  <SelectTrigger className="w-[140px] shrink-0 h-8 text-xs">
+                    <SelectValue placeholder="Méthode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {METHODS.map(m => (
+                      <SelectItem key={m} value={m}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </motion.div>
           ))}
         </div>

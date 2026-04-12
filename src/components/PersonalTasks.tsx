@@ -38,6 +38,8 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
   const [deadline, setDeadline] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
 
+  const [dailyTasks, setDailyTasks] = useState<{ id: string; description: string; subject: string; completed: boolean; task_number: number; method: string }[]>([]);
+
   const loadTasks = useCallback(async () => {
     const { data } = await supabase
       .from('student_tasks')
@@ -46,6 +48,16 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
       .order('completed', { ascending: true })
       .order('created_at', { ascending: false });
     if (data) setTasks(data as unknown as StudentTask[]);
+
+    // Load today's daily tasks
+    const today = new Date().toISOString().split('T')[0];
+    const { data: dt } = await supabase
+      .from('daily_tasks')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('task_date', today)
+      .order('task_number');
+    if (dt) setDailyTasks(dt as any);
   }, [userId]);
 
   useEffect(() => {
@@ -156,8 +168,32 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
       </AnimatePresence>
 
       <div className="space-y-2 max-h-[280px] overflow-y-auto">
-        {activeTasks.length === 0 && completedTasks.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-3">Aucune tâche perso ✏️</p>
+        {/* Daily tasks section */}
+        {dailyTasks.length > 0 && (
+          <div className="mb-3">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5">🎯 Tâches du jour</p>
+            {dailyTasks.map(dt => (
+              <div key={dt.id} className={`flex items-center gap-3 p-2.5 rounded-lg border border-border mb-1.5 ${dt.completed ? 'opacity-50' : ''}`}>
+                {dt.completed ? (
+                  <Check size={14} className="shrink-0" style={{ color: 'hsl(var(--success))' }} />
+                ) : (
+                  <span className="w-5 text-center text-xs font-bold text-muted-foreground shrink-0">{dt.task_number}</span>
+                )}
+                <span className={`text-sm flex-1 ${dt.completed ? 'line-through text-muted-foreground' : ''}`}>{dt.description}</span>
+                <span className="text-[10px] text-muted-foreground">{dt.subject}</span>
+                {(dt as any).method && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground">{(dt as any).method}</span>}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Separator */}
+        {dailyTasks.length > 0 && (activeTasks.length > 0 || completedTasks.length > 0) && (
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5 mt-3">✏️ Tâches perso</p>
+        )}
+
+        {activeTasks.length === 0 && completedTasks.length === 0 && dailyTasks.length === 0 ? (
+          <p className="text-muted-foreground text-sm text-center py-3">Aucune tâche ✏️</p>
         ) : (
           <>
             {activeTasks.map(task => (
