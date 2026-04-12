@@ -30,6 +30,7 @@ interface StudentDifficulty {
 interface StudentExam {
   id: string; user_id: string; subject: string; exam_date: string;
   chapters: string | null; stress_level: string; grade: number | null; photo_url?: string | null;
+  grade_received: boolean;
   pseudo?: string; avatar?: string;
 }
 
@@ -105,7 +106,7 @@ export default function CoachDashboard() {
   const [difficulties, setDifficulties] = useState<StudentDifficulty[]>([]);
   const [exams, setExams] = useState<StudentExam[]>([]);
   const [studentTasks, setStudentTasks] = useState<StudentTask[]>([]);
-  const [dailyTasks, setDailyTasks] = useState<{ id: string; user_id: string; task_date: string; task_number: number; description: string; subject: string; completed: boolean; created_at: string; pseudo?: string; avatar?: string }[]>([]);
+  const [dailyTasks, setDailyTasks] = useState<{ id: string; user_id: string; task_date: string; task_number: number; description: string; subject: string; completed: boolean; created_at: string; method: string; pseudo?: string; avatar?: string }[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [expandedStudent, setExpandedStudent] = useState<string | null>(null);
@@ -147,7 +148,7 @@ export default function CoachDashboard() {
     ]);
 
     if (diffs) setDifficulties(diffs.map(d => ({ ...d, pseudo: profileMap[d.user_id]?.pseudo, avatar: profileMap[d.user_id]?.avatar })));
-    if (examsData) setExams(examsData.map(e => ({ ...e, photo_url: (e as any).photo_url, pseudo: profileMap[e.user_id]?.pseudo, avatar: profileMap[e.user_id]?.avatar })));
+    if (examsData) setExams(examsData.map(e => ({ ...e, photo_url: (e as any).photo_url, grade_received: (e as any).grade_received ?? false, pseudo: profileMap[e.user_id]?.pseudo, avatar: profileMap[e.user_id]?.avatar })));
     if (tasksData) setStudentTasks(tasksData.map(t => ({ ...t, pseudo: profileMap[t.user_id]?.pseudo, avatar: profileMap[t.user_id]?.avatar })));
     if (dailyData) setDailyTasks((dailyData as any[]).map(d => ({ ...d, pseudo: profileMap[d.user_id]?.pseudo, avatar: profileMap[d.user_id]?.avatar })));
 
@@ -354,6 +355,11 @@ export default function CoachDashboard() {
     setBaselines(prev => ({ ...prev, [studentUserId]: true }));
   };
 
+  const handleMarkGradeReceived = async (examId: string, received: boolean) => {
+    await supabase.from('exams').update({ grade_received: received } as any).eq('id', examId);
+    setExams(prev => prev.map(e => e.id === examId ? { ...e, grade_received: received } : e));
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
@@ -361,7 +367,7 @@ export default function CoachDashboard() {
   const unresolvedDiffs = difficulties.filter(d => !d.resolved);
   const now = new Date();
   const upcomingExams = exams.filter(e => new Date(e.exam_date) >= now && e.grade === null);
-  const missingGradeExams = exams.filter(e => new Date(e.exam_date) < now && e.grade === null);
+  const missingGradeExams = exams.filter(e => new Date(e.exam_date) < now && e.grade === null && !(e as any).grade_received);
 
   const filteredDiffs = subjectFilter === 'all' ? difficulties : difficulties.filter(d => d.subject === subjectFilter);
 
@@ -420,7 +426,6 @@ export default function CoachDashboard() {
               )}
             </TabsTrigger>
             <TabsTrigger value="tasks">✏️ Tâches perso</TabsTrigger>
-            <TabsTrigger value="daily">🎯 Tâches du jour</TabsTrigger>
           </TabsList>
 
           {/* Students Tab */}
@@ -625,7 +630,7 @@ export default function CoachDashboard() {
                                           {sExams.map(e => {
                                             const daysUntil = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                                             const isPast = daysUntil < 0;
-                                            const isMissing = isPast && e.grade === null;
+                                            const isMissing = isPast && e.grade === null && !e.grade_received;
                                             return (
                                               <div key={e.id} className={`p-2 rounded border text-xs ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 7 ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}>
                                                 <div className="flex items-center gap-2">
@@ -765,9 +770,9 @@ export default function CoachDashboard() {
                   exams.map(e => {
                     const daysUntil = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                     const isPast = daysUntil < 0;
-                    const isMissing = isPast && e.grade === null;
+                    const isMissing = isPast && e.grade === null && !e.grade_received;
                     return (
-                      <div key={e.id} className={`p-4 rounded-lg border ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 3 ? 'border-destructive/40 bg-destructive/5' : 'border-border'}`}>
+                      <div key={e.id} className={`p-4 rounded-lg border ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 7 ? 'border-destructive/40 bg-destructive/5' : 'border-border'}`}>
                         <div className="flex items-center gap-3">
                           <span className="text-lg">{e.avatar}</span>
                           <span className="font-medium text-sm">{e.pseudo}</span>
@@ -776,6 +781,7 @@ export default function CoachDashboard() {
                           <span className="text-sm text-muted-foreground ml-auto">{new Date(e.exam_date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
                           {!isPast && <span className="text-xs px-2 py-0.5 rounded-full bg-secondary">{daysUntil === 0 ? "Aujourd'hui" : `${daysUntil}j`}</span>}
                           {isMissing && <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'hsl(var(--streak) / 0.15)', color: 'hsl(var(--streak))' }}>Résultat manquant</span>}
+                          {e.grade_received && e.grade === null && <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'hsl(var(--success) / 0.15)', color: 'hsl(var(--success))' }}>✓ Résultat reçu</span>}
                         </div>
                         <div className="flex items-center gap-3 mt-2 text-sm">
                           <span>{STRESS_LABELS[e.stress_level] || e.stress_level}</span>
@@ -786,6 +792,17 @@ export default function CoachDashboard() {
                               <Image size={12} /> Voir le contrôle
                             </button>
                           )}
+                          {isPast && e.grade === null && (
+                            <label className="flex items-center gap-1.5 ml-auto cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={e.grade_received}
+                                onChange={(ev) => handleMarkGradeReceived(e.id, ev.target.checked)}
+                                className="w-3.5 h-3.5 rounded border-border accent-primary"
+                              />
+                              Résultat donné
+                            </label>
+                          )}
                         </div>
                       </div>
                     );
@@ -795,16 +812,35 @@ export default function CoachDashboard() {
             </div>
           </TabsContent>
 
-          {/* Tasks Tab - grouped by day */}
           <TabsContent value="tasks">
             <div className="bg-card border border-border rounded-lg p-5">
               <h2 className="font-display text-base font-semibold mb-4">
-                Tâches personnelles des élèves ({studentTasks.filter(t => !t.completed).length} actives)
+                Toutes les tâches ({studentTasks.filter(t => !t.completed).length} perso actives · {dailyTasks.filter(t => t.task_date === new Date().toISOString().split('T')[0]).length} du jour)
               </h2>
               {(() => {
-                // Group tasks by day (completed_at or created_at)
+                const today = new Date().toISOString().split('T')[0];
                 const PRIORITY_COLORS: Record<string, string> = { high: 'hsl(0 84% 60%)', medium: 'hsl(38 92% 55%)', low: 'hsl(142 71% 45%)' };
                 const PRIORITY_LABELS: Record<string, string> = { high: '🔴 Haute', medium: '🟡 Moyenne', low: '🟢 Faible' };
+
+                // Today's daily tasks section
+                const todayDailyTasks = dailyTasks.filter(t => t.task_date === today);
+                const byStudent: Record<string, typeof todayDailyTasks> = {};
+                todayDailyTasks.forEach(t => {
+                  if (!byStudent[t.user_id]) byStudent[t.user_id] = [];
+                  byStudent[t.user_id].push(t);
+                });
+
+                // Completion rates
+                const allByStudent: Record<string, { total: number; done: number }> = {};
+                dailyTasks.forEach(t => {
+                  if (!allByStudent[t.user_id]) allByStudent[t.user_id] = { total: 0, done: 0 };
+                  allByStudent[t.user_id].total++;
+                  if (t.completed) allByStudent[t.user_id].done++;
+                });
+
+                const missingStudentsToday = students.filter(s => !byStudent[s.user_id]);
+
+                // Student tasks grouped by day
                 const sorted = [...studentTasks].sort((a, b) => {
                   const dateA = a.completed_at || a.created_at;
                   const dateB = b.completed_at || b.created_at;
@@ -817,80 +853,18 @@ export default function CoachDashboard() {
                   if (!grouped[day]) grouped[day] = [];
                   grouped[day].push(t);
                 });
-
                 const days = Object.keys(grouped);
-                if (days.length === 0) {
-                  return <p className="text-muted-foreground text-sm text-center py-4">Aucune tâche personnelle ✏️</p>;
-                }
-                return (
-                  <div className="space-y-6">
-                    {days.map(day => (
-                      <div key={day}>
-                        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 capitalize">{day}</h3>
-                        <div className="space-y-2">
-                          {grouped[day].map(t => (
-                            <div key={t.id} className={`p-4 rounded-lg border ${t.completed ? 'border-border/50 opacity-60' : 'border-border'}`}>
-                              <div className="flex items-center gap-3">
-                                <span className="text-lg">{t.avatar}</span>
-                                <span className="font-medium text-sm">{t.pseudo}</span>
-                                {t.completed && <span className="text-xs" style={{ color: 'hsl(var(--success))' }}>✓</span>}
-                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[t.subject as Subject] || '--muted'}))` }} />
-                                <span className="text-xs text-muted-foreground">{t.subject}</span>
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ color: PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.medium, backgroundColor: `${PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.medium}15` }}>
-                                  {PRIORITY_LABELS[t.priority] || PRIORITY_LABELS.medium}
-                                </span>
-                                <span className="text-xs ml-auto" style={{ color: 'hsl(var(--xp))' }}>+{t.xp_reward} XP</span>
-                              </div>
-                              <p className={`text-sm mt-1 ${t.completed ? 'line-through text-muted-foreground' : ''}`}>{t.description}</p>
-                              {t.deadline && <span className="text-xs text-muted-foreground mt-1 block">Échéance : {new Date(t.deadline).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </div>
-          </TabsContent>
-
-          {/* Daily Tasks Tab */}
-          <TabsContent value="daily">
-            <div className="bg-card border border-border rounded-lg p-5">
-              <h2 className="font-display text-base font-semibold mb-4">🎯 Tâches du jour par élève</h2>
-              {(() => {
-                const today = new Date().toISOString().split('T')[0];
-                const todayTasks = dailyTasks.filter(t => t.task_date === today);
-                
-                // Group by student
-                const byStudent: Record<string, typeof todayTasks> = {};
-                todayTasks.forEach(t => {
-                  if (!byStudent[t.user_id]) byStudent[t.user_id] = [];
-                  byStudent[t.user_id].push(t);
-                });
-
-                // Completion rate per student (all time)
-                const allByStudent: Record<string, { total: number; done: number }> = {};
-                dailyTasks.forEach(t => {
-                  if (!allByStudent[t.user_id]) allByStudent[t.user_id] = { total: 0, done: 0 };
-                  allByStudent[t.user_id].total++;
-                  if (t.completed) allByStudent[t.user_id].done++;
-                });
-
-                // Students who haven't set tasks today
-                const studentsWithTasks = new Set(Object.keys(byStudent));
-                const missingStudents = students.filter(s => !studentsWithTasks.has(s.user_id));
 
                 return (
                   <div className="space-y-6">
                     {/* Missing students alert */}
-                    {missingStudents.length > 0 && new Date().getHours() >= 14 && (
+                    {missingStudentsToday.length > 0 && new Date().getHours() >= 14 && (
                       <div className="p-3 rounded-lg border" style={{ backgroundColor: 'hsl(var(--xp) / 0.08)', borderColor: 'hsl(var(--xp) / 0.2)' }}>
                         <p className="text-xs font-medium mb-2" style={{ color: 'hsl(var(--xp))' }}>
-                          ⚠️ {missingStudents.length} élève{missingStudents.length > 1 ? 's' : ''} n'{missingStudents.length > 1 ? 'ont' : 'a'} pas encore défini ses tâches aujourd'hui
+                          ⚠️ {missingStudentsToday.length} élève{missingStudentsToday.length > 1 ? 's' : ''} n'{missingStudentsToday.length > 1 ? 'ont' : 'a'} pas défini ses tâches du jour
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {missingStudents.map(s => (
+                          {missingStudentsToday.map(s => (
                             <span key={s.user_id} className="text-xs px-2 py-1 rounded-full bg-card border border-border">
                               {s.avatar} {s.pseudo}
                             </span>
@@ -899,80 +873,79 @@ export default function CoachDashboard() {
                       </div>
                     )}
 
-                    {/* Students with tasks today */}
-                    {Object.entries(byStudent).map(([userId, tasks]) => {
-                      const completedCount = tasks.filter(t => t.completed).length;
-                      const allTime = allByStudent[userId];
-                      const rate = allTime ? Math.round((allTime.done / allTime.total) * 100) : 0;
-                      return (
-                        <div key={userId} className="p-4 rounded-lg border border-border">
-                          <div className="flex items-center gap-3 mb-3">
-                            <span className="text-lg">{tasks[0]?.avatar}</span>
-                            <span className="font-medium text-sm">{tasks[0]?.pseudo}</span>
-                            <span className="text-xs text-muted-foreground">{completedCount}/3 faites</span>
-                            <CompletionBadge rate={rate} />
-                            <span className="text-[10px] text-muted-foreground ml-auto">Taux global</span>
-                          </div>
-                          <div className="space-y-2">
-                            {tasks.sort((a, b) => a.task_number - b.task_number).map(t => (
-                              <div key={t.id} className={`flex items-center gap-3 p-2 rounded-lg ${t.completed ? 'bg-secondary/30' : 'bg-secondary/60'}`}>
-                                <span className="text-xs font-bold w-5 text-center" style={{ color: t.completed ? 'hsl(var(--success))' : 'hsl(var(--muted-foreground))' }}>
-                                  {t.completed ? '✓' : t.task_number}
-                                </span>
-                                <p className={`text-sm flex-1 ${t.completed ? 'line-through text-muted-foreground' : ''}`}>{t.description}</p>
-                                <span className="text-[10px] text-muted-foreground">{t.subject}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {todayTasks.length === 0 && missingStudents.length === 0 && (
-                      <p className="text-muted-foreground text-sm text-center py-4">Aucune tâche du jour enregistrée</p>
-                    )}
-
-                    {/* Historical feed */}
-                    {(() => {
-                      const pastTasks = dailyTasks.filter(t => t.task_date !== today);
-                      const byDate: Record<string, typeof pastTasks> = {};
-                      pastTasks.forEach(t => {
-                        if (!byDate[t.task_date]) byDate[t.task_date] = [];
-                        byDate[t.task_date].push(t);
-                      });
-                      const dates = Object.keys(byDate).sort().reverse().slice(0, 7);
-                      if (dates.length === 0) return null;
-                      return (
-                        <div className="mt-4 pt-4 border-t border-border">
-                          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Historique récent</h3>
-                          {dates.map(date => {
-                            const dateTasks = byDate[date];
-                            const byUser: Record<string, typeof dateTasks> = {};
-                            dateTasks.forEach(t => { if (!byUser[t.user_id]) byUser[t.user_id] = []; byUser[t.user_id].push(t); });
+                    {/* Daily tasks today */}
+                    {Object.keys(byStudent).length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">🎯 Tâches du jour</h3>
+                        <div className="space-y-3">
+                          {Object.entries(byStudent).map(([userId, tasks]) => {
+                            const completedCount = tasks.filter(t => t.completed).length;
+                            const allTime = allByStudent[userId];
+                            const rate = allTime ? Math.round((allTime.done / allTime.total) * 100) : 0;
                             return (
-                              <div key={date} className="mb-3">
-                                <p className="text-xs text-muted-foreground capitalize mb-1.5">
-                                  {new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
-                                </p>
-                                <div className="space-y-1.5">
-                                  {Object.entries(byUser).map(([uid, ut]) => {
-                                    const done = ut.filter(t => t.completed).length;
-                                    return (
-                                      <div key={uid} className="flex items-center gap-2 text-xs">
-                                        <span>{ut[0]?.avatar}</span>
-                                        <span className="font-medium">{ut[0]?.pseudo}</span>
-                                        <span className="text-muted-foreground">— {done}/3 faites</span>
-                                        {done === 3 && <span style={{ color: 'hsl(var(--success))' }}>✓</span>}
-                                      </div>
-                                    );
-                                  })}
+                              <div key={userId} className="p-4 rounded-lg border border-border">
+                                <div className="flex items-center gap-3 mb-3">
+                                  <span className="text-lg">{tasks[0]?.avatar}</span>
+                                  <span className="font-medium text-sm">{tasks[0]?.pseudo}</span>
+                                  <span className="text-xs text-muted-foreground">{completedCount}/3 faites</span>
+                                  <CompletionBadge rate={rate} />
+                                  <span className="text-[10px] text-muted-foreground ml-auto">Taux global</span>
+                                </div>
+                                <div className="space-y-2">
+                                  {tasks.sort((a, b) => a.task_number - b.task_number).map(t => (
+                                    <div key={t.id} className={`flex items-center gap-3 p-2 rounded-lg ${t.completed ? 'bg-secondary/30' : 'bg-secondary/60'}`}>
+                                      <span className="text-xs font-bold w-5 text-center" style={{ color: t.completed ? 'hsl(var(--success))' : 'hsl(var(--muted-foreground))' }}>
+                                        {t.completed ? '✓' : t.task_number}
+                                      </span>
+                                      <p className={`text-sm flex-1 ${t.completed ? 'line-through text-muted-foreground' : ''}`}>{t.description}</p>
+                                      <span className="text-[10px] text-muted-foreground">{t.subject}</span>
+                                      {t.method && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground">{t.method}</span>}
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
                             );
                           })}
                         </div>
-                      );
-                    })()}
+                      </div>
+                    )}
+
+                    {/* Personal tasks grouped by day */}
+                    {days.length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">✏️ Tâches perso</h3>
+                        <div className="space-y-6">
+                          {days.map(day => (
+                            <div key={day}>
+                              <p className="text-xs text-muted-foreground capitalize mb-2">{day}</p>
+                              <div className="space-y-2">
+                                {grouped[day].map(t => (
+                                  <div key={t.id} className={`p-4 rounded-lg border ${t.completed ? 'border-border/50 opacity-60' : 'border-border'}`}>
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-lg">{t.avatar}</span>
+                                      <span className="font-medium text-sm">{t.pseudo}</span>
+                                      {t.completed && <span className="text-xs" style={{ color: 'hsl(var(--success))' }}>✓</span>}
+                                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[t.subject as Subject] || '--muted'}))` }} />
+                                      <span className="text-xs text-muted-foreground">{t.subject}</span>
+                                      <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ color: PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.medium, backgroundColor: `${PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.medium}15` }}>
+                                        {PRIORITY_LABELS[t.priority] || PRIORITY_LABELS.medium}
+                                      </span>
+                                      <span className="text-xs ml-auto" style={{ color: 'hsl(var(--xp))' }}>+{t.xp_reward} XP</span>
+                                    </div>
+                                    <p className={`text-sm mt-1 ${t.completed ? 'line-through text-muted-foreground' : ''}`}>{t.description}</p>
+                                    {t.deadline && <span className="text-xs text-muted-foreground mt-1 block">Échéance : {new Date(t.deadline).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {days.length === 0 && Object.keys(byStudent).length === 0 && (
+                      <p className="text-muted-foreground text-sm text-center py-4">Aucune tâche ✏️</p>
+                    )}
                   </div>
                 );
               })()}
