@@ -630,7 +630,7 @@ export default function CoachDashboard() {
                                           {sExams.map(e => {
                                             const daysUntil = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                                             const isPast = daysUntil < 0;
-                                            const isMissing = isPast && e.grade === null;
+                                            const isMissing = isPast && e.grade === null && !e.grade_received;
                                             return (
                                               <div key={e.id} className={`p-2 rounded border text-xs ${isMissing ? 'border-streak/40 bg-streak/5' : isPast ? 'border-border/50 opacity-60' : daysUntil <= 7 ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}>
                                                 <div className="flex items-center gap-2">
