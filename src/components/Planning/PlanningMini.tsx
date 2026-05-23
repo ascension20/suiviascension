@@ -46,12 +46,13 @@ export function PlanningMini({ userId, onXpGain }: Props) {
 
   const selectedDay = days[selectedDayIdx];
   const selectedIso = selectedDay ? formatDateISO(selectedDay) : '';
-  const dayEvents = events.filter(e => e.event_date === selectedIso);
+  // N'afficher que les quêtes et les DS (pas les cours)
+  const dayEvents = events.filter(e => e.event_date === selectedIso && (e.type === 'quest' || e.type === 'ds'));
 
-  // Badge info per day (count + whether there's a DS)
+  // Badge info par jour (quêtes + DS uniquement)
   const dayInfo = days.map(d => {
     const iso = formatDateISO(d);
-    const dayEvs = events.filter(e => e.event_date === iso);
+    const dayEvs = events.filter(e => e.event_date === iso && (e.type === 'quest' || e.type === 'ds'));
     return { count: dayEvs.length, hasDs: dayEvs.some(e => e.type === 'ds') };
   });
 

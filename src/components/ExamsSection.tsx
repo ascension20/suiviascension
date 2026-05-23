@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Plus, X, AlertCircle, MessageCircle, Check } from 'lucide-react';
+import { BookOpen, AlertCircle, MessageCircle, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { Subject, SUBJECTS, SUBJECT_CSS_VAR } from '@/lib/game-utils';
-import { Button } from '@/components/ui/button';
+import { Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type StressLevel = 'stressed' | 'neutral' | 'calm';
 
@@ -54,14 +51,6 @@ function CoeffPicker({ value, onChange }: { value: number; onChange: (v: number)
 
 export function ExamsSection({ userId }: { userId: string }) {
   const [exams, setExams]           = useState<Exam[]>([]);
-  const [showForm, setShowForm]     = useState(false);
-  const [subject, setSubject]       = useState<Subject>('Mathématiques');
-  const [examDate, setExamDate]     = useState('');
-  const [chapters, setChapters]     = useState('');
-  const [stressLevel, setStressLevel] = useState<StressLevel>('neutral');
-  const [customSubject, setCustomSubject] = useState('');
-  const [formCoeff, setFormCoeff]   = useState(1);
-  const [loading, setLoading]       = useState(false);
 
   // Grade editing / entry state
   const [editingId, setEditingId]   = useState<string | null>(null);
@@ -78,20 +67,6 @@ export function ExamsSection({ userId }: { userId: string }) {
   };
 
   useEffect(() => { loadExams(); }, [userId]);
-
-  const handleAdd = async () => {
-    if (!examDate) return;
-    setLoading(true);
-    await supabase.from('exams').insert({
-      user_id: userId, subject, exam_date: examDate,
-      chapters: chapters.trim() || null, stress_level: stressLevel,
-      custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,
-      coefficient: formCoeff,
-    } as any);
-    setExamDate(''); setChapters(''); setCustomSubject(''); setFormCoeff(1);
-    setShowForm(false); setLoading(false);
-    loadExams();
-  };
 
   const saveGrade = async (id: string) => {
     const v = parseFloat(editingVal);
@@ -128,73 +103,8 @@ export function ExamsSection({ userId }: { userId: string }) {
             <span className="text-xs bg-secondary text-muted-foreground px-1.5 py-0.5 rounded">{upcoming.length}</span>
           )}
         </h2>
-        <Button variant="ghost" size="sm" onClick={() => setShowForm(!showForm)}>
-          {showForm ? <X size={14} /> : <Plus size={14} />}
-        </Button>
+        <span className="text-[10px] text-muted-foreground">Synchronisé avec le planning</span>
       </div>
-
-      <AnimatePresence>
-        {showForm && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden mb-4"
-          >
-            <div className="space-y-3 p-3 rounded-lg border border-border bg-secondary/30">
-              <div className="grid grid-cols-2 gap-2">
-                <Select
-                  value={subject}
-                  onValueChange={v => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}
-                >
-                  <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="date" value={examDate}
-                  onChange={e => setExamDate(e.target.value)}
-                  className="h-9 text-sm"
-                />
-              </div>
-              {subject === 'Autre' && (
-                <Input
-                  placeholder="Précise la matière..."
-                  value={customSubject}
-                  onChange={e => setCustomSubject(e.target.value)}
-                  className="h-9 text-sm"
-                />
-              )}
-              <Input
-                placeholder="Chapitres (optionnel)..."
-                value={chapters}
-                onChange={e => setChapters(e.target.value)}
-                className="h-9 text-sm"
-              />
-              {/* Coefficient du DS */}
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Coefficient du DS</p>
-                <CoeffPicker value={formCoeff} onChange={setFormCoeff} />
-              </div>
-              <div className="flex gap-2">
-                {(Object.entries(STRESS_LABELS) as [StressLevel, { label: string; emoji: string }][]).map(([key, val]) => (
-                  <button
-                    key={key}
-                    onClick={() => setStressLevel(key)}
-                    className={`flex-1 text-center py-2 rounded-lg border text-sm transition-colors ${stressLevel === key ? 'border-primary bg-primary/10' : 'border-border'}`}
-                  >
-                    {val.emoji} {val.label}
-                  </button>
-                ))}
-              </div>
-              <Button size="sm" onClick={handleAdd} disabled={loading || !examDate} className="w-full">
-                Ajouter
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <div className="space-y-2 max-h-[300px] overflow-y-auto">
         {upcoming.length === 0 && past.length === 0 ? (

@@ -50,6 +50,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
   const [creating, setCreating]   = useState(false);
   const [editing, setEditing]     = useState<PlanningEvent | null>(null);
   const [validating, setValidating] = useState<PlanningEvent | null>(null);
+  const [converting, setConverting] = useState<PlanningEvent | null>(null);
   const [selectedDay, setSelectedDay] = useState(0);
   const isMobile = useIsMobile();
 
@@ -100,8 +101,11 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
     return (
       <button
         key={ev.id}
-        onClick={() => ev.source === 'ical' ? null : setEditing(ev)}
-        className={`w-full text-left p-2 rounded-md border ${c.bg} ${c.border} hover:opacity-80 transition mb-1.5 ${ev.source === 'ical' ? 'cursor-default' : ''}`}
+        onClick={() => {
+          if (ev.type === 'course') setConverting(ev);
+          else if (ev.source !== 'ical') setEditing(ev);
+        }}
+        className={`w-full text-left p-2 rounded-md border ${c.bg} ${c.border} hover:opacity-80 transition mb-1.5`}
       >
         <div className="flex items-center justify-between gap-1">
           <span className={`text-[10px] font-bold uppercase ${c.text}`}>{eventTypeLabel(ev.type)}</span>
@@ -285,7 +289,10 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
                       return (
                         <button
                           key={ev.id}
-                          onClick={() => ev.source !== 'ical' && setEditing(ev)}
+                          onClick={() => {
+                            if (ev.type === 'course') setConverting(ev);
+                            else if (ev.source !== 'ical') setEditing(ev);
+                          }}
                           className={`absolute inset-x-0.5 rounded overflow-hidden text-left border ${c.bg} ${c.border} hover:opacity-80 transition-opacity`}
                           style={{ top: `${topPct}%`, height: `${heightPct}%` }}
                         >
@@ -346,6 +353,98 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
           onValidated={() => { setValidating(null); load(); onChanged?.(); }}
         />
       )}
+      {converting && (
+        <ConvertToDsModal
+          event={converting}
+          userId={userId}
+          onClose={() => setConverting(null)}
+          onSaved={() => { setConverting(null); load(); onChanged?.(); }}
+        />
+      )}
     </div>
+  );
+}
+
+// ── Modal : convertir un cours en DS ─────────────────────────────────────────
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { SUBJECTS } from '@/lib/game-utils';
+
+function ConvertToDsModal({
+  event, userId, onClose, onSaved,
+}: { event: PlanningEvent; userId: string; onClose: () => void; onSaved: () => void }) {
+  const [subject, setSubject] = useState(event.subject ?? 'Mathématiques');
+  const [chapters, setChapters] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const confirm = async () => {
+    setSaving(true);
+    // Créer un DS dans planning_events
+    await supabase.from('planning_events').insert({
+      user_id: userId,
+      type: 'ds',
+      title: `DS ${subject}`,
+      subject,
+      event_date: event.event_date,
+      start_time: event.start_time,
+      end_time: event.end_time,
+      source: 'manual',
+    });
+    // Créer l'entrée dans la table exams
+    await supabase.from('exams').insert({
+      user_id: userId,
+      subject: subject as any,
+      exam_date: event.event_date,
+      chapters: chapters.trim() || null,
+      stress_level: 'neutral',
+      coefficient: 1,
+    });
+    // Supprimer le cours original s'il est manuel
+    if (event.source === 'manual') {
+      await supabase.from('planning_events').delete().eq('id', event.id);
+    }
+    setSaving(false);
+    onSaved();
+  };
+
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Convertir en DS 🔴</DialogTitle>
+        </DialogHeader>
+        <p className="text-xs text-muted-foreground mb-3">
+          {event.title} · {event.event_date} · {event.start_time.slice(0,5)}–{event.end_time.slice(0,5)}
+        </p>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Matière</label>
+            <select
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm"
+            >
+              {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Chapitres (optionnel)</label>
+            <input
+              value={chapters}
+              onChange={e => setChapters(e.target.value)}
+              placeholder="Ex : Ch. 3 – Cinématique"
+              className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm"
+            />
+          </div>
+          <button
+            onClick={confirm}
+            disabled={saving}
+            className="w-full py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50"
+            style={{ background: 'hsl(0 84% 60%)', color: 'white' }}
+          >
+            {saving ? 'Enregistrement…' : 'Confirmer — c\'est un DS'}
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
