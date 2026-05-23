@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, ChevronLeft, ChevronRight, Check, Loader2, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { fetchICal } from '@/lib/ical-parser';
+import { fetchICal, parseICal, icalToPlanningEvent } from '@/lib/ical-parser';
 
 type Level = 'Collège' | 'Seconde' | 'Première' | 'Terminale';
 const LEVELS: Level[] = ['Collège', 'Seconde', 'Première', 'Terminale'];
@@ -175,6 +175,25 @@ export default function OnboardingPage() {
       ical_url: icalUrl || null,
       onboarding_completed: true,
     }).eq('user_id', u.id);
+
+    // Import iCal events into planning_events (3 months ahead)
+    if (icalUrl && icalStatus === 'ok') {
+      try {
+        const txt = await fetchICal(icalUrl);
+        const rangeStart = new Date();
+        const rangeEnd   = new Date();
+        rangeEnd.setMonth(rangeEnd.getMonth() + 3);
+        const parsed = parseICal(txt, rangeStart, rangeEnd);
+        if (parsed.length > 0) {
+          // Remove any previously-synced ical events to avoid duplicates
+          await supabase.from('planning_events')
+            .delete().eq('user_id', u.id).eq('source', 'ical');
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const rows = parsed.map(e => { const { id: _id, ...rest } = icalToPlanningEvent(e, u.id); return rest; });
+          await supabase.from('planning_events').insert(rows);
+        }
+      } catch { /* iCal import failures are non-blocking */ }
+    }
 
     await refreshProfile();
     setFinalizing(false);
