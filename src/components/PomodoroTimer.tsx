@@ -19,7 +19,7 @@ export function PomodoroTimer({ onSessionComplete }: Props) {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
-  const [subject, setSubject] = useState<Subject>('Maths');
+  const [subject, setSubject] = useState<Subject>('Mathématiques');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hasStarted, setHasStarted] = useState(false);
 

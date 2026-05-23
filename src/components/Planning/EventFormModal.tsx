@@ -15,7 +15,7 @@ interface Props {
 export function EventFormModal({ userId, event, onClose, onSaved }: Props) {
   const [type, setType] = useState<EventType>(event?.type ?? 'quest');
   const [title, setTitle] = useState(event?.title ?? '');
-  const [subject, setSubject] = useState<string>(event?.subject ?? 'Maths');
+  const [subject, setSubject] = useState<string>(event?.subject ?? 'Mathématiques');
   const [date, setDate] = useState(event?.event_date ?? new Date().toISOString().slice(0, 10));
   const [startTime, setStartTime] = useState(event?.start_time?.slice(0, 5) ?? '14:00');
   const [endTime, setEndTime] = useState(event?.end_time?.slice(0, 5) ?? '15:00');

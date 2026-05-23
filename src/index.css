@@ -38,12 +38,27 @@
     --streak: 16 100% 61%;
     --success: 142 71% 45%;
 
-    --subject-maths: 217 91% 64%;
-    --subject-francais: 336 77% 59%;
-    --subject-physique: 142 71% 45%;
-    --subject-ses: 270 50% 60%;
-    --subject-anglais: 0 74% 56%;
-    --subject-autre: 220 10% 56%;
+    /* Tronc commun */
+    --subject-philo:       290 60% 62%;
+    --subject-francais:    336 77% 59%;
+    --subject-hg:           30 80% 57%;
+    --subject-anglais:       0 74% 56%;
+    --subject-lv2:         175 60% 50%;
+    --subject-sciences-cc: 150 65% 48%;
+    --subject-eps:          85 70% 44%;
+    --subject-emc:         200 40% 55%;
+    /* Spécialités */
+    --subject-maths:       217 91% 64%;
+    --subject-physique:    142 71% 45%;
+    --subject-svt:         155 58% 48%;
+    --subject-ses:         270 50% 60%;
+    --subject-nsi:         205 85% 60%;
+    --subject-hggsp:        20 80% 55%;
+    --subject-hlp:         320 65% 60%;
+    --subject-llcer:        50 80% 55%;
+    --subject-arts:        345 70% 60%;
+    --subject-si:          195 75% 52%;
+    --subject-autre:       220 10% 56%;
 
     --sidebar-background: 222 25% 9%;
     --sidebar-foreground: 210 20% 90%;

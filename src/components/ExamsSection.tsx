@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Plus, X, AlertCircle, MessageCircle } from 'lucide-react';
+import { BookOpen, Plus, X, AlertCircle, MessageCircle, Pencil, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Subject, SUBJECTS, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { Button } from '@/components/ui/button';
@@ -22,19 +22,23 @@ interface Exam {
 
 const STRESS_LABELS: Record<StressLevel, { label: string; emoji: string }> = {
   stressed: { label: 'Stressé', emoji: '😰' },
-  neutral: { label: 'Neutre', emoji: '😐' },
-  calm: { label: 'Serein', emoji: '😊' },
+  neutral:  { label: 'Neutre',  emoji: '😐' },
+  calm:     { label: 'Serein',  emoji: '😊' },
 };
 
 export function ExamsSection({ userId }: { userId: string }) {
-  const [exams, setExams] = useState<Exam[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [subject, setSubject] = useState<Subject>('Maths');
-  const [examDate, setExamDate] = useState('');
-  const [chapters, setChapters] = useState('');
+  const [exams, setExams]           = useState<Exam[]>([]);
+  const [showForm, setShowForm]     = useState(false);
+  const [subject, setSubject]       = useState<Subject>('Mathématiques');
+  const [examDate, setExamDate]     = useState('');
+  const [chapters, setChapters]     = useState('');
   const [stressLevel, setStressLevel] = useState<StressLevel>('neutral');
   const [customSubject, setCustomSubject] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]       = useState(false);
+
+  // Grade editing
+  const [editingId, setEditingId]   = useState<string | null>(null);
+  const [editingVal, setEditingVal] = useState('');
 
   const loadExams = async () => {
     const { data } = await supabase
@@ -61,13 +65,30 @@ export function ExamsSection({ userId }: { userId: string }) {
 
   const handleGrade = async (id: string, grade: number) => {
     await supabase.from('exams').update({ grade }).eq('id', id);
+    setEditingId(null);
     loadExams();
   };
 
+  const startEdit = (exam: Exam) => {
+    setEditingId(exam.id);
+    setEditingVal(exam.grade !== null ? String(exam.grade) : '');
+  };
+
+  const commitEdit = (id: string) => {
+    const v = parseFloat(editingVal);
+    if (!isNaN(v) && v >= 0 && v <= 20) {
+      handleGrade(id, v);
+    } else {
+      setEditingId(null);
+    }
+  };
 
   const now = new Date();
   const upcoming = exams.filter(e => new Date(e.exam_date) >= now && e.grade === null);
-  const past = exams.filter(e => new Date(e.exam_date) < now || e.grade !== null);
+  const past     = exams.filter(e => new Date(e.exam_date) < now  || e.grade !== null);
+
+  const subjectColor = (s: string) =>
+    `hsl(var(${SUBJECT_CSS_VAR[s as Subject] ?? '--subject-autre'}))`;
 
   return (
     <div className="bg-card border border-border rounded-lg p-5">
@@ -86,28 +107,57 @@ export function ExamsSection({ userId }: { userId: string }) {
 
       <AnimatePresence>
         {showForm && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-4">
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden mb-4"
+          >
             <div className="space-y-3 p-3 rounded-lg border border-border bg-secondary/30">
               <div className="grid grid-cols-2 gap-2">
-                <Select value={subject} onValueChange={v => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}>
+                <Select
+                  value={subject}
+                  onValueChange={v => { setSubject(v as Subject); if (v !== 'Autre') setCustomSubject(''); }}
+                >
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                  <SelectContent>{SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                  <SelectContent>
+                    {SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
                 </Select>
-                <Input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} className="h-9 text-sm" />
+                <Input
+                  type="date" value={examDate}
+                  onChange={e => setExamDate(e.target.value)}
+                  className="h-9 text-sm"
+                />
               </div>
               {subject === 'Autre' && (
-                <Input placeholder="Précise la matière..." value={customSubject} onChange={e => setCustomSubject(e.target.value)} className="h-9 text-sm" />
+                <Input
+                  placeholder="Précise la matière..."
+                  value={customSubject}
+                  onChange={e => setCustomSubject(e.target.value)}
+                  className="h-9 text-sm"
+                />
               )}
-              <Input placeholder="Chapitres (optionnel)..." value={chapters} onChange={e => setChapters(e.target.value)} className="h-9 text-sm" />
+              <Input
+                placeholder="Chapitres (optionnel)..."
+                value={chapters}
+                onChange={e => setChapters(e.target.value)}
+                className="h-9 text-sm"
+              />
               <div className="flex gap-2">
                 {(Object.entries(STRESS_LABELS) as [StressLevel, { label: string; emoji: string }][]).map(([key, val]) => (
-                  <button key={key} onClick={() => setStressLevel(key)}
-                    className={`flex-1 text-center py-2 rounded-lg border text-sm transition-colors ${stressLevel === key ? 'border-primary bg-primary/10' : 'border-border'}`}>
+                  <button
+                    key={key}
+                    onClick={() => setStressLevel(key)}
+                    className={`flex-1 text-center py-2 rounded-lg border text-sm transition-colors ${stressLevel === key ? 'border-primary bg-primary/10' : 'border-border'}`}
+                  >
                     {val.emoji} {val.label}
                   </button>
                 ))}
               </div>
-              <Button size="sm" onClick={handleAdd} disabled={loading || !examDate} className="w-full">Ajouter</Button>
+              <Button size="sm" onClick={handleAdd} disabled={loading || !examDate} className="w-full">
+                Ajouter
+              </Button>
             </div>
           </motion.div>
         )}
@@ -122,9 +172,12 @@ export function ExamsSection({ userId }: { userId: string }) {
               const daysUntil = Math.ceil((new Date(exam.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
               const isUrgent = daysUntil <= 3;
               return (
-                <div key={exam.id} className={`p-3 rounded-lg border transition-colors ${isUrgent ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}>
+                <div
+                  key={exam.id}
+                  className={`p-3 rounded-lg border transition-colors ${isUrgent ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}
+                >
                   <div className="flex items-center gap-2 mb-1">
-                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[exam.subject]}))` }} />
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: subjectColor(exam.subject) }} />
                     <span className="text-sm font-medium">{exam.custom_subject || exam.subject}</span>
                     <span className="text-xs text-muted-foreground ml-auto">
                       {new Date(exam.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
@@ -135,12 +188,13 @@ export function ExamsSection({ userId }: { userId: string }) {
                     <span className="text-xs text-muted-foreground">
                       {daysUntil === 0 ? "Aujourd'hui !" : daysUntil === 1 ? 'Demain' : `Dans ${daysUntil}j`}
                     </span>
-                    <span className="text-xs">{STRESS_LABELS[exam.stress_level].emoji}</span>
+                    <span className="text-xs">{STRESS_LABELS[exam.stress_level]?.emoji ?? '😐'}</span>
                     {exam.chapters && <span className="text-xs text-muted-foreground truncate">· {exam.chapters}</span>}
                   </div>
                 </div>
               );
             })}
+
             {past.length > 0 && (
               <details className="mt-2">
                 <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
@@ -148,18 +202,71 @@ export function ExamsSection({ userId }: { userId: string }) {
                 </summary>
                 <div className="space-y-1 mt-2">
                   {past.map(exam => (
-                    <div key={exam.id} className={`p-2 rounded border ${exam.grade === null ? 'border-streak/40 bg-streak/5' : 'border-border/50 opacity-60'}`}>
+                    <div
+                      key={exam.id}
+                      className={`p-2 rounded border ${exam.grade === null ? 'border-streak/40 bg-streak/5' : 'border-border/50'}`}
+                    >
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[exam.subject]}))` }} />
-                        <span className="text-xs">{exam.custom_subject || exam.subject}</span>
+                        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: subjectColor(exam.subject) }} />
+                        <span className="text-xs font-medium">{exam.custom_subject || exam.subject}</span>
                         <span className="text-xs text-muted-foreground">
                           {new Date(exam.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                         </span>
-                        {exam.grade !== null ? (
-                          <span className="text-xs font-medium ml-auto">{exam.grade}/20</span>
-                        ) : (
+
+                        {/* Grade zone */}
+                        {editingId === exam.id ? (
+                          /* ── édition en cours ── */
                           <div className="flex items-center gap-1 ml-auto">
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'hsl(var(--streak) / 0.15)', color: 'hsl(var(--streak))' }}>
+                            <Input
+                              type="number" min={0} max={20} step={0.5}
+                              value={editingVal}
+                              onChange={e => setEditingVal(e.target.value)}
+                              className="h-6 w-16 text-xs"
+                              autoFocus
+                              onBlur={() => commitEdit(exam.id)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter')  commitEdit(exam.id);
+                                if (e.key === 'Escape') setEditingId(null);
+                              }}
+                            />
+                            <button
+                              onMouseDown={e => { e.preventDefault(); commitEdit(exam.id); }}
+                              className="text-emerald-400 hover:text-emerald-300 transition-colors"
+                            >
+                              <Check size={12} />
+                            </button>
+                          </div>
+                        ) : exam.grade !== null ? (
+                          /* ── note déjà saisie (cliquable pour modifier) ── */
+                          <button
+                            onClick={() => startEdit(exam)}
+                            className="flex items-center gap-1 ml-auto group/grade"
+                            title="Modifier la note"
+                          >
+                            <span
+                              className="text-xs font-bold tabular-nums"
+                              style={{
+                                color: exam.grade >= 14
+                                  ? 'hsl(var(--success))'
+                                  : exam.grade >= 10
+                                  ? 'hsl(var(--xp))'
+                                  : 'hsl(var(--destructive))',
+                              }}
+                            >
+                              {exam.grade}/20
+                            </span>
+                            <Pencil
+                              size={9}
+                              className="text-muted-foreground opacity-0 group-hover/grade:opacity-100 transition-opacity"
+                            />
+                          </button>
+                        ) : (
+                          /* ── note manquante ── */
+                          <div className="flex items-center gap-1 ml-auto">
+                            <span
+                              className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+                              style={{ backgroundColor: 'hsl(var(--streak) / 0.15)', color: 'hsl(var(--streak))' }}
+                            >
                               Note manquante
                             </span>
                             <Input
@@ -173,7 +280,7 @@ export function ExamsSection({ userId }: { userId: string }) {
                           </div>
                         )}
                       </div>
-                      {/* WhatsApp reminder */}
+
                       {exam.grade === null && (
                         <div className="mt-1.5">
                           <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
@@ -190,7 +297,6 @@ export function ExamsSection({ userId }: { userId: string }) {
           </>
         )}
       </div>
-
     </div>
   );
 }

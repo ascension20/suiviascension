@@ -30,7 +30,7 @@ const SEVERITY_LABELS: Record<Severity, { label: string; color: string }> = {
 export function DifficultiesSection({ userId }: { userId: string }) {
   const [difficulties, setDifficulties] = useState<Difficulty[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [subject, setSubject] = useState<Subject>('Maths');
+  const [subject, setSubject] = useState<Subject>('Mathématiques');
   const [severity, setSeverity] = useState<Severity>('fragile');
   const [description, setDescription] = useState('');
   const [customSubject, setCustomSubject] = useState('');
