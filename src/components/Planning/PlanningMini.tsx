@@ -83,7 +83,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
           )}
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => setCreating(true)} className="p-1.5 rounded-md hover:bg-secondary" title="Ajouter">
+          <button onClick={() => setCreating(true)} className="p-1.5 rounded-md hover:bg-secondary" title="Ajouter" data-tutorial="planning-add">
             <Plus size={14} />
           </button>
           <button onClick={() => setFull(true)} className="p-1.5 rounded-md hover:bg-secondary" title="Agrandir">

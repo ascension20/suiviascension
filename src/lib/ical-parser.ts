@@ -14,20 +14,51 @@ export interface ICalEvent {
 const CORS_PROXIES = [
   (u: string) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
   (u: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  (u: string) => `https://cors-anywhere.herokuapp.com/${u}`,
 ];
 
 export async function fetchICal(url: string): Promise<string> {
-  // Try direct first, then CORS proxies
-  const attempts = [url, ...CORS_PROXIES.map(p => p(url))];
-  for (const attempt of attempts) {
+  // 1. Try via Supabase Edge Function (server-side, no CORS issues)
+  try {
+    const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL;
+    const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY;
+    if (supabaseUrl && supabaseKey) {
+      const res = await fetch(`${supabaseUrl}/functions/v1/fetch-ical`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseKey}`,
+          'apikey': supabaseKey,
+        },
+        body: JSON.stringify({ url }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.text && json.text.includes('BEGIN:VCALENDAR')) return json.text;
+      }
+    }
+  } catch { /* fall through to CORS proxies */ }
+
+  // 2. Try direct fetch (works if URL allows CORS)
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      const text = await res.text();
+      if (text.includes('BEGIN:VCALENDAR')) return text;
+    }
+  } catch { /* fall through */ }
+
+  // 3. CORS proxies as last resort
+  for (const proxy of CORS_PROXIES) {
     try {
-      const res = await fetch(attempt);
+      const res = await fetch(proxy(url));
       if (res.ok) {
         const text = await res.text();
         if (text.includes('BEGIN:VCALENDAR')) return text;
       }
-    } catch {/* try next */}
+    } catch { /* try next */ }
   }
+
   throw new Error('Impossible de récupérer le calendrier iCal.');
 }
 

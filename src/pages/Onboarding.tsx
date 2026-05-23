@@ -10,10 +10,47 @@ type Level = 'Collège' | 'Seconde' | 'Première' | 'Terminale';
 const LEVELS: Level[] = ['Collège', 'Seconde', 'Première', 'Terminale'];
 
 const SPECIALTIES = [
-  'Maths', 'Physique-Chimie', 'SVT', 'NSI', 'SES', 'HGGSP',
-  'LLCE Anglais', 'LLCA (Latin/Grec)', 'Humanités-Philo', 'Arts',
+  'Mathématiques',
+  'Physique-Chimie',
+  'SVT',
+  'NSI',
+  'SES',
+  'HGGSP',
+  'LLCER Anglais',
+  'LLCER Espagnol',
+  'LLCER Allemand',
+  'LLCER Arabe',
+  'LLCER Chinois',
+  'Humanités, Littérature et Philosophie (HLP)',
+  'Sciences de l\'ingénieur (SI)',
+  'Arts plastiques',
+  'Arts – Musique',
+  'Arts – Cinéma / Audiovisuel',
+  'Arts – Théâtre',
+  'Arts – Danse',
+  'Biologie-Écologie',
+  'LCA Latin',
+  'LCA Grec',
+  'EPPCS',
 ];
-const OPTIONS_LIST = ['Latin', 'Grec', 'LV3', 'Section européenne', 'EPS', 'Maths complémentaires', 'Maths expertes', 'DGEMC'];
+const OPTIONS_LIST = [
+  'Latin',
+  'Grec ancien',
+  'LV3',
+  'Section européenne',
+  'Section internationale',
+  'EPS renforcé',
+  'Maths complémentaires',
+  'Maths expertes',
+  'DGEMC',
+  'Arts plastiques',
+  'Musique',
+  'Cinéma-Audiovisuel',
+  'Théâtre',
+  'Danse',
+  'Informatique',
+  'Chef-d\'œuvre',
+];
 
 const ACTIVITIES = [
   { key: 'sport', icon: '🏃', label: 'Sport' },
