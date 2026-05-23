@@ -51,6 +51,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
   const [editing, setEditing]     = useState<PlanningEvent | null>(null);
   const [validating, setValidating] = useState<PlanningEvent | null>(null);
   const [converting, setConverting] = useState<PlanningEvent | null>(null);
+  const [suppressedSlots, setSuppressedSlots] = useState<Set<string>>(new Set());
   const [selectedDay, setSelectedDay] = useState(0);
   const isMobile = useIsMobile();
 
@@ -65,7 +66,16 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
       .gte('event_date', formatDateISO(weekStart))
       .lte('event_date', formatDateISO(weekEnd))
       .order('start_time');
-    if (data) setEvents(data as PlanningEvent[]);
+    if (data) {
+      setEvents(data as PlanningEvent[]);
+      // Rebuild suppressed slots from DB DS events (persists after remount)
+      const slots = new Set<string>(
+        (data as PlanningEvent[])
+          .filter(e => e.type === 'ds')
+          .map(e => `${e.event_date}|${e.start_time.slice(0, 5)}`)
+      );
+      setSuppressedSlots(slots);
+    }
 
     const { data: prof } = await supabase.from('profiles').select('ical_url').eq('user_id', userId).single();
     setIcalUrl(prof?.ical_url ?? null);
@@ -86,18 +96,21 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
     return () => { cancelled = true; };
   }, [icalUrl, weekStart.getTime()]);
 
-  // Suppress iCal courses that have been converted to DS
-  // Primary: ical_uid match; Fallback: same date + start time as a manual DS
-  const convertedUids = new Set(events.map(e => e.ical_uid).filter(Boolean));
-  const manualDsSlots = new Set(
-    events
-      .filter(e => e.type === 'ds')
-      .map(e => `${e.event_date}|${e.start_time.slice(0, 5)}`)
+  // Suppress iCal courses that were converted to DS.
+  // Three independent checks (any one is sufficient):
+  // 1. Immediate client-side key added the moment onSaved fires (no async dependency)
+  // 2. ical_uid stored on the new DS in DB
+  // 3. Same date+time as any manual DS in DB (catches pre-fix records)
+  const convertedUids  = new Set(events.map(e => e.ical_uid).filter(Boolean));
+  const manualDsSlots  = new Set(
+    events.filter(e => e.type === 'ds').map(e => `${e.event_date}|${e.start_time.slice(0, 5)}`)
   );
   const filteredIcal = icalEvents.filter(ev => {
     if (ev.type !== 'course') return true;
-    if (ev.ical_uid && convertedUids.has(ev.ical_uid)) return false;
-    if (manualDsSlots.has(`${ev.event_date}|${ev.start_time.slice(0, 5)}`)) return false;
+    const slot = `${ev.event_date}|${ev.start_time.slice(0, 5)}`;
+    if (suppressedSlots.has(slot))                             return false;
+    if (ev.ical_uid && convertedUids.has(ev.ical_uid))        return false;
+    if (manualDsSlots.has(slot))                              return false;
     return true;
   });
   const allEvents = [...events, ...filteredIcal];
@@ -373,7 +386,14 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
           event={converting}
           userId={userId}
           onClose={() => setConverting(null)}
-          onSaved={() => { setConverting(null); load(); onChanged?.(); }}
+          onSaved={() => {
+            // Immediately suppress the iCal course before DB round-trip
+            const slot = `${converting.event_date}|${converting.start_time.slice(0, 5)}`;
+            setSuppressedSlots(prev => new Set([...prev, slot]));
+            setConverting(null);
+            load();
+            onChanged?.();
+          }}
         />
       )}
     </div>
@@ -390,8 +410,8 @@ function ConvertToDsModal({
   const [chapters, setChapters] = useState('');
   const [saving, setSaving] = useState(false);
 
-  // Garde la matière et le titre du cours original
-  const subject = event.subject ?? 'Mathématiques';
+  // Garde la matière et le titre du cours original (pas de matière par défaut)
+  const subject = event.subject ?? null;
   const dsTitle = `DS · ${event.title}`;
 
   const confirm = async () => {
@@ -409,7 +429,7 @@ function ConvertToDsModal({
     });
     await supabase.from('exams').insert({
       user_id: userId,
-      subject: subject as any,
+      subject: (subject ?? 'Autre') as any,
       exam_date: event.event_date,
       chapters: chapters.trim() || null,
       stress_level: 'neutral',
