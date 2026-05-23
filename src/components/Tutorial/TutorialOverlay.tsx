@@ -174,42 +174,61 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
   // ── Overlay geometry ─────────────────────────────────────────────────────
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-  const box = rect
+
+  // Pour les étapes "action" : pas de backdrop (l'élève doit interagir librement)
+  // Pour les étapes "info" : backdrop avec trou autour de l'élément ciblé
+  const isActionStep = step.kind === 'action';
+  const box = (!isActionStep && rect)
     ? { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 }
     : null;
 
-  // Position card: below highlight if room, otherwise above
+  // Anneau doré autour de l'élément ciblé (info) ou du planning-add (action)
+  const highlightBox = rect
+    ? { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 }
+    : null;
+
   const cardWidth = Math.min(vw - 32, 400);
-  const cardTop = box
-    ? (box.top + box.height + 16 + 220 < vh ? box.top + box.height + 16 : box.top - 240)
-    : vh / 2 - 110;
+  // Carte toujours en bas pour les étapes action, sinon près de l'élément
+  const cardTop = isActionStep
+    ? vh - 240
+    : box
+      ? (box.top + box.height + 16 + 220 < vh ? box.top + box.height + 16 : box.top - 240)
+      : vh / 2 - 110;
 
   return (
     <div className="fixed inset-0 z-[100]" style={{ pointerEvents: 'none' }}>
 
-      {/* ── Backdrop with hole (4 separate rects so the hole stays clickable) ── */}
-      {box ? (
-        <>
-          <div className="absolute left-0 right-0 top-0 bg-black/80 pointer-events-auto"
-               style={{ height: Math.max(0, box.top) }} />
-          <div className="absolute left-0 right-0 bg-black/80 pointer-events-auto"
-               style={{ top: box.top + box.height, bottom: 0 }} />
-          <div className="absolute bg-black/80 pointer-events-auto"
-               style={{ top: box.top, width: Math.max(0, box.left), height: box.height }} />
-          <div className="absolute bg-black/80 pointer-events-auto"
-               style={{ top: box.top, left: box.left + box.width, right: 0, height: box.height }} />
-          {/* Gold highlight ring */}
-          <div className="absolute pointer-events-none" style={{
-            top: box.top, left: box.left, width: box.width, height: box.height,
-            borderRadius: 10,
-            boxShadow: '0 0 0 2px hsl(43 90% 50%), 0 0 0 4px hsl(43 90% 50% / 0.25), 0 0 40px hsl(43 90% 50% / 0.3)',
-          }} />
-        </>
-      ) : (
-        <div className="absolute inset-0 bg-black/80 pointer-events-auto" />
+      {/* ── Backdrop (uniquement pour les étapes info) ── */}
+      {!isActionStep && (
+        box ? (
+          <>
+            <div className="absolute left-0 right-0 top-0 bg-black/80 pointer-events-auto"
+                 style={{ height: Math.max(0, box.top) }} />
+            <div className="absolute left-0 right-0 bg-black/80 pointer-events-auto"
+                 style={{ top: box.top + box.height, bottom: 0 }} />
+            <div className="absolute bg-black/80 pointer-events-auto"
+                 style={{ top: box.top, width: Math.max(0, box.left), height: box.height }} />
+            <div className="absolute bg-black/80 pointer-events-auto"
+                 style={{ top: box.top, left: box.left + box.width, right: 0, height: box.height }} />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-black/80 pointer-events-auto" />
+        )
       )}
 
-      {/* ── Tooltip card ── */}
+      {/* ── Anneau doré (toujours visible sur l'élément ciblé) ── */}
+      {highlightBox && (
+        <div className="absolute pointer-events-none" style={{
+          top: highlightBox.top, left: highlightBox.left,
+          width: highlightBox.width, height: highlightBox.height,
+          borderRadius: 10,
+          boxShadow: isActionStep
+            ? '0 0 0 2px hsl(43 90% 50%), 0 0 0 8px hsl(43 90% 50% / 0.2), 0 0 30px hsl(43 90% 50% / 0.5)'
+            : '0 0 0 2px hsl(43 90% 50%), 0 0 0 4px hsl(43 90% 50% / 0.25), 0 0 40px hsl(43 90% 50% / 0.3)',
+        }} />
+      )}
+
+      {/* ── Carte instruction ── */}
       <AnimatePresence mode="wait">
         <motion.div
           key={idx}

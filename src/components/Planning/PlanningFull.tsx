@@ -202,7 +202,9 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
             {TIME_LABELS.map((label, i) => (
               <div
                 key={label}
-                className="absolute right-0.5 text-[7px] text-muted-foreground -translate-y-1/2 select-none leading-none"
+                className={`absolute right-0.5 text-[7px] text-muted-foreground select-none leading-none ${
+                  i === 0 ? '' : i === GRID_HOURS ? '-translate-y-full' : '-translate-y-1/2'
+                }`}
                 style={{ top: `${(i / GRID_HOURS) * 100}%` }}
               >
                 {label}
