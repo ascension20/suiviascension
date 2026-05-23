@@ -4,41 +4,43 @@
 
 @layer base {
   :root {
-    --background: 222 25% 7%;
-    --foreground: 210 20% 90%;
+    /* ─── Ascension 20 — Noir & Or ─── */
+    --background: 222 22% 5%;
+    --foreground: 42 12% 92%;
 
-    --card: 225 28% 14%;
-    --card-foreground: 210 20% 90%;
+    --card: 222 22% 9%;
+    --card-foreground: 42 12% 92%;
 
-    --popover: 225 28% 14%;
-    --popover-foreground: 210 20% 90%;
+    --popover: 222 22% 9%;
+    --popover-foreground: 42 12% 92%;
 
-    --primary: 217 91% 64%;
-    --primary-foreground: 0 0% 100%;
+    /* OR ASCENSION — couleur primaire */
+    --primary: 43 90% 50%;
+    --primary-foreground: 222 22% 8%;
 
-    --secondary: 225 20% 20%;
-    --secondary-foreground: 210 20% 90%;
+    --secondary: 222 18% 15%;
+    --secondary-foreground: 42 10% 85%;
 
-    --muted: 225 20% 20%;
-    --muted-foreground: 215 15% 55%;
+    --muted: 222 18% 15%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 225 20% 22%;
-    --accent-foreground: 210 20% 90%;
+    --accent: 222 18% 18%;
+    --accent-foreground: 42 12% 92%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 225 20% 22%;
-    --input: 225 28% 18%;
-    --ring: 217 91% 64%;
+    --border: 222 16% 18%;
+    --input: 222 22% 13%;
+    --ring: 43 90% 50%;
 
     --radius: 0.75rem;
 
-    --xp: 38 92% 55%;
+    --xp: 43 90% 50%;
     --streak: 16 100% 61%;
     --success: 142 71% 45%;
 
-    /* Tronc commun */
+    /* Matières — tronc commun */
     --subject-philo:       290 60% 62%;
     --subject-francais:    336 77% 59%;
     --subject-hg:           30 80% 57%;
@@ -47,8 +49,8 @@
     --subject-sciences-cc: 150 65% 48%;
     --subject-eps:          85 70% 44%;
     --subject-emc:         200 40% 55%;
-    /* Spécialités */
-    --subject-maths:       217 91% 64%;
+    /* Matières — spécialités */
+    --subject-maths:       213 90% 62%;
     --subject-physique:    142 71% 45%;
     --subject-svt:         155 58% 48%;
     --subject-ses:         270 50% 60%;
@@ -58,24 +60,21 @@
     --subject-llcer:        50 80% 55%;
     --subject-arts:        345 70% 60%;
     --subject-si:          195 75% 52%;
-    --subject-autre:       220 10% 56%;
+    --subject-autre:       220 10% 52%;
 
-    --sidebar-background: 222 25% 9%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 217 91% 64%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 225 20% 18%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 225 28% 20%;
-    --sidebar-ring: 217 91% 64%;
+    --sidebar-background: 222 22% 5%;
+    --sidebar-foreground: 42 12% 92%;
+    --sidebar-primary: 43 90% 50%;
+    --sidebar-primary-foreground: 222 22% 8%;
+    --sidebar-accent: 222 18% 15%;
+    --sidebar-accent-foreground: 42 12% 92%;
+    --sidebar-border: 222 16% 18%;
+    --sidebar-ring: 43 90% 50%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
+  * { @apply border-border; }
   body {
     @apply bg-background text-foreground;
     font-family: 'Geist', 'Inter', sans-serif;
@@ -89,39 +88,30 @@
   }
 }
 
-/* XP bar shimmer */
+/* ═══════════════════════════════════════════
+   XP SHIMMER
+═══════════════════════════════════════════ */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
-
 .xp-shimmer {
   background-size: 200% 100%;
   animation: shimmer 2s ease-in-out infinite;
 }
 
-/* Card hover */
-.card-hover {
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.card-hover:hover {
-  transform: translateY(-4px);
-  border-color: hsl(var(--primary));
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-}
-
-/* Pulsing glow for alerts */
+/* ═══════════════════════════════════════════
+   PULSE GLOW (alerts)
+═══════════════════════════════════════════ */
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 8px 2px currentColor; opacity: 1; }
-  50% { box-shadow: 0 0 16px 4px currentColor; opacity: 0.7; }
+  50%       { box-shadow: 0 0 16px 4px currentColor; opacity: 0.7; }
 }
-.pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
+.pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 
-/* === GAME UI ENHANCEMENTS === */
-
-/* Scanline overlay subtle */
+/* ═══════════════════════════════════════════
+   SCANLINE OVERLAY — subtle CRT effect
+═══════════════════════════════════════════ */
 body::before {
   content: '';
   position: fixed;
@@ -130,47 +120,67 @@ body::before {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0,0,0,0.03) 2px,
-    rgba(0,0,0,0.03) 4px
+    rgba(0,0,0,0.04) 2px,
+    rgba(0,0,0,0.04) 4px
   );
   pointer-events: none;
   z-index: 9999;
 }
 
-/* Neon border glow on cards */
-.border-border {
-  border-color: hsl(225 20% 24%);
+/* Halo gold ambiant en haut de page */
+body::after {
+  content: '';
+  position: fixed;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 240px;
+  background: radial-gradient(ellipse at center, hsl(43 90% 50% / 0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* Game-style scrollbar */
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: hsl(225 28% 10%); }
-::-webkit-scrollbar-thumb { background: hsl(225 20% 28%); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(217 91% 50%); }
+::-webkit-scrollbar-track { background: hsl(222 22% 7%); }
+::-webkit-scrollbar-thumb { background: hsl(222 16% 22%); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(43 90% 45%); }
 
-/* Floating animation for level badge */
+/* ═══════════════════════════════════════════
+   FLOAT BADGE
+═══════════════════════════════════════════ */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  50%       { transform: translateY(-4px); }
 }
 .float-badge { animation: float 3s ease-in-out infinite; }
 
-/* Neon text glow */
-.neon-amber { text-shadow: 0 0 10px rgba(245,166,35,0.6), 0 0 20px rgba(245,166,35,0.3); }
+/* ═══════════════════════════════════════════
+   NEON TEXT GLOW — Ascension palette
+═══════════════════════════════════════════ */
+.neon-gold   { text-shadow: 0 0 10px rgba(201,162,39,0.7), 0 0 24px rgba(201,162,39,0.35); }
+.neon-amber  { text-shadow: 0 0 10px rgba(245,166,35,0.6), 0 0 20px rgba(245,166,35,0.3); }
 .neon-violet { text-shadow: 0 0 10px rgba(139,92,246,0.6), 0 0 20px rgba(139,92,246,0.3); }
 .neon-blue   { text-shadow: 0 0 10px rgba(96,165,250,0.6), 0 0 20px rgba(96,165,250,0.3); }
 
-/* Card glow on hover */
+/* ═══════════════════════════════════════════
+   GAME CARD hover (gold glow)
+═══════════════════════════════════════════ */
 .game-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .game-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(139,92,246,0.08);
-  border-color: hsl(225 20% 32%);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(201,162,39,0.10);
+  border-color: hsl(43 90% 40% / 0.4);
 }
 
-/* Pixelated/RPG border accent on section headers */
+/* ═══════════════════════════════════════════
+   SECTION HEADER BAR (gold gradient)
+═══════════════════════════════════════════ */
 .section-header-bar {
   display: inline-flex;
   align-items: center;
@@ -182,10 +192,24 @@ body::before {
   width: 3px;
   height: 16px;
   border-radius: 2px;
-  background: linear-gradient(to bottom, hsl(var(--primary)), hsl(262,80%,60%));
+  background: linear-gradient(to bottom, hsl(43 90% 55%), hsl(38 90% 35%));
 }
 
-/* XP gain pop animation */
+/* ═══════════════════════════════════════════
+   CARD HOVER (generic)
+═══════════════════════════════════════════ */
+.card-hover {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6), 0 0 20px hsl(43 90% 50% / 0.08);
+}
+
+/* ═══════════════════════════════════════════
+   XP POP ANIMATION
+═══════════════════════════════════════════ */
 @keyframes xp-pop {
   0%   { opacity: 0; transform: translateY(0) scale(0.7); }
   20%  { opacity: 1; transform: translateY(-20px) scale(1.2); }
@@ -193,3 +217,28 @@ body::before {
   100% { opacity: 0; transform: translateY(-80px) scale(0.9); }
 }
 .xp-pop { animation: xp-pop 1.6s ease-out forwards; }
+
+/* ═══════════════════════════════════════════
+   DEEPWORK HERO — ring rotate animation
+═══════════════════════════════════════════ */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.spin-slow { animation: spin-slow 12s linear infinite; }
+
+/* ═══════════════════════════════════════════
+   GOLD BORDER PULSE (deepwork active)
+═══════════════════════════════════════════ */
+@keyframes gold-pulse {
+  0%, 100% { box-shadow: 0 0 20px hsl(43 90% 50% / 0.3), 0 0 60px hsl(43 90% 50% / 0.1); }
+  50%       { box-shadow: 0 0 30px hsl(43 90% 50% / 0.5), 0 0 80px hsl(43 90% 50% / 0.2); }
+}
+.gold-pulse { animation: gold-pulse 2.5s ease-in-out infinite; }
+
+/* ═══════════════════════════════════════════
+   BORDER OVERRIDE — Ascension dark tone
+═══════════════════════════════════════════ */
+.border-border {
+  border-color: hsl(222 16% 20%);
+}

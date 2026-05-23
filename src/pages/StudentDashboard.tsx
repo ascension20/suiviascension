@@ -13,10 +13,8 @@ import { LevelUpOverlay } from '@/components/LevelUpOverlay';
 import { DifficultiesSection } from '@/components/DifficultiesSection';
 import { ExamsSection } from '@/components/ExamsSection';
 import { XPProgressionChart } from '@/components/XPProgressionChart';
-import { GradeAverages } from '@/components/GradeAverages';
 import { SmartNotifications } from '@/components/SmartNotifications';
 import { ProgressComparison } from '@/components/ProgressComparison';
-import { WeeklyPlanView } from '@/components/WeeklyPlanView';
 import { TutorialOverlay } from '@/components/Tutorial/TutorialOverlay';
 import { DSReminderModal } from '@/components/DSReminderModal';
 import { calculateLevel, getTitleForLevel, Subject } from '@/lib/game-utils';
@@ -40,35 +38,37 @@ export default function StudentDashboard() {
   useOnlineTracker(user?.id);
 
   const totalXp = profile?.total_xp ?? 0;
-  const streak = profile?.streak ?? 0;
+  const streak  = profile?.streak ?? 0;
   const { level, currentXp, requiredXp } = calculateLevel(totalXp);
   const title = getTitleForLevel(level);
 
   // Onboarding redirect
   useEffect(() => {
-    if (profile && profile.onboarding_completed === false) {
-      navigate('/onboarding');
-    }
-    if (profile && profile.tutorial_completed === false && profile.onboarding_completed) {
-      setShowTutorial(true);
-    }
+    if (profile && profile.onboarding_completed === false) navigate('/onboarding');
+    if (profile && profile.tutorial_completed === false && profile.onboarding_completed) setShowTutorial(true);
   }, [profile, navigate]);
 
   useEffect(() => {
     if (!user) return;
     const loadLeaderboards = async () => {
-      const { data: profiles } = await supabase.from('profiles').select('user_id, pseudo, avatar, total_xp').order('total_xp', { ascending: false }).limit(10);
+      const { data: profiles } = await supabase
+        .from('profiles').select('user_id, pseudo, avatar, total_xp')
+        .order('total_xp', { ascending: false }).limit(10);
       if (profiles) {
         setXpLeaderboard(profiles.map((p, i) => ({
           rank: i + 1, pseudo: p.pseudo, avatar: p.avatar,
           value: p.total_xp, isCurrentUser: p.user_id === user.id,
         })));
       }
+
       const startOfWeek = new Date();
       const day = startOfWeek.getDay();
       startOfWeek.setDate(startOfWeek.getDate() - (day === 0 ? 6 : day - 1));
       startOfWeek.setHours(0, 0, 0, 0);
-      const { data: sessions } = await supabase.from('timer_sessions').select('user_id, subject, duration_minutes').gte('created_at', startOfWeek.toISOString());
+
+      const { data: sessions } = await supabase
+        .from('timer_sessions').select('user_id, subject, duration_minutes')
+        .gte('created_at', startOfWeek.toISOString());
       if (sessions && sessions.length > 0) {
         const byUser: Record<string, { total: number; subjects: Record<string, number> }> = {};
         sessions.forEach(s => {
@@ -77,7 +77,8 @@ export default function StudentDashboard() {
           byUser[s.user_id].subjects[s.subject] = (byUser[s.user_id].subjects[s.subject] || 0) + s.duration_minutes;
         });
         const userIds = Object.keys(byUser);
-        const { data: timerProfiles } = await supabase.from('profiles').select('user_id, pseudo, avatar').in('user_id', userIds);
+        const { data: timerProfiles } = await supabase
+          .from('profiles').select('user_id, pseudo, avatar').in('user_id', userIds);
         if (timerProfiles) {
           const entries = timerProfiles.map(p => ({
             pseudo: p.pseudo, avatar: p.avatar,
@@ -113,81 +114,112 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border px-4 md:px-6 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <h1 className="font-display text-lg font-semibold hidden sm:block">Ascension Académique</h1>
-          <div className="flex items-center gap-3">
+
+      {/* ─── HEADER ─── */}
+      <header className="border-b border-border px-4 md:px-6 py-3 sticky top-0 z-30 backdrop-blur-sm"
+              style={{ backgroundColor: 'hsl(222 22% 5% / 0.92)' }}>
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+
+          {/* Logo / title */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="font-display text-sm font-black tracking-tight hidden sm:block neon-gold"
+                  style={{ color: 'hsl(var(--primary))' }}>
+              ASCENSION
+            </span>
+            <span className="font-display text-sm font-black tracking-tight hidden sm:block text-muted-foreground">
+              ACADÉMIQUE
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 md:gap-3">
             {!isOnline && (
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-secondary text-xs text-muted-foreground">
                 <WifiOff size={12} />
-                <span>Hors ligne{pendingCount > 0 ? ` (${pendingCount})` : ''}</span>
+                <span className="hidden sm:inline">Hors ligne{pendingCount > 0 ? ` (${pendingCount})` : ''}</span>
               </div>
             )}
-<div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border" style={{ backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
+
+            {/* Streak badge */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
+                 style={{ borderColor: 'hsl(var(--streak) / 0.3)', backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
               <Flame size={14} className="text-streak" />
               <span className="font-display text-sm font-semibold text-streak">{streak}</span>
             </div>
+
             <XPBar current={currentXp} max={requiredXp} level={level} title={title} className="hidden md:flex" />
             <XPBar current={currentXp} max={requiredXp} level={level} title={title} compact className="md:hidden" />
+
+            {/* Avatar */}
             <button
               onClick={() => navigate('/student/profile')}
               className="relative group"
               title="Mon profil"
             >
-              <div className="w-9 h-9 rounded-full bg-card border border-border group-hover:border-primary/60 flex items-center justify-center text-lg transition-all group-hover:shadow-[0_0_12px_rgba(139,92,246,0.4)]">
+              <div
+                className="w-9 h-9 rounded-full border flex items-center justify-center text-lg transition-all"
+                style={{ backgroundColor: 'hsl(222 22% 12%)', borderColor: 'hsl(43 90% 50% / 0.3)' }}
+              >
                 {profile?.avatar ?? '🐺'}
               </div>
               {weeklyChampion === profile?.pseudo && (
                 <span className="absolute -top-1 -right-1 text-sm" title="Premier du classement chrono !">👑</span>
               )}
             </button>
-            <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors" title="Déconnexion"><LogOut size={18} /></button>
+
+            <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors" title="Déconnexion">
+              <LogOut size={18} />
+            </button>
           </div>
         </div>
       </header>
 
+      {/* ─── MAIN ─── */}
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
         {user && <SmartNotifications userId={user.id} />}
 
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-muted-foreground mb-6">
-          Prêt pour ta prochaine quête, <span className="text-foreground font-medium">{profile?.pseudo ?? 'Élève'}</span> ?
-          {' '}Ta série de <span className="text-streak font-semibold">{streak} jours</span> t'attend.
+        {/* Welcome */}
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-muted-foreground mb-5"
+        >
+          Prêt pour ta prochaine quête,{' '}
+          <span className="font-semibold" style={{ color: 'hsl(42 12% 92%)' }}>
+            {profile?.pseudo ?? 'Élève'}
+          </span>{' '}?{' '}
+          Ta série de{' '}
+          <span className="text-streak font-semibold">{streak} jour{streak > 1 ? 's' : ''}</span>{' '}
+          t'attend.
         </motion.p>
 
-        {/* Ligne 1 : Deepwork + Planning */}
+        {/* ══ ROW 1 : DEEPWORK HERO (full width) ══ */}
+        <div className="mb-6" data-tutorial="deepwork">
+          {user && <DeepworkWidget userId={user.id} onXpGain={addXp} />}
+        </div>
+
+        {/* ══ ROW 2 : Planning + XP Chart ══ */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
-          <div className="lg:col-span-3" data-tutorial="deepwork">
-            {user && <DeepworkWidget userId={user.id} onXpGain={addXp} />}
-          </div>
-          <div className="lg:col-span-2 bg-card border border-border rounded-lg p-4 min-h-[280px]" data-tutorial="planning">
+          <div className="lg:col-span-3 bg-card border border-border rounded-lg p-4 min-h-[280px]" data-tutorial="planning">
             {user && <PlanningMini userId={user.id} onXpGain={addXp} />}
           </div>
+          <div className="lg:col-span-2">
+            {user && <XPProgressionChart userId={user.id} totalXp={totalXp} />}
+          </div>
         </div>
 
-        {/* Ligne 2 : XP Chart + Deepwork Stats */}
+        {/* ══ ROW 3 : Deepwork Stats + Progress Comparison ══ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {user && <XPProgressionChart userId={user.id} totalXp={totalXp} />}
           {user && <DeepworkStats userId={user.id} />}
-        </div>
-
-        {/* Ligne 3 : Moyennes + Plan semaine */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {user && <GradeAverages userId={user.id} />}
-          {user && <WeeklyPlanView userId={user.id} />}
-        </div>
-
-        {/* Ligne 4 : Progression comparée (pleine largeur) */}
-        <div className="mb-6">
           {user && <ProgressComparison userId={user.id} totalXp={totalXp} streak={streak} />}
         </div>
 
-        {/* Ligne 5 : DS + Difficultés */}
+        {/* ══ ROW 4 : DS + Difficultés ══ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {user && <ExamsSection userId={user.id} />}
           {user && <DifficultiesSection userId={user.id} />}
         </div>
 
-        {/* Ligne 6 : Classements */}
+        {/* ══ ROW 5 : Classements ══ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-tutorial="leaderboard">
           <WeeklyLeaderboard title="🏆 Classement XP" data={xpLeaderboard} unit="XP" />
           <WeeklyLeaderboard title="⏱ Classement Chrono" data={timerLeaderboard} unit="min" weeklyChampion={weeklyChampion} />
