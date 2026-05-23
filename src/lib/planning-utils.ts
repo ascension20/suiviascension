@@ -1,5 +1,3 @@
-export const DAILY_XP_CAP = 100;
-
 export type EventType = 'course' | 'quest' | 'ds';
 export type EventDifficulty = 'easy' | 'medium' | 'hard';
 
@@ -18,11 +16,10 @@ export interface PlanningEvent {
   ical_uid?: string | null;
 }
 
-export function computeQuestXp(difficulty: EventDifficulty, durationMinutes: number, hasPhoto: boolean): number {
-  const mult = difficulty === 'easy' ? 0.5 : difficulty === 'medium' ? 1 : 1.5;
-  const base = Math.round((durationMinutes / 10) * 5 * mult); // 5 XP per 10 min × mult
-  const bonus = hasPhoto ? Math.round(base * 0.2) : 0;
-  return Math.max(5, base + bonus);
+/** XP pour une quête : 0.5 XP/min × multiplicateur de difficulté */
+export function computeQuestXp(difficulty: EventDifficulty, durationMinutes: number): number {
+  const mult = difficulty === 'easy' ? 0.6 : difficulty === 'medium' ? 1.0 : 1.6;
+  return Math.max(5, Math.round(durationMinutes * 0.5 * mult));
 }
 
 export function computeDeepworkXp(seconds: number): number {
