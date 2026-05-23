@@ -14,10 +14,11 @@ interface Props {
   userId: string;
   onXpGain: (amount: number) => void;
   onChanged?: () => void;
+  initialWeekStart?: Date;
 }
 
-export function PlanningFull({ userId, onXpGain, onChanged }: Props) {
-  const [weekStart, setWeekStart] = useState(() => getWeekStart(new Date()));
+export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: Props) {
+  const [weekStart, setWeekStart] = useState(() => initialWeekStart ?? getWeekStart(new Date()));
   const [events, setEvents] = useState<PlanningEvent[]>([]);
   const [icalEvents, setIcalEvents] = useState<PlanningEvent[]>([]);
   const [icalUrl, setIcalUrl] = useState<string | null>(null);

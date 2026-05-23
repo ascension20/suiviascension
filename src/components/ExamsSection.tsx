@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Plus, X, AlertCircle, MessageCircle, Pencil, Check } from 'lucide-react';
+import { BookOpen, Plus, X, AlertCircle, MessageCircle, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Subject, SUBJECTS, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ interface Exam {
   chapters: string | null;
   stress_level: StressLevel;
   grade: number | null;
+  coefficient: number | null;
   photo_url: string | null;
   custom_subject: string | null;
 }
@@ -26,6 +27,31 @@ const STRESS_LABELS: Record<StressLevel, { label: string; emoji: string }> = {
   calm:     { label: 'Serein',  emoji: '😊' },
 };
 
+const COEFFS = [0.5, 1, 2, 3, 4, 5, 6, 8];
+
+function CoeffPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="flex items-center gap-1 flex-wrap">
+      <span className="text-[9px] text-muted-foreground mr-0.5">Coeff</span>
+      {COEFFS.map(c => (
+        <button
+          key={c}
+          type="button"
+          onMouseDown={e => { e.preventDefault(); onChange(c); }}
+          className="text-[10px] px-1.5 py-0.5 rounded font-bold transition-all border"
+          style={{
+            borderColor: value === c ? 'hsl(var(--primary))' : 'hsl(222 16% 22%)',
+            backgroundColor: value === c ? 'hsl(var(--primary))' : 'transparent',
+            color: value === c ? 'hsl(222 22% 8%)' : 'hsl(220 10% 55%)',
+          }}
+        >
+          ×{c}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function ExamsSection({ userId }: { userId: string }) {
   const [exams, setExams]           = useState<Exam[]>([]);
   const [showForm, setShowForm]     = useState(false);
@@ -34,11 +60,13 @@ export function ExamsSection({ userId }: { userId: string }) {
   const [chapters, setChapters]     = useState('');
   const [stressLevel, setStressLevel] = useState<StressLevel>('neutral');
   const [customSubject, setCustomSubject] = useState('');
+  const [formCoeff, setFormCoeff]   = useState(1);
   const [loading, setLoading]       = useState(false);
 
-  // Grade editing
+  // Grade editing / entry state
   const [editingId, setEditingId]   = useState<string | null>(null);
   const [editingVal, setEditingVal] = useState('');
+  const [editingCoeff, setEditingCoeff] = useState(1);
 
   const loadExams = async () => {
     const { data } = await supabase
@@ -58,13 +86,18 @@ export function ExamsSection({ userId }: { userId: string }) {
       user_id: userId, subject, exam_date: examDate,
       chapters: chapters.trim() || null, stress_level: stressLevel,
       custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,
-    });
-    setExamDate(''); setChapters(''); setCustomSubject(''); setShowForm(false); setLoading(false);
+      coefficient: formCoeff,
+    } as any);
+    setExamDate(''); setChapters(''); setCustomSubject(''); setFormCoeff(1);
+    setShowForm(false); setLoading(false);
     loadExams();
   };
 
-  const handleGrade = async (id: string, grade: number) => {
-    await supabase.from('exams').update({ grade }).eq('id', id);
+  const saveGrade = async (id: string) => {
+    const v = parseFloat(editingVal);
+    if (!isNaN(v) && v >= 0 && v <= 20) {
+      await supabase.from('exams').update({ grade: v, coefficient: editingCoeff } as any).eq('id', id);
+    }
     setEditingId(null);
     loadExams();
   };
@@ -72,15 +105,7 @@ export function ExamsSection({ userId }: { userId: string }) {
   const startEdit = (exam: Exam) => {
     setEditingId(exam.id);
     setEditingVal(exam.grade !== null ? String(exam.grade) : '');
-  };
-
-  const commitEdit = (id: string) => {
-    const v = parseFloat(editingVal);
-    if (!isNaN(v) && v >= 0 && v <= 20) {
-      handleGrade(id, v);
-    } else {
-      setEditingId(null);
-    }
+    setEditingCoeff(exam.coefficient ?? 1);
   };
 
   const now = new Date();
@@ -89,6 +114,9 @@ export function ExamsSection({ userId }: { userId: string }) {
 
   const subjectColor = (s: string) =>
     `hsl(var(${SUBJECT_CSS_VAR[s as Subject] ?? '--subject-autre'}))`;
+
+  const gradeColor = (g: number) =>
+    g >= 14 ? 'hsl(var(--success))' : g >= 10 ? 'hsl(var(--xp))' : 'hsl(var(--destructive))';
 
   return (
     <div className="bg-card border border-border rounded-lg p-5">
@@ -144,6 +172,11 @@ export function ExamsSection({ userId }: { userId: string }) {
                 onChange={e => setChapters(e.target.value)}
                 className="h-9 text-sm"
               />
+              {/* Coefficient du DS */}
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Coefficient du DS</p>
+                <CoeffPicker value={formCoeff} onChange={setFormCoeff} />
+              </div>
               <div className="flex gap-2">
                 {(Object.entries(STRESS_LABELS) as [StressLevel, { label: string; emoji: string }][]).map(([key, val]) => (
                   <button
@@ -163,11 +196,12 @@ export function ExamsSection({ userId }: { userId: string }) {
         )}
       </AnimatePresence>
 
-      <div className="space-y-2 max-h-[280px] overflow-y-auto">
+      <div className="space-y-2 max-h-[300px] overflow-y-auto">
         {upcoming.length === 0 && past.length === 0 ? (
           <p className="text-muted-foreground text-sm text-center py-3">Aucun DS déclaré 📝</p>
         ) : (
           <>
+            {/* ── Upcoming ── */}
             {upcoming.map(exam => {
               const daysUntil = Math.ceil((new Date(exam.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
               const isUrgent = daysUntil <= 3;
@@ -179,6 +213,12 @@ export function ExamsSection({ userId }: { userId: string }) {
                   <div className="flex items-center gap-2 mb-1">
                     <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: subjectColor(exam.subject) }} />
                     <span className="text-sm font-medium">{exam.custom_subject || exam.subject}</span>
+                    {(exam.coefficient ?? 1) !== 1 && (
+                      <span className="text-[9px] font-bold px-1 rounded"
+                            style={{ color: 'hsl(var(--primary))', background: 'hsl(var(--primary) / 0.12)' }}>
+                        ×{exam.coefficient}
+                      </span>
+                    )}
                     <span className="text-xs text-muted-foreground ml-auto">
                       {new Date(exam.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                     </span>
@@ -195,94 +235,91 @@ export function ExamsSection({ userId }: { userId: string }) {
               );
             })}
 
+            {/* ── Past ── */}
             {past.length > 0 && (
               <details className="mt-2">
                 <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
                   {past.length} DS passé{past.length > 1 ? 's' : ''}
                 </summary>
-                <div className="space-y-1 mt-2">
+                <div className="space-y-1.5 mt-2">
                   {past.map(exam => (
                     <div
                       key={exam.id}
                       className={`p-2 rounded border ${exam.grade === null ? 'border-streak/40 bg-streak/5' : 'border-border/50'}`}
                     >
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: subjectColor(exam.subject) }} />
-                        <span className="text-xs font-medium">{exam.custom_subject || exam.subject}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(exam.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                        </span>
+                      <div className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: subjectColor(exam.subject) }} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-medium truncate">{exam.custom_subject || exam.subject}</span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {new Date(exam.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                            </span>
+                          </div>
+                        </div>
 
                         {/* Grade zone */}
                         {editingId === exam.id ? (
-                          /* ── édition en cours ── */
-                          <div className="flex items-center gap-1 ml-auto">
-                            <Input
-                              type="number" min={0} max={20} step={0.5}
-                              value={editingVal}
-                              onChange={e => setEditingVal(e.target.value)}
-                              className="h-6 w-16 text-xs"
-                              autoFocus
-                              onBlur={() => commitEdit(exam.id)}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter')  commitEdit(exam.id);
-                                if (e.key === 'Escape') setEditingId(null);
-                              }}
-                            />
-                            <button
-                              onMouseDown={e => { e.preventDefault(); commitEdit(exam.id); }}
-                              className="text-emerald-400 hover:text-emerald-300 transition-colors"
-                            >
-                              <Check size={12} />
-                            </button>
+                          /* ── édition active ── */
+                          <div className="flex flex-col gap-1.5 items-end">
+                            <div className="flex items-center gap-1">
+                              <Input
+                                type="number" min={0} max={20} step={0.5}
+                                value={editingVal}
+                                onChange={e => setEditingVal(e.target.value)}
+                                className="h-6 w-16 text-xs"
+                                autoFocus
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter') saveGrade(exam.id);
+                                  if (e.key === 'Escape') setEditingId(null);
+                                }}
+                              />
+                              <span className="text-[10px] text-muted-foreground">/20</span>
+                              <button
+                                onMouseDown={e => { e.preventDefault(); saveGrade(exam.id); }}
+                                className="text-emerald-400 hover:text-emerald-300 transition-colors"
+                              >
+                                <Check size={13} />
+                              </button>
+                            </div>
+                            <CoeffPicker value={editingCoeff} onChange={setEditingCoeff} />
                           </div>
                         ) : exam.grade !== null ? (
-                          /* ── note déjà saisie (cliquable pour modifier) ── */
+                          /* ── note saisie (clic pour modifier) ── */
                           <button
                             onClick={() => startEdit(exam)}
-                            className="flex items-center gap-1 ml-auto group/grade"
-                            title="Modifier la note"
+                            className="flex items-center gap-1 group/grade"
+                            title="Modifier"
                           >
-                            <span
-                              className="text-xs font-bold tabular-nums"
-                              style={{
-                                color: exam.grade >= 14
-                                  ? 'hsl(var(--success))'
-                                  : exam.grade >= 10
-                                  ? 'hsl(var(--xp))'
-                                  : 'hsl(var(--destructive))',
-                              }}
-                            >
+                            {(exam.coefficient ?? 1) !== 1 && (
+                              <span className="text-[9px] font-bold px-1 rounded"
+                                    style={{ color: 'hsl(var(--primary))', background: 'hsl(var(--primary) / 0.12)' }}>
+                                ×{exam.coefficient}
+                              </span>
+                            )}
+                            <span className="text-xs font-bold tabular-nums" style={{ color: gradeColor(exam.grade) }}>
                               {exam.grade}/20
                             </span>
-                            <Pencil
-                              size={9}
-                              className="text-muted-foreground opacity-0 group-hover/grade:opacity-100 transition-opacity"
-                            />
+                            <span className="text-[9px] text-muted-foreground opacity-0 group-hover/grade:opacity-100 transition-opacity">✏</span>
                           </button>
                         ) : (
-                          /* ── note manquante ── */
-                          <div className="flex items-center gap-1 ml-auto">
+                          /* ── note manquante → clic pour saisir ── */
+                          <button
+                            onClick={() => startEdit(exam)}
+                            className="flex items-center gap-1 ml-auto"
+                          >
                             <span
                               className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
                               style={{ backgroundColor: 'hsl(var(--streak) / 0.15)', color: 'hsl(var(--streak))' }}
                             >
-                              Note manquante
+                              Saisir la note
                             </span>
-                            <Input
-                              type="number" min={0} max={20} step={0.5} placeholder="/20"
-                              className="h-6 w-14 text-xs"
-                              onBlur={e => {
-                                const v = parseFloat(e.target.value);
-                                if (!isNaN(v) && v >= 0 && v <= 20) handleGrade(exam.id, v);
-                              }}
-                            />
-                          </div>
+                          </button>
                         )}
                       </div>
 
-                      {exam.grade === null && (
-                        <div className="mt-1.5">
+                      {exam.grade === null && editingId !== exam.id && (
+                        <div className="mt-1.5 ml-3.5">
                           <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
                             <MessageCircle size={10} />
                             Pense à m'envoyer ta note sur WhatsApp 📱

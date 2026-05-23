@@ -114,25 +114,8 @@ export default function DeepworkPage() {
           <ArrowLeft size={18} />
         </button>
         <div className="flex items-center gap-2">
-          <span className="text-lg">⚡</span>
-          <h1 className="font-display font-black tracking-tight" style={{ color: 'hsl(var(--primary))' }}>
-            FOCUS MODE
-          </h1>
+          <h1 className="font-display font-semibold text-foreground">Deepwork</h1>
         </div>
-
-        {/* Lofi toggle */}
-        <button
-          onClick={toggleLofi}
-          title={lofiOn ? 'Couper la musique lofi' : 'Activer la musique lofi'}
-          className="ml-auto p-2 rounded-lg border transition-all"
-          style={{
-            borderColor: lofiOn ? 'hsl(43 90% 50% / 0.5)' : 'hsl(222 16% 18%)',
-            backgroundColor: lofiOn ? 'hsl(43 90% 50% / 0.12)' : 'transparent',
-            color: lofiOn ? 'hsl(var(--primary))' : 'hsl(220 10% 50%)',
-          }}
-        >
-          {lofiOn ? <Music2 size={16} /> : <Music size={16} />}
-        </button>
       </header>
 
       {/* ─── Focus area ─── */}
@@ -152,11 +135,8 @@ export default function DeepworkPage() {
                 color: 'hsl(var(--primary))',
               }}
             >
-              <span
-                className="w-2 h-2 rounded-full animate-pulse"
-                style={{ background: 'hsl(var(--primary))' }}
-              />
-              ✦ SESSION ACTIVE ✦
+              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'hsl(var(--primary))' }} />
+              Session active
             </motion.div>
           )}
         </AnimatePresence>
@@ -168,9 +148,8 @@ export default function DeepworkPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h2 className="text-2xl font-display font-black mb-1 neon-gold"
-                style={{ color: 'hsl(var(--primary))' }}>
-              ✦ Ascension Focus ✦
+            <h2 className="text-2xl font-display font-black mb-1" style={{ color: 'hsl(var(--primary))' }}>
+              Deepwork
             </h2>
             <p className="text-muted-foreground text-sm">Plus la session est longue, plus le débit XP monte</p>
           </motion.div>
@@ -249,7 +228,7 @@ export default function DeepworkPage() {
             <>
               <p className="text-lg font-bold" style={{ color: rateColor }}>{rateLabel}</p>
               <p className="text-muted-foreground text-sm">
-                +{earnedXp} XP en cours · {minutes} min {seconds > 0 ? `${seconds}s` : ''} de focus
+                +{earnedXp} XP · {minutes} min {seconds > 0 ? `${seconds}s` : ''}
               </p>
             </>
           ) : (
@@ -260,6 +239,21 @@ export default function DeepworkPage() {
             </div>
           )}
         </div>
+
+        {/* Lofi music button — centré */}
+        <button
+          onClick={toggleLofi}
+          title={lofiOn ? 'Couper la musique lofi' : 'Activer la musique lofi'}
+          className="flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-sm"
+          style={{
+            borderColor: lofiOn ? 'hsl(43 90% 50% / 0.5)' : 'hsl(222 16% 22%)',
+            backgroundColor: lofiOn ? 'hsl(43 90% 50% / 0.10)' : 'transparent',
+            color: lofiOn ? 'hsl(var(--primary))' : 'hsl(220 10% 55%)',
+          }}
+        >
+          {lofiOn ? <Music2 size={15} /> : <Music size={15} />}
+          <span>{lofiOn ? 'Lofi ON' : 'Lofi OFF'}</span>
+        </button>
       </div>
 
       {/* Stats */}

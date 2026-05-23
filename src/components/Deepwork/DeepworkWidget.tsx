@@ -124,8 +124,8 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
           {/* ── right: info ── */}
           <div className="flex flex-col items-center md:items-start gap-2">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em]"
-               style={{ color: 'hsl(43 90% 50% / 0.6)' }}>
-              ✦ Ascension Focus ✦
+               style={{ color: 'hsl(43 90% 50% / 0.55)' }}>
+              {active ? 'Session active' : 'Focus'}
             </p>
 
             {/* Timer */}
@@ -140,18 +140,15 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
 
-            {/* XP rate */}
-            <div className="flex items-center gap-2 flex-wrap justify-center md:justify-start">
-              {active
-                ? <XpRate minutes={minutes} />
-                : <span className="text-xs text-muted-foreground">Débit : 1 → 2 → 3 XP/min selon la durée</span>
-              }
-            </div>
+            {/* XP rate (only when active) */}
+            {active && (
+              <div className="flex items-center gap-2">
+                <XpRate minutes={minutes} />
+              </div>
+            )}
 
-            <p className="text-xs text-muted-foreground mt-1">
-              {active
-                ? 'Clique pour accéder à ta session ↗'
-                : 'Clique pour lancer ta session deepwork ↗'}
+            <p className="text-xs text-muted-foreground">
+              {active ? 'Ouvrir la session' : 'Démarrer une session de travail'}
             </p>
           </div>
         </div>

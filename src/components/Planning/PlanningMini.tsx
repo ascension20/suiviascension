@@ -48,10 +48,11 @@ export function PlanningMini({ userId, onXpGain }: Props) {
   const selectedIso = selectedDay ? formatDateISO(selectedDay) : '';
   const dayEvents = events.filter(e => e.event_date === selectedIso);
 
-  // Badge counts per day
-  const dayCounts = days.map(d => {
+  // Badge info per day (count + whether there's a DS)
+  const dayInfo = days.map(d => {
     const iso = formatDateISO(d);
-    return events.filter(e => e.event_date === iso).length;
+    const dayEvs = events.filter(e => e.event_date === iso);
+    return { count: dayEvs.length, hasDs: dayEvs.some(e => e.type === 'ds') };
   });
 
   const todayIso = formatDateISO(new Date());
@@ -97,7 +98,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
           const iso = formatDateISO(d);
           const isToday = iso === todayIso;
           const isSelected = i === selectedDayIdx;
-          const count = dayCounts[i];
+          const { count, hasDs } = dayInfo[i];
           return (
             <button
               key={iso}
@@ -115,9 +116,10 @@ export function PlanningMini({ userId, onXpGain }: Props) {
                 {d.getDate()}
               </span>
               {count > 0 && (
-                <span className={`absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full text-[9px] font-bold flex items-center justify-center ${
-                  isSelected ? 'bg-primary text-primary-foreground' : 'bg-violet-500 text-white'
-                }`}>
+                <span
+                  className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full text-[9px] font-bold flex items-center justify-center text-white"
+                  style={{ backgroundColor: hasDs ? 'hsl(0 84% 60%)' : isSelected ? 'hsl(var(--primary))' : 'hsl(270 50% 60%)' }}
+                >
                   {count}
                 </span>
               )}
@@ -168,7 +170,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
 
       <Dialog open={full} onOpenChange={setFull}>
         <DialogContent className="max-w-7xl w-[95vw] h-[90vh] p-0 overflow-hidden">
-          <PlanningFull userId={userId} onXpGain={onXpGain} onChanged={load} />
+          <PlanningFull userId={userId} onXpGain={onXpGain} onChanged={load} initialWeekStart={weekStart} />
         </DialogContent>
       </Dialog>
 

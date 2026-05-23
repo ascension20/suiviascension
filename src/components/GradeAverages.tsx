@@ -5,6 +5,7 @@ import { Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 interface ExamRow {
   subject: string;
   grade: number | null;
+  coefficient: number | null;
 }
 
 function gradeColor(avg: number) {
@@ -19,34 +20,43 @@ export function GradeAverages({ userId }: { userId: string }) {
   useEffect(() => {
     supabase
       .from('exams')
-      .select('subject, grade')
+      .select('subject, grade, coefficient')
       .eq('user_id', userId)
-      .then(({ data }) => { if (data) setExams(data); });
+      .then(({ data }) => { if (data) setExams(data as ExamRow[]); });
   }, [userId]);
 
-  /** Moyenne simple par matière (identique à Pronote) */
+  /** Moyenne pondérée par DS (coefficient choisi par l'élève) par matière */
   const averages = useMemo(() => {
-    const bySubject: Record<string, number[]> = {};
+    const bySubject: Record<string, { sum: number; totalCoeff: number; count: number }> = {};
     exams.forEach(e => {
       if (e.grade !== null) {
-        if (!bySubject[e.subject]) bySubject[e.subject] = [];
-        bySubject[e.subject].push(e.grade);
+        const coeff = e.coefficient ?? 1;
+        if (!bySubject[e.subject]) bySubject[e.subject] = { sum: 0, totalCoeff: 0, count: 0 };
+        bySubject[e.subject].sum       += e.grade * coeff;
+        bySubject[e.subject].totalCoeff += coeff;
+        bySubject[e.subject].count     += 1;
       }
     });
     return Object.entries(bySubject)
-      .map(([subject, grades]) => ({
+      .map(([subject, { sum, totalCoeff, count }]) => ({
         subject,
-        avg: Math.round((grades.reduce((a, b) => a + b, 0) / grades.length) * 10) / 10,
-        count: grades.length,
+        avg: Math.round((sum / totalCoeff) * 10) / 10,
+        count,
       }))
       .sort((a, b) => b.avg - a.avg);
   }, [exams]);
 
-  /** Moyenne générale simple (toutes matières, tous DS) */
+  /** Moyenne générale pondérée (tous DS confondus) */
   const globalAvg = useMemo(() => {
-    const all = exams.filter(e => e.grade !== null).map(e => e.grade!);
-    if (all.length === 0) return null;
-    return Math.round((all.reduce((a, b) => a + b, 0) / all.length) * 10) / 10;
+    let sum = 0, totalCoeff = 0;
+    exams.forEach(e => {
+      if (e.grade !== null) {
+        const c = e.coefficient ?? 1;
+        sum        += e.grade * c;
+        totalCoeff += c;
+      }
+    });
+    return totalCoeff > 0 ? Math.round((sum / totalCoeff) * 10) / 10 : null;
   }, [exams]);
 
   if (averages.length === 0) return null;
@@ -82,9 +92,7 @@ export function GradeAverages({ userId }: { userId: string }) {
                   style={{ backgroundColor: `hsl(var(${cssVar}))` }}
                 />
                 <span className="text-xs flex-1 truncate">{a.subject}</span>
-                <span className="text-[10px] text-muted-foreground tabular-nums">
-                  {a.count} DS
-                </span>
+                <span className="text-[10px] text-muted-foreground tabular-nums">{a.count} DS</span>
                 <span
                   className="font-display text-sm font-bold tabular-nums w-10 text-right"
                   style={{ color: gradeColor(a.avg) }}
@@ -92,15 +100,10 @@ export function GradeAverages({ userId }: { userId: string }) {
                   {a.avg}
                 </span>
               </div>
-              {/* Progress bar */}
               <div className="h-1 rounded-full overflow-hidden ml-4" style={{ background: 'hsl(222 18% 15%)' }}>
                 <div
                   className="h-full rounded-full transition-all duration-700"
-                  style={{
-                    width: `${barPct}%`,
-                    backgroundColor: `hsl(var(${cssVar}))`,
-                    opacity: 0.75,
-                  }}
+                  style={{ width: `${barPct}%`, backgroundColor: `hsl(var(${cssVar}))`, opacity: 0.75 }}
                 />
               </div>
             </div>

@@ -13,7 +13,7 @@ import { LevelUpOverlay } from '@/components/LevelUpOverlay';
 import { DifficultiesSection } from '@/components/DifficultiesSection';
 import { ExamsSection } from '@/components/ExamsSection';
 import { XPProgressionChart } from '@/components/XPProgressionChart';
-import { SmartNotifications } from '@/components/SmartNotifications';
+
 import { ProgressComparison } from '@/components/ProgressComparison';
 import { TutorialOverlay } from '@/components/Tutorial/TutorialOverlay';
 import { DSReminderModal } from '@/components/DSReminderModal';
@@ -121,13 +121,14 @@ export default function StudentDashboard() {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
 
           {/* Logo / title */}
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="font-display text-sm font-black tracking-tight hidden sm:block neon-gold"
-                  style={{ color: 'hsl(var(--primary))' }}>
+          <div className="items-center gap-1 shrink-0 hidden sm:flex">
+            <span className="font-display text-sm font-black tracking-tight"
+                  style={{ color: 'hsl(42 12% 92%)' }}>
               ASCENSION
             </span>
-            <span className="font-display text-sm font-black tracking-tight hidden sm:block text-muted-foreground">
-              ACADÉMIQUE
+            <span className="font-display text-sm font-black tracking-tight neon-gold"
+                  style={{ color: 'hsl(var(--primary))' }}>
+              20
             </span>
           </div>
 
@@ -175,8 +176,6 @@ export default function StudentDashboard() {
 
       {/* ─── MAIN ─── */}
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
-        {user && <SmartNotifications userId={user.id} />}
-
         {/* Welcome */}
         <motion.p
           initial={{ opacity: 0, y: 6 }}
