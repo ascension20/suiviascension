@@ -8,12 +8,10 @@ import { PlanningMini } from '@/components/Planning/PlanningMini';
 import { DailyTaskGate } from '@/components/DailyTaskGate';
 import { EndOfDayReview } from '@/components/EndOfDayReview';
 import { XPBar } from '@/components/XPBar';
-import { QuestList, Quest } from '@/components/QuestList';
 import { WeeklyLeaderboard, LeaderboardEntry } from '@/components/WeeklyLeaderboard';
 import { LevelUpOverlay } from '@/components/LevelUpOverlay';
 import { DifficultiesSection } from '@/components/DifficultiesSection';
 import { ExamsSection } from '@/components/ExamsSection';
-import { WeeklyPlanner } from '@/components/WeeklyPlanner';
 import { XPProgressionChart } from '@/components/XPProgressionChart';
 import { GradeAverages } from '@/components/GradeAverages';
 import { SmartNotifications } from '@/components/SmartNotifications';
@@ -30,7 +28,6 @@ import { supabase } from '@/integrations/supabase/client';
 export default function StudentDashboard() {
   const { user, profile, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
-  const [quests, setQuests] = useState<Quest[]>([]);
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; xpGained: number } | null>(null);
   const [xpLeaderboard, setXpLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [timerLeaderboard, setTimerLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -39,7 +36,7 @@ export default function StudentDashboard() {
   const [showTutorial, setShowTutorial] = useState(false);
   const { enabled: lofiOn, toggle: toggleLofi } = useLofiMusic();
 
-  const { isOnline, pendingCount, enqueue } = useOfflineQueue();
+  const { isOnline, pendingCount } = useOfflineQueue();
   useOnlineTracker(user?.id);
 
   const totalXp = profile?.total_xp ?? 0;
@@ -56,25 +53,6 @@ export default function StudentDashboard() {
       setShowTutorial(true);
     }
   }, [profile, navigate]);
-
-  useEffect(() => {
-    if (!user) return;
-    const loadQuests = async () => {
-      const { data } = await supabase.from('quests').select('*').eq('assigned_to', user.id).order('deadline', { ascending: true });
-      if (data) {
-        setQuests(data.map(q => ({
-          id: q.id, title: q.title, subject: q.subject as Subject, deadline: q.deadline || '',
-          difficulty: q.difficulty === 'easy' ? 1 : q.difficulty === 'hard' ? 3 : 2,
-          xp: q.xp_reward, isCoachQuest: true, completed: q.completed,
-        })));
-      }
-    };
-    loadQuests();
-    const channel = supabase.channel('student-quests')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'quests', filter: `assigned_to=eq.${user.id}` }, () => loadQuests())
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -128,22 +106,6 @@ export default function StudentDashboard() {
     await refreshProfile();
   }, [user, totalXp, refreshProfile]);
 
-  const handleQuestComplete = useCallback(async (questId: string) => {
-    const quest = quests.find(q => q.id === questId);
-    if (!quest || quest.completed) return;
-    if (!navigator.onLine) {
-      enqueue('quest_complete', { id: questId });
-      setQuests(prev => prev.map(q => q.id === questId ? { ...q, completed: true } : q));
-      await addXp(quest.xp);
-      return;
-    }
-    await supabase.from('quests').update({ completed: true, completed_at: new Date().toISOString() }).eq('id', questId);
-    setQuests(prev => prev.map(q => q.id === questId ? { ...q, completed: true } : q));
-    await addXp(quest.xp);
-  }, [quests, addXp, enqueue]);
-
-  const activeQuests = quests.filter(q => !q.completed);
-
   if (user && profile?.onboarding_completed === false) return null;
   if (user && !dailyGatePassed) {
     return <DailyTaskGate userId={user.id} onComplete={() => setDailyGatePassed(true)} />;
@@ -192,7 +154,7 @@ export default function StudentDashboard() {
           {' '}Ta série de <span className="text-streak font-semibold">{streak} jours</span> t'attend.
         </motion.p>
 
-        {/* Deepwork + Planning miniature */}
+        {/* Ligne 1 : Deepwork + Planning */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
           <div className="lg:col-span-3" data-tutorial="deepwork">
             {user && <DeepworkWidget userId={user.id} onXpGain={addXp} />}
@@ -202,37 +164,30 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        {/* Quêtes coach (gardées) */}
-        <div className="mb-6 bg-card border border-border rounded-lg p-5">
-          <h2 className="font-display font-semibold mb-3 text-sm">⚔️ Quêtes du coach ({activeQuests.length})</h2>
-          <QuestList quests={activeQuests} onComplete={handleQuestComplete} />
-        </div>
-
-        {/* XP Chart + Averages */}
+        {/* Ligne 2 : XP Chart + Deepwork Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {user && <XPProgressionChart userId={user.id} totalXp={totalXp} />}
-          {user && <GradeAverages userId={user.id} />}
+          {user && <DeepworkStats userId={user.id} />}
         </div>
 
-        {/* Deepwork stats + Weekly Plan */}
+        {/* Ligne 3 : Moyennes + Plan semaine */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {user && <DeepworkStats userId={user.id} />}
+          {user && <GradeAverages userId={user.id} />}
           {user && <WeeklyPlanView userId={user.id} />}
         </div>
 
-        {/* Progress comparison */}
-        <div className="grid grid-cols-1 mb-6">
+        {/* Ligne 4 : Progression comparée (pleine largeur) */}
+        <div className="mb-6">
           {user && <ProgressComparison userId={user.id} totalXp={totalXp} streak={streak} />}
         </div>
 
-        {/* DS + Difficultés + Planning hebdo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* Ligne 5 : DS + Difficultés */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {user && <ExamsSection userId={user.id} />}
           {user && <DifficultiesSection userId={user.id} />}
-          {user && <WeeklyPlanner userId={user.id} />}
         </div>
 
-        {/* Leaderboards */}
+        {/* Ligne 6 : Classements */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-tutorial="leaderboard">
           <WeeklyLeaderboard title="🏆 Classement XP" data={xpLeaderboard} unit="XP" />
           <WeeklyLeaderboard title="⏱ Classement Chrono" data={timerLeaderboard} unit="min" weeklyChampion={weeklyChampion} />

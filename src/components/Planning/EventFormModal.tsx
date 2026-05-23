@@ -35,6 +35,16 @@ export function EventFormModal({ userId, event, onClose, onSaved }: Props) {
       await supabase.from('planning_events').update(payload).eq('id', event.id);
     } else {
       await supabase.from('planning_events').insert(payload);
+      // When adding a NEW DS in planning, auto-create it in Mes DS (exams)
+      if (type === 'ds') {
+        await supabase.from('exams').insert({
+          user_id: userId,
+          subject: subject as any,
+          exam_date: date,
+          chapters: title.trim() || null,
+          stress_level: 'neutral',
+        });
+      }
     }
     setSaving(false);
     onSaved();

@@ -71,7 +71,34 @@ export function DifficultiesSection({ userId }: { userId: string }) {
     loadDifficulties();
   };
 
-  const unresolvedCount = difficulties.filter(d => !d.resolved).length;
+  const unresolved = difficulties.filter(d => !d.resolved);
+  const resolved = difficulties.filter(d => d.resolved);
+  const unresolvedCount = unresolved.length;
+
+  const DifficultyCard = ({ d }: { d: Difficulty }) => (
+    <div className="p-3 rounded-lg border border-border transition-colors">
+      <div className="flex items-center gap-2 mb-1">
+        <div
+          className="w-2 h-2 rounded-full shrink-0"
+          style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[d.subject as Subject]}))` }}
+        />
+        <span className="text-xs text-muted-foreground">{d.custom_subject || d.subject}</span>
+        <span className="text-xs" style={{ color: SEVERITY_LABELS[d.severity]?.color }}>
+          {SEVERITY_LABELS[d.severity]?.label}
+        </span>
+      </div>
+      <p className="text-sm">{d.description}</p>
+      {d.coach_reply && (
+        <div className="mt-2 p-2 rounded bg-primary/10 border border-primary/20">
+          <div className="flex items-center gap-1 mb-1">
+            <MessageCircle size={12} className="text-primary" />
+            <span className="text-xs text-primary font-medium">Coach</span>
+          </div>
+          <p className="text-xs text-foreground">{d.coach_reply}</p>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="bg-card border border-border rounded-lg p-5">
@@ -135,38 +162,27 @@ export function DifficultiesSection({ userId }: { userId: string }) {
         )}
       </AnimatePresence>
 
-      <div className="space-y-2 max-h-[280px] overflow-y-auto">
+      <div className="space-y-2 max-h-[320px] overflow-y-auto">
         {difficulties.length === 0 ? (
           <p className="text-muted-foreground text-sm text-center py-3">Aucune difficulté signalée 💪</p>
         ) : (
-          difficulties.map(d => (
-            <div
-              key={d.id}
-              className={`p-3 rounded-lg border transition-colors ${d.resolved ? 'border-border/50 opacity-60' : 'border-border'}`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <div
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: `hsl(var(${SUBJECT_CSS_VAR[d.subject as Subject]}))` }}
-                />
-                <span className="text-xs text-muted-foreground">{d.custom_subject || d.subject}</span>
-                <span className="text-xs" style={{ color: SEVERITY_LABELS[d.severity]?.color }}>
-                  {SEVERITY_LABELS[d.severity]?.label}
-                </span>
-                {d.resolved && <span className="text-xs text-success ml-auto">✓ Résolu</span>}
-              </div>
-              <p className="text-sm">{d.description}</p>
-              {d.coach_reply && (
-                <div className="mt-2 p-2 rounded bg-primary/10 border border-primary/20">
-                  <div className="flex items-center gap-1 mb-1">
-                    <MessageCircle size={12} className="text-primary" />
-                    <span className="text-xs text-primary font-medium">Coach</span>
-                  </div>
-                  <p className="text-xs text-foreground">{d.coach_reply}</p>
+          <>
+            {unresolved.length === 0 && resolved.length > 0 && (
+              <p className="text-muted-foreground text-sm text-center py-2">Toutes les difficultés sont résolues 🎉</p>
+            )}
+            {unresolved.map(d => <DifficultyCard key={d.id} d={d} />)}
+
+            {resolved.length > 0 && (
+              <details className="mt-2">
+                <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                  ✓ Résolu ({resolved.length})
+                </summary>
+                <div className="space-y-1 mt-2 opacity-60">
+                  {resolved.map(d => <DifficultyCard key={d.id} d={d} />)}
                 </div>
-              )}
-            </div>
-          ))
+              </details>
+            )}
+          </>
         )}
       </div>
     </div>
