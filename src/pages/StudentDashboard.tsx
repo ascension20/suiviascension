@@ -205,16 +205,18 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        {/* ══ ROW 3 : Deepwork Stats + Progress + DS + Difficultés ══ */}
+        {/* ══ ROW 3 : Deepwork Stats (large) + DS + Difficultés ══ */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
-          {user && <DeepworkStats userId={user.id} />}
-          {user && <ProgressComparison userId={user.id} totalXp={totalXp} streak={streak} />}
+          <div className="md:col-span-2 xl:col-span-2">
+            {user && <DeepworkStats userId={user.id} />}
+          </div>
           {user && <ExamsSection userId={user.id} />}
           {user && <DifficultiesSection userId={user.id} />}
         </div>
 
-        {/* ══ ROW 5 : Classements ══ */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-tutorial="leaderboard">
+        {/* ══ ROW 4 : Comparaison + Classements ══ */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-tutorial="leaderboard">
+          {user && <ProgressComparison userId={user.id} totalXp={totalXp} streak={streak} />}
           <WeeklyLeaderboard title="🏆 Classement XP" data={xpLeaderboard} unit="XP" />
           <WeeklyLeaderboard title="⏱ Classement Chrono" data={timerLeaderboard} unit="min" weeklyChampion={weeklyChampion} />
         </div>
