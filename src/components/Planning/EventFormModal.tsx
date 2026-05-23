@@ -1,0 +1,124 @@
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { supabase } from '@/integrations/supabase/client';
+import type { PlanningEvent, EventType } from '@/lib/planning-utils';
+import { SUBJECTS } from '@/lib/game-utils';
+import { Trash2 } from 'lucide-react';
+
+interface Props {
+  userId: string;
+  event?: PlanningEvent;
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+export function EventFormModal({ userId, event, onClose, onSaved }: Props) {
+  const [type, setType] = useState<EventType>(event?.type ?? 'quest');
+  const [title, setTitle] = useState(event?.title ?? '');
+  const [subject, setSubject] = useState<string>(event?.subject ?? 'Maths');
+  const [date, setDate] = useState(event?.event_date ?? new Date().toISOString().slice(0, 10));
+  const [startTime, setStartTime] = useState(event?.start_time?.slice(0, 5) ?? '14:00');
+  const [endTime, setEndTime] = useState(event?.end_time?.slice(0, 5) ?? '15:00');
+  const [description, setDescription] = useState(event?.description ?? '');
+  const [saving, setSaving] = useState(false);
+
+  const save = async () => {
+    if (!title.trim()) return;
+    setSaving(true);
+    const payload = {
+      user_id: userId,
+      type, title: title.trim(), subject,
+      event_date: date, start_time: startTime, end_time: endTime,
+      description: description.trim() || null,
+    };
+    if (event) {
+      await supabase.from('planning_events').update(payload).eq('id', event.id);
+    } else {
+      await supabase.from('planning_events').insert(payload);
+    }
+    setSaving(false);
+    onSaved();
+  };
+
+  const remove = async () => {
+    if (!event) return;
+    if (!confirm('Supprimer cet événement ?')) return;
+    await supabase.from('planning_events').delete().eq('id', event.id);
+    onSaved();
+  };
+
+  const typeBtn = (t: EventType, label: string, cls: string) => (
+    <button
+      type="button"
+      onClick={() => setType(t)}
+      className={`flex-1 py-2 rounded-md border text-xs font-medium transition ${type === t ? cls : 'border-border bg-secondary text-muted-foreground'}`}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{event ? 'Modifier l\'événement' : 'Nouvel événement'}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1.5 block">Type</label>
+            <div className="flex gap-2">
+              {typeBtn('course', '📘 Cours', 'border-amber-500 bg-amber-500/15 text-amber-300')}
+              {typeBtn('quest', '⚔️ Quête', 'border-violet-500 bg-violet-500/15 text-violet-300')}
+              {typeBtn('ds', '📝 DS', 'border-rose-500 bg-rose-500/15 text-rose-300')}
+            </div>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Titre</label>
+            <input value={title} onChange={e => setTitle(e.target.value)} maxLength={100}
+              className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Matière</label>
+            <select value={subject} onChange={e => setSubject(e.target.value)}
+              className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm">
+              {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Date</label>
+            <input type="date" value={date} onChange={e => setDate(e.target.value)}
+              className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm" />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Début</label>
+              <input type="time" step={300} value={startTime} onChange={e => setStartTime(e.target.value)}
+                className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Fin</label>
+              <input type="time" step={300} value={endTime} onChange={e => setEndTime(e.target.value)}
+                className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm" />
+            </div>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2}
+              className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm" />
+          </div>
+          <div className="flex items-center gap-2 pt-2">
+            {event && (
+              <button onClick={remove} className="px-3 py-2 rounded-md border border-destructive/40 text-destructive hover:bg-destructive/10">
+                <Trash2 size={14} />
+              </button>
+            )}
+            <button onClick={onClose} className="flex-1 px-3 py-2 rounded-md border border-border text-sm hover:bg-secondary">Annuler</button>
+            <button onClick={save} disabled={saving || !title.trim()} className="flex-1 px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50">
+              {event ? 'Enregistrer' : 'Ajouter'}
+            </button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
