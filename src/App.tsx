@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import LoginPage from "./pages/LoginPage";
 import SetupPage from "./pages/SetupPage";
+import OnboardingPage from "./pages/Onboarding";
 import StudentDashboard from "./pages/StudentDashboard";
 import CoachDashboard from "./pages/CoachDashboard";
 import NotFound from "./pages/NotFound";
@@ -46,6 +47,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <LoginPage />} />
+      <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/setup" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <SetupPage />} />
       <Route path="/student" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
       <Route path="/coach" element={<ProtectedRoute requiredRole="coach"><CoachDashboard /></ProtectedRoute>} />

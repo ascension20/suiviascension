@@ -12,6 +12,13 @@ interface Profile {
   total_xp: number;
   streak: number;
   last_activity_date: string | null;
+  onboarding_completed?: boolean;
+  tutorial_completed?: boolean;
+  ical_url?: string | null;
+  today_xp?: number;
+  today_xp_date?: string | null;
+  total_deepwork_seconds?: number;
+  total_deepwork_sessions?: number;
 }
 
 interface AuthContextType {
