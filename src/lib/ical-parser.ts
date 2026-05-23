@@ -1,4 +1,5 @@
 import ICAL from 'ical.js';
+import { supabase } from '@/integrations/supabase/client';
 import type { PlanningEvent } from './planning-utils';
 import { formatDateISO } from './planning-utils';
 
@@ -14,32 +15,18 @@ export interface ICalEvent {
 const CORS_PROXIES = [
   (u: string) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
   (u: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  (u: string) => `https://cors-anywhere.herokuapp.com/${u}`,
 ];
 
 export async function fetchICal(url: string): Promise<string> {
-  // 1. Try via Supabase Edge Function (server-side, no CORS issues)
+  // 1. Via fonction PostgreSQL (serveur, pas de CORS)
   try {
-    const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL;
-    const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY;
-    if (supabaseUrl && supabaseKey) {
-      const res = await fetch(`${supabaseUrl}/functions/v1/fetch-ical`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseKey}`,
-          'apikey': supabaseKey,
-        },
-        body: JSON.stringify({ url }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json?.text && json.text.includes('BEGIN:VCALENDAR')) return json.text;
-      }
+    const { data, error } = await supabase.rpc('fetch_ical_url', { ical_url: url });
+    if (!error && data && typeof data === 'string' && data.includes('BEGIN:VCALENDAR')) {
+      return data;
     }
-  } catch { /* fall through to CORS proxies */ }
+  } catch { /* fall through */ }
 
-  // 2. Try direct fetch (works if URL allows CORS)
+  // 2. Fetch direct (marche si l'URL autorise CORS)
   try {
     const res = await fetch(url);
     if (res.ok) {
@@ -48,7 +35,7 @@ export async function fetchICal(url: string): Promise<string> {
     }
   } catch { /* fall through */ }
 
-  // 3. CORS proxies as last resort
+  // 3. Proxies CORS en dernier recours
   for (const proxy of CORS_PROXIES) {
     try {
       const res = await fetch(proxy(url));
