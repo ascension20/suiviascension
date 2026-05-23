@@ -17,7 +17,7 @@ import { XPProgressionChart } from '@/components/XPProgressionChart';
 import { ProgressComparison } from '@/components/ProgressComparison';
 import { TutorialOverlay } from '@/components/Tutorial/TutorialOverlay';
 import { DSReminderModal } from '@/components/DSReminderModal';
-import { calculateLevel, getTitleForLevel, Subject } from '@/lib/game-utils';
+import { calculateLevel, getTitleForLevel } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useOnlineTracker, updateStreak } from '@/hooks/useOnlineTracker';
 import { useOfflineQueue } from '@/hooks/useOfflineQueue';
@@ -66,15 +66,15 @@ export default function StudentDashboard() {
       startOfWeek.setDate(startOfWeek.getDate() - (day === 0 ? 6 : day - 1));
       startOfWeek.setHours(0, 0, 0, 0);
 
-      const { data: sessions } = await supabase
-        .from('timer_sessions').select('user_id, subject, duration_minutes')
-        .gte('created_at', startOfWeek.toISOString());
-      if (sessions && sessions.length > 0) {
-        const byUser: Record<string, { total: number; subjects: Record<string, number> }> = {};
-        sessions.forEach(s => {
-          if (!byUser[s.user_id]) byUser[s.user_id] = { total: 0, subjects: {} };
-          byUser[s.user_id].total += s.duration_minutes;
-          byUser[s.user_id].subjects[s.subject] = (byUser[s.user_id].subjects[s.subject] || 0) + s.duration_minutes;
+      // Classement chrono : basé sur deepwork_sessions de la semaine en cours
+      const { data: dwSessions } = await supabase
+        .from('deepwork_sessions')
+        .select('user_id, duration_seconds')
+        .gte('started_at', startOfWeek.toISOString());
+      if (dwSessions && dwSessions.length > 0) {
+        const byUser: Record<string, number> = {};
+        dwSessions.forEach(s => {
+          byUser[s.user_id] = (byUser[s.user_id] || 0) + Math.round(s.duration_seconds / 60);
         });
         const userIds = Object.keys(byUser);
         const { data: timerProfiles } = await supabase
@@ -82,9 +82,8 @@ export default function StudentDashboard() {
         if (timerProfiles) {
           const entries = timerProfiles.map(p => ({
             pseudo: p.pseudo, avatar: p.avatar,
-            value: byUser[p.user_id]?.total || 0,
+            value: byUser[p.user_id] || 0,
             isCurrentUser: p.user_id === user.id,
-            subjectBreakdown: byUser[p.user_id]?.subjects as Record<Subject, number>,
             rank: 0,
           })).sort((a, b) => b.value - a.value).map((e, i) => ({ ...e, rank: i + 1 }));
           setTimerLeaderboard(entries);

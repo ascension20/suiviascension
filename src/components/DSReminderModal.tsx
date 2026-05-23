@@ -16,9 +16,13 @@ export function DSReminderModal({ userId }: { userId: string }) {
   const [upcomingDS, setUpcomingDS] = useState<DSEvent[]>([]);
 
   useEffect(() => {
+    // Ne montre qu'une seule fois par session navigateur
+    const SESSION_KEY = `ds_reminder_shown_${userId}`;
+    if (sessionStorage.getItem(SESSION_KEY)) return;
+
     const load = async () => {
       const today = new Date().toISOString().slice(0, 10);
-      const in30 = new Date();
+      const in30  = new Date();
       in30.setDate(in30.getDate() + 30);
       const { data } = await supabase
         .from('exams')
@@ -31,6 +35,7 @@ export function DSReminderModal({ userId }: { userId: string }) {
       if (data && data.length > 0) {
         setUpcomingDS(data as DSEvent[]);
         setOpen(true);
+        sessionStorage.setItem(SESSION_KEY, '1');
       }
     };
     load();

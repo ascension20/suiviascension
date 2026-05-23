@@ -18,6 +18,78 @@ function xpRateInfo(seconds: number) {
   return { rate: 3, label: '3 XP / min · Mode turbo 🔥', color: 'hsl(16,100%,65%)' };
 }
 
+// ── Présence en temps réel ──────────────────────────────────────────────────
+interface PresenceUser { pseudo: string; avatar: string; }
+
+function DeepworkPresence({ userId, profile }: { userId: string; profile: any }) {
+  const [peers, setPeers] = useState<PresenceUser[]>([]);
+
+  useEffect(() => {
+    const channel = supabase.channel('deepwork-room', {
+      config: { presence: { key: userId } },
+    });
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState<PresenceUser>();
+        const others = Object.entries(state)
+          .filter(([key]) => key !== userId)
+          .flatMap(([, v]) => v as PresenceUser[]);
+        setPeers(others);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            pseudo: profile?.pseudo ?? 'Élève',
+            avatar: profile?.avatar ?? '🐺',
+          });
+        }
+      });
+
+    return () => { supabase.removeChannel(channel); };
+  }, [userId, profile?.pseudo]);
+
+  if (peers.length === 0) {
+    return (
+      <p className="text-xs text-muted-foreground text-center">
+        Tu es le premier à étudier en ce moment 🌙
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <p className="text-xs text-muted-foreground">
+        {peers.length} élève{peers.length > 1 ? 's' : ''} en deepwork avec toi
+      </p>
+      <div className="flex -space-x-2 flex-wrap justify-center">
+        {peers.slice(0, 8).map((u, i) => (
+          <div
+            key={i}
+            title={u.pseudo}
+            className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-base"
+            style={{
+              borderColor: 'hsl(222 22% 8%)',
+              backgroundColor: 'hsl(43 90% 50% / 0.15)',
+            }}
+          >
+            {u.avatar}
+          </div>
+        ))}
+        {peers.length > 8 && (
+          <div
+            className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-bold text-muted-foreground"
+            style={{ borderColor: 'hsl(222 22% 8%)', backgroundColor: 'hsl(222 18% 16%)' }}
+          >
+            +{peers.length - 8}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Page principale ─────────────────────────────────────────────────────────
 export default function DeepworkPage() {
   const navigate = useNavigate();
   const { user, profile, refreshProfile } = useAuth();
@@ -27,8 +99,8 @@ export default function DeepworkPage() {
     const v = localStorage.getItem(STORAGE_KEY);
     return v ? Number(v) : null;
   });
-  const [now, setNow]       = useState(Date.now());
-  const [xpPop, setXpPop]   = useState<number | null>(null);
+  const [now, setNow]     = useState(Date.now());
+  const [xpPop, setXpPop] = useState<number | null>(null);
   const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -40,12 +112,12 @@ export default function DeepworkPage() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [startedAt]);
 
-  const elapsedSec  = startedAt ? Math.floor((now - startedAt) / 1000) : 0;
-  const minutes     = Math.floor(elapsedSec / 60);
-  const seconds     = elapsedSec % 60;
-  const earnedXp    = computeDeepworkXp(elapsedSec);
+  const elapsedSec = startedAt ? Math.floor((now - startedAt) / 1000) : 0;
+  const minutes    = Math.floor(elapsedSec / 60);
+  const seconds    = elapsedSec % 60;
+  const earnedXp   = computeDeepworkXp(elapsedSec);
   const { label: rateLabel, color: rateColor } = xpRateInfo(elapsedSec);
-  const active      = !!startedAt;
+  const active     = !!startedAt;
 
   const handleStart = () => {
     const t = Date.now();
@@ -63,11 +135,11 @@ export default function DeepworkPage() {
 
     if (duration >= 60) {
       await supabase.from('deepwork_sessions').insert({
-        user_id: user.id,
-        started_at: new Date(startedAt).toISOString(),
-        ended_at:   new Date(ended).toISOString(),
+        user_id:          user.id,
+        started_at:       new Date(startedAt).toISOString(),
+        ended_at:         new Date(ended).toISOString(),
         duration_seconds: duration,
-        xp_earned: xp,
+        xp_earned:        xp,
       });
       const { data: prof } = await supabase
         .from('profiles')
@@ -90,14 +162,29 @@ export default function DeepworkPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'hsl(222 22% 5%)' }}>
+  // ── Fond bibliothèque ─────────────────────────────────────────────────────
+  const libBg = {
+    background: [
+      /* vertical planches de bibliothèque */
+      'repeating-linear-gradient(90deg, transparent 0px, transparent 28px, hsl(30 30% 40% / 0.025) 28px, hsl(30 30% 40% / 0.025) 30px)',
+      /* étagères horizontales */
+      'repeating-linear-gradient(180deg, transparent 0px, transparent 64px, hsl(28 25% 35% / 0.06) 64px, hsl(28 25% 35% / 0.06) 68px)',
+      /* chaleur ambiante gauche */
+      'radial-gradient(ellipse at 10% 80%, hsl(30 60% 28% / 0.14) 0%, transparent 55%)',
+      /* chaleur ambiante droite */
+      'radial-gradient(ellipse at 90% 20%, hsl(43 70% 38% / 0.10) 0%, transparent 55%)',
+      'hsl(222 22% 5%)',
+    ].join(', '),
+  };
 
-      {/* Ambient top glow */}
+  return (
+    <div className="min-h-screen flex flex-col" style={libBg}>
+
+      {/* Ambient ceiling glow */}
       <div
-        className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none"
+        className="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[280px] pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at top, hsl(43 90% 50% / 0.10) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at top, hsl(43 90% 50% / 0.09) 0%, transparent 70%)',
           zIndex: 0,
         }}
       />
@@ -105,7 +192,7 @@ export default function DeepworkPage() {
       {/* ─── Header ─── */}
       <header
         className="relative z-10 border-b border-border px-4 py-3 flex items-center gap-3 backdrop-blur-sm"
-        style={{ backgroundColor: 'hsl(222 22% 5% / 0.90)' }}
+        style={{ backgroundColor: 'hsl(222 22% 5% / 0.85)' }}
       >
         <button
           onClick={() => navigate('/student')}
@@ -113,13 +200,11 @@ export default function DeepworkPage() {
         >
           <ArrowLeft size={18} />
         </button>
-        <div className="flex items-center gap-2">
-          <h1 className="font-display font-semibold text-foreground">Deepwork</h1>
-        </div>
+        <h1 className="font-display font-semibold text-foreground">Deepwork</h1>
       </header>
 
       {/* ─── Focus area ─── */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 gap-10">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-10 gap-8">
 
         {/* Active badge */}
         <AnimatePresence>
@@ -156,7 +241,7 @@ export default function DeepworkPage() {
         )}
 
         {/* ─── Big circle button ─── */}
-        <div className="relative flex flex-col items-center gap-8">
+        <div className="relative flex flex-col items-center gap-6">
           <motion.button
             onClick={active ? handleStop : handleStart}
             whileTap={{ scale: 0.94 }}
@@ -171,14 +256,12 @@ export default function DeepworkPage() {
                 : '0 0 30px hsl(43 90% 50% / 0.15)',
             }}
           >
-            {/* Rotating ring when active */}
             {active && (
               <div
                 className="spin-slow absolute inset-[-12px] rounded-full border-2 border-dashed pointer-events-none"
                 style={{ borderColor: 'hsl(43 90% 50% / 0.4)' }}
               />
             )}
-
             {active
               ? <Pause size={44} style={{ color: 'hsl(222 22% 8%)' }} />
               : <Play  size={44} style={{ color: 'hsl(var(--primary))' }} className="ml-2" />
@@ -212,7 +295,7 @@ export default function DeepworkPage() {
                   className="font-display text-4xl font-black"
                   style={{
                     color: 'hsl(var(--primary))',
-                    textShadow: '0 0 20px hsl(43 90% 50% / 0.8), 0 0 40px hsl(43 90% 50% / 0.4)',
+                    textShadow: '0 0 20px hsl(43 90% 50% / 0.8)',
                   }}
                 >
                   +{xpPop} XP
@@ -222,7 +305,7 @@ export default function DeepworkPage() {
           </AnimatePresence>
         </div>
 
-        {/* XP rate & info */}
+        {/* XP rate info */}
         <div className="flex flex-col items-center gap-2 text-center">
           {active ? (
             <>
@@ -240,7 +323,7 @@ export default function DeepworkPage() {
           )}
         </div>
 
-        {/* Lofi music button — centré */}
+        {/* Lofi button — centré */}
         <button
           onClick={toggleLofi}
           title={lofiOn ? 'Couper la musique lofi' : 'Activer la musique lofi'}
@@ -254,6 +337,11 @@ export default function DeepworkPage() {
           {lofiOn ? <Music2 size={15} /> : <Music size={15} />}
           <span>{lofiOn ? 'Lofi ON' : 'Lofi OFF'}</span>
         </button>
+
+        {/* Présence élèves */}
+        {user && profile && (
+          <DeepworkPresence userId={user.id} profile={profile} />
+        )}
       </div>
 
       {/* Stats */}

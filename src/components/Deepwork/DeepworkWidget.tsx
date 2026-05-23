@@ -49,22 +49,22 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
       <div
         className={`
           relative rounded-2xl border overflow-hidden transition-all duration-300
-          hover:border-primary/60 active:scale-[0.995]
+          active:scale-[0.995]
           ${active
-            ? 'border-primary/40 gold-pulse'
-            : 'border-primary/20 hover:shadow-[0_0_40px_hsl(43_90%_50%/0.12)]'}
+            ? 'border-primary/50 gold-pulse'
+            : 'border-primary/40 shadow-[0_0_40px_hsl(43_90%_50%/0.18)] hover:shadow-[0_0_60px_hsl(43_90%_50%/0.28)] hover:border-primary/70'}
         `}
         style={{ background: 'hsl(222 22% 8%)' }}
       >
         {/* ── top gold line ── */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-80" />
 
         {/* ── ambient gold glow behind circle ── */}
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-3xl pointer-events-none transition-opacity duration-700"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full blur-3xl pointer-events-none transition-opacity duration-700"
           style={{
-            background: 'radial-gradient(circle, hsl(43 90% 50% / 0.12) 0%, transparent 70%)',
-            opacity: active ? 1 : 0.4,
+            background: 'radial-gradient(circle, hsl(43 90% 50% / 0.15) 0%, transparent 70%)',
+            opacity: active ? 1 : 0.7,
           }}
         />
 
