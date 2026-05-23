@@ -87,9 +87,20 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
   }, [icalUrl, weekStart.getTime()]);
 
   // Suppress iCal courses that have been converted to DS
+  // Primary: ical_uid match; Fallback: same date + start time as a manual DS
   const convertedUids = new Set(events.map(e => e.ical_uid).filter(Boolean));
-  const filteredIcal  = icalEvents.filter(e => !e.ical_uid || !convertedUids.has(e.ical_uid));
-  const allEvents     = [...events, ...filteredIcal];
+  const manualDsSlots = new Set(
+    events
+      .filter(e => e.type === 'ds')
+      .map(e => `${e.event_date}|${e.start_time.slice(0, 5)}`)
+  );
+  const filteredIcal = icalEvents.filter(ev => {
+    if (ev.type !== 'course') return true;
+    if (ev.ical_uid && convertedUids.has(ev.ical_uid)) return false;
+    if (manualDsSlots.has(`${ev.event_date}|${ev.start_time.slice(0, 5)}`)) return false;
+    return true;
+  });
+  const allEvents = [...events, ...filteredIcal];
   const days          = getWeekDays(weekStart);
   const todayIso   = formatDateISO(new Date());
 
