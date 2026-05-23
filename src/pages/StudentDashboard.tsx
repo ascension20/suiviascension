@@ -205,14 +205,10 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        {/* ══ ROW 3 : Deepwork Stats + Progress Comparison ══ */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* ══ ROW 3 : Deepwork Stats + Progress + DS + Difficultés ══ */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
           {user && <DeepworkStats userId={user.id} />}
           {user && <ProgressComparison userId={user.id} totalXp={totalXp} streak={streak} />}
-        </div>
-
-        {/* ══ ROW 4 : DS + Difficultés ══ */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {user && <ExamsSection userId={user.id} />}
           {user && <DifficultiesSection userId={user.id} />}
         </div>

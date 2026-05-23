@@ -199,30 +199,12 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
         </>
       ) : (
         /* ── Desktop : grille horaire ── */
-        <div className="flex flex-1 min-h-0 overflow-hidden">
+        <div className="flex flex-1 min-h-0 overflow-hidden flex-col">
 
-          {/* Axe horaire */}
-          <div className="w-7 flex-shrink-0 border-r border-border relative bg-background">
-            {TIME_LABELS.map((label, i) => (
-              <div
-                key={label}
-                className={`absolute right-0.5 text-[7px] text-muted-foreground select-none leading-none ${
-                  i === 0 ? '' : i === GRID_HOURS ? '-translate-y-full' : '-translate-y-1/2'
-                }`}
-                style={{ top: `${(i / GRID_HOURS) * 100}%` }}
-              >
-                {label}
-              </div>
-            ))}
-          </div>
-
-          {/* Colonnes jours */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* En-têtes des jours */}
-            <div
-              className="grid flex-shrink-0 border-b border-border"
-              style={{ gridTemplateColumns: `repeat(7, 1fr)` }}
-            >
+          {/* En-têtes des jours (avec gouttière pour l'axe horaire) */}
+          <div className="flex flex-shrink-0 border-b border-border">
+            <div className="w-7 flex-shrink-0 border-r border-border" />
+            <div className="flex-1 grid" style={{ gridTemplateColumns: `repeat(7, 1fr)` }}>
               {days.map((d, i) => {
                 const isToday = formatDateISO(d) === todayIso;
                 const dayEvs  = eventsForDay(d);
@@ -242,6 +224,25 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
                   </div>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Axe horaire + Zone événements (même espace de coordonnées) */}
+          <div className="flex flex-1 min-h-0 overflow-hidden">
+
+            {/* Axe horaire — positionné DANS la zone événements */}
+            <div className="w-7 flex-shrink-0 border-r border-border relative bg-background">
+              {TIME_LABELS.map((label, i) => (
+                <div
+                  key={label}
+                  className={`absolute right-0.5 text-[7px] text-muted-foreground select-none leading-none ${
+                    i === 0 ? '' : i === GRID_HOURS ? '-translate-y-full' : '-translate-y-1/2'
+                  }`}
+                  style={{ top: `${(i / GRID_HOURS) * 100}%` }}
+                >
+                  {label}
+                </div>
+              ))}
             </div>
 
             {/* Zone événements avec grille horaire */}
@@ -324,7 +325,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
                 );
               })}
             </div>
-          </div>
+          </div>{/* fin flex axe+events */}
         </div>
       )}
 
@@ -372,24 +373,25 @@ import { SUBJECTS } from '@/lib/game-utils';
 function ConvertToDsModal({
   event, userId, onClose, onSaved,
 }: { event: PlanningEvent; userId: string; onClose: () => void; onSaved: () => void }) {
-  const [subject, setSubject] = useState(event.subject ?? 'Mathématiques');
   const [chapters, setChapters] = useState('');
   const [saving, setSaving] = useState(false);
 
+  // Garde la matière et le titre du cours original
+  const subject = event.subject ?? 'Mathématiques';
+  const dsTitle = `DS · ${event.title}`;
+
   const confirm = async () => {
     setSaving(true);
-    // Créer un DS dans planning_events
     await supabase.from('planning_events').insert({
       user_id: userId,
       type: 'ds',
-      title: `DS ${subject}`,
+      title: dsTitle,
       subject,
       event_date: event.event_date,
       start_time: event.start_time,
       end_time: event.end_time,
       source: 'manual',
     });
-    // Créer l'entrée dans la table exams
     await supabase.from('exams').insert({
       user_id: userId,
       subject: subject as any,
@@ -398,7 +400,6 @@ function ConvertToDsModal({
       stress_level: 'neutral',
       coefficient: 1,
     });
-    // Supprimer le cours original s'il est manuel
     if (event.source === 'manual') {
       await supabase.from('planning_events').delete().eq('id', event.id);
     }
@@ -410,22 +411,15 @@ function ConvertToDsModal({
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Convertir en DS 🔴</DialogTitle>
+          <DialogTitle>Marquer comme DS 🔴</DialogTitle>
         </DialogHeader>
-        <p className="text-xs text-muted-foreground mb-3">
-          {event.title} · {event.event_date} · {event.start_time.slice(0,5)}–{event.end_time.slice(0,5)}
-        </p>
+        <div className="space-y-1 mb-4 p-3 rounded-lg bg-secondary/40 border border-border">
+          <p className="text-sm font-semibold">{event.title}</p>
+          <p className="text-xs text-muted-foreground">
+            {event.event_date} · {event.start_time.slice(0,5)}–{event.end_time.slice(0,5)}
+          </p>
+        </div>
         <div className="space-y-3">
-          <div>
-            <label className="text-xs text-muted-foreground block mb-1">Matière</label>
-            <select
-              value={subject}
-              onChange={e => setSubject(e.target.value)}
-              className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm"
-            >
-              {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Chapitres (optionnel)</label>
             <input
@@ -433,6 +427,7 @@ function ConvertToDsModal({
               onChange={e => setChapters(e.target.value)}
               placeholder="Ex : Ch. 3 – Cinématique"
               className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm"
+              autoFocus
             />
           </div>
           <button
@@ -441,7 +436,7 @@ function ConvertToDsModal({
             className="w-full py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50"
             style={{ background: 'hsl(0 84% 60%)', color: 'white' }}
           >
-            {saving ? 'Enregistrement…' : 'Confirmer — c\'est un DS'}
+            {saving ? 'Enregistrement…' : 'Confirmer — c\'est un DS 🔴'}
           </button>
         </div>
       </DialogContent>

@@ -51,8 +51,8 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
           relative rounded-2xl border overflow-hidden transition-all duration-300
           active:scale-[0.995]
           ${active
-            ? 'border-primary/50 gold-pulse'
-            : 'border-primary/40 shadow-[0_0_40px_hsl(43_90%_50%/0.18)] hover:shadow-[0_0_60px_hsl(43_90%_50%/0.28)] hover:border-primary/70'}
+            ? 'border-primary/60 gold-pulse'
+            : 'border-primary/60 shadow-[0_0_70px_hsl(43_90%_50%/0.35),0_0_120px_hsl(43_90%_50%/0.15)] hover:shadow-[0_0_90px_hsl(43_90%_50%/0.5),0_0_150px_hsl(43_90%_50%/0.25)] hover:border-primary/80'}
         `}
         style={{ background: 'hsl(222 22% 8%)' }}
       >
@@ -63,8 +63,8 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full blur-3xl pointer-events-none transition-opacity duration-700"
           style={{
-            background: 'radial-gradient(circle, hsl(43 90% 50% / 0.15) 0%, transparent 70%)',
-            opacity: active ? 1 : 0.7,
+            background: 'radial-gradient(circle, hsl(43 90% 50% / 0.22) 0%, transparent 70%)',
+            opacity: active ? 1 : 0.85,
           }}
         />
 
