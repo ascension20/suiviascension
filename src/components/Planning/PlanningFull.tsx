@@ -132,7 +132,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
     <div className="flex flex-col h-full bg-background overflow-hidden">
 
       {/* ── Header ── */}
-      <header className="border-b border-border px-3 py-1.5 flex items-center justify-between flex-wrap gap-1.5 flex-shrink-0">
+      <header className="border-b border-border px-3 py-1.5 flex items-center justify-between flex-wrap gap-1.5 flex-shrink-0 pr-10">
         <div className="flex items-center gap-2">
           <CalendarDays size={13} className="text-primary" />
           <h2 className="font-display font-semibold text-xs">{formatWeekLabel(weekStart)}</h2>

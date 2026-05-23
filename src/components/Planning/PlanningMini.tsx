@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Maximize2, Calendar, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Maximize2, Calendar, Plus, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   PlanningEvent, getWeekStart, getWeekDays, formatDateISO, formatWeekLabel,
@@ -8,6 +8,7 @@ import {
 } from '@/lib/planning-utils';
 import { PlanningFull } from './PlanningFull';
 import { EventFormModal } from './EventFormModal';
+import { QuestValidationModal } from './QuestValidationModal';
 
 interface Props { userId: string; onXpGain: (amount: number) => void; }
 
@@ -17,6 +18,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
   const [events, setEvents] = useState<PlanningEvent[]>([]);
   const [full, setFull] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [validating, setValidating] = useState<PlanningEvent | null>(null);
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDayIdx, setSelectedDayIdx] = useState(() => {
     const d = new Date().getDay();
@@ -141,29 +143,51 @@ export function PlanningMini({ userId, onXpGain }: Props) {
         ) : (
           dayEvents.map(ev => {
             const c = eventTypeColor(ev.type);
+            const isQuest = ev.type === 'quest';
             return (
-              <button
-                key={ev.id}
-                onClick={() => setFull(true)}
-                className={`w-full text-left p-2.5 rounded-lg border ${c.bg} ${c.border} hover:opacity-80 transition-opacity`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className={`text-[10px] font-bold uppercase tracking-wide ${c.text}`}>
-                    {eventTypeLabel(ev.type)}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground tabular-nums">
-                    {ev.start_time.slice(0, 5)}
-                  </span>
-                  {ev.end_time && (
-                    <span className="text-[10px] text-muted-foreground tabular-nums">
-                      → {ev.end_time.slice(0, 5)}
+              <div key={ev.id} className={`rounded-lg border ${c.bg} ${c.border}`}>
+                <button
+                  onClick={() => setFull(true)}
+                  className="w-full text-left p-2.5 hover:opacity-80 transition-opacity"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[10px] font-bold uppercase tracking-wide ${c.text}`}>
+                      {eventTypeLabel(ev.type)}
                     </span>
-                  )}
-                  {ev.validated && <span className="text-[10px] text-emerald-400 ml-auto">✓</span>}
-                </div>
-                <p className="text-xs font-semibold truncate mt-0.5">{ev.title}</p>
-                {ev.subject && <p className="text-[10px] text-muted-foreground">{ev.subject}</p>}
-              </button>
+                    <span className="text-[10px] text-muted-foreground tabular-nums">
+                      {ev.start_time.slice(0, 5)}
+                    </span>
+                    {ev.end_time && (
+                      <span className="text-[10px] text-muted-foreground tabular-nums">
+                        → {ev.end_time.slice(0, 5)}
+                      </span>
+                    )}
+                    {ev.validated && (
+                      <span className="text-[10px] text-emerald-400 ml-auto flex items-center gap-0.5">
+                        <CheckCircle2 size={11} /> Validée
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs font-semibold truncate mt-0.5">{ev.title}</p>
+                  {ev.subject && <p className="text-[10px] text-muted-foreground">{ev.subject}</p>}
+                </button>
+
+                {/* Bouton de validation pour les quêtes non validées */}
+                {isQuest && !ev.validated && ev.source !== 'ical' && (
+                  <button
+                    onClick={e => { e.stopPropagation(); setValidating(ev); }}
+                    className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold rounded-b-lg border-t transition-colors"
+                    style={{
+                      borderColor: 'hsl(var(--primary) / 0.25)',
+                      backgroundColor: 'hsl(var(--primary) / 0.08)',
+                      color: 'hsl(var(--primary))',
+                    }}
+                  >
+                    <CheckCircle2 size={12} />
+                    Valider la quête
+                  </button>
+                )}
+              </div>
             );
           })
         )}
@@ -180,6 +204,15 @@ export function PlanningMini({ userId, onXpGain }: Props) {
           userId={userId}
           onClose={() => setCreating(false)}
           onSaved={() => { setCreating(false); load(); }}
+        />
+      )}
+      {validating && (
+        <QuestValidationModal
+          event={validating}
+          userId={userId}
+          onXpGain={onXpGain}
+          onClose={() => setValidating(null)}
+          onValidated={() => { setValidating(null); load(); }}
         />
       )}
     </div>
