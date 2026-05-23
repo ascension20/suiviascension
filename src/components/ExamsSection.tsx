@@ -66,7 +66,15 @@ export function ExamsSection({ userId }: { userId: string }) {
     if (data) setExams(data as unknown as Exam[]);
   };
 
-  useEffect(() => { loadExams(); }, [userId]);
+  useEffect(() => {
+    loadExams();
+    // Realtime: refresh whenever any exam row changes for this user
+    const channel = supabase
+      .channel(`exams-${userId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'exams', filter: `user_id=eq.${userId}` }, loadExams)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [userId]);
 
   const saveGrade = async (id: string) => {
     const v = parseFloat(editingVal);

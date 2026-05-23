@@ -86,8 +86,11 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
     return () => { cancelled = true; };
   }, [icalUrl, weekStart.getTime()]);
 
-  const allEvents  = [...events, ...icalEvents];
-  const days       = getWeekDays(weekStart);
+  // Suppress iCal courses that have been converted to DS
+  const convertedUids = new Set(events.map(e => e.ical_uid).filter(Boolean));
+  const filteredIcal  = icalEvents.filter(e => !e.ical_uid || !convertedUids.has(e.ical_uid));
+  const allEvents     = [...events, ...filteredIcal];
+  const days          = getWeekDays(weekStart);
   const todayIso   = formatDateISO(new Date());
 
   const eventsForDay = (d: Date) =>
@@ -391,6 +394,7 @@ function ConvertToDsModal({
       start_time: event.start_time,
       end_time: event.end_time,
       source: 'manual',
+      ical_uid: event.ical_uid ?? null, // track which iCal course this replaces
     });
     await supabase.from('exams').insert({
       user_id: userId,

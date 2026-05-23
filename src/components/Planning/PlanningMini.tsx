@@ -49,7 +49,9 @@ export function PlanningMini({ userId, onXpGain }: Props) {
   const selectedDay = days[selectedDayIdx];
   const selectedIso = selectedDay ? formatDateISO(selectedDay) : '';
   // N'afficher que les quêtes et les DS (pas les cours)
-  const dayEvents = events.filter(e => e.event_date === selectedIso && (e.type === 'quest' || e.type === 'ds'));
+  const dayEvents        = events.filter(e => e.event_date === selectedIso && (e.type === 'quest' || e.type === 'ds'));
+  const activeEvents     = dayEvents.filter(e => !(e.type === 'quest' && e.validated));
+  const completedQuests  = dayEvents.filter(e => e.type === 'quest' && e.validated);
 
   // Badge info par jour (quêtes + DS uniquement)
   const dayInfo = days.map(d => {
@@ -141,55 +143,81 @@ export function PlanningMini({ userId, onXpGain }: Props) {
             </button>
           </div>
         ) : (
-          dayEvents.map(ev => {
-            const c = eventTypeColor(ev.type);
-            const isQuest = ev.type === 'quest';
-            return (
-              <div key={ev.id} className={`rounded-lg border ${c.bg} ${c.border}`}>
-                <button
-                  onClick={() => setFull(true)}
-                  className="w-full text-left p-2.5 hover:opacity-80 transition-opacity"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wide ${c.text}`}>
-                      {eventTypeLabel(ev.type)}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground tabular-nums">
-                      {ev.start_time.slice(0, 5)}
-                    </span>
-                    {ev.end_time && (
-                      <span className="text-[10px] text-muted-foreground tabular-nums">
-                        → {ev.end_time.slice(0, 5)}
-                      </span>
-                    )}
-                    {ev.validated && (
-                      <span className="text-[10px] text-emerald-400 ml-auto flex items-center gap-0.5">
-                        <CheckCircle2 size={11} /> Validée
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs font-semibold truncate mt-0.5">{ev.title}</p>
-                  {ev.subject && <p className="text-[10px] text-muted-foreground">{ev.subject}</p>}
-                </button>
-
-                {/* Bouton de validation pour les quêtes non validées */}
-                {isQuest && !ev.validated && ev.source !== 'ical' && (
+          <>
+            {/* ── Événements actifs (DS + quêtes non validées) ── */}
+            {activeEvents.map(ev => {
+              const c = eventTypeColor(ev.type);
+              return (
+                <div key={ev.id} className={`rounded-lg border ${c.bg} ${c.border}`}>
                   <button
-                    onClick={e => { e.stopPropagation(); setValidating(ev); }}
-                    className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold rounded-b-lg border-t transition-colors"
-                    style={{
-                      borderColor: 'hsl(var(--primary) / 0.25)',
-                      backgroundColor: 'hsl(var(--primary) / 0.08)',
-                      color: 'hsl(var(--primary))',
-                    }}
+                    onClick={() => setFull(true)}
+                    className="w-full text-left p-2.5 hover:opacity-80 transition-opacity"
                   >
-                    <CheckCircle2 size={12} />
-                    Valider la quête
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-bold uppercase tracking-wide ${c.text}`}>
+                        {eventTypeLabel(ev.type)}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground tabular-nums">
+                        {ev.start_time.slice(0, 5)}
+                      </span>
+                      {ev.end_time && (
+                        <span className="text-[10px] text-muted-foreground tabular-nums">
+                          → {ev.end_time.slice(0, 5)}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-semibold truncate mt-0.5">{ev.title}</p>
+                    {ev.subject && <p className="text-[10px] text-muted-foreground">{ev.subject}</p>}
                   </button>
-                )}
+                  {ev.type === 'quest' && ev.source !== 'ical' && (
+                    <button
+                      onClick={e => { e.stopPropagation(); setValidating(ev); }}
+                      className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold rounded-b-lg border-t transition-colors"
+                      style={{
+                        borderColor: 'hsl(var(--primary) / 0.25)',
+                        backgroundColor: 'hsl(var(--primary) / 0.08)',
+                        color: 'hsl(var(--primary))',
+                      }}
+                    >
+                      <CheckCircle2 size={12} />
+                      Valider la quête
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* ── Quêtes complétées ── */}
+            {completedQuests.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[9px] uppercase tracking-widest text-emerald-500/70 font-bold mb-1.5 flex items-center gap-1">
+                  <CheckCircle2 size={9} />
+                  Quêtes complétées ({completedQuests.length})
+                </p>
+                <div className="space-y-1">
+                  {completedQuests.map(ev => (
+                    <div
+                      key={ev.id}
+                      className="rounded-lg border px-2.5 py-2 flex items-center gap-2"
+                      style={{
+                        background: 'hsl(145 50% 10%)',
+                        borderColor: 'hsl(145 50% 25%)',
+                      }}
+                    >
+                      <CheckCircle2 size={13} className="shrink-0 text-emerald-400" />
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold truncate text-emerald-300">{ev.title}</p>
+                        {ev.subject && <p className="text-[10px] text-emerald-600">{ev.subject}</p>}
+                      </div>
+                      <span className="text-[10px] text-emerald-600 ml-auto tabular-nums shrink-0">
+                        {ev.start_time.slice(0, 5)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            );
-          })
+            )}
+          </>
         )}
       </div>
 
