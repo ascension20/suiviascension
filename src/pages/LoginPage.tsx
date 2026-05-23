@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -64,6 +65,9 @@ export default function LoginPage() {
             Se connecter
           </button>
         </form>
+        <p className="text-xs text-muted-foreground mt-4">
+          Pas encore de compte ? <Link to="/onboarding" className="text-amber-400 hover:underline">Crée ton compte</Link>
+        </p>
       </motion.div>
     </div>
   );

@@ -1,7 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Flame, LogOut, WifiOff, Clock } from 'lucide-react';
-import { PomodoroTimer } from '@/components/PomodoroTimer';
+import { Flame, LogOut, WifiOff, Music, Music2 } from 'lucide-react';
+import { DeepworkWidget } from '@/components/Deepwork/DeepworkWidget';
+import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
+import { PlanningMini } from '@/components/Planning/PlanningMini';
 import { DailyTaskGate } from '@/components/DailyTaskGate';
 import { EndOfDayReview } from '@/components/EndOfDayReview';
 import { XPBar } from '@/components/XPBar';
@@ -9,7 +12,6 @@ import { QuestList, Quest } from '@/components/QuestList';
 import { WeeklyLeaderboard, LeaderboardEntry } from '@/components/WeeklyLeaderboard';
 import { LevelUpOverlay } from '@/components/LevelUpOverlay';
 import { DifficultiesSection } from '@/components/DifficultiesSection';
-import { PersonalTasks } from '@/components/PersonalTasks';
 import { ExamsSection } from '@/components/ExamsSection';
 import { WeeklyPlanner } from '@/components/WeeklyPlanner';
 import { XPProgressionChart } from '@/components/XPProgressionChart';
@@ -17,32 +19,43 @@ import { GradeAverages } from '@/components/GradeAverages';
 import { SmartNotifications } from '@/components/SmartNotifications';
 import { ProgressComparison } from '@/components/ProgressComparison';
 import { WeeklyPlanView } from '@/components/WeeklyPlanView';
+import { TutorialOverlay } from '@/components/Tutorial/TutorialOverlay';
 import { calculateLevel, getTitleForLevel, Subject } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useOnlineTracker, updateStreak } from '@/hooks/useOnlineTracker';
 import { useOfflineQueue } from '@/hooks/useOfflineQueue';
+import { useLofiMusic, playXpSound } from '@/hooks/useXpAudio';
 import { supabase } from '@/integrations/supabase/client';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function StudentDashboard() {
   const { user, profile, signOut, refreshProfile } = useAuth();
+  const navigate = useNavigate();
   const [quests, setQuests] = useState<Quest[]>([]);
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; xpGained: number } | null>(null);
   const [xpLeaderboard, setXpLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [timerLeaderboard, setTimerLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [totalWorkMinutes, setTotalWorkMinutes] = useState(0);
   const [weeklyChampion, setWeeklyChampion] = useState<string | null>(null);
   const [dailyGatePassed, setDailyGatePassed] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const { enabled: lofiOn, toggle: toggleLofi } = useLofiMusic();
 
   const { isOnline, pendingCount, enqueue } = useOfflineQueue();
-
-  // Track online presence
   useOnlineTracker(user?.id);
 
   const totalXp = profile?.total_xp ?? 0;
   const streak = profile?.streak ?? 0;
   const { level, currentXp, requiredXp } = calculateLevel(totalXp);
   const title = getTitleForLevel(level);
+
+  // Onboarding redirect
+  useEffect(() => {
+    if (profile && profile.onboarding_completed === false) {
+      navigate('/onboarding');
+    }
+    if (profile && profile.tutorial_completed === false && profile.onboarding_completed) {
+      setShowTutorial(true);
+    }
+  }, [profile, navigate]);
 
   useEffect(() => {
     if (!user) return;
@@ -66,7 +79,6 @@ export default function StudentDashboard() {
   useEffect(() => {
     if (!user) return;
     const loadLeaderboards = async () => {
-      // XP leaderboard - all profiles
       const { data: profiles } = await supabase.from('profiles').select('user_id, pseudo, avatar, total_xp').order('total_xp', { ascending: false }).limit(10);
       if (profiles) {
         setXpLeaderboard(profiles.map((p, i) => ({
@@ -74,13 +86,10 @@ export default function StudentDashboard() {
           value: p.total_xp, isCurrentUser: p.user_id === user.id,
         })));
       }
-
-      // Timer leaderboard - this week
       const startOfWeek = new Date();
       const day = startOfWeek.getDay();
       startOfWeek.setDate(startOfWeek.getDate() - (day === 0 ? 6 : day - 1));
       startOfWeek.setHours(0, 0, 0, 0);
-
       const { data: sessions } = await supabase.from('timer_sessions').select('user_id, subject, duration_minutes').gte('created_at', startOfWeek.toISOString());
       if (sessions && sessions.length > 0) {
         const byUser: Record<string, { total: number; subjects: Record<string, number> }> = {};
@@ -92,28 +101,16 @@ export default function StudentDashboard() {
         const userIds = Object.keys(byUser);
         const { data: timerProfiles } = await supabase.from('profiles').select('user_id, pseudo, avatar').in('user_id', userIds);
         if (timerProfiles) {
-          const entries = timerProfiles
-            .map(p => ({
-              pseudo: p.pseudo, avatar: p.avatar,
-              value: byUser[p.user_id]?.total || 0,
-              isCurrentUser: p.user_id === user.id,
-              subjectBreakdown: byUser[p.user_id]?.subjects as Record<Subject, number>,
-              rank: 0,
-            }))
-            .sort((a, b) => b.value - a.value)
-            .map((e, i) => ({ ...e, rank: i + 1 }));
+          const entries = timerProfiles.map(p => ({
+            pseudo: p.pseudo, avatar: p.avatar,
+            value: byUser[p.user_id]?.total || 0,
+            isCurrentUser: p.user_id === user.id,
+            subjectBreakdown: byUser[p.user_id]?.subjects as Record<Subject, number>,
+            rank: 0,
+          })).sort((a, b) => b.value - a.value).map((e, i) => ({ ...e, rank: i + 1 }));
           setTimerLeaderboard(entries);
-          // Weekly champion = rank 1
-          if (entries.length > 0) {
-            setWeeklyChampion(entries[0].pseudo);
-          }
+          if (entries.length > 0) setWeeklyChampion(entries[0].pseudo);
         }
-      }
-
-      // Total work time
-      const { data: allSessions } = await supabase.from('timer_sessions').select('duration_minutes').eq('user_id', user.id);
-      if (allSessions) {
-        setTotalWorkMinutes(allSessions.reduce((a, s) => a + s.duration_minutes, 0));
       }
     };
     loadLeaderboards();
@@ -126,46 +123,28 @@ export default function StudentDashboard() {
     const newLevel = calculateLevel(newTotal).level;
     if (newLevel > oldLevel) setLevelUpData({ level: newLevel, title: getTitleForLevel(newLevel), xpGained: amount });
     await supabase.from('profiles').update({ total_xp: newTotal }).eq('user_id', user.id);
-    // Update streak
     await updateStreak(user.id);
+    playXpSound();
     await refreshProfile();
   }, [user, totalXp, refreshProfile]);
-
-  const handleSessionComplete = useCallback(async (subject: Subject, durationMinutes: number) => {
-    if (!user) return;
-    const xp = Math.floor(durationMinutes / 25) * 10;
-    const payload = { user_id: user.id, subject, duration_minutes: durationMinutes, xp_earned: xp };
-
-    if (!navigator.onLine) {
-      enqueue('timer_session', payload);
-      if (xp > 0) await addXp(xp);
-      return;
-    }
-
-    await supabase.from('timer_sessions').insert(payload);
-    if (xp > 0) await addXp(xp);
-  }, [user, addXp, enqueue]);
 
   const handleQuestComplete = useCallback(async (questId: string) => {
     const quest = quests.find(q => q.id === questId);
     if (!quest || quest.completed) return;
-
     if (!navigator.onLine) {
       enqueue('quest_complete', { id: questId });
       setQuests(prev => prev.map(q => q.id === questId ? { ...q, completed: true } : q));
       await addXp(quest.xp);
       return;
     }
-
     await supabase.from('quests').update({ completed: true, completed_at: new Date().toISOString() }).eq('id', questId);
     setQuests(prev => prev.map(q => q.id === questId ? { ...q, completed: true } : q));
     await addXp(quest.xp);
   }, [quests, addXp, enqueue]);
 
   const activeQuests = quests.filter(q => !q.completed);
-  const totalWorkHours = Math.floor(totalWorkMinutes / 60);
-  const totalWorkMins = totalWorkMinutes % 60;
 
+  if (user && profile?.onboarding_completed === false) return null;
   if (user && !dailyGatePassed) {
     return <DailyTaskGate userId={user.id} onComplete={() => setDailyGatePassed(true)} />;
   }
@@ -175,14 +154,17 @@ export default function StudentDashboard() {
       <header className="border-b border-border px-4 md:px-6 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h1 className="font-display text-lg font-semibold hidden sm:block">Ascension Académique</h1>
-          <div className="flex items-center gap-4">
-            {/* Offline indicator */}
+          <div className="flex items-center gap-3">
             {!isOnline && (
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-secondary text-xs text-muted-foreground">
                 <WifiOff size={12} />
                 <span>Hors ligne{pendingCount > 0 ? ` (${pendingCount})` : ''}</span>
               </div>
             )}
+            <button onClick={toggleLofi} title={lofiOn ? 'Couper la musique lofi' : 'Activer la musique lofi'}
+              className={`p-1.5 rounded-md hover:bg-secondary ${lofiOn ? 'text-amber-400' : 'text-muted-foreground'}`}>
+              {lofiOn ? <Music2 size={16} /> : <Music size={16} />}
+            </button>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border" style={{ backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
               <Flame size={14} className="text-streak" />
               <span className="font-display text-sm font-semibold text-streak">{streak}</span>
@@ -203,7 +185,6 @@ export default function StudentDashboard() {
       </header>
 
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
-        {/* Smart contextual notifications */}
         {user && <SmartNotifications userId={user.id} />}
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-muted-foreground mb-6">
@@ -211,35 +192,20 @@ export default function StudentDashboard() {
           {' '}Ta série de <span className="text-streak font-semibold">{streak} jours</span> t'attend.
         </motion.p>
 
-        {/* Cumulative work time banner */}
-        {totalWorkMinutes > 0 && (
-          <div className="mb-6 p-3.5 rounded-lg border border-border bg-card flex items-center gap-3">
-            <Clock size={16} className="text-primary shrink-0" />
-            <p className="text-sm">
-              Depuis que tu as rejoint l'Ascension, tu as travaillé{' '}
-              <span className="font-display font-semibold text-foreground">
-                {totalWorkHours > 0 ? `${totalWorkHours}h` : ''}{totalWorkMins > 0 ? `${totalWorkMins}min` : ''}
-              </span>
-              . Continue comme ça ! 💪
-            </p>
-          </div>
-        )}
-
-        {/* Timer + Quests */}
+        {/* Deepwork + Planning miniature */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
-          <div className="lg:col-span-3 bg-card border border-border rounded-lg p-6" style={{ background: 'linear-gradient(180deg, hsl(var(--card)) 0%, hsl(225, 28%, 12%) 100%)' }}>
-            <PomodoroTimer onSessionComplete={handleSessionComplete} />
+          <div className="lg:col-span-3" data-tutorial="deepwork">
+            {user && <DeepworkWidget userId={user.id} onXpGain={addXp} />}
           </div>
-          <div className="lg:col-span-2 bg-card border border-border rounded-lg p-5">
-            <Tabs defaultValue="coach-quests">
-              <TabsList className="w-full mb-3">
-                <TabsTrigger value="coach-quests" className="flex-1 text-xs">⚔️ Quêtes Coach ({activeQuests.length})</TabsTrigger>
-                <TabsTrigger value="my-tasks" className="flex-1 text-xs">✏️ Mes tâches</TabsTrigger>
-              </TabsList>
-              <TabsContent value="coach-quests"><QuestList quests={activeQuests} onComplete={handleQuestComplete} /></TabsContent>
-              <TabsContent value="my-tasks">{user && <PersonalTasks userId={user.id} onXpGain={addXp} />}</TabsContent>
-            </Tabs>
+          <div className="lg:col-span-2 bg-card border border-border rounded-lg p-4 min-h-[280px]" data-tutorial="planning">
+            {user && <PlanningMini userId={user.id} onXpGain={addXp} />}
           </div>
+        </div>
+
+        {/* Quêtes coach (gardées) */}
+        <div className="mb-6 bg-card border border-border rounded-lg p-5">
+          <h2 className="font-display font-semibold mb-3 text-sm">⚔️ Quêtes du coach ({activeQuests.length})</h2>
+          <QuestList quests={activeQuests} onComplete={handleQuestComplete} />
         </div>
 
         {/* XP Chart + Averages */}
@@ -248,13 +214,18 @@ export default function StudentDashboard() {
           {user && <GradeAverages userId={user.id} />}
         </div>
 
-        {/* Weekly Plan + Progress Comparison */}
+        {/* Deepwork stats + Weekly Plan */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {user && <DeepworkStats userId={user.id} />}
           {user && <WeeklyPlanView userId={user.id} />}
+        </div>
+
+        {/* Progress comparison */}
+        <div className="grid grid-cols-1 mb-6">
           {user && <ProgressComparison userId={user.id} totalXp={totalXp} streak={streak} />}
         </div>
 
-        {/* DS + Difficultés + Planning */}
+        {/* DS + Difficultés + Planning hebdo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {user && <ExamsSection userId={user.id} />}
           {user && <DifficultiesSection userId={user.id} />}
@@ -262,7 +233,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* Leaderboards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-tutorial="leaderboard">
           <WeeklyLeaderboard title="🏆 Classement XP" data={xpLeaderboard} unit="XP" />
           <WeeklyLeaderboard title="⏱ Classement Chrono" data={timerLeaderboard} unit="min" weeklyChampion={weeklyChampion} />
         </div>
@@ -270,6 +241,9 @@ export default function StudentDashboard() {
 
       <LevelUpOverlay data={levelUpData} onDismiss={() => setLevelUpData(null)} />
       {user && <EndOfDayReview userId={user.id} />}
+      {showTutorial && user && (
+        <TutorialOverlay userId={user.id} onXpGain={addXp} onDone={() => setShowTutorial(false)} />
+      )}
     </div>
   );
 }

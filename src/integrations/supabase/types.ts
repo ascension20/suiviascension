@@ -71,6 +71,36 @@ export type Database = {
         }
         Relationships: []
       }
+      deepwork_sessions: {
+        Row: {
+          created_at: string
+          duration_seconds: number
+          ended_at: string
+          id: string
+          started_at: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds: number
+          ended_at: string
+          id?: string
+          started_at: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number
+          ended_at?: string
+          id?: string
+          started_at?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
       difficulties: {
         Row: {
           coach_reply: string | null
@@ -149,17 +179,165 @@ export type Database = {
         }
         Relationships: []
       }
+      initial_grades: {
+        Row: {
+          coefficient: number
+          created_at: string
+          grade: number | null
+          id: string
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          coefficient?: number
+          created_at?: string
+          grade?: number | null
+          id?: string
+          subject: string
+          user_id: string
+        }
+        Update: {
+          coefficient?: number
+          created_at?: string
+          grade?: number | null
+          id?: string
+          subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      onboarding_data: {
+        Row: {
+          activities: string[]
+          created_at: string
+          engagement_signed: boolean
+          first_name: string | null
+          goals: string | null
+          ical_url: string | null
+          id: string
+          language: string
+          last_name: string | null
+          options: string[]
+          other_activity: string | null
+          school_level: string | null
+          school_name: string | null
+          specialties: string[]
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activities?: string[]
+          created_at?: string
+          engagement_signed?: boolean
+          first_name?: string | null
+          goals?: string | null
+          ical_url?: string | null
+          id?: string
+          language?: string
+          last_name?: string | null
+          options?: string[]
+          other_activity?: string | null
+          school_level?: string | null
+          school_name?: string | null
+          specialties?: string[]
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activities?: string[]
+          created_at?: string
+          engagement_signed?: boolean
+          first_name?: string | null
+          goals?: string | null
+          ical_url?: string | null
+          id?: string
+          language?: string
+          last_name?: string | null
+          options?: string[]
+          other_activity?: string | null
+          school_level?: string | null
+          school_name?: string | null
+          specialties?: string[]
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      planning_events: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_time: string
+          event_date: string
+          ical_uid: string | null
+          id: string
+          linked_quest_id: string | null
+          source: Database["public"]["Enums"]["event_source"]
+          start_time: string
+          subject: string | null
+          title: string
+          type: Database["public"]["Enums"]["event_type"]
+          updated_at: string
+          user_id: string
+          validated: boolean
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_time: string
+          event_date: string
+          ical_uid?: string | null
+          id?: string
+          linked_quest_id?: string | null
+          source?: Database["public"]["Enums"]["event_source"]
+          start_time: string
+          subject?: string | null
+          title: string
+          type: Database["public"]["Enums"]["event_type"]
+          updated_at?: string
+          user_id: string
+          validated?: boolean
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_time?: string
+          event_date?: string
+          ical_uid?: string | null
+          id?: string
+          linked_quest_id?: string | null
+          source?: Database["public"]["Enums"]["event_source"]
+          start_time?: string
+          subject?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["event_type"]
+          updated_at?: string
+          user_id?: string
+          validated?: boolean
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar: string
           class_level: string | null
           created_at: string
+          ical_url: string | null
           id: string
           last_activity_date: string | null
           last_seen_at: string | null
+          onboarding_completed: boolean
           pseudo: string
           streak: number
+          today_xp: number
+          today_xp_date: string | null
+          total_deepwork_seconds: number
+          total_deepwork_sessions: number
           total_xp: number
+          tutorial_completed: boolean
           updated_at: string
           user_id: string
         }
@@ -167,12 +345,19 @@ export type Database = {
           avatar?: string
           class_level?: string | null
           created_at?: string
+          ical_url?: string | null
           id?: string
           last_activity_date?: string | null
           last_seen_at?: string | null
+          onboarding_completed?: boolean
           pseudo: string
           streak?: number
+          today_xp?: number
+          today_xp_date?: string | null
+          total_deepwork_seconds?: number
+          total_deepwork_sessions?: number
           total_xp?: number
+          tutorial_completed?: boolean
           updated_at?: string
           user_id: string
         }
@@ -180,12 +365,19 @@ export type Database = {
           avatar?: string
           class_level?: string | null
           created_at?: string
+          ical_url?: string | null
           id?: string
           last_activity_date?: string | null
           last_seen_at?: string | null
+          onboarding_completed?: boolean
           pseudo?: string
           streak?: number
+          today_xp?: number
+          today_xp_date?: string | null
+          total_deepwork_seconds?: number
+          total_deepwork_sessions?: number
           total_xp?: number
+          tutorial_completed?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -411,6 +603,8 @@ export type Database = {
     Enums: {
       app_role: "coach" | "student"
       difficulty_level: "easy" | "medium" | "hard"
+      event_source: "manual" | "ical"
+      event_type: "course" | "quest" | "ds"
       issue_severity: "blocking" | "fragile" | "ok"
       stress_level: "stressed" | "neutral" | "calm"
       subject_type:
@@ -550,6 +744,8 @@ export const Constants = {
     Enums: {
       app_role: ["coach", "student"],
       difficulty_level: ["easy", "medium", "hard"],
+      event_source: ["manual", "ical"],
+      event_type: ["course", "quest", "ds"],
       issue_severity: ["blocking", "fragile", "ok"],
       stress_level: ["stressed", "neutral", "calm"],
       subject_type: [
