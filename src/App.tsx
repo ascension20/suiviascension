@@ -9,6 +9,7 @@ import SetupPage from "./pages/SetupPage";
 import OnboardingPage from "./pages/Onboarding";
 import StudentDashboard from "./pages/StudentDashboard";
 import DeepworkPage from "./pages/DeepworkPage";
+import ProfilePage from "./pages/ProfilePage";
 import CoachDashboard from "./pages/CoachDashboard";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
@@ -52,6 +53,7 @@ function AppRoutes() {
       <Route path="/setup" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <SetupPage />} />
       <Route path="/student" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
       <Route path="/student/deepwork" element={<ProtectedRoute requiredRole="student"><DeepworkPage /></ProtectedRoute>} />
+      <Route path="/student/profile" element={<ProtectedRoute requiredRole="student"><ProfilePage /></ProtectedRoute>} />
       <Route path="/coach" element={<ProtectedRoute requiredRole="coach"><CoachDashboard /></ProtectedRoute>} />
       <Route path="/" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <Navigate to="/login" replace />} />
       <Route path="*" element={<NotFound />} />

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Flame, LogOut, WifiOff, Music, Music2 } from 'lucide-react';
+import { Flame, LogOut, WifiOff } from 'lucide-react';
 import { DeepworkWidget } from '@/components/Deepwork/DeepworkWidget';
 import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
 import { PlanningMini } from '@/components/Planning/PlanningMini';
@@ -18,11 +18,12 @@ import { SmartNotifications } from '@/components/SmartNotifications';
 import { ProgressComparison } from '@/components/ProgressComparison';
 import { WeeklyPlanView } from '@/components/WeeklyPlanView';
 import { TutorialOverlay } from '@/components/Tutorial/TutorialOverlay';
+import { DSReminderModal } from '@/components/DSReminderModal';
 import { calculateLevel, getTitleForLevel, Subject } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useOnlineTracker, updateStreak } from '@/hooks/useOnlineTracker';
 import { useOfflineQueue } from '@/hooks/useOfflineQueue';
-import { useLofiMusic, playXpSound } from '@/hooks/useXpAudio';
+import { playXpSound } from '@/hooks/useXpAudio';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function StudentDashboard() {
@@ -34,7 +35,6 @@ export default function StudentDashboard() {
   const [weeklyChampion, setWeeklyChampion] = useState<string | null>(null);
   const [dailyGatePassed, setDailyGatePassed] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const { enabled: lofiOn, toggle: toggleLofi } = useLofiMusic();
 
   const { isOnline, pendingCount } = useOfflineQueue();
   useOnlineTracker(user?.id);
@@ -123,24 +123,24 @@ export default function StudentDashboard() {
                 <span>Hors ligne{pendingCount > 0 ? ` (${pendingCount})` : ''}</span>
               </div>
             )}
-            <button onClick={toggleLofi} title={lofiOn ? 'Couper la musique lofi' : 'Activer la musique lofi'}
-              className={`p-1.5 rounded-md hover:bg-secondary ${lofiOn ? 'text-amber-400' : 'text-muted-foreground'}`}>
-              {lofiOn ? <Music2 size={16} /> : <Music size={16} />}
-            </button>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border" style={{ backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
+<div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border" style={{ backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
               <Flame size={14} className="text-streak" />
               <span className="font-display text-sm font-semibold text-streak">{streak}</span>
             </div>
             <XPBar current={currentXp} max={requiredXp} level={level} title={title} className="hidden md:flex" />
             <XPBar current={currentXp} max={requiredXp} level={level} title={title} compact className="md:hidden" />
-            <div className="relative">
-              <div className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center text-lg">
+            <button
+              onClick={() => navigate('/student/profile')}
+              className="relative group"
+              title="Mon profil"
+            >
+              <div className="w-9 h-9 rounded-full bg-card border border-border group-hover:border-primary/60 flex items-center justify-center text-lg transition-all group-hover:shadow-[0_0_12px_rgba(139,92,246,0.4)]">
                 {profile?.avatar ?? '🐺'}
               </div>
               {weeklyChampion === profile?.pseudo && (
-                <span className="absolute -top-1 -right-1 text-sm" title="Premier du classement chrono cette semaine !">👑</span>
+                <span className="absolute -top-1 -right-1 text-sm" title="Premier du classement chrono !">👑</span>
               )}
-            </div>
+            </button>
             <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors" title="Déconnexion"><LogOut size={18} /></button>
           </div>
         </div>
@@ -195,6 +195,7 @@ export default function StudentDashboard() {
       </main>
 
       <LevelUpOverlay data={levelUpData} onDismiss={() => setLevelUpData(null)} />
+      {user && <DSReminderModal userId={user.id} />}
       {user && <EndOfDayReview userId={user.id} />}
       {showTutorial && user && (
         <TutorialOverlay userId={user.id} onXpGain={addXp} onDone={() => setShowTutorial(false)} />

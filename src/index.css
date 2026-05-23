@@ -103,3 +103,78 @@
 .pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* === GAME UI ENHANCEMENTS === */
+
+/* Scanline overlay subtle */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Neon border glow on cards */
+.border-border {
+  border-color: hsl(225 20% 24%);
+}
+
+/* Game-style scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: hsl(225 28% 10%); }
+::-webkit-scrollbar-thumb { background: hsl(225 20% 28%); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(217 91% 50%); }
+
+/* Floating animation for level badge */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.float-badge { animation: float 3s ease-in-out infinite; }
+
+/* Neon text glow */
+.neon-amber { text-shadow: 0 0 10px rgba(245,166,35,0.6), 0 0 20px rgba(245,166,35,0.3); }
+.neon-violet { text-shadow: 0 0 10px rgba(139,92,246,0.6), 0 0 20px rgba(139,92,246,0.3); }
+.neon-blue   { text-shadow: 0 0 10px rgba(96,165,250,0.6), 0 0 20px rgba(96,165,250,0.3); }
+
+/* Card glow on hover */
+.game-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.game-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(139,92,246,0.08);
+  border-color: hsl(225 20% 32%);
+}
+
+/* Pixelated/RPG border accent on section headers */
+.section-header-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-header-bar::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, hsl(var(--primary)), hsl(262,80%,60%));
+}
+
+/* XP gain pop animation */
+@keyframes xp-pop {
+  0%   { opacity: 0; transform: translateY(0) scale(0.7); }
+  20%  { opacity: 1; transform: translateY(-20px) scale(1.2); }
+  80%  { opacity: 1; transform: translateY(-50px) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(0.9); }
+}
+.xp-pop { animation: xp-pop 1.6s ease-out forwards; }

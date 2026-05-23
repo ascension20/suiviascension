@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, ArrowLeft, Brain } from 'lucide-react';
+import { Play, Pause, ArrowLeft, Brain, Music, Music2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDeepworkXp } from '@/lib/planning-utils';
-import { playXpSound } from '@/hooks/useXpAudio';
-import { calculateLevel, getTitleForLevel } from '@/lib/game-utils';
+import { playXpSound, useLofiMusic } from '@/hooks/useXpAudio';
 import { useAuth } from '@/hooks/useAuth';
 import { updateStreak } from '@/hooks/useOnlineTracker';
 import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
@@ -23,6 +22,7 @@ export default function DeepworkPage() {
   const navigate = useNavigate();
   const { user, profile, refreshProfile } = useAuth();
   const totalXp = profile?.total_xp ?? 0;
+  const { enabled: lofiOn, toggle: toggleLofi } = useLofiMusic();
 
   const [startedAt, setStartedAt] = useState<number | null>(() => {
     const v = localStorage.getItem(STORAGE_KEY);
@@ -105,6 +105,14 @@ export default function DeepworkPage() {
           <Brain size={18} className="text-violet-400" />
           <h1 className="font-display font-semibold">Deepwork</h1>
         </div>
+        <button
+          onClick={toggleLofi}
+          title={lofiOn ? 'Couper la musique lofi' : 'Activer la musique lofi'}
+          className={`ml-auto p-2 rounded-lg border transition-all ${lofiOn ? 'border-amber-500/50 bg-amber-500/15 text-amber-400' : 'border-border text-muted-foreground hover:text-foreground'}`}
+        >
+          {lofiOn ? <Music2 size={16} /> : <Music size={16} />}
+          <span className="sr-only">{lofiOn ? 'Musique ON' : 'Musique OFF'}</span>
+        </button>
       </header>
 
       {/* Main focus area */}
