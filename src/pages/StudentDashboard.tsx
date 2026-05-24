@@ -5,14 +5,13 @@ import { Flame, LogOut, WifiOff } from 'lucide-react';
 import { DeepworkWidget } from '@/components/Deepwork/DeepworkWidget';
 import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
 import { PlanningMini } from '@/components/Planning/PlanningMini';
-import { DailyTaskGate } from '@/components/DailyTaskGate';
 import { EndOfDayReview } from '@/components/EndOfDayReview';
 import { XPBar } from '@/components/XPBar';
 import { WeeklyLeaderboard, LeaderboardEntry } from '@/components/WeeklyLeaderboard';
 import { LevelUpOverlay } from '@/components/LevelUpOverlay';
 import { DifficultiesSection } from '@/components/DifficultiesSection';
 import { ExamsSection } from '@/components/ExamsSection';
-import { XPProgressionChart } from '@/components/XPProgressionChart';
+import { WeeklyDeepworkGoal } from '@/components/WeeklyDeepworkGoal';
 
 import { ProgressComparison } from '@/components/ProgressComparison';
 import { TutorialOverlay } from '@/components/Tutorial/TutorialOverlay';
@@ -37,7 +36,6 @@ export default function StudentDashboard() {
   const [chronoWeekly, setChronoWeekly] = useState<LeaderboardEntry[]>([]);
   const [chronoDaily,  setChronoDaily]  = useState<LeaderboardEntry[]>([]);
   const [weeklyChampion, setWeeklyChampion] = useState<string | null>(null);
-  const [dailyGatePassed, setDailyGatePassed] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
   const { isOnline, pendingCount } = useOfflineQueue();
@@ -144,9 +142,6 @@ export default function StudentDashboard() {
   }, [user, totalXp, refreshProfile]);
 
   if (user && profile?.onboarding_completed === false) return null;
-  if (user && !dailyGatePassed) {
-    return <DailyTaskGate userId={user.id} onComplete={() => setDailyGatePassed(true)} />;
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -238,7 +233,7 @@ export default function StudentDashboard() {
             {user && <PlanningMini userId={user.id} onXpGain={addXp} />}
           </div>
           <div className="lg:col-span-2">
-            {user && <XPProgressionChart userId={user.id} totalXp={totalXp} />}
+            {user && <WeeklyDeepworkGoal userId={user.id} />}
           </div>
         </div>
 
