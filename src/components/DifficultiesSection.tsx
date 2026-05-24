@@ -59,7 +59,7 @@ export function DifficultiesSection({ userId }: { userId: string }) {
     setLoading(true);
     await supabase.from('difficulties').insert({
       user_id: userId,
-      subject,
+      subject: subject as any,
       severity,
       description: description.trim(),
       custom_subject: subject === 'Autre' && customSubject.trim() ? customSubject.trim() : null,

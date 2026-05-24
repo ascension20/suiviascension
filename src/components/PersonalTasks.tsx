@@ -32,7 +32,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
   const [tasks, setTasks] = useState<StudentTask[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [description, setDescription] = useState('');
-  const [subject, setSubject] = useState<Subject>('Maths');
+  const [subject, setSubject] = useState<Subject>('Maths' as Subject);
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [customSubject, setCustomSubject] = useState('');
   const [deadline, setDeadline] = useState('');
@@ -69,7 +69,7 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
     await supabase.from('student_tasks').insert({
       user_id: userId,
       description: description.trim(),
-      subject,
+      subject: subject as any,
       difficulty,
       xp_reward: DIFF_XP[difficulty],
       deadline: deadline || null,

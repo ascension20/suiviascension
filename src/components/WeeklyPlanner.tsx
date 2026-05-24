@@ -27,7 +27,7 @@ export function WeeklyPlanner({ userId }: { userId: string }) {
     return d === 0 ? 6 : d - 1; // Convert to Mon=0
   });
   const [showForm, setShowForm] = useState(false);
-  const [subject, setSubject] = useState<Subject>('Maths');
+  const [subject, setSubject] = useState<Subject>('Maths' as Subject);
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState('17:00');
   const [duration, setDuration] = useState(30);
