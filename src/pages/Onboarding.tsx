@@ -209,9 +209,13 @@ export default function OnboardingPage() {
     await supabase.from('profiles').update({
       pseudo: firstName ? `${firstName} ${lastName.charAt(0) || ''}`.trim() : undefined,
       class_level: level,
-      ical_url: icalUrl || null,
       onboarding_completed: true,
     }).eq('user_id', u.id);
+
+    await supabase.from('user_private').upsert({
+      user_id: u.id,
+      ical_url: icalUrl || null,
+    }, { onConflict: 'user_id' });
 
     // Import iCal events into planning_events (3 months ahead)
     if (icalUrl && icalStatus === 'ok') {

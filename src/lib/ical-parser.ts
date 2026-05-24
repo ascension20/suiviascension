@@ -18,15 +18,16 @@ const CORS_PROXIES = [
 ];
 
 export async function fetchICal(url: string): Promise<string> {
-  // 1. Via fonction PostgreSQL (serveur, pas de CORS)
+  // 1. Via authenticated edge function (server-side, no CORS, no public DB function)
   try {
-    const { data, error } = await supabase.rpc('fetch_ical_url', { ical_url: url });
-    if (!error && data && typeof data === 'string' && data.includes('BEGIN:VCALENDAR')) {
-      return data;
+    const { data, error } = await supabase.functions.invoke('fetch-ical', { body: { url } });
+    if (!error && data) {
+      const text = typeof data === 'string' ? data : (data as { content?: string }).content ?? '';
+      if (text.includes('BEGIN:VCALENDAR')) return text;
     }
   } catch { /* fall through */ }
 
-  // 2. Fetch direct (marche si l'URL autorise CORS)
+  // 2. Fetch direct (works if the URL allows CORS)
   try {
     const res = await fetch(url);
     if (res.ok) {

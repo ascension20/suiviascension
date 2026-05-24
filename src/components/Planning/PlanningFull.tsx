@@ -77,7 +77,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
       setSuppressedSlots(slots);
     }
 
-    const { data: prof } = await supabase.from('profiles').select('ical_url').eq('user_id', userId).single();
+    const { data: prof } = await supabase.from('user_private').select('ical_url').eq('user_id', userId).maybeSingle();
     setIcalUrl(prof?.ical_url ?? null);
   };
 

@@ -137,6 +137,9 @@ export default function CoachDashboard() {
     const studentProfiles = profiles.filter(p => studentUserIds.includes(p.user_id));
     const profileMap = Object.fromEntries(studentProfiles.map(p => [p.user_id, p]));
 
+    const { data: privateRows } = await supabase.from('user_private').select('user_id, last_seen_at');
+    const lastSeenMap: Record<string, string | null> = Object.fromEntries((privateRows ?? []).map(r => [r.user_id, r.last_seen_at]));
+
     const { data: allQuests } = await supabase.from('quests').select('*');
     const { data: allSessions } = await supabase.from('timer_sessions').select('user_id, duration_minutes');
 
@@ -162,7 +165,7 @@ export default function CoachDashboard() {
       const lastActive = p.last_activity_date
         ? (new Date(p.last_activity_date).toDateString() === new Date().toDateString() ? "Aujourd'hui" : p.last_activity_date)
         : 'Jamais';
-      return { ...p, completionRate, totalHours, lastActive, last_seen_at: p.last_seen_at, class_level: p.class_level };
+      return { ...p, completionRate, totalHours, lastActive, last_seen_at: lastSeenMap[p.user_id] ?? null, class_level: p.class_level };
     });
 
     setStudents(enriched);
