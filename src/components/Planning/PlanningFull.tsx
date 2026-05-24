@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, CalendarDays, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   PlanningEvent, getWeekStart, getWeekDays, formatDateISO, formatWeekLabel,
-  dayName, eventTypeColor, eventTypeLabel,
+  dayName, eventTypeColor, eventTypeLabel, toExamSubject,
 } from '@/lib/planning-utils';
 import { fetchICal, parseICal, icalToPlanningEvent } from '@/lib/ical-parser';
 import { EventFormModal } from './EventFormModal';
@@ -416,20 +416,6 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SUBJECTS } from '@/lib/game-utils';
 
-/**
- * The `exams` table has a limited subject_type enum:
- *   "Maths" | "Français" | "Physique" | "SES" | "Anglais" | "Autre"
- * Map any SUBJECTS value to a valid enum + store the full name in custom_subject.
- */
-function toExamSubject(s: string): { subject: string; custom_subject: string | null } {
-  if (s === 'Français')          return { subject: 'Français',  custom_subject: null };
-  if (s === 'SES')               return { subject: 'SES',       custom_subject: null };
-  if (s === 'Autre')             return { subject: 'Autre',     custom_subject: null };
-  if (s === 'Mathématiques')     return { subject: 'Maths',     custom_subject: 'Mathématiques' };
-  if (s === 'Physique-Chimie')   return { subject: 'Physique',  custom_subject: 'Physique-Chimie' };
-  if (s === 'LV1 (Anglais)')     return { subject: 'Anglais',   custom_subject: 'LV1 (Anglais)' };
-  return { subject: 'Autre', custom_subject: s }; // Histoire-Géo, SVT, NSI, etc.
-}
 
 function ConvertToDsModal({
   event, userId, onClose, onSaved,

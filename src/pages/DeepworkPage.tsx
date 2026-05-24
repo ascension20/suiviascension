@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, ArrowLeft, Music, Music2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { computeDeepworkXp } from '@/lib/planning-utils';
+import { computeDeepworkXp, DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
 import { playXpSound, useLofiMusic } from '@/hooks/useXpAudio';
 import { useAuth } from '@/hooks/useAuth';
 import { updateStreak } from '@/hooks/useOnlineTracker';
 import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
 
-const STORAGE_KEY = 'deepwork_started_at';
+const STORAGE_KEY = DEEPWORK_STORAGE_KEY;
 
 function xpRateInfo(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -99,8 +99,9 @@ export default function DeepworkPage() {
     const v = localStorage.getItem(STORAGE_KEY);
     return v ? Number(v) : null;
   });
-  const [now, setNow]     = useState(Date.now());
-  const [xpPop, setXpPop] = useState<number | null>(null);
+  const [now, setNow]       = useState(Date.now());
+  const [xpPop, setXpPop]   = useState<number | null>(null);
+  const [questTitle, setQuestTitle] = useState<string | null>(() => localStorage.getItem('deepwork_quest_title'));
   const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -131,7 +132,9 @@ export default function DeepworkPage() {
     const duration = Math.floor((ended - startedAt) / 1000);
     const xp       = computeDeepworkXp(duration);
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('deepwork_quest_title');
     setStartedAt(null);
+    setQuestTitle(null);
 
     if (duration >= 60) {
       await supabase.from('deepwork_sessions').insert({
@@ -213,15 +216,31 @@ export default function DeepworkPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-sm font-semibold"
-              style={{
-                borderColor: 'hsl(43 90% 50% / 0.4)',
-                backgroundColor: 'hsl(43 90% 50% / 0.10)',
-                color: 'hsl(var(--primary))',
-              }}
+              className="flex flex-col items-center gap-2"
             >
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'hsl(var(--primary))' }} />
-              Session active
+              <div
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-sm font-semibold"
+                style={{
+                  borderColor: 'hsl(43 90% 50% / 0.4)',
+                  backgroundColor: 'hsl(43 90% 50% / 0.10)',
+                  color: 'hsl(var(--primary))',
+                }}
+              >
+                <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'hsl(var(--primary))' }} />
+                Session active
+              </div>
+              {questTitle && (
+                <div
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-medium"
+                  style={{
+                    borderColor: 'hsl(270 50% 50% / 0.4)',
+                    backgroundColor: 'hsl(270 50% 50% / 0.10)',
+                    color: 'hsl(270 60% 75%)',
+                  }}
+                >
+                  ⚔️ {questTitle}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

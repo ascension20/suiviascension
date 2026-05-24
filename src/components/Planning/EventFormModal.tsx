@@ -2,19 +2,9 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlanningEvent, EventType } from '@/lib/planning-utils';
+import { toExamSubject } from '@/lib/planning-utils';
 import { SUBJECTS } from '@/lib/game-utils';
 import { Trash2 } from 'lucide-react';
-
-/** Maps full subject names to the DB's subject_type enum + custom_subject display override. */
-function toExamSubject(s: string): { subject: string; custom_subject: string | null } {
-  if (s === 'Français')          return { subject: 'Français',  custom_subject: null };
-  if (s === 'SES')               return { subject: 'SES',       custom_subject: null };
-  if (s === 'Autre')             return { subject: 'Autre',     custom_subject: null };
-  if (s === 'Mathématiques')     return { subject: 'Maths',     custom_subject: 'Mathématiques' };
-  if (s === 'Physique-Chimie')   return { subject: 'Physique',  custom_subject: 'Physique-Chimie' };
-  if (s === 'LV1 (Anglais)')     return { subject: 'Anglais',   custom_subject: 'LV1 (Anglais)' };
-  return { subject: 'Autre', custom_subject: s };
-}
 
 interface Props {
   userId: string;

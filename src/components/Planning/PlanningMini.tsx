@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Maximize2, Calendar, Plus, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Maximize2, Calendar, Plus, ChevronLeft, ChevronRight, CheckCircle2, Play, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   PlanningEvent, getWeekStart, getWeekDays, formatDateISO, formatWeekLabel,
-  dayName, eventTypeColor, eventTypeLabel,
+  dayName, eventTypeColor, eventTypeLabel, toExamSubject, DEEPWORK_STORAGE_KEY,
 } from '@/lib/planning-utils';
 import { PlanningFull } from './PlanningFull';
 import { EventFormModal } from './EventFormModal';
@@ -15,6 +16,7 @@ interface Props { userId: string; onXpGain: (amount: number) => void; }
 const SHORT_DAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
 export function PlanningMini({ userId, onXpGain }: Props) {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<PlanningEvent[]>([]);
   const [full, setFull] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -45,6 +47,27 @@ export function PlanningMini({ userId, onXpGain }: Props) {
   };
 
   useEffect(() => { load(); }, [userId, weekOffset]);
+
+  /** Delete a DS event from planning_events + synced exams row */
+  const deleteDs = async (ev: PlanningEvent) => {
+    if (!window.confirm('Supprimer ce DS ?')) return;
+    await supabase.from('planning_events').delete().eq('id', ev.id);
+    const { subject: examEnum } = toExamSubject(ev.subject ?? 'Autre');
+    await supabase.from('exams').delete()
+      .eq('user_id', userId)
+      .eq('exam_date', ev.event_date)
+      .eq('subject', examEnum as any);
+    load();
+  };
+
+  /** Navigate to deepwork page and auto-start the timer if not already running */
+  const launchDeepwork = (ev: PlanningEvent) => {
+    if (!localStorage.getItem(DEEPWORK_STORAGE_KEY)) {
+      localStorage.setItem(DEEPWORK_STORAGE_KEY, String(Date.now()));
+    }
+    localStorage.setItem('deepwork_quest_title', ev.title);
+    navigate('/student/deepwork');
+  };
 
   const selectedDay = days[selectedDayIdx];
   const selectedIso = selectedDay ? formatDateISO(selectedDay) : '';
@@ -149,39 +172,69 @@ export function PlanningMini({ userId, onXpGain }: Props) {
               const c = eventTypeColor(ev.type);
               return (
                 <div key={ev.id} className={`rounded-lg border ${c.bg} ${c.border}`}>
-                  <button
-                    onClick={() => setFull(true)}
-                    className="w-full text-left p-2.5 hover:opacity-80 transition-opacity"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[10px] font-bold uppercase tracking-wide ${c.text}`}>
-                        {eventTypeLabel(ev.type)}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground tabular-nums">
-                        {ev.start_time.slice(0, 5)}
-                      </span>
-                      {ev.end_time && (
-                        <span className="text-[10px] text-muted-foreground tabular-nums">
-                          → {ev.end_time.slice(0, 5)}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs font-semibold truncate mt-0.5">{ev.title}</p>
-                    {ev.subject && <p className="text-[10px] text-muted-foreground">{ev.subject}</p>}
-                  </button>
-                  {ev.type === 'quest' && ev.source !== 'ical' && (
+                  {/* Card body */}
+                  <div className="relative">
                     <button
-                      onClick={e => { e.stopPropagation(); setValidating(ev); }}
-                      className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold rounded-b-lg border-t transition-colors"
+                      onClick={() => setFull(true)}
+                      className="w-full text-left p-2.5 hover:opacity-80 transition-opacity"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-bold uppercase tracking-wide ${c.text}`}>
+                          {eventTypeLabel(ev.type)}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground tabular-nums">
+                          {ev.start_time.slice(0, 5)}
+                        </span>
+                        {ev.end_time && (
+                          <span className="text-[10px] text-muted-foreground tabular-nums">
+                            → {ev.end_time.slice(0, 5)}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs font-semibold truncate mt-0.5 pr-6">{ev.title}</p>
+                      {ev.subject && <p className="text-[10px] text-muted-foreground">{ev.subject}</p>}
+                    </button>
+
+                    {/* DS: trash button top-right */}
+                    {ev.type === 'ds' && (
+                      <button
+                        onClick={e => { e.stopPropagation(); deleteDs(ev); }}
+                        className="absolute top-2 right-2 p-1 rounded hover:bg-rose-500/20 text-rose-400/60 hover:text-rose-400 transition-colors"
+                        title="Supprimer ce DS"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Quest: play + validate split bar */}
+                  {ev.type === 'quest' && ev.source !== 'ical' && (
+                    <div
+                      className="flex items-stretch border-t divide-x rounded-b-lg overflow-hidden"
                       style={{
-                        borderColor: 'hsl(var(--primary) / 0.25)',
-                        backgroundColor: 'hsl(var(--primary) / 0.08)',
-                        color: 'hsl(var(--primary))',
+                        borderColor: 'hsl(270 50% 40% / 0.3)',
+                        divideColor: 'hsl(270 50% 40% / 0.3)',
                       }}
                     >
-                      <CheckCircle2 size={12} />
-                      Valider la quête
-                    </button>
+                      <button
+                        onClick={() => launchDeepwork(ev)}
+                        className="flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold flex-1 transition-colors hover:bg-amber-500/10"
+                        style={{ color: 'hsl(43 90% 55%)', borderColor: 'hsl(270 50% 40% / 0.3)' }}
+                        title="Lancer le deepwork sur cette quête"
+                      >
+                        <Play size={10} className="ml-0.5" />
+                        Travailler
+                      </button>
+                      <div style={{ width: 1, backgroundColor: 'hsl(270 50% 40% / 0.3)' }} />
+                      <button
+                        onClick={() => setValidating(ev)}
+                        className="flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold flex-1 transition-colors hover:bg-violet-500/10"
+                        style={{ color: 'hsl(var(--primary))' }}
+                      >
+                        <CheckCircle2 size={11} />
+                        Valider
+                      </button>
+                    </div>
                   )}
                 </div>
               );

@@ -85,3 +85,21 @@ export function eventTypeColor(type: EventType) {
 export function eventTypeLabel(type: EventType) {
   return type === 'course' ? 'Cours' : type === 'quest' ? 'Quête' : 'DS';
 }
+
+/**
+ * Maps full subject names (from SUBJECTS) to the DB's limited subject_type enum
+ * ("Maths" | "Français" | "Physique" | "SES" | "Anglais" | "Autre").
+ * Unmapped subjects fall back to 'Autre' with the original name in custom_subject.
+ */
+export function toExamSubject(s: string): { subject: string; custom_subject: string | null } {
+  if (s === 'Français')        return { subject: 'Français', custom_subject: null };
+  if (s === 'SES')             return { subject: 'SES',      custom_subject: null };
+  if (s === 'Autre')           return { subject: 'Autre',    custom_subject: null };
+  if (s === 'Mathématiques')   return { subject: 'Maths',    custom_subject: 'Mathématiques' };
+  if (s === 'Physique-Chimie') return { subject: 'Physique', custom_subject: 'Physique-Chimie' };
+  if (s === 'LV1 (Anglais)')   return { subject: 'Anglais',  custom_subject: 'LV1 (Anglais)' };
+  return { subject: 'Autre', custom_subject: s };
+}
+
+/** localStorage key used by the deepwork timer (shared between pages) */
+export const DEEPWORK_STORAGE_KEY = 'deepwork_started_at';
