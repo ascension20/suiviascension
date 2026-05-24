@@ -83,21 +83,21 @@ export function WeeklyDeepworkGoal({ userId }: { userId: string }) {
           >
             {fmtMin(totalMin)}
           </span>
-          <span className="text-sm font-bold tabular-nums neon-cyan" style={{ color: 'hsl(var(--primary))' }}>
+          <span className="text-sm font-bold tabular-nums neon-gold" style={{ color: 'hsl(var(--primary))' }}>
             {pct} %
           </span>
         </div>
-        <div className="h-2.5 rounded-full overflow-hidden" style={{ background: 'hsl(222 40% 9%)' }}>
+        <div className="h-2.5 rounded-full overflow-hidden" style={{ background: 'hsl(222 18% 14%)' }}>
           <div
-            className="h-full rounded-full transition-all duration-700"
+            className={`h-full rounded-full transition-all duration-700 ${done ? '' : 'energy-bar'}`}
             style={{
               width: `${pct}%`,
               background: done
                 ? 'linear-gradient(90deg, hsl(142 71% 40%), hsl(142 71% 55%))'
-                : 'linear-gradient(90deg, hsl(196 100% 38%), hsl(196 100% 62%))',
+                : undefined,
               boxShadow: done
                 ? '0 0 10px hsl(142 71% 45% / 0.5)'
-                : '0 0 12px hsl(196 100% 58% / 0.45)',
+                : '0 0 10px hsl(43 90% 50% / 0.5)',
             }}
           />
         </div>
@@ -115,12 +115,12 @@ export function WeeklyDeepworkGoal({ userId }: { userId: string }) {
                     ? `${Math.max(6, (d.minutes / maxDay) * 48)}px`
                     : '4px',
                   background: d.isToday
-                    ? 'hsl(196 100% 58%)'
+                    ? 'hsl(43 90% 55%)'
                     : d.minutes > 0
-                    ? 'hsl(196 100% 58% / 0.4)'
-                    : 'hsl(222 40% 12%)',
+                    ? 'hsl(43 90% 50% / 0.45)'
+                    : 'hsl(222 16% 18%)',
                   boxShadow: d.isToday && d.minutes > 0
-                    ? '0 0 8px hsl(196 100% 58% / 0.6)'
+                    ? '0 0 8px hsl(43 90% 50% / 0.65)'
                     : 'none',
                 }}
               />

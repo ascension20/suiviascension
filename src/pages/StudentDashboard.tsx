@@ -206,8 +206,8 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-background">
 
       {/* ─── HEADER ─── */}
-      <header className="border-b px-4 md:px-6 py-3 sticky top-0 z-30 backdrop-blur-sm"
-              style={{ backgroundColor: 'hsl(222 45% 2% / 0.94)', borderColor: 'hsl(213 40% 14%)' }}>
+      <header className="border-b border-border px-4 md:px-6 py-3 sticky top-0 z-30 backdrop-blur-sm hud-top-line"
+              style={{ backgroundColor: 'hsl(222 22% 5% / 0.92)' }}>
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
 
           {/* Logo / title */}
@@ -232,7 +232,7 @@ export default function StudentDashboard() {
 
             {/* Streak badge */}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
-                 style={{ borderColor: 'hsl(var(--streak) / 0.35)', backgroundColor: 'hsl(var(--streak) / 0.08)' }}>
+                 style={{ borderColor: 'hsl(var(--streak) / 0.3)', backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
               <Flame size={14} className="text-streak" />
               <span className="font-display text-sm font-semibold text-streak">{streak}</span>
             </div>
@@ -247,8 +247,8 @@ export default function StudentDashboard() {
               title="Mon profil"
             >
               <div
-                className="w-9 h-9 rounded-full border flex items-center justify-center text-lg transition-all group-hover:border-primary/60"
-                style={{ backgroundColor: 'hsl(222 40% 8%)', borderColor: 'hsl(var(--primary) / 0.25)' }}
+                className="w-9 h-9 rounded-full border flex items-center justify-center text-lg transition-all"
+                style={{ backgroundColor: 'hsl(222 22% 12%)', borderColor: 'hsl(43 90% 50% / 0.3)' }}
               >
                 {profile?.avatar ?? '🐺'}
               </div>
@@ -288,27 +288,48 @@ export default function StudentDashboard() {
 
         {/* ══ ROW 2 : Planning + XP Chart ══ */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
-          <div className="lg:col-span-3 bg-card border border-border rounded-lg p-4 min-h-[280px]" data-tutorial="planning">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+            className="lg:col-span-3 bg-card border border-border rounded-lg p-4 min-h-[280px] game-panel"
+            data-tutorial="planning"
+          >
             {user && <PlanningMini userId={user.id} onXpGain={addXp} />}
-          </div>
-          <div className="lg:col-span-2">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+            className="lg:col-span-2"
+          >
             {user && <WeeklyDeepworkGoal userId={user.id} />}
-          </div>
+          </motion.div>
         </div>
 
         {/* ══ ROW 3 : Deepwork Stats (large) + DS + Difficultés ══ */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
-          <div className="md:col-span-2 xl:col-span-2">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+            className="md:col-span-2 xl:col-span-2"
+          >
             {user && <DeepworkStats userId={user.id} />}
-          </div>
-          {user && <ExamsSection userId={user.id} />}
-          {user && <DifficultiesSection userId={user.id} />}
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}
+          >
+            {user && <ExamsSection userId={user.id} />}
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}
+          >
+            {user && <DifficultiesSection userId={user.id} />}
+          </motion.div>
         </div>
 
         {/* ══ ROW 4 : Comparaison ══ */}
-        <div className="mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}
+          className="mb-6"
+        >
           {user && <ProgressComparison userId={user.id} totalXp={totalXp} streak={streak} />}
-        </div>
+        </motion.div>
 
         {/* ══ ROW 5 : Classements (pleine largeur) ══ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-tutorial="leaderboard">

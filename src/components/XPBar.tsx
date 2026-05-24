@@ -15,18 +15,18 @@ export function XPBar({ current, max, level, title, className, compact }: XPBarP
   if (compact) {
     return (
       <div className={cn("flex items-center gap-2", className)}>
-        <span className="font-display text-xs font-semibold">Niv. {level}</span>
+        <span className="font-display text-xs font-semibold neon-gold" style={{ color: 'hsl(var(--primary))' }}>
+          Niv. {level}
+        </span>
         <div
           className="h-2 rounded-full overflow-hidden min-w-[80px]"
-          style={{ backgroundColor: 'hsl(var(--secondary))', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.4)' }}
+          style={{ backgroundColor: 'hsl(var(--secondary))', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.5)' }}
         >
           <div
-            className="h-full rounded-full xp-shimmer transition-all duration-700"
+            className="h-full rounded-full energy-bar transition-all duration-700"
             style={{
               width: `${percentage}%`,
-              background: 'linear-gradient(90deg, hsl(196 100% 38%), hsl(196 100% 62%))',
-              backgroundSize: '200% 100%',
-              boxShadow: '0 0 8px hsl(196 100% 58% / 0.5)',
+              boxShadow: '0 0 8px hsl(43 90% 50% / 0.7)',
             }}
           />
         </div>
@@ -37,7 +37,9 @@ export function XPBar({ current, max, level, title, className, compact }: XPBarP
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <div className="flex items-center gap-1.5 shrink-0">
-        <span className="font-display text-sm font-semibold text-foreground">Niv. {level}</span>
+        <span className="font-display text-sm font-semibold" style={{ color: 'hsl(var(--primary))' }}>
+          Niv. {level}
+        </span>
         <span className="text-xs text-muted-foreground">— {title}</span>
       </div>
       <div
@@ -45,12 +47,10 @@ export function XPBar({ current, max, level, title, className, compact }: XPBarP
         style={{ backgroundColor: 'hsl(var(--secondary))', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}
       >
         <div
-          className="h-full rounded-full xp-shimmer transition-all duration-700"
+          className="h-full rounded-full energy-bar transition-all duration-700"
           style={{
             width: `${percentage}%`,
-            background: 'linear-gradient(90deg, hsl(196 100% 38%), hsl(196 100% 62%))',
-            backgroundSize: '200% 100%',
-            boxShadow: '0 0 8px hsl(196 100% 58% / 0.4)',
+            boxShadow: '0 0 10px hsl(43 90% 50% / 0.6), 0 0 20px hsl(43 90% 50% / 0.2)',
           }}
         />
       </div>

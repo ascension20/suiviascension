@@ -150,8 +150,8 @@ export default function ProfilePage() {
         {/* ── Avatar + level card ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="relative bg-card border border-border rounded-lg p-6 overflow-hidden sys-panel"
-          style={{ boxShadow: '0 0 50px hsl(196 100% 58% / 0.07)' }}
+          className="relative bg-card border border-border rounded-2xl p-6 overflow-hidden game-panel"
+          style={{ boxShadow: '0 0 50px hsl(43 90% 50% / 0.08)' }}
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60" />
           {/* Ambient glow */}
@@ -163,21 +163,21 @@ export default function ProfilePage() {
           <div className="flex items-center gap-5 relative">
             <div className="relative">
               <div
-                className="w-20 h-20 rounded-lg flex items-center justify-center text-4xl border-2"
+                className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl border-2"
                 style={{
-                  borderColor: 'hsl(var(--primary) / 0.5)',
-                  background: 'linear-gradient(135deg, hsl(var(--primary) / 0.15) 0%, hsl(var(--primary) / 0.04) 100%)',
-                  boxShadow: '0 0 24px hsl(var(--primary) / 0.18)',
+                  borderColor: 'hsl(43 90% 50% / 0.6)',
+                  background: 'linear-gradient(135deg, hsl(43 90% 50% / 0.2) 0%, hsl(43 90% 50% / 0.05) 100%)',
+                  boxShadow: '0 0 24px hsl(43 90% 50% / 0.25)',
                 }}
               >
                 {profile?.avatar ?? '🐺'}
               </div>
               <div
-                className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded border text-[10px] font-display font-bold neon-cyan"
+                className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-lg border text-[10px] font-display font-bold neon-gold"
                 style={{
-                  background: 'hsl(var(--primary) / 0.15)',
-                  borderColor: 'hsl(var(--primary) / 0.6)',
-                  color: 'hsl(var(--primary))',
+                  background: 'hsl(43 90% 50%)',
+                  borderColor: 'hsl(43 90% 70% / 0.5)',
+                  color: 'hsl(222 22% 8%)',
                 }}
               >
                 LVL {level}
@@ -193,16 +193,14 @@ export default function ProfilePage() {
                   <span>{requiredXp.toLocaleString('fr-FR')} XP</span>
                 </div>
                 <div className="h-3 rounded-full overflow-hidden border border-border"
-                     style={{ background: 'hsl(222 40% 9%)' }}>
+                     style={{ background: 'hsl(222 18% 14%)' }}>
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${pct}%` }}
                     transition={{ duration: 1, ease: 'easeOut' }}
-                    className="h-full rounded-full relative overflow-hidden xp-shimmer"
+                    className="h-full rounded-full relative overflow-hidden energy-bar"
                     style={{
-                      background: 'linear-gradient(90deg, hsl(196 100% 38%) 0%, hsl(196 100% 65%) 50%, hsl(196 100% 38%) 100%)',
-                      backgroundSize: '200% 100%',
-                      boxShadow: '0 0 10px hsl(196 100% 58% / 0.5)',
+                      boxShadow: '0 0 12px hsl(43 90% 50% / 0.6), 0 0 24px hsl(43 90% 50% / 0.2)',
                     }}
                   />
                 </div>
@@ -248,26 +246,26 @@ export default function ProfilePage() {
                 <AreaChart data={xpHistory} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="profileXpGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="hsl(196,100%,58%)" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="hsl(196,100%,58%)" stopOpacity={0} />
+                      <stop offset="5%"  stopColor="hsl(43,90%,50%)" stopOpacity={0.45} />
+                      <stop offset="95%" stopColor="hsl(43,90%,50%)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
                     dataKey="label"
-                    tick={{ fontSize: 10, fill: 'hsl(213,18%,46%)' }}
+                    tick={{ fontSize: 10, fill: 'hsl(220,10%,50%)' }}
                     tickLine={false} axisLine={false} interval={9}
                   />
                   <YAxis
-                    tick={{ fontSize: 10, fill: 'hsl(213,18%,46%)' }}
+                    tick={{ fontSize: 10, fill: 'hsl(220,10%,50%)' }}
                     tickLine={false} axisLine={false}
                   />
                   <Tooltip
-                    contentStyle={{ background: 'hsl(222,40%,6%)', border: '1px solid hsl(213,40%,16%)', borderRadius: 6, fontSize: 12 }}
+                    contentStyle={{ background: 'hsl(222,22%,9%)', border: '1px solid hsl(222,16%,18%)', borderRadius: 8, fontSize: 12 }}
                     formatter={(v: number) => [`${v} XP`, 'XP gagné']}
                   />
                   <Area
                     type="monotone" dataKey="xp"
-                    stroke="hsl(196,100%,58%)" strokeWidth={2}
+                    stroke="hsl(43,90%,50%)" strokeWidth={2}
                     fill="url(#profileXpGrad)" dot={false} isAnimationActive={false}
                   />
                 </AreaChart>
