@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Crown, Medal, ExternalLink } from 'lucide-react';
+import { Crown, Medal, ChevronDown } from 'lucide-react';
 
 export interface LeaderboardEntry {
   rank: number;
@@ -10,22 +11,30 @@ export interface LeaderboardEntry {
   isCurrentUser?: boolean;
 }
 
-interface Props {
-  title: string;
-  subtitle?: string;
+export interface LeaderboardDataset {
+  label: string;
   data: LeaderboardEntry[];
   unit: string;
-  weeklyChampion?: string | null;
   emptyLabel?: string;
 }
 
-export function WeeklyLeaderboard({ title, subtitle, data, unit, weeklyChampion, emptyLabel }: Props) {
+interface Props {
+  title: string;
+  datasets: LeaderboardDataset[];           // [global, weekly, daily] or similar
+  weeklyChampion?: string | null;
+}
+
+export function WeeklyLeaderboard({ title, datasets, weeklyChampion }: Props) {
   const navigate = useNavigate();
+  const [periodIdx, setPeriodIdx] = useState(0);
+
+  const current = datasets[periodIdx] ?? datasets[0];
+  const { data, unit, emptyLabel } = current;
 
   const rankColor = (rank: number) => {
-    if (rank === 1) return 'hsl(43 90% 50%)';   // gold
-    if (rank === 2) return 'hsl(210 10% 65%)';  // silver
-    if (rank === 3) return 'hsl(25 60% 55%)';   // bronze
+    if (rank === 1) return 'hsl(43 90% 50%)';
+    if (rank === 2) return 'hsl(210 10% 65%)';
+    if (rank === 3) return 'hsl(25 60% 55%)';
     return 'hsl(var(--border))';
   };
 
@@ -39,15 +48,30 @@ export function WeeklyLeaderboard({ title, subtitle, data, unit, weeklyChampion,
   return (
     <div className="bg-card border border-border rounded-lg p-5 flex flex-col">
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="font-display text-sm font-semibold">{title}</h3>
-          {subtitle && <p className="text-[10px] text-muted-foreground mt-0.5">{subtitle}</p>}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-display text-sm font-semibold">{title}</h3>
+
+        {/* Period selector */}
+        <div className="flex gap-1">
+          {datasets.map((ds, i) => (
+            <button
+              key={ds.label}
+              onClick={() => setPeriodIdx(i)}
+              className="px-2 py-0.5 rounded text-[10px] font-semibold transition-all"
+              style={
+                i === periodIdx
+                  ? { background: 'hsl(var(--primary))', color: 'hsl(222 22% 8%)' }
+                  : { background: 'hsl(222 16% 14%)', color: 'hsl(220 10% 50%)' }
+              }
+            >
+              {ds.label}
+            </button>
+          ))}
         </div>
       </div>
 
       {data.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-6">
+        <p className="text-sm text-muted-foreground text-center py-6 flex-1">
           {emptyLabel ?? 'Aucune donnée'}
         </p>
       ) : (
@@ -56,7 +80,7 @@ export function WeeklyLeaderboard({ title, subtitle, data, unit, weeklyChampion,
             <button
               key={`${entry.userId}-${index}`}
               onClick={() => navigate(`/student/profile/${entry.userId}`)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all hover:bg-secondary/60 group"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all hover:bg-secondary/60 group text-left"
               style={entry.isCurrentUser ? { backgroundColor: 'hsl(var(--primary) / 0.08)' } : undefined}
             >
               {/* Rank */}
@@ -80,22 +104,18 @@ export function WeeklyLeaderboard({ title, subtitle, data, unit, weeklyChampion,
               </div>
 
               {/* Name */}
-              <span className="font-medium text-sm flex-1 truncate text-left">
+              <span className="font-medium text-sm flex-1 truncate">
                 {entry.pseudo}
                 {entry.isCurrentUser && (
                   <span className="text-xs text-muted-foreground ml-1">(toi)</span>
                 )}
               </span>
 
-              {/* Profile link icon */}
-              <ExternalLink
-                size={11}
-                className="shrink-0 text-muted-foreground opacity-0 group-hover:opacity-60 transition-opacity"
-              />
-
               {/* Value */}
-              <span className="font-display text-sm tabular-nums shrink-0 font-semibold"
-                    style={{ color: entry.rank === 1 ? 'hsl(43 90% 55%)' : undefined }}>
+              <span
+                className="font-display text-sm tabular-nums shrink-0 font-semibold"
+                style={{ color: entry.rank === 1 ? 'hsl(43 90% 55%)' : undefined }}
+              >
                 {entry.value.toLocaleString()}
                 <span className="text-xs text-muted-foreground font-normal ml-1">{unit}</span>
               </span>

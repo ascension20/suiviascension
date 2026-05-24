@@ -112,12 +112,20 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
   );
   const filteredIcal = icalEvents.filter(ev => {
     const slot = `${ev.event_date}|${ev.start_time.slice(0, 5)}`;
-    if (dbIcalSlots.has(slot))      return false; // (a) already in DB
+    if (dbIcalSlots.has(slot))      return false; // (a) already in DB → show DB version
     if (dbDsSlots.has(slot))        return false; // (b) converted to DS
     if (suppressedSlots.has(slot))  return false; // (c) immediate client flag
     return true;
   });
-  const allEvents = [...events, ...filteredIcal];
+  // Also hide DB iCal courses that are covered by a DS (course was converted but NOT deleted)
+  const visibleDbEvents = events.filter(e => {
+    if (e.source === 'ical' && e.type === 'course') {
+      const slot = `${e.event_date}|${e.start_time.slice(0, 5)}`;
+      if (dbDsSlots.has(slot) || suppressedSlots.has(slot)) return false;
+    }
+    return true;
+  });
+  const allEvents = [...visibleDbEvents, ...filteredIcal];
   const days          = getWeekDays(weekStart);
   const todayIso   = formatDateISO(new Date());
 
@@ -439,11 +447,9 @@ function ConvertToDsModal({
       stress_level: 'neutral',
       coefficient: 1,
     });
-    // Delete original event from DB if it has a real UUID
-    // (DB iCal events stored at onboarding don't start with 'ical-')
-    if (!event.id.startsWith('ical-')) {
-      await supabase.from('planning_events').delete().eq('id', event.id);
-    }
+    // Do NOT delete the original iCal course — it stays in DB.
+    // The DS at the same slot suppresses it via dbDsSlots filtering.
+    // When the DS is deleted, the course automatically reappears.
     setSaving(false);
     onSaved();
   };
