@@ -71,6 +71,30 @@ export type Database = {
         }
         Relationships: []
       }
+      xp_history: {
+        Row: {
+          id: string
+          user_id: string
+          amount: number
+          source: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          amount: number
+          source?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          amount?: number
+          source?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       deepwork_sessions: {
         Row: {
           created_at: string

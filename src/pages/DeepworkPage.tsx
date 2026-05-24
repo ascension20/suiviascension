@@ -76,6 +76,13 @@ export default function DeepworkPage() {
         duration_seconds: duration,
         xp_earned:        xp,
       });
+      if (xp > 0) {
+        await supabase.from('xp_history').insert({
+          user_id: user.id,
+          amount: xp,
+          source: 'deepwork',
+        });
+      }
       const { data: prof } = await supabase
         .from('profiles')
         .select('total_deepwork_seconds, total_deepwork_sessions, total_xp')

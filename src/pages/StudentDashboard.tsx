@@ -67,23 +67,35 @@ export default function StudentDashboard() {
       dayStart.setHours(0, 0, 0, 0);
 
       // ── Fetch everything in parallel ─────────────────────────────────────
-      const [profsRes, weekRes, dayRes] = await Promise.all([
+      const [profsRes, weekXpRes, dayXpRes, weekSecRes, daySecRes] = await Promise.all([
         supabase
           .from('profiles')
           .select('user_id, pseudo, avatar, total_xp, total_deepwork_seconds'),
+        // XP weekly / daily → from xp_history (captures deepwork + quest + tutorial)
+        supabase
+          .from('xp_history')
+          .select('user_id, amount')
+          .gte('created_at', weekStart.toISOString()),
+        supabase
+          .from('xp_history')
+          .select('user_id, amount')
+          .gte('created_at', dayStart.toISOString()),
+        // Chrono weekly / daily → still from deepwork_sessions (actual time spent)
         supabase
           .from('deepwork_sessions')
-          .select('user_id, duration_seconds, xp_earned')
+          .select('user_id, duration_seconds')
           .gte('started_at', weekStart.toISOString()),
         supabase
           .from('deepwork_sessions')
-          .select('user_id, duration_seconds, xp_earned')
+          .select('user_id, duration_seconds')
           .gte('started_at', dayStart.toISOString()),
       ]);
 
-      const profs       = profsRes.data ?? [];
-      const weekSessions = weekRes.data  ?? [];
-      const daySessions  = dayRes.data   ?? [];
+      const profs       = profsRes.data  ?? [];
+      const weekXpRows  = weekXpRes.data ?? [];
+      const dayXpRows   = dayXpRes.data  ?? [];
+      const weekSessions = weekSecRes.data ?? [];
+      const daySessions  = daySecRes.data  ?? [];
 
       // Profile lookup map
       const profMap: Record<string, { pseudo: string; avatar: string }> = {};
@@ -91,20 +103,22 @@ export default function StudentDashboard() {
         profMap[p.user_id] = { pseudo: p.pseudo ?? 'Élève', avatar: p.avatar ?? '🐺' };
       });
 
-      // Aggregate sessions by user for a given field
-      const agg = (
-        sessions: typeof weekSessions,
-        field: 'duration_seconds' | 'xp_earned',
-      ): Record<string, number> => {
+      // Aggregate rows by user
+      const aggXp = (rows: { user_id: string; amount: number }[]): Record<string, number> => {
         const acc: Record<string, number> = {};
-        sessions.forEach(s => { acc[s.user_id] = (acc[s.user_id] ?? 0) + (s[field] ?? 0); });
+        rows.forEach(r => { acc[r.user_id] = (acc[r.user_id] ?? 0) + (r.amount ?? 0); });
+        return acc;
+      };
+      const aggSec = (rows: { user_id: string; duration_seconds: number }[]): Record<string, number> => {
+        const acc: Record<string, number> = {};
+        rows.forEach(r => { acc[r.user_id] = (acc[r.user_id] ?? 0) + (r.duration_seconds ?? 0); });
         return acc;
       };
 
-      const weekXpByUser  = agg(weekSessions, 'xp_earned');
-      const dayXpByUser   = agg(daySessions,  'xp_earned');
-      const weekSecByUser = agg(weekSessions, 'duration_seconds');
-      const daySecByUser  = agg(daySessions,  'duration_seconds');
+      const weekXpByUser  = aggXp(weekXpRows);
+      const dayXpByUser   = aggXp(dayXpRows);
+      const weekSecByUser = aggSec(weekSessions);
+      const daySecByUser  = aggSec(daySessions);
 
       // Build a sorted, consecutively ranked leaderboard from a score map
       const buildBoard = (
@@ -171,13 +185,16 @@ export default function StudentDashboard() {
     loadLeaderboards();
   }, [user]);
 
-  const addXp = useCallback(async (amount: number) => {
+  const addXp = useCallback(async (amount: number, source = 'quest') => {
     if (!user) return;
     const oldLevel = calculateLevel(totalXp).level;
     const newTotal = totalXp + amount;
     const newLevel = calculateLevel(newTotal).level;
     if (newLevel > oldLevel) setLevelUpData({ level: newLevel, title: getTitleForLevel(newLevel), xpGained: amount });
-    await supabase.from('profiles').update({ total_xp: newTotal }).eq('user_id', user.id);
+    await Promise.all([
+      supabase.from('profiles').update({ total_xp: newTotal }).eq('user_id', user.id),
+      supabase.from('xp_history').insert({ user_id: user.id, amount, source }),
+    ]);
     await updateStreak(user.id);
     playXpSound();
     await refreshProfile();
