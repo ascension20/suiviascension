@@ -95,6 +95,81 @@ export type Database = {
         }
         Relationships: []
       }
+      avatar_configs: {
+        Row: {
+          id: string
+          user_id: string
+          hat: string | null
+          glasses: string | null
+          outfit: string | null
+          background: string | null
+          badge: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          hat?: string | null
+          glasses?: string | null
+          outfit?: string | null
+          background?: string | null
+          badge?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          hat?: string | null
+          glasses?: string | null
+          outfit?: string | null
+          background?: string | null
+          badge?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      achievements: {
+        Row: {
+          id: string
+          label: string
+          description: string
+          category: string
+        }
+        Insert: {
+          id: string
+          label: string
+          description: string
+          category?: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          description?: string
+          category?: string
+        }
+        Relationships: []
+      }
+      student_achievements: {
+        Row: {
+          id: string
+          user_id: string
+          achievement_id: string
+          unlocked_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          achievement_id: string
+          unlocked_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          achievement_id?: string
+          unlocked_at?: string
+        }
+        Relationships: []
+      }
       deepwork_sessions: {
         Row: {
           created_at: string

@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Flame, Brain, Star, Trophy, Swords } from 'lucide-react';
+import { ArrowLeft, Flame, Brain, Star, Trophy, Swords, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { calculateLevel, getTitleForLevel } from '@/lib/game-utils';
 import { GradeAverages } from '@/components/GradeAverages';
+import { Avatar } from '@/components/avatar/Avatar';
+import { UnlockToast } from '@/components/avatar/UnlockToast';
+import { useAvatarConfig } from '@/hooks/useAvatarConfig';
+import { useUnlocks } from '@/hooks/useUnlocks';
 
 interface XPDay { label: string; xp: number; }
 
@@ -19,16 +23,18 @@ export default function ProfilePage() {
   const title = getTitleForLevel(level);
   const pct = Math.min(100, Math.round((currentXp / requiredXp) * 100));
 
-  const [deepworkSec, setDeepworkSec]     = useState(0);
+  const { config: avatarConfig, loading: avatarLoading } = useAvatarConfig(user?.id);
+  const { newlyUnlocked, dismissNewUnlocks } = useUnlocks(user?.id);
+
+  const [deepworkSec, setDeepworkSec]         = useState(0);
   const [deepworkSessions, setDeepworkSessions] = useState(0);
-  const [questsDone, setQuestsDone]       = useState(0);
-  const [xpHistory, setXpHistory]         = useState<XPDay[]>([]);
-  const [simpleAvg, setSimpleAvg]         = useState<number | null>(null);
+  const [questsDone, setQuestsDone]           = useState(0);
+  const [xpHistory, setXpHistory]             = useState<XPDay[]>([]);
+  const [simpleAvg, setSimpleAvg]             = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      // Deepwork stats
       const { data: prof } = await supabase.from('profiles')
         .select('total_deepwork_seconds, total_deepwork_sessions')
         .eq('user_id', user.id).single();
@@ -37,13 +43,11 @@ export default function ProfilePage() {
         setDeepworkSessions(prof.total_deepwork_sessions ?? 0);
       }
 
-      // Quests completed
       const { count } = await supabase.from('quests')
         .select('*', { count: 'exact', head: true })
         .eq('assigned_to', user.id).eq('completed', true);
       setQuestsDone(count ?? 0);
 
-      // XP last 30 days — deepwork (historical) + quests (xp_history, source != 'deepwork')
       const since = new Date();
       since.setDate(since.getDate() - 30);
       since.setHours(0, 0, 0, 0);
@@ -53,7 +57,7 @@ export default function ProfilePage() {
           .gte('started_at', since.toISOString()),
         supabase.from('xp_history')
           .select('created_at, amount').eq('user_id', user.id)
-          .neq('source', 'deepwork')   // deepwork already counted via deepwork_sessions
+          .neq('source', 'deepwork')
           .gte('created_at', since.toISOString()),
       ]);
       const byDate: Record<string, number> = {};
@@ -74,7 +78,6 @@ export default function ProfilePage() {
         xp,
       })));
 
-      // Simple average from exams (like Pronote)
       const { data: exams } = await supabase.from('exams')
         .select('grade').eq('user_id', user.id).not('grade', 'is', null);
       if (exams && exams.length > 0) {
@@ -133,7 +136,7 @@ export default function ProfilePage() {
 
       {/* Header */}
       <header
-        className="border-b border-border px-4 py-3 flex items-center gap-3 sticky top-0 z-20 backdrop-blur-sm"
+        className="border-b border-border px-4 py-3 flex items-center gap-3 sticky top-0 z-20 backdrop-blur-sm hud-top-line"
         style={{ backgroundColor: 'hsl(222 22% 5% / 0.92)' }}
       >
         <button
@@ -147,31 +150,33 @@ export default function ProfilePage() {
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-8">
 
-        {/* ── Avatar + level card ── */}
+        {/* ── Hero card: Avatar + level ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="relative bg-card border border-border rounded-2xl p-6 overflow-hidden game-panel"
           style={{ boxShadow: '0 0 50px hsl(43 90% 50% / 0.08)' }}
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60" />
-          {/* Ambient glow */}
           <div
-            className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-8"
+            className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-5"
             style={{ background: 'hsl(var(--primary))' }}
           />
 
           <div className="flex items-center gap-5 relative">
-            <div className="relative">
-              <div
-                className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl border-2"
-                style={{
-                  borderColor: 'hsl(43 90% 50% / 0.6)',
-                  background: 'linear-gradient(135deg, hsl(43 90% 50% / 0.2) 0%, hsl(43 90% 50% / 0.05) 100%)',
-                  boxShadow: '0 0 24px hsl(43 90% 50% / 0.25)',
-                }}
-              >
-                {profile?.avatar ?? '🐺'}
-              </div>
+            {/* Avatar */}
+            <div className="relative shrink-0">
+              {avatarLoading ? (
+                <div
+                  className="rounded-2xl animate-pulse"
+                  style={{
+                    width: 80, height: 80,
+                    background: 'hsl(222 22% 14%)',
+                  }}
+                />
+              ) : (
+                <Avatar config={avatarConfig} size="lg" />
+              )}
+              {/* LVL badge */}
               <div
                 className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-lg border text-[10px] font-display font-bold neon-gold"
                 style={{
@@ -185,8 +190,27 @@ export default function ProfilePage() {
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="font-display font-black text-xl truncate">{profile?.pseudo ?? 'Joueur'}</p>
-              <p className="text-sm font-semibold mb-3" style={{ color: 'hsl(var(--primary) / 0.8)' }}>{title}</p>
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-display font-black text-xl truncate">{profile?.pseudo ?? 'Joueur'}</p>
+                  <p className="text-sm font-semibold mb-3" style={{ color: 'hsl(var(--primary) / 0.8)' }}>{title}</p>
+                </div>
+                {/* Customise button */}
+                <motion.button
+                  onClick={() => navigate('/student/profile/customize')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold shrink-0 transition-all"
+                  style={{
+                    background: 'hsl(43 90% 50% / 0.12)',
+                    color: 'hsl(43 90% 60%)',
+                    border: '1px solid hsl(43 90% 50% / 0.3)',
+                  }}
+                >
+                  <Sparkles size={11} />
+                  Personnaliser
+                </motion.button>
+              </div>
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>{currentXp.toLocaleString('fr-FR')} XP</span>
@@ -199,9 +223,7 @@ export default function ProfilePage() {
                     animate={{ width: `${pct}%` }}
                     transition={{ duration: 1, ease: 'easeOut' }}
                     className="h-full rounded-full relative overflow-hidden energy-bar"
-                    style={{
-                      boxShadow: '0 0 12px hsl(43 90% 50% / 0.6), 0 0 24px hsl(43 90% 50% / 0.2)',
-                    }}
+                    style={{ boxShadow: '0 0 12px hsl(43 90% 50% / 0.6), 0 0 24px hsl(43 90% 50% / 0.2)' }}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground text-right">{pct}% → niveau {level + 1}</p>
@@ -286,6 +308,9 @@ export default function ProfilePage() {
         )}
 
       </main>
+
+      {/* Unlock toast */}
+      <UnlockToast unlocks={newlyUnlocked} onDismiss={dismissNewUnlocks} />
     </div>
   );
 }

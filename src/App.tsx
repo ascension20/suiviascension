@@ -11,6 +11,7 @@ import OnboardingPage from "./pages/Onboarding";
 import StudentDashboard from "./pages/StudentDashboard";
 import DeepworkPage from "./pages/DeepworkPage";
 import ProfilePage from "./pages/ProfilePage";
+import AvatarCustomizePage from "./pages/AvatarCustomizePage";
 import PublicProfilePage from "./pages/PublicProfilePage";
 import CoachDashboard from "./pages/CoachDashboard";
 import NotFound from "./pages/NotFound";
@@ -57,6 +58,7 @@ function AppRoutes() {
       <Route path="/student" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
       <Route path="/student/deepwork" element={<ProtectedRoute requiredRole="student"><DeepworkPage /></ProtectedRoute>} />
       <Route path="/student/profile" element={<ProtectedRoute requiredRole="student"><ProfilePage /></ProtectedRoute>} />
+      <Route path="/student/profile/customize" element={<ProtectedRoute requiredRole="student"><AvatarCustomizePage /></ProtectedRoute>} />
       <Route path="/student/profile/:userId" element={<ProtectedRoute requiredRole="student"><PublicProfilePage /></ProtectedRoute>} />
       <Route path="/coach" element={<ProtectedRoute requiredRole="coach"><CoachDashboard /></ProtectedRoute>} />
       <Route path="/" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <Navigate to="/login" replace />} />
