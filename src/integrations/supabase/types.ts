@@ -140,6 +140,7 @@ export type Database = {
       exams: {
         Row: {
           chapters: string | null
+          coefficient: number
           created_at: string
           custom_subject: string | null
           exam_date: string
@@ -153,6 +154,7 @@ export type Database = {
         }
         Insert: {
           chapters?: string | null
+          coefficient?: number
           created_at?: string
           custom_subject?: string | null
           exam_date: string
@@ -166,6 +168,7 @@ export type Database = {
         }
         Update: {
           chapters?: string | null
+          coefficient?: number
           created_at?: string
           custom_subject?: string | null
           exam_date?: string

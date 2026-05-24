@@ -1,0 +1,1 @@
+ALTER TABLE public.exams ADD COLUMN IF NOT EXISTS coefficient numeric(4,2) NOT NULL DEFAULT 1;
