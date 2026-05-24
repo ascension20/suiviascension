@@ -55,76 +55,118 @@ export default function StudentDashboard() {
   useEffect(() => {
     if (!user) return;
     const loadLeaderboards = async () => {
-      const today = new Date().toISOString().slice(0, 10);
-      const startOfWeek = new Date();
-      const dow = startOfWeek.getDay();
-      startOfWeek.setDate(startOfWeek.getDate() - (dow === 0 ? 6 : dow - 1));
-      startOfWeek.setHours(0, 0, 0, 0);
-      const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
+      // ── Time boundaries (local midnight → ISO for Supabase) ──────────────
+      const now = new Date();
 
-      const toEntry = (p: { user_id: string; pseudo: string; avatar: string }, value: number, rank: number): LeaderboardEntry => ({
-        rank, userId: p.user_id, pseudo: p.pseudo, avatar: p.avatar ?? '🐺',
-        value, isCurrentUser: p.user_id === user.id,
+      const weekStart = new Date(now);
+      const dow = weekStart.getDay();
+      weekStart.setDate(weekStart.getDate() - (dow === 0 ? 6 : dow - 1));
+      weekStart.setHours(0, 0, 0, 0);
+
+      const dayStart = new Date(now);
+      dayStart.setHours(0, 0, 0, 0);
+
+      // ── Fetch everything in parallel ─────────────────────────────────────
+      const [profsRes, weekRes, dayRes] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('user_id, pseudo, avatar, total_xp, total_deepwork_seconds'),
+        supabase
+          .from('deepwork_sessions')
+          .select('user_id, duration_seconds, xp_earned')
+          .gte('started_at', weekStart.toISOString()),
+        supabase
+          .from('deepwork_sessions')
+          .select('user_id, duration_seconds, xp_earned')
+          .gte('started_at', dayStart.toISOString()),
+      ]);
+
+      const profs       = profsRes.data ?? [];
+      const weekSessions = weekRes.data  ?? [];
+      const daySessions  = dayRes.data   ?? [];
+
+      // Profile lookup map
+      const profMap: Record<string, { pseudo: string; avatar: string }> = {};
+      profs.forEach(p => {
+        profMap[p.user_id] = { pseudo: p.pseudo ?? 'Élève', avatar: p.avatar ?? '🐺' };
       });
 
-      const rank = <T extends { value: number }>(arr: T[]): (T & { rank: number })[] =>
-        [...arr].sort((a, b) => b.value - a.value).map((e, i) => ({ ...e, rank: i + 1 }));
-
-      // ── Profiles (all) ──
-      const { data: profs } = await supabase
-        .from('profiles')
-        .select('user_id, pseudo, avatar, total_xp, today_xp, today_xp_date, total_deepwork_seconds');
-      if (!profs) return;
-
-      // XP Global
-      const xpG = rank(profs.map(p => ({ ...p, value: p.total_xp ?? 0 })))
-        .slice(0, 10).map((p, i) => toEntry(p, p.value, p.rank));
-      setXpGlobal(xpG);
-
-      // XP Daily (today_xp)
-      const xpD = rank(profs.map(p => ({ ...p, value: p.today_xp_date === today ? (p.today_xp ?? 0) : 0 })))
-        .filter(p => p.value > 0).slice(0, 10).map((p, i) => toEntry(p, p.value, p.rank));
-      setXpDaily(xpD);
-
-      // Chrono Global (total_deepwork_seconds → minutes)
-      const chG = rank(profs.map(p => ({ ...p, value: Math.round((p.total_deepwork_seconds ?? 0) / 60) })))
-        .filter(p => p.value > 0).slice(0, 10).map((p, i) => toEntry(p, p.value, p.rank));
-      setChronoGlobal(chG);
-
-      // ── Deepwork sessions this week ──
-      const { data: dwWeek } = await supabase
-        .from('deepwork_sessions').select('user_id, duration_seconds, xp_earned')
-        .gte('started_at', startOfWeek.toISOString());
-
-      // ── Deepwork sessions today ──
-      const { data: dwDay } = await supabase
-        .from('deepwork_sessions').select('user_id, duration_seconds, xp_earned')
-        .gte('started_at', startOfDay.toISOString());
-
-      const aggregate = (sessions: { user_id: string; duration_seconds: number; xp_earned: number }[] | null, field: 'duration_seconds' | 'xp_earned') => {
-        const byUser: Record<string, number> = {};
-        sessions?.forEach(s => { byUser[s.user_id] = (byUser[s.user_id] || 0) + (s[field] ?? 0); });
-        return byUser;
+      // Aggregate sessions by user for a given field
+      const agg = (
+        sessions: typeof weekSessions,
+        field: 'duration_seconds' | 'xp_earned',
+      ): Record<string, number> => {
+        const acc: Record<string, number> = {};
+        sessions.forEach(s => { acc[s.user_id] = (acc[s.user_id] ?? 0) + (s[field] ?? 0); });
+        return acc;
       };
 
-      // XP Weekly (deepwork xp_earned this week)
-      const xpWByUser = aggregate(dwWeek, 'xp_earned');
-      const xpW = rank(profs.filter(p => xpWByUser[p.user_id] > 0).map(p => ({ ...p, value: xpWByUser[p.user_id] || 0 })))
-        .slice(0, 10).map((p, i) => toEntry(p, p.value, p.rank));
-      setXpWeekly(xpW);
-      if (xpW.length > 0) setWeeklyChampion(xpW[0].pseudo);
+      const weekXpByUser  = agg(weekSessions, 'xp_earned');
+      const dayXpByUser   = agg(daySessions,  'xp_earned');
+      const weekSecByUser = agg(weekSessions, 'duration_seconds');
+      const daySecByUser  = agg(daySessions,  'duration_seconds');
 
-      // Chrono Weekly (deepwork minutes this week)
-      const chWByUser = aggregate(dwWeek, 'duration_seconds');
-      const chW = rank(profs.filter(p => chWByUser[p.user_id] > 0).map(p => ({ ...p, value: Math.round((chWByUser[p.user_id] || 0) / 60) })))
-        .slice(0, 10).map((p, i) => toEntry(p, p.value, p.rank));
-      setChronoWeekly(chW);
+      // Build a sorted, consecutively ranked leaderboard from a score map
+      const buildBoard = (
+        scores: Record<string, number>,
+        transform: (v: number) => number = v => v,
+      ): LeaderboardEntry[] =>
+        Object.entries(scores)
+          .map(([uid, raw]) => ({ uid, val: transform(raw) }))
+          .filter(x => x.val > 0)                          // filter BEFORE ranking
+          .sort((a, b) => b.val - a.val)
+          .slice(0, 10)
+          .map((x, i) => ({
+            rank:  i + 1,                                  // consecutive ranks
+            userId: x.uid,
+            pseudo:  profMap[x.uid]?.pseudo ?? 'Élève',
+            avatar:  profMap[x.uid]?.avatar ?? '🐺',
+            value:   x.val,
+            isCurrentUser: x.uid === user.id,
+          }));
 
-      // Chrono Daily (deepwork minutes today)
-      const chDByUser = aggregate(dwDay, 'duration_seconds');
-      const chD = rank(profs.filter(p => chDByUser[p.user_id] > 0).map(p => ({ ...p, value: Math.round((chDByUser[p.user_id] || 0) / 60) })))
-        .slice(0, 10).map((p, i) => toEntry(p, p.value, p.rank));
-      setChronoDaily(chD);
+      // ── Global boards (from profiles, all-time) ──────────────────────────
+      const xpGlobal = profs
+        .filter(p => (p.total_xp ?? 0) > 0)
+        .sort((a, b) => (b.total_xp ?? 0) - (a.total_xp ?? 0))
+        .slice(0, 10)
+        .map((p, i) => ({
+          rank: i + 1,
+          userId: p.user_id,
+          pseudo:  p.pseudo ?? 'Élève',
+          avatar:  p.avatar ?? '🐺',
+          value:   p.total_xp ?? 0,
+          isCurrentUser: p.user_id === user.id,
+        }));
+
+      const chGlobal = profs
+        .filter(p => (p.total_deepwork_seconds ?? 0) > 0)
+        .sort((a, b) => (b.total_deepwork_seconds ?? 0) - (a.total_deepwork_seconds ?? 0))
+        .slice(0, 10)
+        .map((p, i) => ({
+          rank: i + 1,
+          userId: p.user_id,
+          pseudo:  p.pseudo ?? 'Élève',
+          avatar:  p.avatar ?? '🐺',
+          value:   Math.round((p.total_deepwork_seconds ?? 0) / 60),
+          isCurrentUser: p.user_id === user.id,
+        }));
+
+      // ── Weekly / daily boards (from deepwork_sessions) ───────────────────
+      const xpWeekly  = buildBoard(weekXpByUser);
+      const xpDaily   = buildBoard(dayXpByUser);
+      const chWeekly  = buildBoard(weekSecByUser, v => Math.round(v / 60));
+      const chDaily   = buildBoard(daySecByUser,  v => Math.round(v / 60));
+
+      setXpGlobal(xpGlobal);
+      setXpWeekly(xpWeekly);
+      setXpDaily(xpDaily);
+      setChronoGlobal(chGlobal);
+      setChronoWeekly(chWeekly);
+      setChronoDaily(chDaily);
+
+      // Weekly champion = #1 chrono this week (shown as crown on Chrono board)
+      if (chWeekly.length > 0) setWeeklyChampion(chWeekly[0].pseudo);
     };
     loadLeaderboards();
   }, [user]);
