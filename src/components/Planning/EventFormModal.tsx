@@ -5,6 +5,17 @@ import type { PlanningEvent, EventType } from '@/lib/planning-utils';
 import { SUBJECTS } from '@/lib/game-utils';
 import { Trash2 } from 'lucide-react';
 
+/** Maps full subject names to the DB's subject_type enum + custom_subject display override. */
+function toExamSubject(s: string): { subject: string; custom_subject: string | null } {
+  if (s === 'Français')          return { subject: 'Français',  custom_subject: null };
+  if (s === 'SES')               return { subject: 'SES',       custom_subject: null };
+  if (s === 'Autre')             return { subject: 'Autre',     custom_subject: null };
+  if (s === 'Mathématiques')     return { subject: 'Maths',     custom_subject: 'Mathématiques' };
+  if (s === 'Physique-Chimie')   return { subject: 'Physique',  custom_subject: 'Physique-Chimie' };
+  if (s === 'LV1 (Anglais)')     return { subject: 'Anglais',   custom_subject: 'LV1 (Anglais)' };
+  return { subject: 'Autre', custom_subject: s };
+}
+
 interface Props {
   userId: string;
   event?: PlanningEvent;
@@ -37,9 +48,11 @@ export function EventFormModal({ userId, event, onClose, onSaved }: Props) {
       await supabase.from('planning_events').insert(payload);
       // When adding a NEW DS in planning, auto-create it in Mes DS (exams)
       if (type === 'ds') {
+        const { subject: examEnum, custom_subject: examCustom } = toExamSubject(subject);
         await supabase.from('exams').insert({
           user_id: userId,
-          subject: subject as any,
+          subject: examEnum as any,
+          custom_subject: examCustom,
           exam_date: date,
           chapters: title.trim() || null,
           stress_level: 'neutral',
@@ -56,11 +69,11 @@ export function EventFormModal({ userId, event, onClose, onSaved }: Props) {
     await supabase.from('planning_events').delete().eq('id', event.id);
     // Sync: delete the matching exam entry when a DS is removed
     if (event.type === 'ds') {
-      const examSubject = event.subject ?? 'Autre';
+      const { subject: examEnum } = toExamSubject(event.subject ?? 'Autre');
       await supabase.from('exams').delete()
         .eq('user_id', userId)
         .eq('exam_date', event.event_date)
-        .eq('subject', examSubject as any);
+        .eq('subject', examEnum as any);
     }
     onSaved();
   };

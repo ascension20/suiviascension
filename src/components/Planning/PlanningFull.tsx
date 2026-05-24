@@ -416,6 +416,21 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SUBJECTS } from '@/lib/game-utils';
 
+/**
+ * The `exams` table has a limited subject_type enum:
+ *   "Maths" | "Français" | "Physique" | "SES" | "Anglais" | "Autre"
+ * Map any SUBJECTS value to a valid enum + store the full name in custom_subject.
+ */
+function toExamSubject(s: string): { subject: string; custom_subject: string | null } {
+  if (s === 'Français')          return { subject: 'Français',  custom_subject: null };
+  if (s === 'SES')               return { subject: 'SES',       custom_subject: null };
+  if (s === 'Autre')             return { subject: 'Autre',     custom_subject: null };
+  if (s === 'Mathématiques')     return { subject: 'Maths',     custom_subject: 'Mathématiques' };
+  if (s === 'Physique-Chimie')   return { subject: 'Physique',  custom_subject: 'Physique-Chimie' };
+  if (s === 'LV1 (Anglais)')     return { subject: 'Anglais',   custom_subject: 'LV1 (Anglais)' };
+  return { subject: 'Autre', custom_subject: s }; // Histoire-Géo, SVT, NSI, etc.
+}
+
 function ConvertToDsModal({
   event, userId, onClose, onSaved,
 }: { event: PlanningEvent; userId: string; onClose: () => void; onSaved: () => void }) {
@@ -438,9 +453,11 @@ function ConvertToDsModal({
       source: 'manual',
       ical_uid: event.ical_uid ?? null,
     });
+    const { subject: examEnum, custom_subject: examCustom } = toExamSubject(subject);
     await supabase.from('exams').insert({
       user_id: userId,
-      subject: subject as any,
+      subject: examEnum as any,
+      custom_subject: examCustom,
       exam_date: event.event_date,
       chapters: chapters.trim() || null,
       stress_level: 'neutral',
