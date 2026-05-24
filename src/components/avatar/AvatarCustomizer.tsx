@@ -15,6 +15,7 @@ interface AvatarCustomizerProps {
   unlockedIds: Set<string>;
   stats: PlayerStats | null;
   saving: boolean;
+  seed?: string;
   onConfigChange: (next: AvatarConfig) => void;
   onSave: () => Promise<void>;
 }
@@ -23,6 +24,7 @@ export function AvatarCustomizer({
   config,
   unlockedIds,
   stats,
+  seed = 'default',
   saving,
   onConfigChange,
   onSave,
@@ -44,7 +46,7 @@ export function AvatarCustomizer({
       {/* Preview + save */}
       <div className="flex flex-col items-center gap-4">
         <div className="relative">
-          <Avatar config={config} size="xl" animated />
+          <Avatar config={config} size="xl" animated seed={seed} />
           {/* Rarity glow ring (changes by equipped badge rarity) */}
           <div
             className="absolute inset-0 rounded-[1.25rem] pointer-events-none"

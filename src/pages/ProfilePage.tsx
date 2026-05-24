@@ -174,7 +174,7 @@ export default function ProfilePage() {
                   }}
                 />
               ) : (
-                <Avatar config={avatarConfig} size="lg" />
+                <Avatar config={avatarConfig} size="lg" seed={profile?.pseudo ?? user?.id ?? 'default'} />
               )}
               {/* LVL badge */}
               <div

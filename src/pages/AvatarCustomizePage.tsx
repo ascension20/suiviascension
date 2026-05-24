@@ -9,7 +9,7 @@ import { UnlockToast } from '@/components/avatar/UnlockToast';
 
 export default function AvatarCustomizePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { config, saving, setConfig, saveConfig } = useAvatarConfig(user?.id);
   const { unlockedIds, newlyUnlocked, stats, dismissNewUnlocks } = useUnlocks(user?.id);
 
@@ -49,6 +49,7 @@ export default function AvatarCustomizePage() {
             unlockedIds={unlockedIds}
             stats={stats}
             saving={saving}
+            seed={profile?.pseudo ?? user?.id ?? 'default'}
             onConfigChange={setConfig}
             onSave={handleSave}
           />
