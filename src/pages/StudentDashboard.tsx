@@ -29,6 +29,7 @@ export default function StudentDashboard() {
   const navigate = useNavigate();
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; xpGained: number } | null>(null);
   const [xpLeaderboard, setXpLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [weeklyLeaderboard, setWeeklyLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [timerLeaderboard, setTimerLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [weeklyChampion, setWeeklyChampion] = useState<string | null>(null);
   const [dailyGatePassed, setDailyGatePassed] = useState(false);
@@ -51,42 +52,58 @@ export default function StudentDashboard() {
   useEffect(() => {
     if (!user) return;
     const loadLeaderboards = async () => {
-      const { data: profiles } = await supabase
-        .from('profiles').select('user_id, pseudo, avatar, total_xp')
-        .order('total_xp', { ascending: false }).limit(10);
-      if (profiles) {
-        setXpLeaderboard(profiles.map((p, i) => ({
-          rank: i + 1, pseudo: p.pseudo, avatar: p.avatar,
-          value: p.total_xp, isCurrentUser: p.user_id === user.id,
-        })));
-      }
+      const today = new Date().toISOString().slice(0, 10);
 
       const startOfWeek = new Date();
       const day = startOfWeek.getDay();
       startOfWeek.setDate(startOfWeek.getDate() - (day === 0 ? 6 : day - 1));
       startOfWeek.setHours(0, 0, 0, 0);
 
-      // Classement chrono : basé sur deepwork_sessions de la semaine en cours
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      // ── 1. Classement Global XP (all-time) ──
+      const { data: allProfiles } = await supabase
+        .from('profiles').select('user_id, pseudo, avatar, total_xp, today_xp, today_xp_date')
+        .order('total_xp', { ascending: false }).limit(10);
+
+      if (allProfiles) {
+        setXpLeaderboard(allProfiles.map((p, i) => ({
+          rank: i + 1, userId: p.user_id, pseudo: p.pseudo, avatar: p.avatar,
+          value: p.total_xp, isCurrentUser: p.user_id === user.id,
+        })));
+
+        // ── 3. Classement Journalier (today_xp) ──
+        const daily = [...allProfiles]
+          .map(p => ({ ...p, dayXp: p.today_xp_date === today ? (p.today_xp ?? 0) : 0 }))
+          .filter(p => p.dayXp > 0)
+          .sort((a, b) => b.dayXp - a.dayXp)
+          .slice(0, 10)
+          .map((p, i) => ({
+            rank: i + 1, userId: p.user_id, pseudo: p.pseudo, avatar: p.avatar,
+            value: p.dayXp, isCurrentUser: p.user_id === user.id,
+          }));
+        setTimerLeaderboard(daily); // reuse for daily
+      }
+
+      // ── 2. Classement Hebdomadaire (deepwork XP cette semaine) ──
       const { data: dwSessions } = await supabase
         .from('deepwork_sessions')
-        .select('user_id, duration_seconds')
+        .select('user_id, xp_earned')
         .gte('started_at', startOfWeek.toISOString());
+
       if (dwSessions && dwSessions.length > 0) {
         const byUser: Record<string, number> = {};
-        dwSessions.forEach(s => {
-          byUser[s.user_id] = (byUser[s.user_id] || 0) + Math.round(s.duration_seconds / 60);
-        });
+        dwSessions.forEach(s => { byUser[s.user_id] = (byUser[s.user_id] || 0) + (s.xp_earned ?? 0); });
         const userIds = Object.keys(byUser);
-        const { data: timerProfiles } = await supabase
+        const { data: wkProfiles } = await supabase
           .from('profiles').select('user_id, pseudo, avatar').in('user_id', userIds);
-        if (timerProfiles) {
-          const entries = timerProfiles.map(p => ({
-            pseudo: p.pseudo, avatar: p.avatar,
-            value: byUser[p.user_id] || 0,
-            isCurrentUser: p.user_id === user.id,
-            rank: 0,
-          })).sort((a, b) => b.value - a.value).map((e, i) => ({ ...e, rank: i + 1 }));
-          setTimerLeaderboard(entries);
+        if (wkProfiles) {
+          const entries = wkProfiles
+            .map(p => ({ rank: 0, userId: p.user_id, pseudo: p.pseudo, avatar: p.avatar, value: byUser[p.user_id] || 0, isCurrentUser: p.user_id === user.id }))
+            .sort((a, b) => b.value - a.value)
+            .map((e, i) => ({ ...e, rank: i + 1 }));
+          setWeeklyLeaderboard(entries);
           if (entries.length > 0) setWeeklyChampion(entries[0].pseudo);
         }
       }
@@ -214,11 +231,35 @@ export default function StudentDashboard() {
           {user && <DifficultiesSection userId={user.id} />}
         </div>
 
-        {/* ══ ROW 4 : Comparaison + Classements ══ */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-tutorial="leaderboard">
+        {/* ══ ROW 4 : Comparaison ══ */}
+        <div className="mb-6">
           {user && <ProgressComparison userId={user.id} totalXp={totalXp} streak={streak} />}
-          <WeeklyLeaderboard title="🏆 Classement XP" data={xpLeaderboard} unit="XP" />
-          <WeeklyLeaderboard title="⏱ Classement Chrono" data={timerLeaderboard} unit="min" weeklyChampion={weeklyChampion} />
+        </div>
+
+        {/* ══ ROW 5 : Classements (pleine largeur) ══ */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-tutorial="leaderboard">
+          <WeeklyLeaderboard
+            title="🌍 Classement Global"
+            subtitle="XP total cumulé"
+            data={xpLeaderboard}
+            unit="XP"
+            emptyLabel="Aucun élève"
+          />
+          <WeeklyLeaderboard
+            title="📅 Classement Semaine"
+            subtitle="XP deepwork cette semaine"
+            data={weeklyLeaderboard}
+            unit="XP"
+            weeklyChampion={weeklyChampion}
+            emptyLabel="Aucune session cette semaine"
+          />
+          <WeeklyLeaderboard
+            title="☀️ Classement Aujourd'hui"
+            subtitle="XP quêtes du jour"
+            data={timerLeaderboard}
+            unit="XP"
+            emptyLabel="Aucune quête validée aujourd'hui"
+          />
         </div>
       </main>
 
