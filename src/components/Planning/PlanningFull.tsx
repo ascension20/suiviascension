@@ -419,11 +419,10 @@ import { SUBJECTS } from '@/lib/game-utils';
 function ConvertToDsModal({
   event, userId, onClose, onSaved,
 }: { event: PlanningEvent; userId: string; onClose: () => void; onSaved: () => void }) {
+  const [subject, setSubject] = useState<string>(event.subject ?? SUBJECTS[0]);
   const [chapters, setChapters] = useState('');
   const [saving, setSaving] = useState(false);
 
-  // Garde la matière et le titre du cours original (pas de matière par défaut)
-  const subject = event.subject ?? null;
   const dsTitle = `DS · ${event.title}`;
 
   const confirm = async () => {
@@ -437,11 +436,11 @@ function ConvertToDsModal({
       start_time: event.start_time,
       end_time: event.end_time,
       source: 'manual',
-      ical_uid: event.ical_uid ?? null, // track which iCal course this replaces
+      ical_uid: event.ical_uid ?? null,
     });
     await supabase.from('exams').insert({
       user_id: userId,
-      subject: (subject ?? 'Autre') as any,
+      subject: subject as any,
       exam_date: event.event_date,
       chapters: chapters.trim() || null,
       stress_level: 'neutral',
@@ -467,6 +466,16 @@ function ConvertToDsModal({
           </p>
         </div>
         <div className="space-y-3">
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Matière</label>
+            <select
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm"
+            >
+              {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Chapitres (optionnel)</label>
             <input

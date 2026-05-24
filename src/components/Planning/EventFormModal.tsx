@@ -54,6 +54,14 @@ export function EventFormModal({ userId, event, onClose, onSaved }: Props) {
     if (!event) return;
     if (!confirm('Supprimer cet événement ?')) return;
     await supabase.from('planning_events').delete().eq('id', event.id);
+    // Sync: delete the matching exam entry when a DS is removed
+    if (event.type === 'ds') {
+      const examSubject = event.subject ?? 'Autre';
+      await supabase.from('exams').delete()
+        .eq('user_id', userId)
+        .eq('exam_date', event.event_date)
+        .eq('subject', examSubject as any);
+    }
     onSaved();
   };
 

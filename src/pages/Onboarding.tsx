@@ -416,19 +416,54 @@ export default function OnboardingPage() {
             {step === 7 && (
               <>
                 <h1 className="font-display text-2xl font-bold mb-1">Engagement</h1>
-                <p className="text-muted-foreground text-sm mb-6">Dernière étape avant de commencer.</p>
+                <p className="text-muted-foreground text-sm mb-5">Dernière étape avant de commencer.</p>
+
+                {/* Engagement text */}
+                <div className="space-y-3 mb-6 text-sm leading-relaxed text-muted-foreground">
+                  <p>
+                    Prépare-toi à voir{' '}
+                    <span className="font-bold text-amber-400">tes notes monter. Dès les prochaines semaines.</span>
+                  </p>
+                  <p>
+                    Le seul effort demandé ici est de{' '}
+                    <span className="font-semibold text-foreground">suivre nos méthodes, et être régulier.</span>{' '}
+                    Ta discipline, ton organisation, ta moyenne vont décoller, et tu vas le sentir avant même que ton prof te le dise.
+                  </p>
+                  <p>
+                    Gagner{' '}
+                    <span className="font-bold text-amber-400">+2, +3 ou +6 points dans sa moyenne</span>
+                    , ce n'est pas un rêve : Des centaines d'élèves l'ont fait avant toi, avec les mêmes doutes que toi en ce moment.
+                  </p>
+                  <p>
+                    Tu vas progresser visiblement, semaine après semaine. Tu vas reconnaître des exercices, anticiper les pièges,{' '}
+                    <span className="font-semibold text-foreground">comprendre vraiment au lieu d'apprendre par cœur.</span>{' '}
+                    Et ce déclic, une fois qu'il est là, plus personne ne te l'enlève.
+                  </p>
+                  <p className="text-foreground font-semibold border-l-2 border-amber-500 pl-3">
+                    La régularité bat le talent. Toujours.
+                  </p>
+                  <p>
+                    Suivre nos méthodes ainsi que les directives de ton tuteur, c'est{' '}
+                    <span className="font-bold text-amber-400">le seul coût pour propulser tes notes</span>
+                    , et réaliser tes projets scolaires.
+                  </p>
+                  <p className="font-semibold text-foreground">
+                    Dans 3 mois, tu vas regarder ta moyenne et sourire. Dans 6 mois, tu ne te reconnaîtras plus. Allez, on y va. 🚀
+                  </p>
+                </div>
+
                 <button onClick={() => setEngagement(e => !e)}
-                  className={`w-full p-5 rounded-xl border-2 text-left transition ${engagement ? 'border-amber-500 bg-amber-950/40' : 'border-border bg-secondary'}`}>
+                  className={`w-full p-4 rounded-xl border-2 text-left transition ${engagement ? 'border-amber-500 bg-amber-950/40' : 'border-border bg-secondary'}`}>
                   <div className="flex items-start gap-3">
                     <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 ${engagement ? 'border-amber-500 bg-amber-500' : 'border-muted-foreground'}`}>
                       {engagement && <Check size={14} className="text-black" />}
                     </div>
-                    <p className="font-display font-bold text-base">Je m'engage. La régularité bat le talent. Toujours.</p>
+                    <p className="font-display font-bold text-sm">Je m'engage. La régularité bat le talent. Toujours.</p>
                   </div>
                 </button>
                 <button onClick={finalize} disabled={!engagement || finalizing}
-                  className="w-full mt-5 bg-amber-500 text-white rounded-md py-3 text-sm font-bold hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-2">
-                  {finalizing && <Loader2 size={14} className="animate-spin" />} C'est parti
+                  className="w-full mt-4 bg-amber-500 text-white rounded-md py-3 text-sm font-bold hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-2">
+                  {finalizing && <Loader2 size={14} className="animate-spin" />} C'est parti 🚀
                 </button>
               </>
             )}
