@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { DeepworkPresenceProvider } from "@/hooks/useDeepworkPresence";
 import LoginPage from "./pages/LoginPage";
 import SetupPage from "./pages/SetupPage";
 import OnboardingPage from "./pages/Onboarding";
@@ -37,7 +38,7 @@ function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode;
 }
 
 function AppRoutes() {
-  const { user, role, loading } = useAuth();
+  const { user, role, loading, profile } = useAuth();
 
   if (loading) {
     return (
@@ -48,6 +49,7 @@ function AppRoutes() {
   }
 
   return (
+    <DeepworkPresenceProvider userId={user?.id} profile={profile}>
     <Routes>
       <Route path="/login" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <LoginPage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
@@ -60,6 +62,7 @@ function AppRoutes() {
       <Route path="/" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <Navigate to="/login" replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </DeepworkPresenceProvider>
   );
 }
 

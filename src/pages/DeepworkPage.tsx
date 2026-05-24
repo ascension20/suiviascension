@@ -7,7 +7,7 @@ import { computeDeepworkXp, DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
 import { playXpSound, useLofiMusic } from '@/hooks/useXpAudio';
 import { useAuth } from '@/hooks/useAuth';
 import { updateStreak } from '@/hooks/useOnlineTracker';
-import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
+import { useDeepworkPresence } from '@/hooks/useDeepworkPresence';
 
 const STORAGE_KEY = DEEPWORK_STORAGE_KEY;
 
@@ -18,82 +18,12 @@ function xpRateInfo(seconds: number) {
   return { rate: 3, label: '3 XP / min · Mode turbo 🔥', color: 'hsl(16,100%,65%)' };
 }
 
-// ── Présence en temps réel ──────────────────────────────────────────────────
-interface PresenceUser { pseudo: string; avatar: string; }
-
-function DeepworkPresence({ userId, profile }: { userId: string; profile: any }) {
-  const [peers, setPeers] = useState<PresenceUser[]>([]);
-
-  useEffect(() => {
-    const channel = supabase.channel('deepwork-room', {
-      config: { presence: { key: userId } },
-    });
-
-    channel
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState<PresenceUser>();
-        const others = Object.entries(state)
-          .filter(([key]) => key !== userId)
-          .flatMap(([, v]) => v as PresenceUser[]);
-        setPeers(others);
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track({
-            pseudo: profile?.pseudo ?? 'Élève',
-            avatar: profile?.avatar ?? '🐺',
-          });
-        }
-      });
-
-    return () => { supabase.removeChannel(channel); };
-  }, [userId, profile?.pseudo]);
-
-  if (peers.length === 0) {
-    return (
-      <p className="text-xs text-muted-foreground text-center">
-        Tu es le premier à étudier en ce moment 🌙
-      </p>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <p className="text-xs text-muted-foreground">
-        {peers.length} élève{peers.length > 1 ? 's' : ''} en deepwork avec toi
-      </p>
-      <div className="flex -space-x-2 flex-wrap justify-center">
-        {peers.slice(0, 8).map((u, i) => (
-          <div
-            key={i}
-            title={u.pseudo}
-            className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-base"
-            style={{
-              borderColor: 'hsl(222 22% 8%)',
-              backgroundColor: 'hsl(43 90% 50% / 0.15)',
-            }}
-          >
-            {u.avatar}
-          </div>
-        ))}
-        {peers.length > 8 && (
-          <div
-            className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-bold text-muted-foreground"
-            style={{ borderColor: 'hsl(222 22% 8%)', backgroundColor: 'hsl(222 18% 16%)' }}
-          >
-            +{peers.length - 8}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ── Page principale ─────────────────────────────────────────────────────────
 export default function DeepworkPage() {
   const navigate = useNavigate();
   const { user, profile, refreshProfile } = useAuth();
   const { enabled: lofiOn, toggle: toggleLofi } = useLofiMusic();
+  const peers = useDeepworkPresence();
 
   const [startedAt, setStartedAt] = useState<number | null>(() => {
     const v = localStorage.getItem(STORAGE_KEY);
@@ -123,6 +53,7 @@ export default function DeepworkPage() {
   const handleStart = () => {
     const t = Date.now();
     localStorage.setItem(STORAGE_KEY, String(t));
+    window.dispatchEvent(new Event('deepwork-session-change'));
     setStartedAt(t);
   };
 
@@ -133,6 +64,7 @@ export default function DeepworkPage() {
     const xp       = computeDeepworkXp(duration);
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('deepwork_quest_title');
+    window.dispatchEvent(new Event('deepwork-session-change'));
     setStartedAt(null);
     setQuestTitle(null);
 
@@ -357,15 +289,37 @@ export default function DeepworkPage() {
           <span>{lofiOn ? 'Lofi ON' : 'Lofi OFF'}</span>
         </button>
 
-        {/* Présence élèves */}
-        {user && profile && (
-          <DeepworkPresence userId={user.id} profile={profile} />
-        )}
-      </div>
-
-      {/* Stats */}
-      <div className="relative z-10 px-4 pb-10 max-w-2xl mx-auto w-full">
-        {user && <DeepworkStats userId={user.id} />}
+        {/* ── Présence élèves ── */}
+        <div className="flex flex-col items-center gap-3 w-full max-w-md">
+          {peers.length === 0 ? (
+            <p className="text-xs text-muted-foreground text-center">
+              Tu es le premier à étudier en ce moment 🌙
+            </p>
+          ) : (
+            <>
+              <p className="text-xs font-semibold" style={{ color: 'hsl(43 90% 50% / 0.7)' }}>
+                {peers.length} élève{peers.length > 1 ? 's' : ''} en deepwork avec toi
+              </p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {peers.map((u, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border"
+                    style={{
+                      borderColor: 'hsl(43 90% 50% / 0.3)',
+                      backgroundColor: 'hsl(43 90% 50% / 0.07)',
+                    }}
+                  >
+                    <span className="text-base leading-none">{u.avatar}</span>
+                    <span className="text-xs font-semibold" style={{ color: 'hsl(42 12% 88%)' }}>
+                      {u.pseudo}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
