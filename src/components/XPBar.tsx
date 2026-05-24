@@ -24,8 +24,9 @@ export function XPBar({ current, max, level, title, className, compact }: XPBarP
             className="h-full rounded-full xp-shimmer transition-all duration-700"
             style={{
               width: `${percentage}%`,
-              background: 'linear-gradient(90deg, hsl(var(--xp)), hsl(var(--streak)))',
+              background: 'linear-gradient(90deg, hsl(196 100% 38%), hsl(196 100% 62%))',
               backgroundSize: '200% 100%',
+              boxShadow: '0 0 8px hsl(196 100% 58% / 0.5)',
             }}
           />
         </div>
@@ -41,14 +42,15 @@ export function XPBar({ current, max, level, title, className, compact }: XPBarP
       </div>
       <div
         className="flex-1 h-3 rounded-full overflow-hidden min-w-[100px]"
-        style={{ backgroundColor: 'hsl(var(--secondary))', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)' }}
+        style={{ backgroundColor: 'hsl(var(--secondary))', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}
       >
         <div
           className="h-full rounded-full xp-shimmer transition-all duration-700"
           style={{
             width: `${percentage}%`,
-            background: 'linear-gradient(90deg, hsl(var(--xp)), hsl(var(--streak)))',
+            background: 'linear-gradient(90deg, hsl(196 100% 38%), hsl(196 100% 62%))',
             backgroundSize: '200% 100%',
+            boxShadow: '0 0 8px hsl(196 100% 58% / 0.4)',
           }}
         />
       </div>

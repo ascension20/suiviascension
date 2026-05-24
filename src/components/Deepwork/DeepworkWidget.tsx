@@ -12,7 +12,7 @@ function XpRate({ minutes }: { minutes: number }) {
     ? '2 XP/min · Bonus vitesse ⚡'
     : '3 XP/min · Mode turbo 🔥';
   return (
-    <span className="text-xs font-semibold" style={{ color: `hsl(var(--primary) / ${0.5 + rate * 0.15})` }}>
+    <span className="text-xs font-semibold" style={{ color: `hsl(var(--primary) / ${0.55 + rate * 0.13})` }}>
       {label}
     </span>
   );
@@ -48,35 +48,32 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
     >
       <div
         className={`
-          relative rounded-2xl border overflow-hidden transition-all duration-300
-          active:scale-[0.995]
-          ${active
-            ? 'border-primary/60 gold-pulse'
-            : 'border-primary/60 shadow-[0_0_70px_hsl(43_90%_50%/0.35),0_0_120px_hsl(43_90%_50%/0.15)] hover:shadow-[0_0_90px_hsl(43_90%_50%/0.5),0_0_150px_hsl(43_90%_50%/0.25)] hover:border-primary/80'}
+          relative rounded-lg border overflow-hidden transition-all duration-300
+          active:scale-[0.995] sys-panel
+          ${active ? 'gold-pulse' : 'hover:border-primary/50'}
         `}
-        style={{ background: 'hsl(222 22% 8%)' }}
+        style={{ background: 'hsl(222 45% 4%)' }}
       >
-        {/* ── top gold line ── */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-80" />
+        {/* ── top system line ── */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-70" />
 
-        {/* ── ambient gold glow behind circle ── */}
+        {/* ── ambient system glow ── */}
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full blur-3xl pointer-events-none transition-opacity duration-700"
           style={{
-            background: 'radial-gradient(circle, hsl(43 90% 50% / 0.22) 0%, transparent 70%)',
-            opacity: active ? 1 : 0.85,
+            background: `radial-gradient(circle, hsl(var(--primary) / ${active ? 0.18 : 0.08}) 0%, transparent 70%)`,
           }}
         />
 
         <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 py-10 px-6">
 
-          {/* ── left: session badge ── */}
+          {/* ── left: session badge + circle ── */}
           <div className="flex flex-col items-center gap-4">
             {active && (
               <div className="flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold"
                 style={{
-                  borderColor: 'hsl(43 90% 50% / 0.5)',
-                  backgroundColor: 'hsl(43 90% 50% / 0.12)',
+                  borderColor: 'hsl(var(--primary) / 0.5)',
+                  backgroundColor: 'hsl(var(--primary) / 0.1)',
                   color: 'hsl(var(--primary))',
                 }}
               >
@@ -91,17 +88,20 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
                 relative w-36 h-36 rounded-full flex items-center justify-center flex-shrink-0
                 transition-all duration-300
                 ${active
-                  ? 'border-2 border-primary/80 shadow-[0_0_50px_hsl(43_90%_50%/0.45)]'
-                  : 'border-2 border-primary/30 group-hover:border-primary/60 group-hover:shadow-[0_0_30px_hsl(43_90%_50%/0.2)]'}
+                  ? 'border-2 border-primary/80'
+                  : 'border-2 border-primary/25 group-hover:border-primary/55'}
               `}
               style={{
                 background: active
-                  ? 'linear-gradient(135deg, hsl(43 90% 50%) 0%, hsl(38 90% 38%) 100%)'
-                  : 'linear-gradient(135deg, hsl(43 90% 50% / 0.15) 0%, hsl(43 90% 50% / 0.05) 100%)',
+                  ? 'linear-gradient(135deg, hsl(var(--primary) / 0.35) 0%, hsl(var(--primary) / 0.15) 100%)'
+                  : 'linear-gradient(135deg, hsl(var(--primary) / 0.1) 0%, hsl(var(--primary) / 0.03) 100%)',
+                boxShadow: active
+                  ? '0 0 50px hsl(var(--primary) / 0.4), inset 0 0 30px hsl(var(--primary) / 0.08)'
+                  : 'none',
               }}
             >
               {active
-                ? <Pause size={40} style={{ color: 'hsl(222 22% 8%)' }} />
+                ? <Pause size={40} style={{ color: 'hsl(var(--primary))' }} />
                 : <Play  size={40} style={{ color: 'hsl(var(--primary))' }} className="ml-2" />
               }
 
@@ -109,22 +109,22 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
               {active && (
                 <div
                   className="spin-slow absolute inset-[-10px] rounded-full border border-dashed pointer-events-none"
-                  style={{ borderColor: 'hsl(43 90% 50% / 0.35)' }}
+                  style={{ borderColor: 'hsl(var(--primary) / 0.35)' }}
                 />
               )}
 
               {/* Static outer ring */}
               <div
                 className="absolute inset-[-18px] rounded-full border pointer-events-none"
-                style={{ borderColor: 'hsl(43 90% 50% / 0.1)' }}
+                style={{ borderColor: 'hsl(var(--primary) / 0.1)' }}
               />
             </div>
           </div>
 
           {/* ── right: info ── */}
           <div className="flex flex-col items-center md:items-start gap-2">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em]"
-               style={{ color: 'hsl(43 90% 50% / 0.55)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] neon-cyan"
+               style={{ color: 'hsl(var(--primary) / 0.65)' }}>
               {active ? 'Session active' : 'Focus'}
             </p>
 
@@ -133,8 +133,8 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
               className="font-display font-black tabular-nums leading-none transition-all duration-300"
               style={{
                 fontSize: 'clamp(3rem, 8vw, 5rem)',
-                color: active ? 'hsl(var(--primary))' : 'hsl(42 12% 92%)',
-                textShadow: active ? '0 0 30px hsl(43 90% 50% / 0.4)' : 'none',
+                color: active ? 'hsl(var(--primary))' : 'hsl(196 15% 92%)',
+                textShadow: active ? '0 0 30px hsl(var(--primary) / 0.5)' : 'none',
               }}
             >
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
@@ -153,8 +153,8 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
           </div>
         </div>
 
-        {/* ── bottom gold line ── */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-30" />
+        {/* ── bottom system line ── */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-25" />
       </div>
     </button>
   );

@@ -206,8 +206,8 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-background">
 
       {/* ─── HEADER ─── */}
-      <header className="border-b border-border px-4 md:px-6 py-3 sticky top-0 z-30 backdrop-blur-sm"
-              style={{ backgroundColor: 'hsl(222 22% 5% / 0.92)' }}>
+      <header className="border-b px-4 md:px-6 py-3 sticky top-0 z-30 backdrop-blur-sm"
+              style={{ backgroundColor: 'hsl(222 45% 2% / 0.94)', borderColor: 'hsl(213 40% 14%)' }}>
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
 
           {/* Logo / title */}
@@ -232,7 +232,7 @@ export default function StudentDashboard() {
 
             {/* Streak badge */}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
-                 style={{ borderColor: 'hsl(var(--streak) / 0.3)', backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
+                 style={{ borderColor: 'hsl(var(--streak) / 0.35)', backgroundColor: 'hsl(var(--streak) / 0.08)' }}>
               <Flame size={14} className="text-streak" />
               <span className="font-display text-sm font-semibold text-streak">{streak}</span>
             </div>
@@ -247,8 +247,8 @@ export default function StudentDashboard() {
               title="Mon profil"
             >
               <div
-                className="w-9 h-9 rounded-full border flex items-center justify-center text-lg transition-all"
-                style={{ backgroundColor: 'hsl(222 22% 12%)', borderColor: 'hsl(43 90% 50% / 0.3)' }}
+                className="w-9 h-9 rounded-full border flex items-center justify-center text-lg transition-all group-hover:border-primary/60"
+                style={{ backgroundColor: 'hsl(222 40% 8%)', borderColor: 'hsl(var(--primary) / 0.25)' }}
               >
                 {profile?.avatar ?? '🐺'}
               </div>

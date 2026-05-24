@@ -43,20 +43,31 @@ export default function ProfilePage() {
         .eq('assigned_to', user.id).eq('completed', true);
       setQuestsDone(count ?? 0);
 
-      // XP last 30 days (from deepwork_sessions)
+      // XP last 30 days — deepwork (historical) + quests (xp_history, source != 'deepwork')
       const since = new Date();
       since.setDate(since.getDate() - 30);
-      const { data: sessions } = await supabase.from('deepwork_sessions')
-        .select('started_at, xp_earned').eq('user_id', user.id)
-        .gte('started_at', since.toISOString());
+      since.setHours(0, 0, 0, 0);
+      const [sessionsRes, questXpRes] = await Promise.all([
+        supabase.from('deepwork_sessions')
+          .select('started_at, xp_earned').eq('user_id', user.id)
+          .gte('started_at', since.toISOString()),
+        supabase.from('xp_history')
+          .select('created_at, amount').eq('user_id', user.id)
+          .neq('source', 'deepwork')   // deepwork already counted via deepwork_sessions
+          .gte('created_at', since.toISOString()),
+      ]);
       const byDate: Record<string, number> = {};
       for (let i = 0; i < 30; i++) {
         const d = new Date(); d.setDate(d.getDate() - (29 - i));
         byDate[d.toISOString().slice(0, 10)] = 0;
       }
-      sessions?.forEach(s => {
+      sessionsRes.data?.forEach(s => {
         const k = (s.started_at ?? '').slice(0, 10);
         if (byDate[k] !== undefined) byDate[k] += s.xp_earned ?? 0;
+      });
+      questXpRes.data?.forEach(r => {
+        const k = (r.created_at ?? '').slice(0, 10);
+        if (byDate[k] !== undefined) byDate[k] += r.amount ?? 0;
       });
       setXpHistory(Object.entries(byDate).map(([date, xp]) => ({
         label: new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
@@ -139,34 +150,34 @@ export default function ProfilePage() {
         {/* ── Avatar + level card ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="relative bg-card border border-border rounded-2xl p-6 overflow-hidden"
-          style={{ boxShadow: '0 0 50px hsl(43 90% 50% / 0.08)' }}
+          className="relative bg-card border border-border rounded-lg p-6 overflow-hidden sys-panel"
+          style={{ boxShadow: '0 0 50px hsl(196 100% 58% / 0.07)' }}
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60" />
           {/* Ambient glow */}
           <div
-            className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-10"
+            className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-8"
             style={{ background: 'hsl(var(--primary))' }}
           />
 
           <div className="flex items-center gap-5 relative">
             <div className="relative">
               <div
-                className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl border-2"
+                className="w-20 h-20 rounded-lg flex items-center justify-center text-4xl border-2"
                 style={{
-                  borderColor: 'hsl(43 90% 50% / 0.6)',
-                  background: 'linear-gradient(135deg, hsl(43 90% 50% / 0.2) 0%, hsl(43 90% 50% / 0.05) 100%)',
-                  boxShadow: '0 0 20px hsl(43 90% 50% / 0.2)',
+                  borderColor: 'hsl(var(--primary) / 0.5)',
+                  background: 'linear-gradient(135deg, hsl(var(--primary) / 0.15) 0%, hsl(var(--primary) / 0.04) 100%)',
+                  boxShadow: '0 0 24px hsl(var(--primary) / 0.18)',
                 }}
               >
                 {profile?.avatar ?? '🐺'}
               </div>
               <div
-                className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-lg border text-[10px] font-display font-bold"
+                className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded border text-[10px] font-display font-bold neon-cyan"
                 style={{
-                  background: 'hsl(43 90% 50%)',
-                  borderColor: 'hsl(43 90% 70% / 0.5)',
-                  color: 'hsl(222 22% 8%)',
+                  background: 'hsl(var(--primary) / 0.15)',
+                  borderColor: 'hsl(var(--primary) / 0.6)',
+                  color: 'hsl(var(--primary))',
                 }}
               >
                 LVL {level}
@@ -182,15 +193,16 @@ export default function ProfilePage() {
                   <span>{requiredXp.toLocaleString('fr-FR')} XP</span>
                 </div>
                 <div className="h-3 rounded-full overflow-hidden border border-border"
-                     style={{ background: 'hsl(222 18% 14%)' }}>
+                     style={{ background: 'hsl(222 40% 9%)' }}>
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${pct}%` }}
                     transition={{ duration: 1, ease: 'easeOut' }}
                     className="h-full rounded-full relative overflow-hidden xp-shimmer"
                     style={{
-                      background: 'linear-gradient(90deg, hsl(43 90% 40%) 0%, hsl(43 90% 60%) 50%, hsl(43 90% 40%) 100%)',
+                      background: 'linear-gradient(90deg, hsl(196 100% 38%) 0%, hsl(196 100% 65%) 50%, hsl(196 100% 38%) 100%)',
                       backgroundSize: '200% 100%',
+                      boxShadow: '0 0 10px hsl(196 100% 58% / 0.5)',
                     }}
                   />
                 </div>
@@ -228,7 +240,7 @@ export default function ProfilePage() {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display font-semibold text-sm">XP des 30 derniers jours</h2>
-            <span className="text-xs text-muted-foreground">Sessions deepwork</span>
+            <span className="text-xs text-muted-foreground">Deepwork + Quêtes</span>
           </div>
           {xpHistory.some(d => d.xp > 0) ? (
             <div className="h-36">
@@ -236,33 +248,33 @@ export default function ProfilePage() {
                 <AreaChart data={xpHistory} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="profileXpGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="hsl(43,90%,50%)" stopOpacity={0.45} />
-                      <stop offset="95%" stopColor="hsl(43,90%,50%)" stopOpacity={0} />
+                      <stop offset="5%"  stopColor="hsl(196,100%,58%)" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="hsl(196,100%,58%)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
                     dataKey="label"
-                    tick={{ fontSize: 10, fill: 'hsl(220,10%,50%)' }}
+                    tick={{ fontSize: 10, fill: 'hsl(213,18%,46%)' }}
                     tickLine={false} axisLine={false} interval={9}
                   />
                   <YAxis
-                    tick={{ fontSize: 10, fill: 'hsl(220,10%,50%)' }}
+                    tick={{ fontSize: 10, fill: 'hsl(213,18%,46%)' }}
                     tickLine={false} axisLine={false}
                   />
                   <Tooltip
-                    contentStyle={{ background: 'hsl(222,22%,9%)', border: '1px solid hsl(222,16%,18%)', borderRadius: 8, fontSize: 12 }}
+                    contentStyle={{ background: 'hsl(222,40%,6%)', border: '1px solid hsl(213,40%,16%)', borderRadius: 6, fontSize: 12 }}
                     formatter={(v: number) => [`${v} XP`, 'XP gagné']}
                   />
                   <Area
                     type="monotone" dataKey="xp"
-                    stroke="hsl(43,90%,50%)" strokeWidth={2}
+                    stroke="hsl(196,100%,58%)" strokeWidth={2}
                     fill="url(#profileXpGrad)" dot={false} isAnimationActive={false}
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">Lance ta première session deepwork ! 🧠</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Lance ta première session ou valide une quête ! 🧠</p>
           )}
         </motion.div>
 

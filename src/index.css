@@ -4,39 +4,39 @@
 
 @layer base {
   :root {
-    /* ─── Ascension 20 — Noir & Or ─── */
-    --background: 222 22% 5%;
-    --foreground: 42 12% 92%;
+    /* ─── Ascension 20 — Solo Leveling System ─── */
+    --background: 222 45% 2%;
+    --foreground: 196 15% 92%;
 
-    --card: 222 22% 9%;
-    --card-foreground: 42 12% 92%;
+    --card: 222 40% 5%;
+    --card-foreground: 196 15% 92%;
 
-    --popover: 222 22% 9%;
-    --popover-foreground: 42 12% 92%;
+    --popover: 222 40% 5%;
+    --popover-foreground: 196 15% 92%;
 
-    /* OR ASCENSION — couleur primaire */
-    --primary: 43 90% 50%;
-    --primary-foreground: 222 22% 8%;
+    /* SYSTEM CYAN — couleur primaire Solo Leveling */
+    --primary: 196 100% 58%;
+    --primary-foreground: 222 50% 4%;
 
-    --secondary: 222 18% 15%;
-    --secondary-foreground: 42 10% 85%;
+    --secondary: 222 35% 10%;
+    --secondary-foreground: 196 12% 82%;
 
-    --muted: 222 18% 15%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 222 35% 10%;
+    --muted-foreground: 213 18% 46%;
 
-    --accent: 222 18% 18%;
-    --accent-foreground: 42 12% 92%;
+    --accent: 222 32% 13%;
+    --accent-foreground: 196 15% 92%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 222 16% 18%;
-    --input: 222 22% 13%;
-    --ring: 43 90% 50%;
+    --border: 213 40% 14%;
+    --input: 222 40% 8%;
+    --ring: 196 100% 58%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --xp: 43 90% 50%;
+    --xp: 43 90% 50%;          /* or doré — récompenses */
     --streak: 16 100% 61%;
     --success: 142 71% 45%;
 
@@ -62,14 +62,14 @@
     --subject-si:          195 75% 52%;
     --subject-autre:       220 10% 52%;
 
-    --sidebar-background: 222 22% 5%;
-    --sidebar-foreground: 42 12% 92%;
-    --sidebar-primary: 43 90% 50%;
-    --sidebar-primary-foreground: 222 22% 8%;
-    --sidebar-accent: 222 18% 15%;
-    --sidebar-accent-foreground: 42 12% 92%;
-    --sidebar-border: 222 16% 18%;
-    --sidebar-ring: 43 90% 50%;
+    --sidebar-background: 222 45% 2%;
+    --sidebar-foreground: 196 15% 92%;
+    --sidebar-primary: 196 100% 58%;
+    --sidebar-primary-foreground: 222 50% 4%;
+    --sidebar-accent: 222 35% 10%;
+    --sidebar-accent-foreground: 196 15% 92%;
+    --sidebar-border: 213 40% 14%;
+    --sidebar-ring: 196 100% 58%;
   }
 }
 
@@ -89,7 +89,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   XP SHIMMER
+   XP SHIMMER — bleu système
 ═══════════════════════════════════════════ */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
@@ -120,23 +120,23 @@ body::before {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0,0,0,0.04) 2px,
-    rgba(0,0,0,0.04) 4px
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
   );
   pointer-events: none;
   z-index: 9999;
 }
 
-/* Halo gold ambiant en haut de page */
+/* Halo système bleu en haut de page */
 body::after {
   content: '';
   position: fixed;
   top: -120px;
   left: 50%;
   transform: translateX(-50%);
-  width: 600px;
-  height: 240px;
-  background: radial-gradient(ellipse at center, hsl(43 90% 50% / 0.07) 0%, transparent 70%);
+  width: 700px;
+  height: 260px;
+  background: radial-gradient(ellipse at center, hsl(196 100% 58% / 0.07) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -145,9 +145,9 @@ body::after {
    SCROLLBAR
 ═══════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: hsl(222 22% 7%); }
-::-webkit-scrollbar-thumb { background: hsl(222 16% 22%); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(43 90% 45%); }
+::-webkit-scrollbar-track { background: hsl(222 45% 4%); }
+::-webkit-scrollbar-thumb { background: hsl(213 40% 18%); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.7); }
 
 /* ═══════════════════════════════════════════
    FLOAT BADGE
@@ -161,25 +161,28 @@ body::after {
 /* ═══════════════════════════════════════════
    NEON TEXT GLOW — Ascension palette
 ═══════════════════════════════════════════ */
-.neon-gold   { text-shadow: 0 0 10px rgba(201,162,39,0.7), 0 0 24px rgba(201,162,39,0.35); }
-.neon-amber  { text-shadow: 0 0 10px rgba(245,166,35,0.6), 0 0 20px rgba(245,166,35,0.3); }
-.neon-violet { text-shadow: 0 0 10px rgba(139,92,246,0.6), 0 0 20px rgba(139,92,246,0.3); }
-.neon-blue   { text-shadow: 0 0 10px rgba(96,165,250,0.6), 0 0 20px rgba(96,165,250,0.3); }
+/* Logo ASCENSION reste doré (marque) */
+.neon-gold   { text-shadow: 0 0 10px rgba(201,162,39,0.7),  0 0 24px rgba(201,162,39,0.35); }
+.neon-amber  { text-shadow: 0 0 10px rgba(245,166,35,0.6),  0 0 20px rgba(245,166,35,0.3); }
+.neon-violet { text-shadow: 0 0 10px rgba(139,92,246,0.6),  0 0 20px rgba(139,92,246,0.3); }
+.neon-blue   { text-shadow: 0 0 10px rgba(96,165,250,0.6),  0 0 20px rgba(96,165,250,0.3); }
+/* Couleur système Solo Leveling */
+.neon-cyan   { text-shadow: 0 0 12px hsl(196 100% 58% / 0.85), 0 0 28px hsl(196 100% 58% / 0.45); }
 
 /* ═══════════════════════════════════════════
-   GAME CARD hover (gold glow)
+   GAME CARD hover (system glow)
 ═══════════════════════════════════════════ */
 .game-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .game-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(201,162,39,0.10);
-  border-color: hsl(43 90% 40% / 0.4);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 24px hsl(196 100% 58% / 0.09);
+  border-color: hsl(var(--primary) / 0.4);
 }
 
 /* ═══════════════════════════════════════════
-   SECTION HEADER BAR (gold gradient)
+   SECTION HEADER BAR (system gradient)
 ═══════════════════════════════════════════ */
 .section-header-bar {
   display: inline-flex;
@@ -192,7 +195,7 @@ body::after {
   width: 3px;
   height: 16px;
   border-radius: 2px;
-  background: linear-gradient(to bottom, hsl(43 90% 55%), hsl(38 90% 35%));
+  background: linear-gradient(to bottom, hsl(196 100% 65%), hsl(196 100% 40%));
 }
 
 /* ═══════════════════════════════════════════
@@ -203,8 +206,8 @@ body::after {
 }
 .card-hover:hover {
   transform: translateY(-3px);
-  border-color: hsl(var(--primary) / 0.5);
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6), 0 0 20px hsl(43 90% 50% / 0.08);
+  border-color: hsl(var(--primary) / 0.45);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.7), 0 0 20px hsl(var(--primary) / 0.08);
 }
 
 /* ═══════════════════════════════════════════
@@ -228,17 +231,86 @@ body::after {
 .spin-slow { animation: spin-slow 12s linear infinite; }
 
 /* ═══════════════════════════════════════════
-   GOLD BORDER PULSE (deepwork active)
+   SYSTEM PULSE — Solo Leveling active glow
+   (cyan / primary)
 ═══════════════════════════════════════════ */
+@keyframes system-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px hsl(196 100% 58% / 0.35),
+      0 0 60px hsl(196 100% 58% / 0.12),
+      inset 0 0 20px hsl(196 100% 58% / 0.04);
+  }
+  50% {
+    box-shadow:
+      0 0 35px hsl(196 100% 58% / 0.55),
+      0 0 90px hsl(196 100% 58% / 0.22),
+      inset 0 0 30px hsl(196 100% 58% / 0.08);
+  }
+}
+.system-pulse { animation: system-pulse 2.5s ease-in-out infinite; }
+
+/* Alias garde la compatibilité (deepwork widget) */
 @keyframes gold-pulse {
-  0%, 100% { box-shadow: 0 0 20px hsl(43 90% 50% / 0.3), 0 0 60px hsl(43 90% 50% / 0.1); }
-  50%       { box-shadow: 0 0 30px hsl(43 90% 50% / 0.5), 0 0 80px hsl(43 90% 50% / 0.2); }
+  0%, 100% {
+    box-shadow:
+      0 0 20px hsl(var(--primary) / 0.3),
+      0 0 60px hsl(var(--primary) / 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px hsl(var(--primary) / 0.5),
+      0 0 80px hsl(var(--primary) / 0.2);
+  }
 }
 .gold-pulse { animation: gold-pulse 2.5s ease-in-out infinite; }
 
 /* ═══════════════════════════════════════════
-   BORDER OVERRIDE — Ascension dark tone
+   SYSTEM PANEL — Solo Leveling card look
+   Appliqué via classe .sys-panel
+═══════════════════════════════════════════ */
+.sys-panel {
+  position: relative;
+  border-color: hsl(var(--primary) / 0.22) !important;
+  box-shadow:
+    0 0 0 1px hsl(var(--primary) / 0.06) inset,
+    0 4px 24px hsl(222 45% 1% / 0.8);
+}
+.sys-panel:hover {
+  border-color: hsl(var(--primary) / 0.4) !important;
+  box-shadow:
+    0 0 0 1px hsl(var(--primary) / 0.12) inset,
+    0 0 32px hsl(var(--primary) / 0.1),
+    0 4px 24px hsl(222 45% 1% / 0.8);
+}
+/* Coins style système (avant = haut-gauche, après = bas-droite) */
+.sys-panel::before,
+.sys-panel::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-style: solid;
+  border-color: hsl(var(--primary) / 0.7);
+  pointer-events: none;
+  z-index: 2;
+}
+.sys-panel::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1.5px 0 0 1.5px;
+  border-radius: 2px 0 0 0;
+}
+.sys-panel::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 1.5px 1.5px 0;
+  border-radius: 0 0 2px 0;
+}
+
+/* ═══════════════════════════════════════════
+   BORDER OVERRIDE — deep dark tone
 ═══════════════════════════════════════════ */
 .border-border {
-  border-color: hsl(222 16% 20%);
+  border-color: hsl(213 40% 14%);
 }
