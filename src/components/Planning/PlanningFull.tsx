@@ -39,10 +39,12 @@ interface Props {
   onXpGain: (amount: number) => void;
   onChanged?: () => void;
   initialWeekStart?: Date;
+  /** Increment to trigger a data reload from the parent (e.g. after external validation) */
+  reloadTrigger?: number;
 }
 
 // ── Composant ─────────────────────────────────────────────────────────────
-export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: Props) {
+export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, reloadTrigger }: Props) {
   const [weekStart, setWeekStart] = useState(() => initialWeekStart ?? getWeekStart(new Date()));
   const [events,     setEvents]   = useState<PlanningEvent[]>([]);
   const [icalEvents, setIcalEvents] = useState<PlanningEvent[]>([]);
@@ -81,7 +83,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
     setIcalUrl(prof?.ical_url ?? null);
   };
 
-  useEffect(() => { load(); }, [userId, weekStart.getTime()]);
+  useEffect(() => { load(); }, [userId, weekStart.getTime(), reloadTrigger]);
 
   useEffect(() => {
     if (!icalUrl) { setIcalEvents([]); return; }
@@ -134,16 +136,20 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
       .filter(e => e.event_date === formatDateISO(d))
       .sort((a, b) => a.start_time.localeCompare(b.start_time));
 
+  // ── Helper: decide what happens when an event card is clicked ─────────
+  const handleEventClick = (ev: PlanningEvent) => {
+    if (ev.type === 'course') { setConverting(ev); return; }
+    if (ev.type === 'quest' && !ev.validated && ev.source !== 'ical') { setValidating(ev); return; }
+    if (ev.source !== 'ical') setEditing(ev);
+  };
+
   // ── Mobile : liste par jour ───────────────────────────────────────────
   const renderEventCard = (ev: PlanningEvent) => {
     const c = eventTypeColor(ev.type);
     return (
       <button
         key={ev.id}
-        onClick={() => {
-          if (ev.type === 'course') setConverting(ev);
-          else if (ev.source !== 'ical') setEditing(ev);
-        }}
+        onClick={() => handleEventClick(ev)}
         className={`w-full text-left p-2 rounded-md border ${c.bg} ${c.border} hover:opacity-80 transition mb-1.5`}
       >
         <div className="flex items-center justify-between gap-1">
@@ -154,14 +160,6 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
         </div>
         <p className="text-xs font-medium leading-tight mt-1">{ev.title}</p>
         {ev.subject && <p className="text-[10px] text-muted-foreground mt-0.5">{ev.subject}</p>}
-        {ev.type === 'quest' && !ev.validated && ev.source !== 'ical' && (
-          <button
-            onClick={e => { e.stopPropagation(); setValidating(ev); }}
-            className="mt-1.5 w-full text-[10px] py-1 rounded bg-violet-500/30 hover:bg-violet-500/50 text-violet-100 font-medium"
-          >
-            ✓ Valider
-          </button>
-        )}
         {ev.validated && <span className="text-[10px] text-emerald-400">✓ Validée</span>}
       </button>
     );
@@ -329,16 +327,18 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
                       return (
                         <button
                           key={ev.id}
-                          onClick={() => {
-                            if (ev.type === 'course') setConverting(ev);
-                            else if (ev.source !== 'ical') setEditing(ev);
+                          onClick={() => handleEventClick(ev)}
+                          className={`absolute inset-x-0.5 rounded overflow-hidden text-left border hover:opacity-80 transition-opacity ${ev.validated ? 'opacity-60' : ''} ${c.bg} ${c.border}`}
+                          style={{
+                            top: `${topPct}%`, height: `${heightPct}%`,
+                            ...(ev.validated ? { background: 'hsl(145 50% 10%)', borderColor: 'hsl(145 50% 25%)' } : {}),
                           }}
-                          className={`absolute inset-x-0.5 rounded overflow-hidden text-left border ${c.bg} ${c.border} hover:opacity-80 transition-opacity`}
-                          style={{ top: `${topPct}%`, height: `${heightPct}%` }}
                         >
                           <div className="px-1 py-0.5 h-full flex flex-col justify-start overflow-hidden">
-                            <p className={`text-[8px] font-bold leading-tight truncate ${c.text}`}>
-                              {ev.start_time.slice(0, 5)} {ev.type === 'ds' ? '🔴' : ''}
+                            <p className={`text-[8px] font-bold leading-tight truncate ${ev.validated ? 'text-emerald-400' : c.text}`}>
+                              {ev.start_time.slice(0, 5)}
+                              {ev.type === 'ds' ? ' 🔴' : ''}
+                              {ev.validated ? ' ✓' : ''}
                             </p>
                             <p className="text-[8px] font-medium leading-tight text-foreground truncate">
                               {ev.title}
@@ -347,14 +347,6 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
                               <p className="text-[7px] text-muted-foreground leading-tight truncate">
                                 {ev.subject}
                               </p>
-                            )}
-                            {heightPct > 10 && ev.type === 'quest' && !ev.validated && ev.source !== 'ical' && (
-                              <button
-                                onMouseDown={e => { e.stopPropagation(); setValidating(ev); }}
-                                className="mt-auto text-[7px] rounded px-1 bg-violet-500/40 text-violet-100 leading-tight"
-                              >
-                                Valider
-                              </button>
                             )}
                           </div>
                         </button>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
 
@@ -13,36 +13,48 @@ interface Props {
 }
 
 /**
- * Provides real-time deepwork presence across all pages.
- * - Always subscribes to the channel (so we can SEE who's studying).
- * - Only calls channel.track() while a session is active (so we appear to others).
- * - Uses a custom DOM event + storage event to react to session start/stop
- *   without needing a polling loop.
+ * Provides real-time deepwork presence to the whole app.
+ *
+ * Design:
+ *  - Always subscribes to the channel so we can see who is studying.
+ *  - Calls channel.track() INSIDE the subscribe callback (the only safe
+ *    place), with the up-to-date isActive value captured in the same
+ *    closure — no stale-closure race condition.
+ *  - Re-creates the channel whenever isActive or profile changes so the
+ *    subscribe callback always sees the correct values.
+ *  - Reacts to session start/stop via a custom DOM event (same tab) and
+ *    the storage event (cross-tab).
  */
 export function DeepworkPresenceProvider({ children, userId, profile }: Props) {
   const [peers, setPeers] = useState<DeepworkPeer[]>([]);
   const [isActive, setIsActive] = useState(() => !!localStorage.getItem(DEEPWORK_STORAGE_KEY));
-  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
-  // React to session start / stop from any page
+  // Listen for session start / stop from any tab / page
   useEffect(() => {
     const sync = () => setIsActive(!!localStorage.getItem(DEEPWORK_STORAGE_KEY));
     window.addEventListener('deepwork-session-change', sync);
-    window.addEventListener('storage', sync); // cross-tab
+    window.addEventListener('storage', sync);
     return () => {
       window.removeEventListener('deepwork-session-change', sync);
       window.removeEventListener('storage', sync);
     };
   }, []);
 
-  // Subscribe once (to observe peers) — track/untrack based on isActive
+  /**
+   * Channel effect. Dependencies include isActive + profile so that each
+   * time one of them changes we spin up a fresh channel. The subscribe
+   * callback therefore always captures the current values — no stale
+   * closure. track() is called only after SUBSCRIBED and only when active.
+   */
   useEffect(() => {
     if (!userId) return;
+
+    const pseudo = profile?.pseudo ?? 'Élève';
+    const avatar = profile?.avatar ?? '🐺';
 
     const ch = supabase.channel('deepwork-room', {
       config: { presence: { key: userId } },
     });
-    channelRef.current = ch;
 
     ch.on('presence', { event: 'sync' }, () => {
       const state = ch.presenceState<DeepworkPeer>();
@@ -53,25 +65,13 @@ export function DeepworkPresenceProvider({ children, userId, profile }: Props) {
     }).subscribe(async (status) => {
       if (status !== 'SUBSCRIBED') return;
       if (isActive) {
-        await ch.track({ pseudo: profile?.pseudo ?? 'Élève', avatar: profile?.avatar ?? '🐺' });
+        await ch.track({ pseudo, avatar });
       }
     });
 
-    return () => { supabase.removeChannel(ch); channelRef.current = null; };
+    return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]); // only reconnect if userId changes
-
-  // Track / untrack without reconnecting when isActive changes
-  useEffect(() => {
-    const ch = channelRef.current;
-    if (!ch) return;
-    if (isActive) {
-      ch.track({ pseudo: profile?.pseudo ?? 'Élève', avatar: profile?.avatar ?? '🐺' });
-    } else {
-      ch.untrack();
-      setPeers([]); // clear peers when not in session
-    }
-  }, [isActive, profile?.pseudo, profile?.avatar]);
+  }, [userId, isActive, profile?.pseudo, profile?.avatar]);
 
   return <Ctx.Provider value={peers}>{children}</Ctx.Provider>;
 }

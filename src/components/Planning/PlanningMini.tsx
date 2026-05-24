@@ -21,6 +21,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
   const [full, setFull] = useState(false);
   const [creating, setCreating] = useState(false);
   const [validating, setValidating] = useState<PlanningEvent | null>(null);
+  const [fullReload, setFullReload] = useState(0);
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDayIdx, setSelectedDayIdx] = useState(() => {
     const d = new Date().getDay();
@@ -276,7 +277,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
 
       <Dialog open={full} onOpenChange={setFull}>
         <DialogContent className="max-w-7xl w-[95vw] h-[90vh] p-0 overflow-hidden">
-          <PlanningFull userId={userId} onXpGain={onXpGain} onChanged={load} initialWeekStart={weekStart} />
+          <PlanningFull userId={userId} onXpGain={onXpGain} onChanged={load} initialWeekStart={weekStart} reloadTrigger={fullReload} />
         </DialogContent>
       </Dialog>
 
@@ -293,7 +294,11 @@ export function PlanningMini({ userId, onXpGain }: Props) {
           userId={userId}
           onXpGain={onXpGain}
           onClose={() => setValidating(null)}
-          onValidated={() => { setValidating(null); load(); }}
+          onValidated={() => {
+            setValidating(null);
+            load();
+            setFullReload(r => r + 1); // also refresh PlanningFull if open
+          }}
         />
       )}
     </div>
