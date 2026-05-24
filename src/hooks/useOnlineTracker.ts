@@ -10,7 +10,7 @@ export function useOnlineTracker(userId: string | undefined) {
     if (!userId) return;
 
     const updatePresence = async () => {
-      await supabase.from('profiles').update({
+      await supabase.from('user_private').update({
         last_seen_at: new Date().toISOString(),
       }).eq('user_id', userId);
     };
