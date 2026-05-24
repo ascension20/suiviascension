@@ -39,11 +39,8 @@ export default function SetupPage() {
       return;
     }
 
-    // Assign coach role
-    await supabase.from('user_roles').insert({
-      user_id: data.user.id,
-      role: 'coach' as Database['public']['Enums']['app_role'],
-    });
+    // Assign coach role via SECURITY DEFINER bootstrap (only works if no coach exists)
+    await supabase.rpc('bootstrap_first_coach');
 
     setDone(true);
     setLoading(false);

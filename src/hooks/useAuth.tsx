@@ -14,7 +14,7 @@ interface Profile {
   last_activity_date: string | null;
   onboarding_completed?: boolean;
   tutorial_completed?: boolean;
-  ical_url?: string | null;
+  // ical_url moved to user_private table
   today_xp?: number;
   today_xp_date?: string | null;
   total_deepwork_seconds?: number;

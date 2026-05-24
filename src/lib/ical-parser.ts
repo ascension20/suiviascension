@@ -22,7 +22,7 @@ export async function fetchICal(url: string): Promise<string> {
   try {
     const { data, error } = await supabase.functions.invoke('fetch-ical', { body: { url } });
     if (!error && data) {
-      const text = typeof data === 'string' ? data : (data as { content?: string }).content ?? '';
+      const text = typeof data === 'string' ? data : (data as { text?: string; content?: string }).text ?? (data as { content?: string }).content ?? '';
       if (text.includes('BEGIN:VCALENDAR')) return text;
     }
   } catch { /* fall through */ }
