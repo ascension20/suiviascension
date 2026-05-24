@@ -96,21 +96,23 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart }: 
     return () => { cancelled = true; };
   }, [icalUrl, weekStart.getTime()]);
 
-  // Suppress iCal courses that were converted to DS.
-  // Three independent checks (any one is sufficient):
-  // 1. Immediate client-side key added the moment onSaved fires (no async dependency)
-  // 2. ical_uid stored on the new DS in DB
-  // 3. Same date+time as any manual DS in DB (catches pre-fix records)
-  const convertedUids  = new Set(events.map(e => e.ical_uid).filter(Boolean));
-  const manualDsSlots  = new Set(
+  // iCal events stored in DB (onboarding) share ical_uid with URL-parsed events.
+  // Rule: URL-parsed events are shown ONLY if not already in DB (avoids duplicates).
+  // Converted iCal courses are deleted from DB directly — no slot-suppression needed.
+  const dbIcalUids = new Set(
+    events.filter(e => e.source === 'ical').map(e => e.ical_uid).filter(Boolean)
+  );
+  const manualDsSlots = new Set(
     events.filter(e => e.type === 'ds').map(e => `${e.event_date}|${e.start_time.slice(0, 5)}`)
   );
   const filteredIcal = icalEvents.filter(ev => {
     if (ev.type !== 'course') return true;
+    // Already persisted to DB — show from events[], not from iCal URL parse
+    if (ev.ical_uid && dbIcalUids.has(ev.ical_uid)) return false;
+    // Converted to DS (URL-only event, no DB record)
     const slot = `${ev.event_date}|${ev.start_time.slice(0, 5)}`;
-    if (suppressedSlots.has(slot))                             return false;
-    if (ev.ical_uid && convertedUids.has(ev.ical_uid))        return false;
-    if (manualDsSlots.has(slot))                              return false;
+    if (suppressedSlots.has(slot))       return false;
+    if (manualDsSlots.has(slot))         return false;
     return true;
   });
   const allEvents = [...events, ...filteredIcal];
@@ -435,7 +437,9 @@ function ConvertToDsModal({
       stress_level: 'neutral',
       coefficient: 1,
     });
-    if (event.source === 'manual') {
+    // Delete original event from DB if it has a real UUID
+    // (DB iCal events stored at onboarding don't start with 'ical-')
+    if (!event.id.startsWith('ical-')) {
       await supabase.from('planning_events').delete().eq('id', event.id);
     }
     setSaving(false);
