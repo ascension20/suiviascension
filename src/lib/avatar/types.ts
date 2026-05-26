@@ -45,6 +45,10 @@ export interface AvatarConfig {
   outfit: string | null;
   background: string | null;
   badge: string | null;
+  // Base appearance
+  skinColor: string;
+  hairStyle: string;
+  hairColor: string;
 }
 
 export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
@@ -53,6 +57,9 @@ export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
   outfit: 'outfit_hoodie',
   background: 'bg_dark',
   badge: null,
+  skinColor: 'light',
+  hairStyle: 'shortHairShortFlat',
+  hairColor: 'brown',
 };
 
 export interface PlayerStats {

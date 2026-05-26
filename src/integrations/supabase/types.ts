@@ -104,6 +104,9 @@ export type Database = {
           outfit: string | null
           background: string | null
           badge: string | null
+          skin_color: string
+          hair_style: string
+          hair_color: string
           updated_at: string
         }
         Insert: {
@@ -114,6 +117,9 @@ export type Database = {
           outfit?: string | null
           background?: string | null
           badge?: string | null
+          skin_color?: string
+          hair_style?: string
+          hair_color?: string
           updated_at?: string
         }
         Update: {
@@ -124,6 +130,9 @@ export type Database = {
           outfit?: string | null
           background?: string | null
           badge?: string | null
+          skin_color?: string
+          hair_style?: string
+          hair_color?: string
           updated_at?: string
         }
         Relationships: []

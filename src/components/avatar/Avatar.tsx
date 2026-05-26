@@ -24,7 +24,17 @@ export function buildAvataaarsUrl(config: AvatarConfig, seed: string): string {
   const outfit  = config.outfit     ? getAccessory(config.outfit)     : null;
   const bg      = config.background ? getAccessory(config.background) : null;
 
-  if (hat?.dicebearParam)     parts.push(hat.dicebearParam);
+  // Top: hat overrides hair style; otherwise use chosen hair style
+  if (hat?.dicebearParam) {
+    parts.push(hat.dicebearParam);
+  } else {
+    parts.push(`top[]=${config.hairStyle || 'shortHairShortFlat'}`);
+  }
+
+  // Base appearance — always applied
+  parts.push(`skinColor[]=${config.skinColor || 'light'}`);
+  parts.push(`hairColor[]=${config.hairColor || 'brown'}`);
+
   if (glasses?.dicebearParam) parts.push(glasses.dicebearParam);
   else                        parts.push('accessoriesProbability=0');
   if (outfit?.dicebearParam)  parts.push(outfit.dicebearParam);
