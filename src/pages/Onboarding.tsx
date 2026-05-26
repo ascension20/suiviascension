@@ -65,12 +65,20 @@ const ACTIVITIES = [
   { key: 'other', icon: '📈', label: 'Autre' },
 ];
 
-const SUBJECTS_BY_LEVEL: Record<Level, string[]> = {
-  'Collège': ['Maths', 'Français', 'Histoire-Géo', 'Anglais', 'SVT', 'Physique-Chimie'],
-  'Seconde': ['Maths', 'Français', 'Histoire-Géo', 'Anglais', 'SVT', 'Physique-Chimie', 'SES'],
-  'Première': ['Maths', 'Français', 'Histoire-Géo', 'Anglais', 'Philosophie', 'Spécialités'],
-  'Terminale': ['Maths', 'Histoire-Géo', 'Anglais', 'Philosophie', 'Spécialité 1', 'Spécialité 2'],
+const BASE_SUBJECTS_BY_LEVEL: Record<Level, string[]> = {
+  'Collège':   ['Maths', 'Français', 'Histoire-Géo', 'Anglais', 'SVT', 'Physique-Chimie', 'EPS'],
+  'Seconde':   ['Maths', 'Français', 'Histoire-Géo', 'Anglais', 'SVT', 'Physique-Chimie', 'SES', 'EPS'],
+  'Première':  ['Français', 'Histoire-Géo', 'Anglais', 'EPS'],
+  'Terminale': ['Histoire-Géo', 'Anglais', 'Philosophie', 'EPS'],
 };
+
+function getSubjectsForLevel(level: Level | null, specialties: string[], options: string[]): string[] {
+  const base = BASE_SUBJECTS_BY_LEVEL[level ?? 'Seconde'] ?? [];
+  const extras: string[] = [];
+  for (const s of specialties) if (!base.includes(s)) extras.push(s);
+  for (const o of options)     if (!base.includes(o) && !extras.includes(o)) extras.push(o);
+  return [...base, ...extras];
+}
 
 function gradeColor(g: number) {
   if (g >= 16) return 'text-emerald-400';
@@ -113,7 +121,8 @@ export default function OnboardingPage() {
 
   // 5
   const [icalUrl, setIcalUrl] = useState('');
-  const [icalStatus, setIcalStatus] = useState<'idle' | 'checking' | 'ok' | 'error'>('idle');
+  const [icalStatus, setIcalStatus] = useState<'idle' | 'checking' | 'ok' | 'error' | 'unverified'>('idle');
+  const [icalSkipped, setIcalSkipped] = useState(false);
 
   // 6
   const [grades, setGrades] = useState<Record<string, { grade: string; coef: string }>>({});
@@ -172,15 +181,18 @@ export default function OnboardingPage() {
       const txt = await fetchICal(icalUrl);
       setIcalStatus(txt.includes('BEGIN:VCALENDAR') ? 'ok' : 'error');
     } catch {
-      setIcalStatus('error');
+      // CORS ou proxy inaccessible : le lien est peut-être valide quand même
+      setIcalStatus('unverified');
     }
   };
 
   const finalize = async () => {
     if (!engagement) return;
     setFinalizing(true);
-    const { data: { user: u } } = await supabase.auth.getUser();
-    if (!u) { setFinalizing(false); return; }
+    try {
+      const { data: { user: uFresh } } = await supabase.auth.getUser();
+      const u = uFresh ?? user;
+      if (!u) { setFinalizing(false); return; }
 
     await supabase.from('onboarding_data').upsert({
       user_id: u.id,
@@ -235,9 +247,13 @@ export default function OnboardingPage() {
       } catch { /* iCal import failures are non-blocking */ }
     }
 
-    await refreshProfile();
-    setFinalizing(false);
-    navigate('/student');
+      await refreshProfile();
+    } catch (err) {
+      console.error('Onboarding finalize error:', err);
+    } finally {
+      setFinalizing(false);
+      navigate('/student');
+    }
   };
 
   const totalSteps = 7;
@@ -247,6 +263,7 @@ export default function OnboardingPage() {
     switch (step) {
       case 0: return false; // handled by signup
       case 2: return !!level;
+      case 5: return icalStatus === 'ok' || icalStatus === 'unverified' || icalSkipped;
       case 7: return engagement;
       default: return true;
     }
@@ -371,18 +388,62 @@ export default function OnboardingPage() {
 
             {step === 5 && (
               <>
-                <h1 className="font-display text-2xl font-bold mb-1">Emploi du temps</h1>
-                <p className="text-muted-foreground text-sm mb-6">Importe ton emploi du temps via un lien iCal (facultatif).</p>
-                <div className="flex gap-2 mb-2">
-                  <input value={icalUrl} onChange={e => { setIcalUrl(e.target.value); setIcalStatus('idle'); }} placeholder="https://..."
-                    className="flex-1 bg-secondary border border-border rounded-md px-3 py-2 text-sm" />
-                  <button onClick={checkIcal} disabled={!icalUrl || icalStatus === 'checking'} className="px-3 py-2 rounded-md bg-amber-500 text-white text-sm font-medium disabled:opacity-50">
-                    {icalStatus === 'checking' ? <Loader2 size={14} className="animate-spin" /> : 'Vérifier'}
-                  </button>
-                </div>
-                {icalStatus === 'ok' && <p className="text-xs text-emerald-400">✓ Fichier iCal valide</p>}
-                {icalStatus === 'error' && <p className="text-xs text-destructive">Lien invalide ou inaccessible.</p>}
-                <p className="text-xs text-muted-foreground mt-4">Facultatif — tu peux passer cette étape et renseigner ton emploi du temps plus tard dans ton profil.</p>
+                <h1 className="font-display text-2xl font-bold mb-1">Emploi du temps 📅</h1>
+                <p className="text-muted-foreground text-sm mb-1">Colle ton lien iCal pour synchroniser ton EDT (Pronote, EcoleDirecte, etc.).</p>
+                <p className="text-xs text-amber-400/80 mb-4">🎓 En cas de problème pour trouver ton lien, demande de l'aide à ton tuteur.</p>
+
+                {!icalSkipped ? (
+                  <>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        value={icalUrl}
+                        onChange={e => { setIcalUrl(e.target.value); setIcalStatus('idle'); }}
+                        placeholder="https://... ou webcal://..."
+                        className="flex-1 bg-secondary border border-border rounded-md px-3 py-2 text-sm"
+                      />
+                      <button onClick={checkIcal} disabled={!icalUrl || icalStatus === 'checking'}
+                        className="px-3 py-2 rounded-md bg-amber-500 text-white text-sm font-medium disabled:opacity-50 flex items-center gap-1">
+                        {icalStatus === 'checking' ? <Loader2 size={14} className="animate-spin" /> : 'Vérifier'}
+                      </button>
+                    </div>
+
+                    {icalStatus === 'ok' && (
+                      <p className="text-xs text-emerald-400">✓ Calendrier valide — il sera importé automatiquement.</p>
+                    )}
+                    {icalStatus === 'error' && (
+                      <p className="text-xs text-destructive">❌ Lien invalide ou format non reconnu. Vérifie l'URL.</p>
+                    )}
+                    {icalStatus === 'unverified' && (
+                      <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 mt-1">
+                        <p className="text-xs text-amber-300 mb-2">
+                          ⚠️ Impossible de vérifier depuis le navigateur (restriction CORS des serveurs scolaires).
+                          Si l'URL vient bien de ton ENT (Pronote, EcoleDirecte…), elle est probablement correcte.
+                        </p>
+                        <button onClick={() => setIcalSkipped(true)}
+                          className="text-xs font-semibold text-amber-400 underline">
+                          Continuer avec ce lien →
+                        </button>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => setIcalSkipped(true)}
+                      className="mt-4 text-xs text-muted-foreground hover:text-foreground underline block">
+                      Je n'ai pas d'EDT iCal pour l'instant
+                    </button>
+                  </>
+                ) : (
+                  <div className="rounded-lg border border-border bg-secondary p-4 text-sm text-muted-foreground">
+                    {icalUrl && (icalStatus === 'unverified') ? (
+                      <>✓ Lien enregistré — il sera utilisé pour importer ton EDT.</>
+                    ) : (
+                      <>EDT non configuré — tu pourras l'ajouter plus tard dans ton profil.</>
+                    )}
+                    <button onClick={() => setIcalSkipped(false)} className="block mt-2 text-xs text-amber-400 underline">
+                      Modifier
+                    </button>
+                  </div>
+                )}
               </>
             )}
 
@@ -391,18 +452,20 @@ export default function OnboardingPage() {
                 <h1 className="font-display text-2xl font-bold mb-1">Premières notes</h1>
                 <p className="text-muted-foreground text-sm mb-6">Indique ta dernière note. Laisse vide si tu n'en as pas encore.</p>
                 <div className="space-y-2">
-                  {(SUBJECTS_BY_LEVEL[level ?? 'Seconde']).map(s => {
+                  {getSubjectsForLevel(level, specialties, options).map(s => {
                     const g = grades[s] ?? { grade: '', coef: '1' };
                     const num = Number(g.grade);
                     const color = g.grade ? gradeColor(num) : 'text-foreground';
                     return (
                       <div key={s} className="flex items-center gap-2">
                         <span className="flex-1 text-sm">{s}</span>
-                        <input type="number" min={0} max={20} step={0.25} placeholder="—" value={g.grade}
+                        <input type="number" min={0} max={20} step={0.5} placeholder="—" value={g.grade}
                           onChange={e => setGrades({ ...grades, [s]: { ...g, grade: e.target.value } })}
                           className={`w-20 bg-secondary border border-border rounded-md px-2 py-1.5 text-sm text-center font-bold ${color}`} />
                         <span className="text-xs text-muted-foreground">coef</span>
-                        <input type="number" min={1} max={10} step={0.5} value={g.coef}
+                        <input
+                          type="text" inputMode="decimal" placeholder="1"
+                          value={g.coef}
                           onChange={e => setGrades({ ...grades, [s]: { ...g, coef: e.target.value } })}
                           className="w-14 bg-secondary border border-border rounded-md px-2 py-1.5 text-sm text-center" />
                       </div>

@@ -12,9 +12,37 @@ function XpRate({ minutes }: { minutes: number }) {
     ? '2 XP/min · Bonus vitesse ⚡'
     : '3 XP/min · Mode turbo 🔥';
   return (
-    <span className="text-xs font-semibold neon-amber" style={{ color: `hsl(43 90% ${50 + rate * 5}% / ${0.7 + rate * 0.1})` }}>
+    <span className="text-xs font-semibold" style={{ color: `hsl(43 90% ${50 + rate * 5}%)` }}>
       {label}
     </span>
+  );
+}
+
+function TierProgressBar({ minutes }: { minutes: number }) {
+  const atMax = minutes >= 30;
+  const inTier2 = minutes >= 15 && minutes < 30;
+  const pct = atMax ? 100 : inTier2 ? ((minutes - 15) / 15) * 100 : (minutes / 15) * 100;
+  const nextIn = atMax ? 0 : inTier2 ? 30 - minutes : 15 - minutes;
+  const label = atMax
+    ? '🔥 Mode turbo — palier max atteint'
+    : inTier2
+    ? `⚡ Palier 2 — 🔥 dans ${nextIn} min`
+    : `Palier 1 — ⚡ dans ${nextIn} min`;
+  const color = atMax ? 'hsl(16 100% 60%)' : inTier2 ? 'hsl(38 90% 55%)' : 'hsl(43 90% 50%)';
+
+  return (
+    <div className="w-full flex flex-col gap-1">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold" style={{ color }}>{label}</span>
+        <span className="text-[10px] text-muted-foreground">{atMax ? '' : `${Math.round(pct)}%`}</span>
+      </div>
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(222 22% 14%)' }}>
+        <div
+          className="h-full rounded-full transition-all duration-1000"
+          style={{ width: `${pct}%`, background: atMax ? 'hsl(16 100% 60%)' : inTier2 ? 'hsl(38 90% 55%)' : 'hsl(43 90% 50%)', boxShadow: `0 0 6px ${color}` }}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -169,6 +197,13 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
             {active && (
               <div className="flex items-center gap-2">
                 <XpRate minutes={minutes} />
+              </div>
+            )}
+
+            {/* Tier progress bar */}
+            {active && (
+              <div className="w-full max-w-[220px]">
+                <TierProgressBar minutes={minutes} />
               </div>
             )}
 
