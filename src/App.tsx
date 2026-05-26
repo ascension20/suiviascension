@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,12 +22,16 @@ const queryClient = new QueryClient();
 
 function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode; requiredRole?: 'coach' | 'student' }) {
   const { user, role, loading } = useAuth();
+  // Safety timeout: if user is authenticated but role hasn't loaded after
+  // 5 s, stop waiting (the DB row may genuinely be missing).
+  const [roleTimedOut, setRoleTimedOut] = useState(false);
+  useEffect(() => {
+    if (!user || role) { setRoleTimedOut(false); return; }
+    const t = setTimeout(() => setRoleTimedOut(true), 5000);
+    return () => clearTimeout(t);
+  }, [user, role]);
 
-  // Show spinner while auth is loading OR while the role is still being
-  // fetched from the DB (user is set but role hasn't arrived yet).
-  // Without this second check, ProtectedRoute would redirect to '/student'
-  // with role=null, causing an infinite redirect loop → blank page.
-  if (loading || (user && requiredRole && !role)) {
+  if (loading || (user && requiredRole && !role && !roleTimedOut)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -35,6 +40,8 @@ function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode;
   }
 
   if (!user) return <Navigate to="/login" replace />;
+  // After timeout with no role → treat as unauthenticated
+  if (requiredRole && !role) return <Navigate to="/login" replace />;
   if (requiredRole && role !== requiredRole) {
     return <Navigate to={role === 'coach' ? '/coach' : '/student'} replace />;
   }
