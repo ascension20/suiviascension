@@ -22,16 +22,16 @@ const SKIN_OPTIONS = [
 ];
 
 const HAIR_STYLES = [
-  { id: 'shortHairShortFlat',  label: 'Court plat' },
-  { id: 'shortHairShortRound', label: 'Court rond' },
-  { id: 'shortHairTheCaesar',  label: 'César'      },
-  { id: 'shortHairDreads01',   label: 'Dreads'     },
-  { id: 'longHairStraight',    label: 'Long lisse' },
-  { id: 'longHairBob',         label: 'Bob'        },
-  { id: 'longHairBun',         label: 'Chignon'    },
-  { id: 'longHairCurly',       label: 'Bouclé'     },
-  { id: 'longHairFro',         label: 'Afro'       },
-  { id: 'noHair',              label: 'Chauve'     },
+  { id: 'shortFlat',         label: 'Court plat' },
+  { id: 'shortRound',        label: 'Court rond' },
+  { id: 'theCaesar',         label: 'César'      },
+  { id: 'dreads01',          label: 'Dreads'     },
+  { id: 'straight01',        label: 'Long lisse' },
+  { id: 'bob',               label: 'Bob'        },
+  { id: 'bun',               label: 'Chignon'    },
+  { id: 'curly',             label: 'Bouclé'     },
+  { id: 'fro',               label: 'Afro'       },
+  { id: 'shavedSides',       label: 'Rasé'       },
 ];
 
 const HAIR_COLORS = [

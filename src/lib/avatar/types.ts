@@ -58,7 +58,7 @@ export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
   background: 'bg_dark',
   badge: null,
   skinColor: 'light',
-  hairStyle: 'shortHairShortFlat',
+  hairStyle: 'shortFlat',
   hairColor: 'brown',
 };
 

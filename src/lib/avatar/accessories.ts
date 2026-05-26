@@ -118,7 +118,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'Confort total pour les longues sessions.',
     condition: { type: 'free', label: 'Disponible dès le début' },
     rarity: 'common',
-    dicebearParam: 'clothes[]=hoodie&clothesColor[]=262E33',
+    dicebearParam: 'clothing[]=hoodie&clothesColor[]=262E33',
   },
   {
     id: 'outfit_sweater',
@@ -127,7 +127,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'Rigueur et discipline. Chaque jour.',
     condition: { type: 'streak', value: 30, label: 'Streak 30 jours' },
     rarity: 'rare',
-    dicebearParam: 'clothes[]=collarAndSweater&clothesColor[]=3C4F5C',
+    dicebearParam: 'clothing[]=collarAndSweater&clothesColor[]=3C4F5C',
   },
   {
     id: 'outfit_blazer',
@@ -136,7 +136,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'Pour les grandes occasions et les grandes ambitions.',
     condition: { type: 'xp', value: 10000, label: '10 000 XP' },
     rarity: 'epic',
-    dicebearParam: 'clothes[]=blazerAndShirt&clothesColor[]=1F2D3D',
+    dicebearParam: 'clothing[]=blazerAndShirt&clothesColor[]=1F2D3D',
   },
   {
     id: 'outfit_toga',
@@ -145,7 +145,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'La tenue des diplômés des grandes écoles.',
     condition: { type: 'level', value: 25, label: 'Niveau 25' },
     rarity: 'epic',
-    dicebearParam: 'clothes[]=blazerAndSweater&clothesColor[]=7B6000',
+    dicebearParam: 'clothing[]=blazerAndSweater&clothesColor[]=7B6000',
   },
   {
     id: 'outfit_graphicshirt',
@@ -154,7 +154,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'Pour ceux qui ont bravé 100 sessions de deepwork.',
     condition: { type: 'deepwork_sessions', value: 100, label: '100 sessions deepwork' },
     rarity: 'legendary',
-    dicebearParam: 'clothes[]=graphicShirt&clothesColor[]=3C0000',
+    dicebearParam: 'clothing[]=graphicShirt&clothesColor[]=3C0000',
   },
 
   // ── BACKGROUNDS (backgroundColor) ─────────────────────────
