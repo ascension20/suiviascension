@@ -49,7 +49,7 @@ export default function StudentDashboard() {
   // Onboarding redirect
   useEffect(() => {
     if (profile && profile.onboarding_completed === false) navigate('/onboarding');
-    if (profile && profile.tutorial_completed === false && profile.onboarding_completed) setShowTutorial(true);
+    if (profile && !profile.tutorial_completed && profile.onboarding_completed) setShowTutorial(true);
   }, [profile, navigate]);
 
   useEffect(() => {

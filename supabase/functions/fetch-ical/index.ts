@@ -11,13 +11,19 @@ serve(async (req) => {
   }
 
   try {
-    const { url } = await req.json();
-    if (!url || typeof url !== "string") {
+    const { url: rawUrl } = await req.json();
+    if (!rawUrl || typeof rawUrl !== "string") {
       return new Response(JSON.stringify({ error: "Missing url" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Normalise protocol: webcal:// and http:// → https://
+    const url = rawUrl
+      .trim()
+      .replace(/^webcal:\/\//i, "https://")
+      .replace(/^http:\/\//i, "https://");
 
     const response = await fetch(url, {
       headers: {

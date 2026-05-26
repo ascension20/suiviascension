@@ -17,7 +17,13 @@ const CORS_PROXIES = [
   (u: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
 ];
 
-export async function fetchICal(url: string): Promise<string> {
+export async function fetchICal(rawUrl: string): Promise<string> {
+  // Normalise protocol: webcal:// and http:// → https://
+  const url = rawUrl
+    .trim()
+    .replace(/^webcal:\/\//i, 'https://')
+    .replace(/^http:\/\//i, 'https://');
+
   // 1. Via authenticated edge function (server-side, no CORS, no public DB function)
   try {
     const { data, error } = await supabase.functions.invoke('fetch-ical', { body: { url } });
