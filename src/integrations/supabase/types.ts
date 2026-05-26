@@ -40,9 +40,12 @@ export type Database = {
           background: string | null
           badge: string | null
           glasses: string | null
+          hair_color: string
+          hair_style: string
           hat: string | null
           id: string
           outfit: string | null
+          skin_color: string
           updated_at: string
           user_id: string
         }
@@ -50,9 +53,12 @@ export type Database = {
           background?: string | null
           badge?: string | null
           glasses?: string | null
+          hair_color?: string
+          hair_style?: string
           hat?: string | null
           id?: string
           outfit?: string | null
+          skin_color?: string
           updated_at?: string
           user_id: string
         }
@@ -60,9 +66,12 @@ export type Database = {
           background?: string | null
           badge?: string | null
           glasses?: string | null
+          hair_color?: string
+          hair_style?: string
           hat?: string | null
           id?: string
           outfit?: string | null
+          skin_color?: string
           updated_at?: string
           user_id?: string
         }
@@ -270,7 +279,6 @@ export type Database = {
           engagement_signed: boolean
           first_name: string | null
           goals: string | null
-          ical_url: string | null
           id: string
           language: string
           last_name: string | null
@@ -289,7 +297,6 @@ export type Database = {
           engagement_signed?: boolean
           first_name?: string | null
           goals?: string | null
-          ical_url?: string | null
           id?: string
           language?: string
           last_name?: string | null
@@ -308,7 +315,6 @@ export type Database = {
           engagement_signed?: boolean
           first_name?: string | null
           goals?: string | null
-          ical_url?: string | null
           id?: string
           language?: string
           last_name?: string | null
