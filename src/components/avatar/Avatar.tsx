@@ -16,6 +16,30 @@ import { getAccessory } from '@/lib/avatar/accessories';
 // URL builder
 // ─────────────────────────────────────────────────────────────
 
+// DiceBear v9 avataaars expects HEX color values (without #), not named IDs.
+const SKIN_COLOR_HEX: Record<string, string> = {
+  pale:      'FDDBB4',
+  light:     'EDB98A',
+  tanned:    'D08B5B',
+  yellow:    'F8D25C',
+  brown:     'AE5D29',
+  darkBrown: '694D3D',
+  black:     '614335',
+};
+
+const HAIR_COLOR_HEX: Record<string, string> = {
+  black:        '2C1B18',
+  brownDark:    '4A312C',
+  brown:        '724133',
+  auburn:       'A55728',
+  blonde:       'B58143',
+  blondeGolden: 'D6B370',
+  red:          'C93305',
+  pastelPink:   'F59797',
+  silverGray:   'E8E1E1',
+  platinum:     'EEEEEE',
+};
+
 export function buildAvataaarsUrl(config: AvatarConfig, seed: string): string {
   const parts: string[] = [`seed=${encodeURIComponent(seed || 'default')}`];
 
@@ -31,9 +55,11 @@ export function buildAvataaarsUrl(config: AvatarConfig, seed: string): string {
     parts.push(`top[]=${config.hairStyle || 'shortHairShortFlat'}`);
   }
 
-  // Base appearance — always applied
-  parts.push(`skinColor[]=${config.skinColor || 'light'}`);
-  parts.push(`hairColor[]=${config.hairColor || 'brown'}`);
+  // Base appearance — hex values required by DiceBear v9
+  const skinHex = SKIN_COLOR_HEX[config.skinColor] ?? 'EDB98A';
+  const hairHex = HAIR_COLOR_HEX[config.hairColor] ?? '724133';
+  parts.push(`skinColor[]=${skinHex}`);
+  parts.push(`hairColor[]=${hairHex}`);
 
   if (glasses?.dicebearParam) parts.push(glasses.dicebearParam);
   else                        parts.push('accessoriesProbability=0');

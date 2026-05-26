@@ -35,16 +35,16 @@ const HAIR_STYLES = [
 ];
 
 const HAIR_COLORS = [
-  { id: 'black',        label: 'Noir',     hex: '#1a1a1a' },
-  { id: 'brownDark',    label: 'Brun foncé',hex: '#4A312C' },
-  { id: 'brown',        label: 'Brun',     hex: '#724133' },
-  { id: 'auburn',       label: 'Auburn',   hex: '#A55728' },
-  { id: 'blonde',       label: 'Blond',    hex: '#B58143' },
-  { id: 'blondeGolden', label: 'Doré',     hex: '#D6B370' },
-  { id: 'red',          label: 'Roux',     hex: '#C93305' },
-  { id: 'pastelPink',   label: 'Rose',     hex: '#F59797' },
-  { id: 'silverGray',   label: 'Argenté',  hex: '#C4C4C4' },
-  { id: 'platinum',     label: 'Platine',  hex: '#E8E8E8' },
+  { id: 'black',        label: 'Noir',      hex: '#2C1B18' },
+  { id: 'brownDark',    label: 'Brun foncé', hex: '#4A312C' },
+  { id: 'brown',        label: 'Brun',      hex: '#724133' },
+  { id: 'auburn',       label: 'Auburn',    hex: '#A55728' },
+  { id: 'blonde',       label: 'Blond',     hex: '#B58143' },
+  { id: 'blondeGolden', label: 'Doré',      hex: '#D6B370' },
+  { id: 'red',          label: 'Roux',      hex: '#C93305' },
+  { id: 'pastelPink',   label: 'Rose',      hex: '#F59797' },
+  { id: 'silverGray',   label: 'Argenté',   hex: '#E8E1E1' },
+  { id: 'platinum',     label: 'Platine',   hex: '#EEEEEE' },
 ];
 
 // ─────────────────────────────────────────────────────────────
