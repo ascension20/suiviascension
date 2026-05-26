@@ -298,14 +298,13 @@ export default function OnboardingPage() {
         } catch { /* iCal import failures are non-blocking */ }
       }
 
-      // Hard redirect instead of SPA navigate: forces AuthProvider to reinitialise
-      // from localStorage, so ProtectedRoute always sees a valid session.
-      // navigate('/student') is SPA-only and fails when the React auth context
-      // hasn't caught up with the session yet (race after signUp).
-      window.location.replace('/student');
+      // Refresh so the profile has onboarding_completed:true before we navigate.
+      await refreshProfile();
+      navigate('/student');
     } catch (err) {
       console.error('Onboarding finalize error:', err);
-      setFinalizing(false); // Only reset on error; success triggers a page reload
+    } finally {
+      setFinalizing(false);
     }
   };
 

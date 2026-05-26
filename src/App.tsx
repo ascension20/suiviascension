@@ -22,7 +22,11 @@ const queryClient = new QueryClient();
 function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode; requiredRole?: 'coach' | 'student' }) {
   const { user, role, loading } = useAuth();
 
-  if (loading) {
+  // Show spinner while auth is loading OR while the role is still being
+  // fetched from the DB (user is set but role hasn't arrived yet).
+  // Without this second check, ProtectedRoute would redirect to '/student'
+  // with role=null, causing an infinite redirect loop → blank page.
+  if (loading || (user && requiredRole && !role)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
