@@ -45,10 +45,10 @@ export interface AvatarConfig {
   outfit: string | null;
   background: string | null;
   badge: string | null;
-  // Base appearance
-  skinColor: string;
-  hairStyle: string;
-  hairColor: string;
+  // Base appearance (optional)
+  skinColor?: string;
+  hairStyle?: string;
+  hairColor?: string;
 }
 
 export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
