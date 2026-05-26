@@ -152,7 +152,11 @@ export default function OnboardingPage() {
       setAuthError('Tous les champs sont requis (mot de passe ≥ 6 caractères).');
       return;
     }
-    setSubmittingAuth(true); setAuthError('');
+    setSubmittingAuth(true);
+    setAuthError('');
+
+    let userId: string | null = null;
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -161,15 +165,47 @@ export default function OnboardingPage() {
         data: { pseudo: `${firstName} ${lastName}`, avatar: '🐺' },
       },
     });
+
     if (error) {
-      setAuthError(error.message);
-      setSubmittingAuth(false);
-      return;
+      // "User already registered" → try signing in directly instead
+      const msg = error.message.toLowerCase();
+      if (msg.includes('already') || msg.includes('registered') || msg.includes('exists')) {
+        const { data: si, error: siErr } = await supabase.auth.signInWithPassword({ email, password });
+        if (siErr) {
+          setAuthError('Ce compte existe déjà. Vérifiez votre mot de passe ou connectez-vous depuis la page de connexion.');
+          setSubmittingAuth(false);
+          return;
+        }
+        userId = si.user?.id ?? null;
+      } else {
+        setAuthError(error.message);
+        setSubmittingAuth(false);
+        return;
+      }
+    } else {
+      userId = data.user?.id ?? null;
+
+      // Supabase may return session:null when email confirmation is ON.
+      // In that case, try signing in immediately to establish a session.
+      if (!data.session && userId) {
+        const { error: siErr } = await supabase.auth.signInWithPassword({ email, password });
+        if (siErr) {
+          // Confirmation required — inform the user clearly.
+          setAuthError(
+            '✉️ Un email de confirmation a été envoyé à ' + email +
+            '. Confirmez votre adresse puis revenez vous connecter.'
+          );
+          setSubmittingAuth(false);
+          return;
+        }
+      }
     }
-    if (data.user) {
-      // assign student role
-      await supabase.from('user_roles').insert({ user_id: data.user.id, role: 'student' });
+
+    if (userId) {
+      // Insert student role — ignore if it already exists
+      await supabase.from('user_roles').insert({ user_id: userId, role: 'student' }).then(() => {});
     }
+
     setSubmittingAuth(false);
     setStep(1);
   };
