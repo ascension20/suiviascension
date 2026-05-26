@@ -155,9 +155,9 @@ export default function OnboardingPage() {
     setSubmittingAuth(true);
     setAuthError('');
 
-    let userId: string | null = null;
-
-    const { data, error } = await supabase.auth.signUp({
+    // Step 1 — create the account (ignore "already registered" errors,
+    // we'll just sign in with the existing credentials below).
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -166,45 +166,43 @@ export default function OnboardingPage() {
       },
     });
 
-    if (error) {
-      // "User already registered" → try signing in directly instead
-      const msg = error.message.toLowerCase();
-      if (msg.includes('already') || msg.includes('registered') || msg.includes('exists')) {
-        const { data: si, error: siErr } = await supabase.auth.signInWithPassword({ email, password });
-        if (siErr) {
-          setAuthError('Ce compte existe déjà. Vérifiez votre mot de passe ou connectez-vous depuis la page de connexion.');
-          setSubmittingAuth(false);
-          return;
-        }
-        userId = si.user?.id ?? null;
-      } else {
-        setAuthError(error.message);
+    if (signUpError) {
+      const msg = signUpError.message.toLowerCase();
+      const isAlreadyExists = msg.includes('already') || msg.includes('registered') || msg.includes('exists');
+      if (!isAlreadyExists) {
+        // A real error (invalid email, weak password, etc.)
+        setAuthError(signUpError.message);
         setSubmittingAuth(false);
         return;
       }
-    } else {
-      userId = data.user?.id ?? null;
+      // Otherwise fall through and try signing in below
+    }
 
-      // Supabase may return session:null when email confirmation is ON.
-      // In that case, try signing in immediately to establish a session.
-      if (!data.session && userId) {
-        const { error: siErr } = await supabase.auth.signInWithPassword({ email, password });
-        if (siErr) {
-          // Confirmation required — inform the user clearly.
-          setAuthError(
-            '✉️ Un email de confirmation a été envoyé à ' + email +
-            '. Confirmez votre adresse puis revenez vous connecter.'
-          );
-          setSubmittingAuth(false);
-          return;
-        }
+    // Step 2 — always sign in to guarantee an active session.
+    // This handles: brand-new account, existing account, and the case where
+    // signUp succeeds but returns session:null (email confirmation enabled).
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (signInError) {
+      const msg = signInError.message.toLowerCase();
+      if (msg.includes('confirm') || msg.includes('verified') || msg.includes('not confirmed')) {
+        setAuthError('✉️ Un email de confirmation a été envoyé à ' + email + '. Confirmez votre adresse puis revenez vous connecter.');
+      } else {
+        setAuthError(signInError.message);
       }
+      setSubmittingAuth(false);
+      return;
     }
 
-    if (userId) {
-      // Insert student role — ignore if it already exists
-      await supabase.from('user_roles').insert({ user_id: userId, role: 'student' }).then(() => {});
+    const userId = signInData.user?.id;
+    if (!userId) {
+      setAuthError('Impossible de créer le compte. Veuillez réessayer.');
+      setSubmittingAuth(false);
+      return;
     }
+
+    // Step 3 — assign the student role (silent fail if already present)
+    await supabase.from('user_roles').insert({ user_id: userId, role: 'student' });
 
     setSubmittingAuth(false);
     setStep(1);
