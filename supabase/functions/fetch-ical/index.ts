@@ -25,12 +25,24 @@ serve(async (req) => {
       .replace(/^webcal:\/\//i, "https://")
       .replace(/^http:\/\//i, "https://");
 
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; Ascension20Calendar/1.0)",
-        "Accept": "text/calendar, application/ics, */*",
-      },
-    });
+    // Abort the fetch after 12 seconds to avoid edge function timeouts.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; Ascension20Calendar/1.0)",
+          "Accept": "text/calendar, application/ics, text/plain, */*",
+          "Cache-Control": "no-cache",
+        },
+        signal: controller.signal,
+        redirect: "follow",
+      });
+    } finally {
+      clearTimeout(timer);
+    }
 
     if (!response.ok) {
       return new Response(JSON.stringify({ error: `HTTP ${response.status}` }), {

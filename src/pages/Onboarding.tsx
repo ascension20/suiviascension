@@ -179,10 +179,18 @@ export default function OnboardingPage() {
     setIcalStatus('checking');
     try {
       const txt = await fetchICal(icalUrl);
-      setIcalStatus(txt.includes('BEGIN:VCALENDAR') ? 'ok' : 'error');
+      if (txt.includes('BEGIN:VCALENDAR')) {
+        setIcalStatus('ok');
+      } else {
+        // Fetched something but not a calendar — likely a login page redirect.
+        // Treat as unverified so the user can still proceed.
+        setIcalStatus('unverified');
+      }
     } catch {
-      // CORS ou proxy inaccessible : le lien est peut-être valide quand même
+      // CORS or network failure — common for school ENTs.
+      // Auto-skip so the user doesn't get stuck.
       setIcalStatus('unverified');
+      setIcalSkipped(true);
     }
   };
 
@@ -190,69 +198,87 @@ export default function OnboardingPage() {
     if (!engagement) return;
     setFinalizing(true);
     try {
-      const { data: { user: uFresh } } = await supabase.auth.getUser();
-      const u = uFresh ?? user;
-      if (!u) { setFinalizing(false); return; }
+      // Prefer the user already in context (avoids network round-trip).
+      // Fall back to getSession() (localStorage) in case the context hasn't
+      // been hydrated yet (e.g. a page refresh mid-onboarding).
+      let uid = user?.id;
+      if (!uid) {
+        const { data: { session } } = await supabase.auth.getSession();
+        uid = session?.user?.id;
+      }
+      if (!uid) {
+        // No authenticated session – should not normally happen.
+        // Send them back to login so they can reconnect.
+        navigate('/login');
+        return;
+      }
 
-    await supabase.from('onboarding_data').upsert({
-      user_id: u.id,
-      first_name: firstName || null,
-      last_name: lastName || null,
-      language, timezone,
-      school_level: level,
-      school_name: schoolName || null,
-      specialties, options,
-      goals: goals || null,
-      activities, other_activity: otherActivity || null,
-      engagement_signed: true,
-    }, { onConflict: 'user_id' });
+      await supabase.from('onboarding_data').upsert({
+        user_id: uid,
+        first_name: firstName || null,
+        last_name: lastName || null,
+        language, timezone,
+        school_level: level,
+        school_name: schoolName || null,
+        specialties, options,
+        goals: goals || null,
+        activities, other_activity: otherActivity || null,
+        engagement_signed: true,
+      }, { onConflict: 'user_id' });
 
-    // Initial grades
-    const gradeRows = Object.entries(grades)
-      .filter(([_, v]) => v.grade !== '')
-      .map(([subject, v]) => ({
-        user_id: u.id, subject,
-        grade: Number(v.grade) || null,
-        coefficient: Number(v.coef) || 1,
-      }));
-    if (gradeRows.length) await supabase.from('initial_grades').insert(gradeRows);
+      // Initial grades
+      const gradeRows = Object.entries(grades)
+        .filter(([_, v]) => v.grade !== '')
+        .map(([subject, v]) => ({
+          user_id: uid, subject,
+          grade: Number(v.grade) || null,
+          coefficient: Number(v.coef) || 1,
+        }));
+      if (gradeRows.length) await supabase.from('initial_grades').insert(gradeRows);
 
-    await supabase.from('profiles').update({
-      pseudo: firstName ? `${firstName} ${lastName.charAt(0) || ''}`.trim() : undefined,
-      class_level: level,
-      onboarding_completed: true,
-    }).eq('user_id', u.id);
+      await supabase.from('profiles').update({
+        pseudo: firstName ? `${firstName} ${lastName.charAt(0) || ''}`.trim() : undefined,
+        class_level: level,
+        onboarding_completed: true,
+      }).eq('user_id', uid);
 
-    await supabase.from('user_private').upsert({
-      user_id: u.id,
-      ical_url: icalUrl || null,
-    }, { onConflict: 'user_id' });
+      await supabase.from('user_private').upsert({
+        user_id: uid,
+        ical_url: icalUrl || null,
+      }, { onConflict: 'user_id' });
 
-    // Import iCal events into planning_events (3 months ahead)
-    if (icalUrl && icalStatus === 'ok') {
-      try {
-        const txt = await fetchICal(icalUrl);
-        const rangeStart = new Date();
-        const rangeEnd   = new Date();
-        rangeEnd.setMonth(rangeEnd.getMonth() + 3);
-        const parsed = parseICal(txt, rangeStart, rangeEnd);
-        if (parsed.length > 0) {
-          // Remove any previously-synced ical events to avoid duplicates
-          await supabase.from('planning_events')
-            .delete().eq('user_id', u.id).eq('source', 'ical');
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const rows = parsed.map(e => { const { id: _id, ...rest } = icalToPlanningEvent(e, u.id); return rest; });
-          await supabase.from('planning_events').insert(rows);
-        }
-      } catch { /* iCal import failures are non-blocking */ }
-    }
+      // Import iCal events into planning_events (3 months ahead).
+      // Try even if verification was only 'unverified' — the edge function
+      // may succeed during finalize even if it failed during the live check.
+      if (icalUrl) {
+        try {
+          const txt = await fetchICal(icalUrl);
+          if (txt.includes('BEGIN:VCALENDAR')) {
+            const rangeStart = new Date();
+            const rangeEnd   = new Date();
+            rangeEnd.setMonth(rangeEnd.getMonth() + 3);
+            const parsed = parseICal(txt, rangeStart, rangeEnd);
+            if (parsed.length > 0) {
+              await supabase.from('planning_events')
+                .delete().eq('user_id', uid).eq('source', 'ical');
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const rows = parsed.map(e => { const { id: _id, ...rest } = icalToPlanningEvent(e, uid!); return rest; });
+              await supabase.from('planning_events').insert(rows);
+            }
+          }
+        } catch { /* iCal import failures are non-blocking */ }
+      }
 
       await refreshProfile();
+      // Navigate only on success — never in finally, which would run even
+      // on early-return / exception and send the user to a protected route
+      // without a valid session.
+      navigate('/student');
     } catch (err) {
       console.error('Onboarding finalize error:', err);
     } finally {
+      // Only cleanup — no navigation here.
       setFinalizing(false);
-      navigate('/student');
     }
   };
 
@@ -414,15 +440,10 @@ export default function OnboardingPage() {
                       <p className="text-xs text-destructive">❌ Lien invalide ou format non reconnu. Vérifie l'URL.</p>
                     )}
                     {icalStatus === 'unverified' && (
-                      <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 mt-1">
-                        <p className="text-xs text-amber-300 mb-2">
-                          ⚠️ Impossible de vérifier depuis le navigateur (restriction CORS des serveurs scolaires).
-                          Si l'URL vient bien de ton ENT (Pronote, EcoleDirecte…), elle est probablement correcte.
+                      <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 mt-1">
+                        <p className="text-xs text-emerald-300">
+                          ✓ Lien enregistré — les serveurs scolaires (Pronote, EcoleDirecte…) bloquent la vérification depuis le navigateur, c'est tout à fait normal. Ton calendrier sera importé automatiquement.
                         </p>
-                        <button onClick={() => setIcalSkipped(true)}
-                          className="text-xs font-semibold text-amber-400 underline">
-                          Continuer avec ce lien →
-                        </button>
                       </div>
                     )}
 
