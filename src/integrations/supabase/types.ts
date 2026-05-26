@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          description: string
+          id: string
+          label: string
+        }
+        Insert: {
+          category?: string
+          description: string
+          id: string
+          label: string
+        }
+        Update: {
+          category?: string
+          description?: string
+          id?: string
+          label?: string
+        }
+        Relationships: []
+      }
+      avatar_configs: {
+        Row: {
+          background: string | null
+          badge: string | null
+          glasses: string | null
+          hat: string | null
+          id: string
+          outfit: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          background?: string | null
+          badge?: string | null
+          glasses?: string | null
+          hat?: string | null
+          id?: string
+          outfit?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          background?: string | null
+          badge?: string | null
+          glasses?: string | null
+          hat?: string | null
+          id?: string
+          outfit?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           badge_key: string
@@ -68,114 +122,6 @@ export type Database = {
           task_date?: string
           task_number?: number
           user_id?: string
-        }
-        Relationships: []
-      }
-      xp_history: {
-        Row: {
-          id: string
-          user_id: string
-          amount: number
-          source: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          amount: number
-          source?: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          amount?: number
-          source?: string
-          created_at?: string
-        }
-        Relationships: []
-      }
-      avatar_configs: {
-        Row: {
-          id: string
-          user_id: string
-          hat: string | null
-          glasses: string | null
-          outfit: string | null
-          background: string | null
-          badge: string | null
-          skin_color: string
-          hair_style: string
-          hair_color: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          hat?: string | null
-          glasses?: string | null
-          outfit?: string | null
-          background?: string | null
-          badge?: string | null
-          skin_color?: string
-          hair_style?: string
-          hair_color?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          hat?: string | null
-          glasses?: string | null
-          outfit?: string | null
-          background?: string | null
-          badge?: string | null
-          skin_color?: string
-          hair_style?: string
-          hair_color?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      achievements: {
-        Row: {
-          id: string
-          label: string
-          description: string
-          category: string
-        }
-        Insert: {
-          id: string
-          label: string
-          description: string
-          category?: string
-        }
-        Update: {
-          id?: string
-          label?: string
-          description?: string
-          category?: string
-        }
-        Relationships: []
-      }
-      student_achievements: {
-        Row: {
-          id: string
-          user_id: string
-          achievement_id: string
-          unlocked_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          achievement_id: string
-          unlocked_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          achievement_id?: string
-          unlocked_at?: string
         }
         Relationships: []
       }
@@ -533,6 +479,35 @@ export type Database = {
         }
         Relationships: []
       }
+      student_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_baselines: {
         Row: {
           created_at: string
@@ -713,6 +688,30 @@ export type Database = {
           validated?: boolean
           validated_at?: string | null
           week_start?: string
+        }
+        Relationships: []
+      }
+      xp_history: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          source: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          source?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          source?: string
+          user_id?: string
         }
         Relationships: []
       }
