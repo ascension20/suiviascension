@@ -192,7 +192,6 @@ export default function OnboardingPage() {
       specialties, options,
       goals: goals || null,
       activities, other_activity: otherActivity || null,
-      ical_url: icalUrl || null,
       engagement_signed: true,
     }, { onConflict: 'user_id' });
 
