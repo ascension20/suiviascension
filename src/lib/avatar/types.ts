@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// Avatar System — Core Types
+// Avatar System — Core Types (avataaars edition)
 // ─────────────────────────────────────────────────────────────
 
 export type AccessorySlot = 'hat' | 'glasses' | 'outfit' | 'background' | 'badge';
@@ -24,15 +24,19 @@ export interface Accessory {
   id: string;
   slot: AccessorySlot;
   label: string;
-  emoji: string;
-  /** Human-readable flavour description */
   description: string;
-  /** Unlock rule */
   condition: UnlockCondition;
   rarity: Rarity;
-  /** Rive state-machine input name (ready for future integration) */
-  riveInput?: string;
-  riveValue?: number | boolean;
+  /**
+   * DiceBear avataaars URL params appended to the avatar URL.
+   * Hat/glasses/outfit/background slots only.
+   * Example: "top[]=winterHat1" or "accessories[]=round&accessoriesProbability=100"
+   */
+  dicebearParam?: string;
+  /**
+   * Badge slot only — emoji shown as an overlay on the avatar frame.
+   */
+  badgeSymbol?: string;
 }
 
 export interface AvatarConfig {
@@ -47,7 +51,7 @@ export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
   hat: null,
   glasses: null,
   outfit: 'outfit_hoodie',
-  background: 'bg_classroom',
+  background: 'bg_dark',
   badge: null,
 };
 

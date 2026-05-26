@@ -3,11 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Accessory } from '@/lib/avatar/types';
 import { RARITY_COLORS } from '@/lib/avatar/types';
-
-interface UnlockToastProps {
-  unlocks: Accessory[];
-  onDismiss: () => void;
-}
+import { buildAvataaarsUrl } from './Avatar';
+import type { AvatarConfig } from '@/lib/avatar/types';
 
 const RARITY_LABEL: Record<string, string> = {
   common: 'Commun',
@@ -15,6 +12,24 @@ const RARITY_LABEL: Record<string, string> = {
   epic: 'Épique',
   legendary: 'Légendaire',
 };
+
+const PREVIEW_SEED = 'ascension-preview';
+
+function unlockPreviewUrl(acc: Accessory): string {
+  const config: AvatarConfig = {
+    hat:        acc.slot === 'hat'        ? acc.id : null,
+    glasses:    acc.slot === 'glasses'    ? acc.id : null,
+    outfit:     acc.slot === 'outfit'     ? acc.id : 'outfit_hoodie',
+    background: acc.slot === 'background' ? acc.id : 'bg_dark',
+    badge:      null,
+  };
+  return buildAvataaarsUrl(config, PREVIEW_SEED);
+}
+
+interface UnlockToastProps {
+  unlocks: Accessory[];
+  onDismiss: () => void;
+}
 
 export function UnlockToast({ unlocks, onDismiss }: UnlockToastProps) {
   const first = unlocks[0];
@@ -40,39 +55,54 @@ export function UnlockToast({ unlocks, onDismiss }: UnlockToastProps) {
           style={{ transform: 'translateX(-50%)' }}
         >
           <div
-            className="flex items-center gap-3 px-5 py-3.5 rounded-2xl border shadow-2xl"
+            className="relative flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-2xl overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, hsl(222 22% 11%) 0%, hsl(222 22% 8%) 100%)',
               borderColor: rc.border,
               boxShadow: `${rc.glow}, 0 20px 40px hsl(222 22% 2% / 0.8)`,
-              minWidth: 260,
+              minWidth: 280,
             }}
           >
-            {/* Gold top line */}
+            {/* Top glow line */}
             <div
-              className="absolute top-0 left-4 right-4 h-px rounded"
+              className="absolute top-0 left-4 right-4 h-px"
               style={{ background: `linear-gradient(90deg, transparent, ${rc.border}, transparent)` }}
             />
 
-            {/* Emoji */}
+            {/* Avatar preview */}
             <div
-              className="text-3xl leading-none shrink-0"
-              style={{ filter: `drop-shadow(0 0 8px ${rc.border})` }}
+              className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border"
+              style={{ borderColor: rc.border }}
             >
-              {first.emoji}
+              {first.badgeSymbol ? (
+                <div
+                  className="w-full h-full flex items-center justify-center text-2xl"
+                  style={{ background: 'hsl(222 22% 14%)' }}
+                >
+                  {first.badgeSymbol}
+                </div>
+              ) : (
+                <img
+                  src={unlockPreviewUrl(first)}
+                  alt={first.label}
+                  draggable={false}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              )}
             </div>
 
             {/* Text */}
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-0.5"
-                 style={{ color: rc.text }}>
+              <p
+                className="text-[10px] font-bold tracking-widest uppercase mb-0.5"
+                style={{ color: rc.text }}
+              >
                 🔓 Nouveau déblocage !
               </p>
-              <p className="font-display font-black text-base leading-tight text-foreground">
+              <p className="font-display font-black text-base leading-tight text-foreground truncate">
                 {first.label}
               </p>
-              <p className="text-[10px] mt-0.5"
-                 style={{ color: rc.text }}>
+              <p className="text-[10px] mt-0.5" style={{ color: rc.text }}>
                 {RARITY_LABEL[first.rarity]}
                 {unlocks.length > 1 && (
                   <span className="text-muted-foreground ml-1.5">

@@ -9,7 +9,7 @@ import {
 import type { Accessory, PlayerStats, AvatarConfig } from '../types';
 
 // ─────────────────────────────────────────────────────────────
-// Helpers
+// Mock accessories (no emoji field — avataaars edition)
 // ─────────────────────────────────────────────────────────────
 
 const baseStats: PlayerStats = {
@@ -24,60 +24,60 @@ const freeAcc: Accessory = {
   id: 'free_item',
   slot: 'hat',
   label: 'Free item',
-  emoji: '🆓',
   description: '',
   condition: { type: 'free', label: 'Disponible dès le début' },
   rarity: 'common',
+  dicebearParam: 'top[]=winterHat1',
 };
 
 const xpAcc: Accessory = {
   id: 'xp_item',
   slot: 'glasses',
   label: 'XP item',
-  emoji: '👓',
   description: '',
   condition: { type: 'xp', value: 1000, label: '1 000 XP' },
   rarity: 'rare',
+  dicebearParam: 'accessories[]=round&accessoriesProbability=100',
 };
 
 const levelAcc: Accessory = {
   id: 'level_item',
   slot: 'outfit',
   label: 'Level item',
-  emoji: '👕',
   description: '',
   condition: { type: 'level', value: 10, label: 'Niveau 10' },
   rarity: 'rare',
+  dicebearParam: 'clothes[]=hoodie&clothesColor=262E33',
 };
 
 const streakAcc: Accessory = {
   id: 'streak_item',
   slot: 'badge',
   label: 'Streak item',
-  emoji: '🔥',
   description: '',
   condition: { type: 'streak', value: 7, label: 'Streak 7 jours' },
   rarity: 'rare',
+  badgeSymbol: '🔥',
 };
 
 const deepworkAcc: Accessory = {
   id: 'deepwork_item',
   slot: 'background',
   label: 'Deepwork item',
-  emoji: '🧠',
   description: '',
   condition: { type: 'deepwork_sessions', value: 50, label: '50 sessions' },
   rarity: 'epic',
+  dicebearParam: 'backgroundColor=1a0a2e&backgroundType[]=solid',
 };
 
 const achievementAcc: Accessory = {
   id: 'achievement_item',
   slot: 'hat',
   label: 'Achievement item',
-  emoji: '🏆',
   description: '',
   condition: { type: 'achievement', value: 'first_deepwork', label: 'Première session' },
   rarity: 'epic',
+  dicebearParam: 'top[]=hat',
 };
 
 const catalog = [freeAcc, xpAcc, levelAcc, streakAcc, deepworkAcc, achievementAcc];
@@ -147,7 +147,6 @@ describe('computeUnlocked', () => {
     const result = computeUnlocked(baseStats, catalog);
     expect(result.has('free_item')).toBe(true);
     expect(result.has('xp_item')).toBe(false);
-    expect(result.has('level_item')).toBe(false);
     expect(result.size).toBe(1);
   });
 
@@ -164,13 +163,13 @@ describe('computeUnlocked', () => {
     expect(result.has('xp_item')).toBe(true);
     expect(result.has('level_item')).toBe(true);
     expect(result.has('streak_item')).toBe(true);
-    expect(result.has('deepwork_item')).toBe(false); // needs 50 sessions
+    expect(result.has('deepwork_item')).toBe(false);
     expect(result.has('achievement_item')).toBe(true);
   });
 
   it('returns empty set for empty catalog', () => {
-    const result = computeUnlocked(baseStats, []);
-    expect(result.size).toBe(0);
+    expect(computeUnlocked(baseStats, [])).toHaveLength !== undefined;
+    expect(computeUnlocked(baseStats, []).size).toBe(0);
   });
 });
 
@@ -186,7 +185,7 @@ describe('detectNewUnlocks', () => {
 
   it('detects one newly unlocked item', () => {
     const previous = new Set(['free_item']);
-    const current = new Set(['free_item', 'xp_item']);
+    const current  = new Set(['free_item', 'xp_item']);
     const result = detectNewUnlocks(previous, current, catalog);
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('xp_item');
@@ -194,14 +193,13 @@ describe('detectNewUnlocks', () => {
 
   it('detects multiple newly unlocked items', () => {
     const previous = new Set<string>();
-    const current = new Set(['free_item', 'xp_item', 'level_item']);
-    const result = detectNewUnlocks(previous, current, catalog);
-    expect(result).toHaveLength(3);
+    const current  = new Set(['free_item', 'xp_item', 'level_item']);
+    expect(detectNewUnlocks(previous, current, catalog)).toHaveLength(3);
   });
 
-  it('ignores items that were already in previous set', () => {
+  it('ignores already-seen items', () => {
     const previous = new Set(['free_item', 'xp_item']);
-    const current = new Set(['free_item', 'xp_item', 'streak_item']);
+    const current  = new Set(['free_item', 'xp_item', 'streak_item']);
     const result = detectNewUnlocks(previous, current, catalog);
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('streak_item');
@@ -223,8 +221,7 @@ describe('sanitiseConfig', () => {
 
   it('keeps null slots as null', () => {
     const unlocked = new Set(['free_item', 'xp_item']);
-    const result = sanitiseConfig(config, unlocked);
-    expect(result.outfit).toBeNull();
+    expect(sanitiseConfig(config, unlocked).outfit).toBeNull();
   });
 
   it('keeps unlocked items as-is', () => {
@@ -235,7 +232,7 @@ describe('sanitiseConfig', () => {
   });
 
   it('nullifies items that are no longer unlocked', () => {
-    const unlocked = new Set(['free_item']); // xp_item no longer unlocked
+    const unlocked = new Set(['free_item']);
     const result = sanitiseConfig(config, unlocked);
     expect(result.hat).toBe('free_item');
     expect(result.glasses).toBeNull();
@@ -256,12 +253,10 @@ describe('unlockProgress', () => {
   });
 
   it('returns formatted xp progress string', () => {
-    const result = unlockProgress(xpAcc, { ...baseStats, totalXp: 350 });
-    expect(result).toBe('350 / 1 000 XP');
+    expect(unlockProgress(xpAcc, { ...baseStats, totalXp: 350 })).toBe('350 / 1 000 XP');
   });
 
   it('returns formatted streak progress string', () => {
-    const result = unlockProgress(streakAcc, { ...baseStats, streak: 3 });
-    expect(result).toBe('3 / 7 j');
+    expect(unlockProgress(streakAcc, { ...baseStats, streak: 3 })).toBe('3 / 7 j');
   });
 });

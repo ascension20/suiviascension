@@ -1,9 +1,45 @@
 import { Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { Accessory } from '@/lib/avatar/types';
+import type { Accessory, PlayerStats } from '@/lib/avatar/types';
 import { RARITY_COLORS } from '@/lib/avatar/types';
 import { unlockProgress } from '@/lib/avatar/unlock-engine';
-import type { PlayerStats } from '@/lib/avatar/types';
+import { buildAvataaarsUrl } from './Avatar';
+import type { AvatarConfig } from '@/lib/avatar/types';
+
+// ─────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────
+
+const RARITY_LABEL: Record<string, string> = {
+  common: 'Commun',
+  rare: 'Rare',
+  epic: 'Épique',
+  legendary: 'Légendaire',
+};
+
+const PREVIEW_SEED = 'ascension-preview';
+
+/** Build a preview URL showing only this accessory on a neutral character */
+function previewUrl(acc: Accessory): string {
+  const config: AvatarConfig = {
+    hat:        acc.slot === 'hat'        ? acc.id : null,
+    glasses:    acc.slot === 'glasses'    ? acc.id : null,
+    outfit:     acc.slot === 'outfit'     ? acc.id : 'outfit_hoodie',
+    background: acc.slot === 'background' ? acc.id : 'bg_dark',
+    badge:      null,
+  };
+  return buildAvataaarsUrl(config, PREVIEW_SEED);
+}
+
+/** Extract hex from dicebearParam for background swatches */
+function bgHex(acc: Accessory): string | null {
+  if (acc.slot !== 'background') return null;
+  return acc.dicebearParam?.match(/backgroundColor=([0-9a-fA-F]{6})/)?.[1] ?? null;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────────────
 
 interface AccessoryCardProps {
   accessory: Accessory;
@@ -13,13 +49,6 @@ interface AccessoryCardProps {
   onSelect: () => void;
 }
 
-const RARITY_LABEL: Record<string, string> = {
-  common: 'Commun',
-  rare: 'Rare',
-  epic: 'Épique',
-  legendary: 'Légendaire',
-};
-
 export function AccessoryCard({
   accessory,
   isUnlocked,
@@ -27,8 +56,9 @@ export function AccessoryCard({
   stats,
   onSelect,
 }: AccessoryCardProps) {
-  const rc = RARITY_COLORS[accessory.rarity];
+  const rc       = RARITY_COLORS[accessory.rarity];
   const progress = stats ? unlockProgress(accessory, stats) : null;
+  const hex      = bgHex(accessory);
 
   return (
     <motion.button
@@ -39,64 +69,89 @@ export function AccessoryCard({
       style={{
         borderColor: isEquipped
           ? rc.border
-          : isUnlocked
-          ? `${rc.border}55`
-          : 'hsl(222 16% 18%)',
+          : isUnlocked ? `${rc.border}55` : 'hsl(222 16% 18%)',
         background: isEquipped
           ? rc.bg
-          : isUnlocked
-          ? 'hsl(222 22% 10%)'
-          : 'hsl(222 22% 8%)',
+          : isUnlocked ? 'hsl(222 22% 10%)' : 'hsl(222 22% 8%)',
         boxShadow: isEquipped ? rc.glow : 'none',
         opacity: isUnlocked ? 1 : 0.55,
         cursor: isUnlocked ? 'pointer' : 'default',
       }}
     >
-      {/* Equipped indicator */}
+      {/* Equipped check */}
       {isEquipped && (
         <div
-          className="absolute top-1.5 right-1.5 px-1 py-0.5 rounded text-[8px] font-bold tracking-wide"
-          style={{
-            background: rc.bg,
-            color: rc.text,
-            border: `1px solid ${rc.border}`,
-          }}
+          className="absolute top-1.5 right-1.5 px-1 py-0.5 rounded text-[8px] font-bold"
+          style={{ background: rc.bg, color: rc.text, border: `1px solid ${rc.border}` }}
         >
           ✓
         </div>
       )}
 
-      {/* Emoji */}
+      {/* Preview visual */}
       <div
-        className="relative text-3xl leading-none"
+        className="relative overflow-hidden rounded-lg shrink-0"
         style={{
-          filter: isUnlocked
-            ? isEquipped
-              ? `drop-shadow(0 0 8px ${rc.border})`
-              : 'none'
-            : 'grayscale(1) brightness(0.4)',
+          width: 52,
+          height: 52,
+          filter: isUnlocked ? 'none' : 'grayscale(1) brightness(0.4)',
         }}
       >
-        {accessory.emoji}
+        {hex ? (
+          /* Background slot → color swatch */
+          <div
+            className="w-full h-full rounded-lg flex items-center justify-center"
+            style={{ background: `#${hex}` }}
+          >
+            <span className="text-xl">{
+              hex === '0d1117' ? '🌑' :
+              hex === '1a2332' ? '🏫' :
+              hex === '2d1500' ? '📚' :
+              hex === '1a0a2e' ? '🏰' :
+              hex === '3d2000' ? '🏛️' :
+              hex === '0a1628' ? '🗼' : '🌌'
+            }</span>
+          </div>
+        ) : accessory.badgeSymbol ? (
+          /* Badge slot → emoji centered */
+          <div
+            className="w-full h-full flex items-center justify-center text-2xl"
+            style={{ background: 'hsl(222 22% 12%)' }}
+          >
+            {accessory.badgeSymbol}
+          </div>
+        ) : (
+          /* All other slots → mini DiceBear preview */
+          <img
+            src={previewUrl(accessory)}
+            alt={accessory.label}
+            draggable={false}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        )}
 
         {/* Lock overlay */}
         {!isUnlocked && (
-          <div
-            className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
-            style={{ background: 'hsl(222 22% 14%)', border: '1px solid hsl(222 16% 25%)' }}
-          >
-            <Lock size={8} className="text-muted-foreground" />
+          <div className="absolute inset-0 flex items-end justify-end p-1">
+            <div
+              className="w-4 h-4 rounded-full flex items-center justify-center"
+              style={{ background: 'hsl(222 22% 14%)', border: '1px solid hsl(222 16% 25%)' }}
+            >
+              <Lock size={8} className="text-muted-foreground" />
+            </div>
           </div>
         )}
       </div>
 
       {/* Label */}
-      <p className="text-[11px] font-semibold text-center leading-tight line-clamp-2"
-         style={{ color: isUnlocked ? 'hsl(42 12% 88%)' : 'hsl(220 10% 45%)' }}>
+      <p
+        className="text-[11px] font-semibold text-center leading-tight line-clamp-2 w-full"
+        style={{ color: isUnlocked ? 'hsl(42 12% 88%)' : 'hsl(220 10% 45%)' }}
+      >
         {accessory.label}
       </p>
 
-      {/* Rarity badge */}
+      {/* Rarity */}
       <span
         className="text-[9px] font-bold tracking-wide uppercase px-1.5 py-0.5 rounded"
         style={{
@@ -108,15 +163,10 @@ export function AccessoryCard({
         {RARITY_LABEL[accessory.rarity]}
       </span>
 
-      {/* Unlock progress (for locked items) */}
-      {!isUnlocked && progress && (
+      {/* Lock condition */}
+      {!isUnlocked && (
         <p className="text-[9px] text-center" style={{ color: 'hsl(220 10% 40%)' }}>
-          {progress}
-        </p>
-      )}
-      {!isUnlocked && !progress && (
-        <p className="text-[9px] text-center" style={{ color: 'hsl(220 10% 40%)' }}>
-          {accessory.condition.label}
+          {progress ?? accessory.condition.label}
         </p>
       )}
     </motion.button>
