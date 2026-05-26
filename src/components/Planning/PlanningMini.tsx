@@ -80,7 +80,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
   // Badge info par jour (quêtes + DS uniquement)
   const dayInfo = days.map(d => {
     const iso = formatDateISO(d);
-    const dayEvs = events.filter(e => e.event_date === iso && (e.type === 'quest' || e.type === 'ds'));
+    const dayEvs = events.filter(e => e.event_date === iso && (e.type === 'ds' || (e.type === 'quest' && !e.validated)));
     return { count: dayEvs.length, hasDs: dayEvs.some(e => e.type === 'ds') };
   });
 
