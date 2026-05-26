@@ -198,17 +198,12 @@ export default function OnboardingPage() {
     if (!engagement) return;
     setFinalizing(true);
     try {
-      // Prefer the user already in context (avoids network round-trip).
-      // Fall back to getSession() (localStorage) in case the context hasn't
-      // been hydrated yet (e.g. a page refresh mid-onboarding).
-      let uid = user?.id;
+      // Always read the session directly from the Supabase client (localStorage)
+      // rather than from the React auth context, which may be stale right after
+      // signUp (the context updates asynchronously via onAuthStateChange).
+      const { data: { session } } = await supabase.auth.getSession();
+      const uid = session?.user?.id ?? user?.id;
       if (!uid) {
-        const { data: { session } } = await supabase.auth.getSession();
-        uid = session?.user?.id;
-      }
-      if (!uid) {
-        // No authenticated session – should not normally happen.
-        // Send them back to login so they can reconnect.
         navigate('/login');
         return;
       }
@@ -269,16 +264,14 @@ export default function OnboardingPage() {
         } catch { /* iCal import failures are non-blocking */ }
       }
 
-      await refreshProfile();
-      // Navigate only on success — never in finally, which would run even
-      // on early-return / exception and send the user to a protected route
-      // without a valid session.
-      navigate('/student');
+      // Hard redirect instead of SPA navigate: forces AuthProvider to reinitialise
+      // from localStorage, so ProtectedRoute always sees a valid session.
+      // navigate('/student') is SPA-only and fails when the React auth context
+      // hasn't caught up with the session yet (race after signUp).
+      window.location.replace('/student');
     } catch (err) {
       console.error('Onboarding finalize error:', err);
-    } finally {
-      // Only cleanup — no navigation here.
-      setFinalizing(false);
+      setFinalizing(false); // Only reset on error; success triggers a page reload
     }
   };
 
