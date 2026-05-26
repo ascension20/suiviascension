@@ -214,7 +214,6 @@ export function PlanningMini({ userId, onXpGain }: Props) {
                       className="flex items-stretch border-t divide-x rounded-b-lg overflow-hidden"
                       style={{
                         borderColor: 'hsl(270 50% 40% / 0.3)',
-                        divideColor: 'hsl(270 50% 40% / 0.3)',
                       }}
                     >
                       <button
