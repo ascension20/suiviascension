@@ -303,28 +303,96 @@ export default function DeepworkPage() {
               Tu es le premier à étudier en ce moment 🌙
             </p>
           ) : (
-            <>
-              <p className="text-xs font-semibold" style={{ color: 'hsl(43 90% 50% / 0.7)' }}>
-                {peers.length} élève{peers.length > 1 ? 's' : ''} en deepwork avec toi
-              </p>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {peers.map((u, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border"
-                    style={{
-                      borderColor: 'hsl(43 90% 50% / 0.3)',
-                      backgroundColor: 'hsl(43 90% 50% / 0.07)',
-                    }}
-                  >
-                    <span className="text-base leading-none">{u.avatar}</span>
-                    <span className="text-xs font-semibold" style={{ color: 'hsl(42 12% 88%)' }}>
-                      {u.pseudo}
-                    </span>
-                  </div>
-                ))}
+            <div className="flex flex-col items-center gap-3 w-full">
+
+              {/* Header */}
+              <div className="flex items-center gap-2">
+                <span
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{
+                    background: 'hsl(142 71% 50%)',
+                    boxShadow: '0 0 6px hsl(142 71% 50% / 0.9)',
+                    animation: 'pulse 1.5s ease-in-out infinite',
+                  }}
+                />
+                <span
+                  className="text-[11px] font-bold tracking-widest uppercase"
+                  style={{ color: 'hsl(43 90% 55%)' }}
+                >
+                  {peers.length} élève{peers.length > 1 ? 's' : ''} en session
+                </span>
               </div>
-            </>
+
+              {/* Peer cards */}
+              <div className="flex flex-wrap gap-3 justify-center">
+                <AnimatePresence>
+                  {peers.map((u, i) => (
+                    <motion.div
+                      key={u.pseudo}
+                      initial={{ opacity: 0, scale: 0.75, y: 12 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ delay: i * 0.08, type: 'spring', bounce: 0.35 }}
+                      className="relative flex flex-col items-center gap-2 p-3 rounded-xl border"
+                      style={{
+                        width: 80,
+                        borderColor: 'hsl(43 90% 50% / 0.28)',
+                        background: 'linear-gradient(145deg, hsl(222 22% 11%) 0%, hsl(222 22% 7%) 100%)',
+                        boxShadow: '0 0 20px hsl(43 90% 50% / 0.06), inset 0 0 20px hsl(43 90% 50% / 0.03)',
+                      }}
+                    >
+                      {/* Corner brackets */}
+                      <div className="absolute top-0 left-0 w-3 h-3 border-l border-t pointer-events-none rounded-tl-lg"
+                           style={{ borderColor: 'hsl(43 90% 55% / 0.5)' }} />
+                      <div className="absolute top-0 right-0 w-3 h-3 border-r border-t pointer-events-none rounded-tr-lg"
+                           style={{ borderColor: 'hsl(43 90% 55% / 0.5)' }} />
+                      <div className="absolute bottom-0 left-0 w-3 h-3 border-l border-b pointer-events-none rounded-bl-lg"
+                           style={{ borderColor: 'hsl(43 90% 55% / 0.5)' }} />
+                      <div className="absolute bottom-0 right-0 w-3 h-3 border-r border-b pointer-events-none rounded-br-lg"
+                           style={{ borderColor: 'hsl(43 90% 55% / 0.5)' }} />
+
+                      {/* Live dot */}
+                      <div
+                        className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full hud-live"
+                        style={{
+                          background: 'hsl(142 71% 50%)',
+                          boxShadow: '0 0 6px hsl(142 71% 50% / 0.8)',
+                        }}
+                      />
+
+                      {/* DiceBear avatar */}
+                      <div
+                        className="w-12 h-12 rounded-lg overflow-hidden shrink-0"
+                        style={{ background: 'hsl(222 22% 14%)' }}
+                      >
+                        <img
+                          src={`https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(u.pseudo)}&backgroundColor=transparent`}
+                          alt={u.pseudo}
+                          draggable={false}
+                          style={{ width: '100%', height: '100%', imageRendering: 'pixelated' }}
+                        />
+                      </div>
+
+                      {/* Name */}
+                      <p
+                        className="text-[10px] font-bold text-center leading-tight w-full truncate"
+                        style={{ color: 'hsl(42 12% 82%)' }}
+                      >
+                        {u.pseudo}
+                      </p>
+
+                      {/* Status */}
+                      <p
+                        className="text-[9px] text-center leading-none"
+                        style={{ color: 'hsl(142 71% 45%)' }}
+                      >
+                        ● focus
+                      </p>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
           )}
         </div>
       </div>
