@@ -48,11 +48,11 @@ export function buildAvataaarsUrl(config: AvatarConfig, seed: string): string {
   const outfit  = config.outfit     ? getAccessory(config.outfit)     : null;
   const bg      = config.background ? getAccessory(config.background) : null;
 
-  // Top: hat overrides hair style; otherwise use chosen hair style
+  // DiceBear v9: top[] = hats only, hairStyle[] = hair styles
   if (hat?.dicebearParam) {
     parts.push(hat.dicebearParam);
   } else {
-    parts.push(`top[]=${config.hairStyle || 'shortHairShortFlat'}`);
+    parts.push(`hairStyle[]=${config.hairStyle || 'shortHairShortFlat'}`);
   }
 
   // Base appearance — hex values required by DiceBear v9

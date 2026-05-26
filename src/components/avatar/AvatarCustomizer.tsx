@@ -78,7 +78,7 @@ function BaseAppearancePicker({
 }) {
   const hairPreviewUrl = (hairStyle: string) =>
     buildAvataaarsUrl(
-      { ...config, hat: null, hairStyle },
+      { ...config, hat: null, glasses: null, outfit: null, background: null, hairStyle },
       PREVIEW_SEED,
     );
 

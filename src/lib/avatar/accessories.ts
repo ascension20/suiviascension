@@ -60,7 +60,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'Réservé aux légendes du tableau de bord.',
     condition: { type: 'level', value: 50, label: 'Niveau 50' },
     rarity: 'legendary',
-    dicebearParam: 'top[]=winterHat4',
+    dicebearParam: 'top[]=winterHat04',
   },
 
   // ── GLASSES (accessories[]) ────────────────────────────────
