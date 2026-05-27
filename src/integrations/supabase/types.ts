@@ -272,6 +272,27 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_log: {
+        Row: {
+          id: string
+          notif_type: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          notif_type: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          notif_type?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       onboarding_data: {
         Row: {
           activities: string[]
@@ -436,6 +457,33 @@ export type Database = {
           total_xp?: number
           tutorial_completed?: boolean
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
           user_id?: string
         }
         Relationships: []
