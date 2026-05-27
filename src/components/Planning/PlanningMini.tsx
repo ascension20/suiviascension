@@ -167,26 +167,28 @@ export function PlanningMini({ userId, onXpGain }: Props) {
               <span className={`tabular-nums ${isSelected ? 'text-primary' : isToday ? 'text-amber-300' : ''}`}>
                 {d.getDate()}
               </span>
-              {/* Pastilles colorées séparées : violet = quêtes, rouge = DS */}
-              <div className="flex items-center justify-center gap-0.5 mt-0.5 h-3">
-                {questCount > 0 && (
-                  <span
-                    className="min-w-[12px] h-3 rounded-full text-[8px] font-bold flex items-center justify-center text-white px-0.5"
-                    style={{ backgroundColor: 'hsl(270 50% 58%)' }}
-                  >
-                    {questCount}
-                  </span>
-                )}
-                {dsCount > 0 && (
-                  <span
-                    className="min-w-[12px] h-3 rounded-full text-[8px] font-bold flex items-center justify-center text-white px-0.5"
-                    style={{ backgroundColor: hasMissing ? 'hsl(0 84% 55%)' : 'hsl(0 70% 55%)' }}
-                    title={hasMissing ? 'Note manquante' : undefined}
-                  >
-                    {dsCount}
-                  </span>
-                )}
-              </div>
+              {/* Pastilles colorées séparées top-right */}
+              {(questCount > 0 || dsCount > 0) && (
+                <div className="absolute -top-1.5 -right-1 flex items-center gap-0.5">
+                  {questCount > 0 && (
+                    <span
+                      className="w-3.5 h-3.5 rounded-full text-[9px] font-bold flex items-center justify-center text-white"
+                      style={{ backgroundColor: 'hsl(270 50% 58%)' }}
+                    >
+                      {questCount}
+                    </span>
+                  )}
+                  {dsCount > 0 && (
+                    <span
+                      className="w-3.5 h-3.5 rounded-full text-[9px] font-bold flex items-center justify-center text-white"
+                      style={{ backgroundColor: hasMissing ? 'hsl(0 84% 55%)' : 'hsl(0 70% 55%)' }}
+                      title={hasMissing ? 'Note manquante' : undefined}
+                    >
+                      {dsCount}
+                    </span>
+                  )}
+                </div>
+              )}
             </button>
           );
         })}
