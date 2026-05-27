@@ -63,16 +63,16 @@ function AppRoutes() {
   return (
     <DeepworkPresenceProvider userId={user?.id} profile={profile}>
     <Routes>
-      <Route path="/login" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <LoginPage />} />
+      <Route path="/login" element={(user && role) ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <LoginPage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
-      <Route path="/setup" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <SetupPage />} />
+      <Route path="/setup" element={(user && role) ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <SetupPage />} />
       <Route path="/student" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
       <Route path="/student/deepwork" element={<ProtectedRoute requiredRole="student"><DeepworkPage /></ProtectedRoute>} />
       <Route path="/student/profile" element={<ProtectedRoute requiredRole="student"><ProfilePage /></ProtectedRoute>} />
       <Route path="/student/profile/customize" element={<ProtectedRoute requiredRole="student"><AvatarCustomizePage /></ProtectedRoute>} />
       <Route path="/student/profile/:userId" element={<ProtectedRoute requiredRole="student"><PublicProfilePage /></ProtectedRoute>} />
       <Route path="/coach" element={<ProtectedRoute requiredRole="coach"><CoachDashboard /></ProtectedRoute>} />
-      <Route path="/" element={user ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <Navigate to="/login" replace />} />
+      <Route path="/" element={(user && role) ? <Navigate to={role === 'coach' ? '/coach' : '/student'} replace /> : <Navigate to="/login" replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
     </DeepworkPresenceProvider>

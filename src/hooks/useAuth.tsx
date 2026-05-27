@@ -47,7 +47,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from('user_roles').select('role').eq('user_id', userId).single(),
     ]);
     if (profileRes.data) setProfile(profileRes.data as Profile);
-    if (roleRes.data) setRole(roleRes.data.role as AppRole);
+
+    if (roleRes.data) {
+      setRole(roleRes.data.role as AppRole);
+    } else {
+      // Self-heal: no role row found (migration may not have run yet).
+      // RLS allows a user to insert their own 'student' role, so try that.
+      const { data: healed } = await supabase
+        .from('user_roles')
+        .insert({ user_id: userId, role: 'student' })
+        .select('role')
+        .single();
+      // Even if the insert fails (e.g. row already exists race), default to student.
+      setRole((healed?.role as AppRole) ?? 'student');
+    }
   };
 
   const refreshProfile = async () => {
@@ -55,12 +68,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    let mounted = true;
+
+    // Initial load: keep loading=true until session + user data are both ready.
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!mounted) return;
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        // Use setTimeout to avoid deadlock with Supabase auth
-        setTimeout(() => fetchUserData(session.user.id), 0);
+        await fetchUserData(session.user.id);
+      }
+      if (mounted) setLoading(false);
+    };
+
+    init();
+
+    // Subsequent auth state changes (sign-in / sign-out after initial load).
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        // fetchUserData uses only PostgREST (not supabase.auth.*) so no deadlock risk.
+        fetchUserData(session.user.id);
       } else {
         setProfile(null);
         setRole(null);
@@ -68,16 +99,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserData(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
