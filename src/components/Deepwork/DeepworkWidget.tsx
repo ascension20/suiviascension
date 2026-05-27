@@ -5,41 +5,58 @@ import { Play, Pause } from 'lucide-react';
 const STORAGE_KEY = 'deepwork_started_at';
 
 function XpRate({ minutes }: { minutes: number }) {
-  const rate = minutes < 15 ? 1 : minutes < 30 ? 2 : 3;
-  const label = rate === 1
-    ? '1 XP/min'
-    : rate === 2
-    ? '2 XP/min · Bonus vitesse ⚡'
-    : '3 XP/min · Mode turbo 🔥';
+  const tier = minutes >= 90 ? 4 : minutes >= 30 ? 3 : minutes >= 15 ? 2 : 1;
+  const config = [
+    { label: '1 XP/min',                    color: 'hsl(43 90% 55%)' },
+    { label: '2 XP/min · Bonus vitesse ⚡', color: 'hsl(38 90% 60%)' },
+    { label: '3 XP/min · Mode turbo 🔥',   color: 'hsl(16 100% 62%)' },
+    { label: '4 XP/min · Mode ULTRA 🚀',   color: 'hsl(280 90% 70%)' },
+  ][tier - 1];
   return (
-    <span className="text-xs font-semibold" style={{ color: `hsl(43 90% ${50 + rate * 5}%)` }}>
-      {label}
+    <span className="text-xs font-semibold" style={{ color: config.color }}>
+      {config.label}
     </span>
   );
 }
 
-function TierProgressBar({ minutes }: { minutes: number }) {
-  const atMax = minutes >= 30;
-  const inTier2 = minutes >= 15 && minutes < 30;
-  const pct = atMax ? 100 : inTier2 ? ((minutes - 15) / 15) * 100 : (minutes / 15) * 100;
-  const nextIn = atMax ? 0 : inTier2 ? 30 - minutes : 15 - minutes;
-  const label = atMax
-    ? '🔥 Mode turbo — palier max atteint'
-    : inTier2
-    ? `⚡ Palier 2 — 🔥 dans ${nextIn} min`
-    : `Palier 1 — ⚡ dans ${nextIn} min`;
-  const color = atMax ? 'hsl(16 100% 60%)' : inTier2 ? 'hsl(38 90% 55%)' : 'hsl(43 90% 50%)';
+function TierProgressBar({ elapsedSec }: { elapsedSec: number }) {
+  const minutes = elapsedSec / 60; // fractional for smooth fill
+  const isMax   = minutes >= 90;
+
+  let start: number, end: number, color: string, statusLabel: string;
+
+  if (isMax) {
+    start = 90; end = 90;
+    color       = 'hsl(280 90% 70%)';
+    statusLabel = '🚀 Palier MAX — 4 XP/min';
+  } else if (minutes >= 30) {
+    start = 30; end = 90;
+    color       = 'hsl(16 100% 62%)';
+    statusLabel = `🔥 Palier 3 — 🚀 dans ${Math.ceil(90 - minutes)} min`;
+  } else if (minutes >= 15) {
+    start = 15; end = 30;
+    color       = 'hsl(38 90% 58%)';
+    statusLabel = `⚡ Palier 2 — 🔥 dans ${Math.ceil(30 - minutes)} min`;
+  } else {
+    start = 0; end = 15;
+    color       = 'hsl(43 90% 52%)';
+    statusLabel = `Palier 1 — ⚡ dans ${Math.ceil(15 - minutes)} min`;
+  }
+
+  const pct = isMax ? 100 : ((minutes - start) / (end - start)) * 100;
 
   return (
     <div className="w-full flex flex-col gap-1">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-bold" style={{ color }}>{label}</span>
-        <span className="text-[10px] text-muted-foreground">{atMax ? '' : `${Math.round(pct)}%`}</span>
+        <span className="text-[10px] font-bold" style={{ color }}>{statusLabel}</span>
+        {!isMax && (
+          <span className="text-[10px] text-muted-foreground">{Math.round(pct)}%</span>
+        )}
       </div>
       <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(222 22% 14%)' }}>
         <div
           className="h-full rounded-full transition-all duration-1000"
-          style={{ width: `${pct}%`, background: atMax ? 'hsl(16 100% 60%)' : inTier2 ? 'hsl(38 90% 55%)' : 'hsl(43 90% 50%)', boxShadow: `0 0 6px ${color}` }}
+          style={{ width: `${pct}%`, background: color, boxShadow: `0 0 6px ${color}` }}
         />
       </div>
     </div>
@@ -203,7 +220,7 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
             {/* Tier progress bar */}
             {active && (
               <div className="w-full max-w-[220px]">
-                <TierProgressBar minutes={minutes} />
+                <TierProgressBar elapsedSec={elapsedSec} />
               </div>
             )}
 

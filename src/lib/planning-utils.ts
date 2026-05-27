@@ -26,9 +26,10 @@ export function computeDeepworkXp(seconds: number): number {
   const minutes = Math.floor(seconds / 60);
   let xp = 0;
   for (let m = 1; m <= minutes; m++) {
-    if (m <= 15) xp += 1;
-    else if (m <= 30) xp += 2;
-    else xp += 3;
+    if (m <= 15)       xp += 1; // palier 1 : 1 XP/min
+    else if (m <= 30)  xp += 2; // palier 2 : 2 XP/min
+    else if (m <= 90)  xp += 3; // palier 3 : 3 XP/min
+    else               xp += 4; // palier 4 : 4 XP/min (≥ 1h30)
   }
   return xp;
 }

@@ -200,29 +200,39 @@ export function WeeklyDeepworkGoal({ userId, onXpGain }: Props) {
           return (
             <div
               key={i}
-              className="absolute flex flex-col items-center gap-1"
+              className="absolute flex flex-col items-center gap-0.5"
               style={{ left: `${pos}%`, top: 22, transform: 'translateX(-50%)' }}
             >
               <span className="text-[9px] font-bold tabular-nums leading-none" style={{ color: col }}>
                 {tier.label}
               </span>
               <div
-                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full"
+                className="flex items-center gap-0.5 px-1.5 py-1 rounded-full"
                 style={{
                   background: reached
-                    ? isClaimed ? 'hsl(142 71% 20% / 0.35)' : 'hsl(43 90% 50% / 0.12)'
-                    : 'hsl(222 16% 13%)',
+                    ? isClaimed ? 'hsl(142 71% 20% / 0.35)' : 'hsl(43 90% 50% / 0.15)'
+                    : 'hsl(222 16% 12%)',
                   border: `1px solid ${reached
-                    ? isClaimed ? 'hsl(142 71% 35% / 0.5)' : 'hsl(43 90% 50% / 0.3)'
+                    ? isClaimed ? 'hsl(142 71% 45% / 0.65)' : 'hsl(43 90% 55% / 0.45)'
                     : 'hsl(222 16% 22%)'}`,
+                  boxShadow: reached
+                    ? `0 0 10px ${isClaimed ? 'hsl(142 71% 45% / 0.45)' : 'hsl(43 90% 50% / 0.5)'}`
+                    : 'none',
                 }}
               >
                 {reached
-                  ? <Zap size={8} style={{ color: col }} />
-                  : <Lock size={7} style={{ color: dim }} />
+                  ? <Zap size={9} style={{ color: col }} />
+                  : <Lock size={8} style={{ color: dim }} />
                 }
-                <span className="text-[8px] font-bold leading-none tabular-nums" style={{ color: col }}>
-                  +{tier.xp}
+                <span
+                  className="font-display font-black leading-none tabular-nums"
+                  style={{
+                    fontSize: '10px',
+                    color: col,
+                    textShadow: reached ? `0 0 10px ${col}` : 'none',
+                  }}
+                >
+                  +{tier.xp} XP
                 </span>
               </div>
             </div>
@@ -269,7 +279,17 @@ export function WeeklyDeepworkGoal({ userId, onXpGain }: Props) {
             <span className="font-semibold" style={{ color: 'hsl(var(--primary))' }}>
               {fmtMin(nextTier.minutes - totalMin)}
             </span>{' '}
-            pour +{nextTier.xp} XP 💪
+            pour{' '}
+            <span
+              className="font-display font-black"
+              style={{
+                color: 'hsl(43 90% 62%)',
+                textShadow: '0 0 10px hsl(43 90% 50% / 0.7)',
+              }}
+            >
+              +{nextTier.xp} XP
+            </span>
+            {' '}⚡
           </span>
         ) : (
           <span className="text-muted-foreground">Lance une session pour démarrer 🔥</span>
