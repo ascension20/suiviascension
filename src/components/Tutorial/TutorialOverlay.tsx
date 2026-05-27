@@ -87,26 +87,59 @@ const STEPS: Step[] = [
   },
 ];
 
-// ── Hooks ─────────────────────────────────────────────────────────────────────
+// ── useRect ───────────────────────────────────────────────────────────────────
+// Tracks the viewport-relative bounding rect of `selector`.
+// - Resets to null immediately on selector change (avoids stale highlight)
+// - Scrolls the element into view once, then measures after the animation
+// - Re-measures on resize (immediate) and scroll (next rAF frame)
+// - Cleans up the pending setTimeout on unmount / dep change
 
 function useRect(selector: string, tick: number) {
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    const measure = () => {
-      if (selector === 'body') { setRect(null); return; }
-      const el = document.querySelector(selector) as HTMLElement | null;
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        setTimeout(() => setRect(el.getBoundingClientRect()), 380);
-      } else {
-        setRect(null);
-      }
+    // Reset immediately so the old highlight never bleeds into the new step.
+    setRect(null);
+
+    if (selector === 'body') return;
+
+    // Scroll target into view once (not on every resize).
+    const el = document.querySelector(selector) as HTMLElement | null;
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    // Measure after scroll animation settles.
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      const target = document.querySelector(selector) as HTMLElement | null;
+      if (target) setRect(target.getBoundingClientRect());
+    }, 400);
+
+    // Re-measure on resize (immediate) – no re-scroll.
+    const onResize = () => {
+      const target = document.querySelector(selector) as HTMLElement | null;
+      if (target) setRect(target.getBoundingClientRect());
     };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+
+    // Re-measure on scroll (next rAF so we read the settled position).
+    const onScroll = () => {
+      requestAnimationFrame(() => {
+        const target = document.querySelector(selector) as HTMLElement | null;
+        if (target) setRect(target.getBoundingClientRect());
+      });
+    };
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('scroll', onScroll);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selector, tick]);
+
   return rect;
 }
 
@@ -128,7 +161,7 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
   const rect = useRect(step.selector, tick);
   const PAD = 10;
 
-  // ── Count events in DB ───────────────────────────────────────────────────
+  // ── Poll DB for action completion ────────────────────────────────────────
   const checkAction = useCallback(async (waitFor: WaitFor) => {
     const { count } = await supabase
       .from('planning_events')
@@ -141,7 +174,7 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
     }
   }, [userId]);
 
-  // ── Start / stop polling on step change ─────────────────────────────────
+  // ── Reset + start polling on step change ─────────────────────────────────
   useEffect(() => {
     if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
     setActionDone(false);
@@ -171,56 +204,70 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
 
   const canAdvance = step.kind === 'info' || actionDone;
 
-  // ── Overlay geometry ─────────────────────────────────────────────────────
+  // ── Geometry ─────────────────────────────────────────────────────────────
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
 
-  // Pour les étapes "action" : pas de backdrop (l'élève doit interagir librement)
-  // Pour les étapes "info" : backdrop avec trou autour de l'élément ciblé
   const isActionStep = step.kind === 'action';
+
+  // Backdrop hole: only for info steps with a known rect
   const box = (!isActionStep && rect)
     ? { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 }
     : null;
 
-  // Anneau doré autour de l'élément ciblé (info) ou du planning-add (action)
+  // Gold ring: always shown when rect is known
   const highlightBox = rect
     ? { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 }
     : null;
 
+  // Card position: below / above target for info steps; bottom of screen for action steps
   const cardWidth = Math.min(vw - 32, 400);
-  // Carte toujours en bas pour les étapes action, sinon près de l'élément
   const cardTop = isActionStep
     ? vh - 240
     : box
-      ? (box.top + box.height + 16 + 220 < vh ? box.top + box.height + 16 : box.top - 240)
+      ? (box.top + box.height + 16 + 220 < vh
+          ? box.top + box.height + 16
+          : Math.max(8, box.top - 236))
       : vh / 2 - 110;
+
+  // KEY BEHAVIOUR: during action steps, the full card is HIDDEN while the user
+  // acts (so that the EventFormModal / other dialogs at z-50 are fully usable).
+  // The card only appears once the action is detected (actionDone = true).
+  const showCard = !isActionStep || actionDone;
 
   return (
     <div className="fixed inset-0 z-[100]" style={{ pointerEvents: 'none' }}>
 
-      {/* ── Backdrop (uniquement pour les étapes info) ── */}
+      {/* ── Backdrop with cut-out (info steps only) ── */}
       {!isActionStep && (
         box ? (
           <>
+            {/* top strip */}
             <div className="absolute left-0 right-0 top-0 bg-black/80 pointer-events-auto"
                  style={{ height: Math.max(0, box.top) }} />
+            {/* bottom strip */}
             <div className="absolute left-0 right-0 bg-black/80 pointer-events-auto"
                  style={{ top: box.top + box.height, bottom: 0 }} />
+            {/* left strip */}
             <div className="absolute bg-black/80 pointer-events-auto"
                  style={{ top: box.top, width: Math.max(0, box.left), height: box.height }} />
+            {/* right strip */}
             <div className="absolute bg-black/80 pointer-events-auto"
                  style={{ top: box.top, left: box.left + box.width, right: 0, height: box.height }} />
           </>
         ) : (
+          /* No rect yet or welcome step → full blackout */
           <div className="absolute inset-0 bg-black/80 pointer-events-auto" />
         )
       )}
 
-      {/* ── Anneau doré (toujours visible sur l'élément ciblé) ── */}
+      {/* ── Gold highlight ring ── */}
       {highlightBox && (
         <div className="absolute pointer-events-none" style={{
-          top: highlightBox.top, left: highlightBox.left,
-          width: highlightBox.width, height: highlightBox.height,
+          top: highlightBox.top,
+          left: highlightBox.left,
+          width: highlightBox.width,
+          height: highlightBox.height,
           borderRadius: 10,
           boxShadow: isActionStep
             ? '0 0 0 2px hsl(43 90% 50%), 0 0 0 8px hsl(43 90% 50% / 0.2), 0 0 30px hsl(43 90% 50% / 0.5)'
@@ -228,78 +275,100 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
         }} />
       )}
 
-      {/* ── Carte instruction ── */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0, scale: 0.96, y: 8 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.96, y: -8 }}
-          transition={{ duration: 0.18 }}
-          className="pointer-events-auto absolute"
-          style={{
-            top: Math.max(8, Math.min(cardTop, vh - 260)),
-            left: vw / 2 - cardWidth / 2,
-            width: cardWidth,
-          }}
-        >
-          <div className="rounded-2xl p-5 border border-amber-500/40"
+      {/* ── Waiting pill (action step, before action is done) ──
+           Intentionally pointer-events-none so it never blocks any interaction.
+           Replaced by the full card once actionDone=true.            ── */}
+      {isActionStep && !actionDone && (
+        <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full border text-xs"
                style={{
-                 background: 'hsl(222 22% 9%)',
-                 boxShadow: '0 0 0 1px hsl(43 90% 50% / 0.2), 0 24px 64px rgba(0,0,0,0.8)',
+                 background: 'hsl(222 22% 9% / 0.9)',
+                 borderColor: 'hsl(43 90% 50% / 0.35)',
+                 color: 'hsl(43 90% 65%)',
+                 boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
                }}>
-
-            {/* Progress */}
-            <div className="flex items-center gap-1 mb-3">
-              {STEPS.map((_, i) => (
-                <div key={i} className="h-1 rounded-full transition-all duration-300"
-                     style={{
-                       width: i === idx ? 20 : 8,
-                       background: i < idx ? 'hsl(43 90% 40%)' : i === idx ? 'hsl(43 90% 50%)' : 'hsl(222 18% 22%)',
-                     }} />
-              ))}
-              <span className="ml-auto text-[10px] text-muted-foreground">{idx + 1}/{STEPS.length}</span>
-            </div>
-
-            <h3 className="font-display font-bold text-[15px] mb-1.5 leading-snug">{step.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">{step.body}</p>
-
-            {/* Action feedback */}
-            {step.kind === 'action' && (
-              <div className="mb-3 px-3 py-2 rounded-lg border text-xs font-semibold flex items-center gap-2 transition-all duration-300"
-                   style={{
-                     background: actionDone ? 'hsl(142 70% 30% / 0.2)' : 'hsl(43 90% 50% / 0.08)',
-                     borderColor: actionDone ? 'hsl(142 70% 45% / 0.5)' : 'hsl(43 90% 50% / 0.3)',
-                     color: actionDone ? 'hsl(142 70% 60%)' : 'hsl(43 90% 65%)',
-                   }}>
-                {actionDone
-                  ? <><span>✓</span><span>Action détectée — bien joué !</span></>
-                  : <><span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'hsl(43 90% 50%)' }} />
-                    <span>En attente de ton action dans le planning…</span></>}
-              </div>
-            )}
-
-            <div className="flex items-center justify-between gap-3">
-              <button onClick={finish}
-                      className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0">
-                Passer
-              </button>
-              <button
-                onClick={next}
-                disabled={!canAdvance}
-                className="flex-1 py-2 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{
-                  background: canAdvance ? 'hsl(43 90% 50%)' : 'hsl(222 18% 18%)',
-                  color: canAdvance ? 'hsl(222 22% 8%)' : 'hsl(220 10% 45%)',
-                }}
-              >
-                {step.kind === 'action'
-                  ? (actionDone ? (step.ctaDone ?? 'Continuer !') : 'En attente…')
-                  : step.cta}
-              </button>
-            </div>
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'hsl(43 90% 50%)' }} />
+            <span>{step.title}</span>
           </div>
-        </motion.div>
+        </div>
+      )}
+
+      {/* ── Instruction card ── */}
+      <AnimatePresence mode="wait">
+        {showCard && (
+          <motion.div
+            key={`${idx}-${actionDone}`}
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -8 }}
+            transition={{ duration: 0.18 }}
+            className="pointer-events-auto absolute"
+            style={{
+              top: Math.max(8, Math.min(cardTop, vh - 260)),
+              left: vw / 2 - cardWidth / 2,
+              width: cardWidth,
+            }}
+          >
+            <div className="rounded-2xl p-5 border border-amber-500/40"
+                 style={{
+                   background: 'hsl(222 22% 9%)',
+                   boxShadow: '0 0 0 1px hsl(43 90% 50% / 0.2), 0 24px 64px rgba(0,0,0,0.8)',
+                 }}>
+
+              {/* Progress dots */}
+              <div className="flex items-center gap-1 mb-3">
+                {STEPS.map((_, i) => (
+                  <div key={i} className="h-1 rounded-full transition-all duration-300"
+                       style={{
+                         width: i === idx ? 20 : 8,
+                         background: i < idx
+                           ? 'hsl(43 90% 40%)'
+                           : i === idx
+                             ? 'hsl(43 90% 50%)'
+                             : 'hsl(222 18% 22%)',
+                       }} />
+                ))}
+                <span className="ml-auto text-[10px] text-muted-foreground">{idx + 1}/{STEPS.length}</span>
+              </div>
+
+              <h3 className="font-display font-bold text-[15px] mb-1.5 leading-snug">{step.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">{step.body}</p>
+
+              {/* Action-done confirmation banner */}
+              {step.kind === 'action' && actionDone && (
+                <div className="mb-3 px-3 py-2 rounded-lg border text-xs font-semibold flex items-center gap-2"
+                     style={{
+                       background: 'hsl(142 70% 30% / 0.2)',
+                       borderColor: 'hsl(142 70% 45% / 0.5)',
+                       color: 'hsl(142 70% 60%)',
+                     }}>
+                  <span>✓</span>
+                  <span>Action détectée — bien joué !</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between gap-3">
+                <button
+                  onClick={finish}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                >
+                  Passer
+                </button>
+                <button
+                  onClick={next}
+                  disabled={!canAdvance}
+                  className="flex-1 py-2 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{
+                    background: canAdvance ? 'hsl(43 90% 50%)' : 'hsl(222 18% 18%)',
+                    color: canAdvance ? 'hsl(222 22% 8%)' : 'hsl(220 10% 45%)',
+                  }}
+                >
+                  {step.kind === 'action' ? (step.ctaDone ?? 'Continuer !') : step.cta}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
