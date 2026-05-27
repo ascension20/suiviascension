@@ -19,7 +19,7 @@ function XpRate({ minutes }: { minutes: number }) {
   );
 }
 
-function TierProgressBar({ elapsedSec }: { elapsedSec: number }) {
+export function TierProgressBar({ elapsedSec }: { elapsedSec: number }) {
   const minutes = elapsedSec / 60; // fractional for smooth fill
   const isMax   = minutes >= 90;
 

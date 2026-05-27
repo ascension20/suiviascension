@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Maximize2, Calendar, Plus, ChevronLeft, ChevronRight, CheckCircle2, Play, Trash2 } from 'lucide-react';
+import { Maximize2, Calendar, Plus, ChevronLeft, ChevronRight, CheckCircle2, Play, Trash2, Pencil, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   PlanningEvent, getWeekStart, getWeekDays, formatDateISO, formatWeekLabel,
@@ -21,7 +21,9 @@ export function PlanningMini({ userId, onXpGain }: Props) {
   const [full, setFull] = useState(false);
   const [creating, setCreating] = useState(false);
   const [validating, setValidating] = useState<PlanningEvent | null>(null);
+  const [editing, setEditing] = useState<PlanningEvent | null>(null);
   const [fullReload, setFullReload] = useState(0);
+  const [missingGradeDates, setMissingGradeDates] = useState<Set<string>>(new Set());
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDayIdx, setSelectedDayIdx] = useState(() => {
     const d = new Date().getDay();
@@ -37,14 +39,25 @@ export function PlanningMini({ userId, onXpGain }: Props) {
   const isCurrentWeek = weekOffset === 0;
 
   const load = async () => {
-    const { data } = await supabase
-      .from('planning_events')
-      .select('*')
-      .eq('user_id', userId)
-      .gte('event_date', formatDateISO(weekStart))
-      .lte('event_date', formatDateISO(weekEnd))
-      .order('start_time');
-    if (data) setEvents(data as PlanningEvent[]);
+    const todayIsoLoad = formatDateISO(new Date());
+    const [eventsRes, missingRes] = await Promise.all([
+      supabase
+        .from('planning_events')
+        .select('*')
+        .eq('user_id', userId)
+        .gte('event_date', formatDateISO(weekStart))
+        .lte('event_date', formatDateISO(weekEnd))
+        .order('start_time'),
+      supabase
+        .from('exams')
+        .select('exam_date')
+        .eq('user_id', userId)
+        .gte('exam_date', formatDateISO(weekStart))
+        .lt('exam_date', todayIsoLoad)
+        .is('grade', null),
+    ]);
+    if (eventsRes.data) setEvents(eventsRes.data as PlanningEvent[]);
+    setMissingGradeDates(new Set(missingRes.data?.map(e => e.exam_date) ?? []));
   };
 
   useEffect(() => { load(); }, [userId, weekOffset]);
@@ -58,6 +71,13 @@ export function PlanningMini({ userId, onXpGain }: Props) {
       .eq('user_id', userId)
       .eq('exam_date', ev.event_date)
       .eq('subject', examEnum as any);
+    load();
+  };
+
+  /** Delete a quest event */
+  const deleteQuest = async (ev: PlanningEvent) => {
+    if (!window.confirm('Supprimer cette quête ?')) return;
+    await supabase.from('planning_events').delete().eq('id', ev.id);
     load();
   };
 
@@ -77,11 +97,14 @@ export function PlanningMini({ userId, onXpGain }: Props) {
   const activeEvents     = dayEvents.filter(e => !(e.type === 'quest' && e.validated));
   const completedQuests  = dayEvents.filter(e => e.type === 'quest' && e.validated);
 
-  // Badge info par jour (quêtes + DS uniquement)
+  // Badge info par jour (quêtes + DS séparés)
   const dayInfo = days.map(d => {
     const iso = formatDateISO(d);
-    const dayEvs = events.filter(e => e.event_date === iso && (e.type === 'ds' || (e.type === 'quest' && !e.validated)));
-    return { count: dayEvs.length, hasDs: dayEvs.some(e => e.type === 'ds') };
+    const dayEvs = events.filter(e => e.event_date === iso);
+    const questCount = dayEvs.filter(e => e.type === 'quest' && !e.validated).length;
+    const dsCount    = dayEvs.filter(e => e.type === 'ds').length;
+    const hasMissing = missingGradeDates.has(iso);
+    return { questCount, dsCount, hasMissing };
   });
 
   const todayIso = formatDateISO(new Date());
@@ -127,7 +150,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
           const iso = formatDateISO(d);
           const isToday = iso === todayIso;
           const isSelected = i === selectedDayIdx;
-          const { count, hasDs } = dayInfo[i];
+          const { questCount, dsCount, hasMissing } = dayInfo[i];
           return (
             <button
               key={iso}
@@ -144,14 +167,26 @@ export function PlanningMini({ userId, onXpGain }: Props) {
               <span className={`tabular-nums ${isSelected ? 'text-primary' : isToday ? 'text-amber-300' : ''}`}>
                 {d.getDate()}
               </span>
-              {count > 0 && (
-                <span
-                  className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full text-[9px] font-bold flex items-center justify-center text-white"
-                  style={{ backgroundColor: hasDs ? 'hsl(0 84% 60%)' : isSelected ? 'hsl(var(--primary))' : 'hsl(270 50% 60%)' }}
-                >
-                  {count}
-                </span>
-              )}
+              {/* Pastilles colorées séparées : violet = quêtes, rouge = DS */}
+              <div className="flex items-center justify-center gap-0.5 mt-0.5 h-3">
+                {questCount > 0 && (
+                  <span
+                    className="min-w-[12px] h-3 rounded-full text-[8px] font-bold flex items-center justify-center text-white px-0.5"
+                    style={{ backgroundColor: 'hsl(270 50% 58%)' }}
+                  >
+                    {questCount}
+                  </span>
+                )}
+                {dsCount > 0 && (
+                  <span
+                    className="min-w-[12px] h-3 rounded-full text-[8px] font-bold flex items-center justify-center text-white px-0.5"
+                    style={{ backgroundColor: hasMissing ? 'hsl(0 84% 55%)' : 'hsl(0 70% 55%)' }}
+                    title={hasMissing ? 'Note manquante' : undefined}
+                  >
+                    {dsCount}
+                  </span>
+                )}
+              </div>
             </button>
           );
         })}
@@ -192,20 +227,49 @@ export function PlanningMini({ userId, onXpGain }: Props) {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs font-semibold truncate mt-0.5 pr-6">{ev.title}</p>
+                      <p className={`text-xs font-semibold truncate mt-0.5 ${ev.type === 'quest' ? 'pr-14' : 'pr-6'}`}>{ev.title}</p>
                       {ev.subject && <p className="text-[10px] text-muted-foreground">{ev.subject}</p>}
                       {ev.description && <p className="text-[10px] text-muted-foreground/75 truncate">{ev.description}</p>}
                     </button>
 
-                    {/* DS: trash button top-right */}
+                    {/* DS: trash + badge note manquante */}
                     {ev.type === 'ds' && (
-                      <button
-                        onClick={e => { e.stopPropagation(); deleteDs(ev); }}
-                        className="absolute top-2 right-2 p-1 rounded hover:bg-rose-500/20 text-rose-400/60 hover:text-rose-400 transition-colors"
-                        title="Supprimer ce DS"
-                      >
-                        <Trash2 size={12} />
-                      </button>
+                      <>
+                        <button
+                          onClick={e => { e.stopPropagation(); deleteDs(ev); }}
+                          className="absolute top-2 right-2 p-1 rounded hover:bg-rose-500/20 text-rose-400/60 hover:text-rose-400 transition-colors"
+                          title="Supprimer ce DS"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                        {missingGradeDates.has(ev.event_date) && (
+                          <div className="flex items-center gap-1 mt-1.5 px-1.5 py-0.5 rounded-full w-fit"
+                               style={{ background: 'hsl(0 84% 50% / 0.15)', border: '1px solid hsl(0 84% 55% / 0.4)' }}>
+                            <AlertCircle size={9} className="text-rose-400 shrink-0" />
+                            <span className="text-[9px] font-bold text-rose-400">Note manquante</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {/* Quest: edit + trash buttons top-right */}
+                    {ev.type === 'quest' && (
+                      <div className="absolute top-2 right-2 flex items-center gap-0.5">
+                        <button
+                          onClick={e => { e.stopPropagation(); setEditing(ev); }}
+                          className="p-1 rounded hover:bg-violet-500/20 text-violet-400/60 hover:text-violet-400 transition-colors"
+                          title="Modifier cette quête"
+                        >
+                          <Pencil size={11} />
+                        </button>
+                        <button
+                          onClick={e => { e.stopPropagation(); deleteQuest(ev); }}
+                          className="p-1 rounded hover:bg-rose-500/20 text-rose-400/60 hover:text-rose-400 transition-colors"
+                          title="Supprimer cette quête"
+                        >
+                          <Trash2 size={11} />
+                        </button>
+                      </div>
                     )}
                   </div>
 
@@ -286,6 +350,14 @@ export function PlanningMini({ userId, onXpGain }: Props) {
           userId={userId}
           onClose={() => setCreating(false)}
           onSaved={() => { setCreating(false); load(); }}
+        />
+      )}
+      {editing && (
+        <EventFormModal
+          userId={userId}
+          event={editing}
+          onClose={() => setEditing(null)}
+          onSaved={() => { setEditing(null); load(); }}
         />
       )}
       {validating && (

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, ArrowLeft, Music, Music2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDeepworkXp, DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
+import { TierProgressBar } from '@/components/Deepwork/DeepworkWidget';
 import { playXpSound, useLofiMusic } from '@/hooks/useXpAudio';
 import { useAuth } from '@/hooks/useAuth';
 import { updateStreak } from '@/hooks/useOnlineTracker';
@@ -13,9 +14,10 @@ const STORAGE_KEY = DEEPWORK_STORAGE_KEY;
 
 function xpRateInfo(seconds: number) {
   const m = Math.floor(seconds / 60);
-  if (m < 15) return { rate: 1, label: '1 XP / min', color: 'hsl(43,90%,60%)' };
-  if (m < 30) return { rate: 2, label: '2 XP / min · Bonus vitesse ⚡', color: 'hsl(38,92%,65%)' };
-  return { rate: 3, label: '3 XP / min · Mode turbo 🔥', color: 'hsl(16,100%,65%)' };
+  if (m < 15) return { label: '1 XP / min',                    color: 'hsl(43,90%,60%)' };
+  if (m < 30) return { label: '2 XP / min · Bonus vitesse ⚡', color: 'hsl(38,92%,65%)' };
+  if (m < 90) return { label: '3 XP / min · Mode turbo 🔥',   color: 'hsl(16,100%,65%)' };
+  return             { label: '4 XP / min · Mode ULTRA 🚀',    color: 'hsl(280,90%,70%)' };
 }
 
 // ── Page principale ─────────────────────────────────────────────────────────
@@ -308,19 +310,21 @@ export default function DeepworkPage() {
         </div>
 
         {/* XP rate info */}
-        <div className="flex flex-col items-center gap-2 text-center">
+        <div className="flex flex-col items-center gap-3 text-center w-full max-w-xs">
           {active ? (
             <>
               <p className="text-lg font-bold" style={{ color: rateColor }}>{rateLabel}</p>
+              <TierProgressBar elapsedSec={elapsedSec} />
               <p className="text-muted-foreground text-sm">
                 +{earnedXp} XP · {minutes} min {seconds > 0 ? `${seconds}s` : ''}
               </p>
             </>
           ) : (
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
               <span>0–15 min : <span className="font-bold" style={{ color: 'hsl(43,90%,60%)' }}>1 XP/min</span></span>
               <span>15–30 min : <span className="font-bold" style={{ color: 'hsl(38,92%,65%)' }}>2 XP/min</span></span>
-              <span>30+ min : <span className="font-bold" style={{ color: 'hsl(16,100%,65%)' }}>3 XP/min</span></span>
+              <span>30–90 min : <span className="font-bold" style={{ color: 'hsl(16,100%,65%)' }}>3 XP/min</span></span>
+              <span>90+ min : <span className="font-bold" style={{ color: 'hsl(280,90%,70%)' }}>4 XP/min</span></span>
             </div>
           )}
         </div>
