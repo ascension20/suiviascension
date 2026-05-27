@@ -66,10 +66,51 @@ const ACTIVITIES = [
 ];
 
 const BASE_SUBJECTS_BY_LEVEL: Record<Level, string[]> = {
-  'Collège':   ['Maths', 'Français', 'Histoire-Géo', 'Anglais', 'SVT', 'Physique-Chimie', 'EPS'],
-  'Seconde':   ['Maths', 'Français', 'Histoire-Géo', 'Anglais', 'SVT', 'Physique-Chimie', 'SES', 'EPS'],
-  'Première':  ['Français', 'Histoire-Géo', 'Anglais', 'EPS'],
-  'Terminale': ['Histoire-Géo', 'Anglais', 'Philosophie', 'EPS'],
+  // Tronc commun collège (BO officiel)
+  'Collège': [
+    'Mathématiques',
+    'Français',
+    'Histoire-Géographie-EMC',
+    'Anglais (LV1)',
+    'LV2',
+    'SVT',
+    'Physique-Chimie',
+    'Technologie',
+    'EPS',
+    'Arts plastiques',
+    'Éducation musicale',
+  ],
+  // Tronc commun seconde générale et technologique
+  'Seconde': [
+    'Mathématiques',
+    'Français',
+    'Histoire-Géographie',
+    'Anglais (LV1)',
+    'LV2',
+    'SVT',
+    'Physique-Chimie',
+    'SES',
+    'SNT',
+    'EPS',
+  ],
+  // Tronc commun première générale (sans spécialités)
+  'Première': [
+    'Français',
+    'Histoire-Géographie',
+    'Enseignement scientifique',
+    'Anglais (LV1)',
+    'LV2',
+    'EPS',
+  ],
+  // Tronc commun terminale générale (sans spécialités)
+  'Terminale': [
+    'Philosophie',
+    'Histoire-Géographie',
+    'Enseignement scientifique',
+    'Anglais (LV1)',
+    'LV2',
+    'EPS',
+  ],
 };
 
 function getSubjectsForLevel(level: Level | null, specialties: string[], options: string[]): string[] {

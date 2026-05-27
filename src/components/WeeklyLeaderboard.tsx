@@ -25,6 +25,17 @@ interface Props {
   weeklyChampion?: string | null;
 }
 
+function fmtValue(value: number, unit: string): string {
+  if (unit === 'min') {
+    const h = Math.floor(value / 60);
+    const m = value % 60;
+    if (h === 0) return `${m} min`;
+    if (m === 0) return `${h} h`;
+    return `${h} h ${String(m).padStart(2, '0')}`;
+  }
+  return value.toLocaleString();
+}
+
 export function WeeklyLeaderboard({ title, datasets, weeklyChampion }: Props) {
   const navigate = useNavigate();
   const [periodIdx, setPeriodIdx] = useState(0);
@@ -157,8 +168,10 @@ export function WeeklyLeaderboard({ title, datasets, weeklyChampion }: Props) {
                       color: isPodium ? rc.text : 'hsl(220 10% 65%)',
                     }}
                   >
-                    {entry.value.toLocaleString()}
-                    <span className="text-[10px] text-muted-foreground font-normal ml-1">{unit}</span>
+                    {fmtValue(entry.value, unit)}
+                    {unit !== 'min' && (
+                      <span className="text-[10px] text-muted-foreground font-normal ml-1">{unit}</span>
+                    )}
                   </span>
                 </motion.button>
               );

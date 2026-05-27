@@ -28,7 +28,7 @@ function previewUrl(acc: Accessory): string {
     background: acc.slot === 'background' ? acc.id : 'bg_dark',
     badge:      null,
     skinColor:  'light',
-    hairStyle:  'shortHairShortFlat',
+    hairStyle:  'shortFlat',
     hairColor:  'brown',
   };
   return buildAvataaarsUrl(config, PREVIEW_SEED);

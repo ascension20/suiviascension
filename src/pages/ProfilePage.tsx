@@ -31,6 +31,8 @@ export default function ProfilePage() {
   const [questsDone, setQuestsDone]           = useState(0);
   const [xpHistory, setXpHistory]             = useState<XPDay[]>([]);
   const [simpleAvg, setSimpleAvg]             = useState<number | null>(null);
+  const [specialties, setSpecialties]         = useState<string[]>([]);
+  const [schoolLevel, setSchoolLevel]         = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -83,6 +85,16 @@ export default function ProfilePage() {
       if (exams && exams.length > 0) {
         const grades = exams.map(e => e.grade as number);
         setSimpleAvg(Math.round((grades.reduce((a, b) => a + b, 0) / grades.length) * 100) / 100);
+      }
+
+      const { data: onb } = await supabase
+        .from('onboarding_data')
+        .select('specialties, school_level')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (onb) {
+        setSpecialties((onb.specialties as string[]) ?? []);
+        setSchoolLevel(onb.school_level ?? null);
       }
     };
     load();
@@ -191,9 +203,27 @@ export default function ProfilePage() {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="font-display font-black text-xl truncate">{profile?.pseudo ?? 'Joueur'}</p>
-                  <p className="text-sm font-semibold mb-3" style={{ color: 'hsl(var(--primary) / 0.8)' }}>{title}</p>
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <p className="text-sm font-semibold" style={{ color: 'hsl(var(--primary) / 0.8)' }}>{title}</p>
+                    {schoolLevel && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                            style={{ background: 'hsl(43 90% 50% / 0.12)', color: 'hsl(43 90% 60%)', border: '1px solid hsl(43 90% 50% / 0.25)' }}>
+                        {schoolLevel}
+                      </span>
+                    )}
+                  </div>
+                  {specialties.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {specialties.map(s => (
+                        <span key={s} className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                              style={{ background: 'hsl(270 60% 50% / 0.12)', color: 'hsl(270 60% 70%)', border: '1px solid hsl(270 60% 50% / 0.25)' }}>
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {/* Customise button */}
                 <motion.button

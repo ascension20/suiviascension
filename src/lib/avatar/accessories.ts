@@ -114,11 +114,11 @@ export const ACCESSORIES: Accessory[] = [
   {
     id: 'outfit_hoodie',
     slot: 'outfit',
-    label: 'Hoodie étudiant',
-    description: 'Confort total pour les longues sessions.',
+    label: 'T-shirt blanc',
+    description: 'La tenue de départ. Simple, clean, efficace.',
     condition: { type: 'free', label: 'Disponible dès le début' },
     rarity: 'common',
-    dicebearParam: 'clothing[]=hoodie&clothesColor[]=262E33',
+    dicebearParam: 'clothing[]=shirtCrewNeck&clothesColor[]=F5F5F5',
   },
   {
     id: 'outfit_sweater',

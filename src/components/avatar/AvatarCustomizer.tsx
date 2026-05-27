@@ -53,12 +53,11 @@ const HAIR_COLORS = [
 
 type Tab = 'base' | AccessorySlot;
 const TABS: { id: Tab; emoji: string; label: string }[] = [
-  { id: 'base',       emoji: '👤', label: 'Perso'      },
-  { id: 'hat',        emoji: '🎩', label: 'Couvre-chef' },
-  { id: 'glasses',    emoji: '👓', label: 'Lunettes'   },
-  { id: 'outfit',     emoji: '👕', label: 'Tenue'      },
-  { id: 'background', emoji: '🌆', label: 'Décor'      },
-  { id: 'badge',      emoji: '🏅', label: 'Badge'      },
+  { id: 'base',    emoji: '👤', label: 'Perso'       },
+  { id: 'hat',     emoji: '🎩', label: 'Couvre-chef' },
+  { id: 'glasses', emoji: '👓', label: 'Lunettes'    },
+  { id: 'outfit',  emoji: '👕', label: 'Tenue'       },
+  { id: 'badge',   emoji: '🏅', label: 'Badge'       },
 ];
 
 const PREVIEW_SEED = 'ascension-preview';
