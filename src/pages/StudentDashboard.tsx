@@ -231,17 +231,22 @@ export default function StudentDashboard() {
             )}
 
             {/* Streak badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
+            <div data-tutorial="streak" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
                  style={{ borderColor: 'hsl(var(--streak) / 0.3)', backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
               <Flame size={14} className="text-streak" />
               <span className="font-display text-sm font-semibold text-streak">{streak}</span>
             </div>
 
-            <XPBar current={currentXp} max={requiredXp} level={level} title={title} className="hidden md:flex" />
-            <XPBar current={currentXp} max={requiredXp} level={level} title={title} compact className="md:hidden" />
+            <div data-tutorial="xpbar" className="hidden md:flex">
+              <XPBar current={currentXp} max={requiredXp} level={level} title={title} />
+            </div>
+            <div className="md:hidden">
+              <XPBar current={currentXp} max={requiredXp} level={level} title={title} compact />
+            </div>
 
             {/* Avatar */}
             <button
+              data-tutorial="profile"
               onClick={() => navigate('/student/profile')}
               className="relative group"
               title="Mon profil"
