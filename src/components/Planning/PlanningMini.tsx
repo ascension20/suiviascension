@@ -115,7 +115,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
           <button onClick={() => setCreating(true)} className="p-1.5 rounded-md hover:bg-secondary" title="Ajouter" data-tutorial="planning-add">
             <Plus size={14} />
           </button>
-          <button onClick={() => setFull(true)} className="p-1.5 rounded-md hover:bg-secondary" title="Agrandir">
+          <button onClick={() => setFull(true)} className="p-1.5 rounded-md hover:bg-secondary" title="Agrandir" data-tutorial="planning-expand">
             <Maximize2 size={14} />
           </button>
         </div>

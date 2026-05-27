@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -70,6 +70,15 @@ const STEPS: Step[] = [
     cta: 'Compris !',
   },
   {
+    id: 'planning-expand',
+    selector: '[data-tutorial="planning-expand"]',
+    kind: 'info',
+    icon: '🗓️',
+    title: 'Vue complète & Cours → DS',
+    body: "Ce bouton ouvre la vue hebdomadaire complète. Si ton EDT est importé, clique sur n'importe quel cours pour le convertir en DS 🔴 — il apparaîtra en rouge dans ton planning.",
+    cta: 'Parfait !',
+  },
+  {
     id: 'add-quest-1',
     selector: '[data-tutorial="planning-add"]',
     kind: 'action',
@@ -130,6 +139,10 @@ const STEPS: Step[] = [
     cta: 'Jouer ! 🚀',
   },
 ];
+
+// ── localStorage key ──────────────────────────────────────────────────────────
+
+const LS_KEY = 'ascension_tutorial_step';
 
 // ── useRect ───────────────────────────────────────────────────────────────────
 
@@ -260,8 +273,19 @@ interface Props {
 }
 
 export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
-  const [idx, setIdx]             = useState(0);
-  const [tick, setTick]           = useState(0);
+  // Restore step from localStorage so navigation away/back resumes correctly
+  const [idx, setIdx] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved !== null) {
+        const n = parseInt(saved, 10);
+        if (!isNaN(n) && n >= 0 && n < STEPS.length) return n;
+      }
+    } catch { /* ignore */ }
+    return 0;
+  });
+
+  const [tick, setTick]             = useState(0);
   const [actionDone, setActionDone] = useState(false);
   const pollRef = useRef<number | null>(null);
 
@@ -271,6 +295,11 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
   const PAD      = isAction ? PAD_ACTION : PAD_INFO;
 
   const rect = useRect(step.selector, tick);
+
+  // Persist step index to localStorage whenever it changes
+  useEffect(() => {
+    try { localStorage.setItem(LS_KEY, String(idx)); } catch { /* ignore */ }
+  }, [idx]);
 
   // ── Polling ───────────────────────────────────────────────────────────────
   const checkAction = useCallback(async (waitFor: WaitFor) => {
@@ -302,6 +331,7 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
   const finish = async () => {
     if (pollRef.current) clearInterval(pollRef.current);
     await supabase.from('profiles').update({ tutorial_completed: true }).eq('user_id', userId);
+    try { localStorage.removeItem(LS_KEY); } catch { /* ignore */ }
     onXpGain(15);
     onDone();
   };
@@ -413,24 +443,18 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
                 </div>
               )}
 
-              {/* Buttons */}
-              <div className="flex items-center gap-2">
-                <button onClick={finish}
-                        className="text-[11px] text-muted-foreground hover:text-foreground transition-colors shrink-0 px-1">
-                  Passer
-                </button>
-                <button
-                  onClick={next}
-                  disabled={!canAdvance}
-                  className="flex-1 py-2 rounded-xl text-xs font-bold transition-all duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
-                  style={{
-                    background: canAdvance ? 'hsl(43 90% 50%)' : 'hsl(222 18% 16%)',
-                    color: canAdvance ? 'hsl(222 22% 8%)' : 'hsl(220 10% 40%)',
-                  }}
-                >
-                  {isAction ? (actionDone ? (step.ctaDone ?? 'Continuer →') : 'En attente…') : step.cta}
-                </button>
-              </div>
+              {/* Button */}
+              <button
+                onClick={next}
+                disabled={!canAdvance}
+                className="w-full py-2 rounded-xl text-xs font-bold transition-all duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
+                style={{
+                  background: canAdvance ? 'hsl(43 90% 50%)' : 'hsl(222 18% 16%)',
+                  color: canAdvance ? 'hsl(222 22% 8%)' : 'hsl(220 10% 40%)',
+                }}
+              >
+                {isAction ? (actionDone ? (step.ctaDone ?? 'Continuer →') : 'En attente…') : step.cta}
+              </button>
             </div>
           </motion.div>
         )}
@@ -483,20 +507,13 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
                 ))}
               </div>
 
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={next}
-                  className="w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
-                  style={{ background: 'hsl(43 90% 50%)', color: 'hsl(222 22% 8%)' }}
-                >
-                  {step.cta}
-                </button>
-                {step.id !== 'completion' && (
-                  <button onClick={finish} className="text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
-                    Passer le tutoriel
-                  </button>
-                )}
-              </div>
+              <button
+                onClick={next}
+                className="w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
+                style={{ background: 'hsl(43 90% 50%)', color: 'hsl(222 22% 8%)' }}
+              >
+                {step.cta}
+              </button>
             </div>
           </motion.div>
         )}
