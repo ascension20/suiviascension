@@ -88,40 +88,28 @@ const STEPS: Step[] = [
 ];
 
 // ── useRect ───────────────────────────────────────────────────────────────────
-// Tracks the viewport-relative bounding rect of `selector`.
-// - Resets to null immediately on selector change (avoids stale highlight)
-// - Scrolls the element into view once, then measures after the animation
-// - Re-measures on resize (immediate) and scroll (next rAF frame)
-// - Cleans up the pending setTimeout on unmount / dep change
 
 function useRect(selector: string, tick: number) {
   const [rect, setRect] = useState<DOMRect | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // Reset immediately so the old highlight never bleeds into the new step.
     setRect(null);
-
     if (selector === 'body') return;
 
-    // Scroll target into view once (not on every resize).
     const el = document.querySelector(selector) as HTMLElement | null;
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-    // Measure after scroll animation settles.
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       const target = document.querySelector(selector) as HTMLElement | null;
       if (target) setRect(target.getBoundingClientRect());
     }, 400);
 
-    // Re-measure on resize (immediate) – no re-scroll.
     const onResize = () => {
       const target = document.querySelector(selector) as HTMLElement | null;
       if (target) setRect(target.getBoundingClientRect());
     };
-
-    // Re-measure on scroll (next rAF so we read the settled position).
     const onScroll = () => {
       requestAnimationFrame(() => {
         const target = document.querySelector(selector) as HTMLElement | null;
@@ -159,7 +147,11 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
 
   const step = STEPS[idx];
   const rect = useRect(step.selector, tick);
-  const PAD = 10;
+
+  const isActionStep = step.kind === 'action';
+
+  // Larger cut-out for action steps so the target is easy to click.
+  const PAD = isActionStep ? 22 : 10;
 
   // ── Poll DB for action completion ────────────────────────────────────────
   const checkAction = useCallback(async (waitFor: WaitFor) => {
@@ -208,19 +200,12 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
 
-  const isActionStep = step.kind === 'action';
-
-  // Backdrop hole: only for info steps with a known rect
-  const box = (!isActionStep && rect)
+  // Backdrop cut-out box (same for all step kinds — dark screen always shown)
+  const box = rect
     ? { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 }
     : null;
 
-  // Gold ring: always shown when rect is known
-  const highlightBox = rect
-    ? { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 }
-    : null;
-
-  // Card position: below / above target for info steps; bottom of screen for action steps
+  // Card position
   const cardWidth = Math.min(vw - 32, 400);
   const cardTop = isActionStep
     ? vh - 240
@@ -230,44 +215,42 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
           : Math.max(8, box.top - 236))
       : vh / 2 - 110;
 
-  // KEY BEHAVIOUR: during action steps, the full card is HIDDEN while the user
-  // acts (so that the EventFormModal / other dialogs at z-50 are fully usable).
-  // The card only appears once the action is detected (actionDone = true).
+  // During action steps: hide the full card while waiting so the
+  // EventFormModal (z-[200], above tutorial z-[100]) can be used freely.
+  // The card reappears once the action is detected.
   const showCard = !isActionStep || actionDone;
 
   return (
     <div className="fixed inset-0 z-[100]" style={{ pointerEvents: 'none' }}>
 
-      {/* ── Backdrop with cut-out (info steps only) ── */}
-      {!isActionStep && (
-        box ? (
-          <>
-            {/* top strip */}
-            <div className="absolute left-0 right-0 top-0 bg-black/80 pointer-events-auto"
-                 style={{ height: Math.max(0, box.top) }} />
-            {/* bottom strip */}
-            <div className="absolute left-0 right-0 bg-black/80 pointer-events-auto"
-                 style={{ top: box.top + box.height, bottom: 0 }} />
-            {/* left strip */}
-            <div className="absolute bg-black/80 pointer-events-auto"
-                 style={{ top: box.top, width: Math.max(0, box.left), height: box.height }} />
-            {/* right strip */}
-            <div className="absolute bg-black/80 pointer-events-auto"
-                 style={{ top: box.top, left: box.left + box.width, right: 0, height: box.height }} />
-          </>
-        ) : (
-          /* No rect yet or welcome step → full blackout */
-          <div className="absolute inset-0 bg-black/80 pointer-events-auto" />
-        )
+      {/* ── Dark backdrop with cut-out — shown for ALL steps ── */}
+      {box ? (
+        <>
+          {/* top */}
+          <div className="absolute left-0 right-0 top-0 bg-black/80 pointer-events-auto"
+               style={{ height: Math.max(0, box.top) }} />
+          {/* bottom */}
+          <div className="absolute left-0 right-0 bg-black/80 pointer-events-auto"
+               style={{ top: box.top + box.height, bottom: 0 }} />
+          {/* left */}
+          <div className="absolute bg-black/80 pointer-events-auto"
+               style={{ top: box.top, width: Math.max(0, box.left), height: box.height }} />
+          {/* right */}
+          <div className="absolute bg-black/80 pointer-events-auto"
+               style={{ top: box.top, left: box.left + box.width, right: 0, height: box.height }} />
+        </>
+      ) : (
+        /* No rect yet (transitioning) or welcome step → full blackout */
+        <div className="absolute inset-0 bg-black/80 pointer-events-auto" />
       )}
 
       {/* ── Gold highlight ring ── */}
-      {highlightBox && (
+      {box && (
         <div className="absolute pointer-events-none" style={{
-          top: highlightBox.top,
-          left: highlightBox.left,
-          width: highlightBox.width,
-          height: highlightBox.height,
+          top: box.top,
+          left: box.left,
+          width: box.width,
+          height: box.height,
           borderRadius: 10,
           boxShadow: isActionStep
             ? '0 0 0 2px hsl(43 90% 50%), 0 0 0 8px hsl(43 90% 50% / 0.2), 0 0 30px hsl(43 90% 50% / 0.5)'
@@ -275,17 +258,16 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
         }} />
       )}
 
-      {/* ── Waiting pill (action step, before action is done) ──
-           Intentionally pointer-events-none so it never blocks any interaction.
-           Replaced by the full card once actionDone=true.            ── */}
+      {/* ── Waiting pill (action step, not yet done) ──
+           pointer-events-none so it never blocks any click in the cut-out     ── */}
       {isActionStep && !actionDone && (
         <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2">
           <div className="flex items-center gap-2 px-4 py-2 rounded-full border text-xs"
                style={{
-                 background: 'hsl(222 22% 9% / 0.9)',
-                 borderColor: 'hsl(43 90% 50% / 0.35)',
+                 background: 'hsl(222 22% 9% / 0.92)',
+                 borderColor: 'hsl(43 90% 50% / 0.4)',
                  color: 'hsl(43 90% 65%)',
-                 boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
+                 boxShadow: '0 4px 20px rgba(0,0,0,0.7)',
                }}>
             <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'hsl(43 90% 50%)' }} />
             <span>{step.title}</span>
