@@ -212,17 +212,13 @@ export default function OnboardingPage() {
     if (!icalUrl) return;
     setIcalStatus('checking');
     try {
-      const txt = await fetchICal(icalUrl);
-      if (txt.includes('BEGIN:VCALENDAR')) {
-        setIcalStatus('ok');
-      } else {
-        // Fetched something but not a calendar — likely a login page redirect.
-        // Treat as unverified so the user can still proceed.
-        setIcalStatus('unverified');
-      }
+      // fetchICal already guarantees the response contains BEGIN:VCALENDAR
+      // (it falls through all methods and throws if it can't extract calendar data).
+      // If it returns → the EDT is readable → show "Lien valide".
+      await fetchICal(icalUrl);
+      setIcalStatus('ok');
     } catch {
-      // CORS or network failure — common for school ENTs.
-      // Auto-skip so the user doesn't get stuck.
+      // Could not extract calendar data (CORS, auth wall, wrong URL, etc.).
       setIcalStatus('unverified');
       setIcalSkipped(true);
     }
@@ -466,7 +462,7 @@ export default function OnboardingPage() {
                     </div>
 
                     {icalStatus === 'ok' && (
-                      <p className="text-xs text-emerald-400">✓ Calendrier valide — il sera importé automatiquement.</p>
+                      <p className="text-xs text-emerald-400">✓ Lien valide — ton calendrier sera importé automatiquement.</p>
                     )}
                     {icalStatus === 'error' && (
                       <p className="text-xs text-destructive">❌ Lien invalide ou format non reconnu. Vérifie l'URL.</p>
