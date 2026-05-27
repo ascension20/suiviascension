@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, Loader2 } from 'lucide-react';
+import { Lock, Loader2, Star } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
@@ -29,7 +29,14 @@ export default function LoginPage() {
         animate={{ opacity: 1, scale: 1 }}
         className="bg-card border border-border rounded-lg p-8 max-w-sm w-full text-center"
       >
-        <div className="text-4xl mb-3">🏆</div>
+        <div className="flex justify-center mb-3">
+          <Star
+            size={44}
+            fill="hsl(43 90% 52%)"
+            strokeWidth={0}
+            style={{ filter: 'drop-shadow(0 0 14px hsl(43 90% 50% / 0.75))' }}
+          />
+        </div>
         <h1 className="font-display text-2xl font-bold mb-1">
           Ascension{' '}
           <span
