@@ -29,8 +29,18 @@ export default function LoginPage() {
         animate={{ opacity: 1, scale: 1 }}
         className="bg-card border border-border rounded-lg p-8 max-w-sm w-full text-center"
       >
-        <div className="text-4xl mb-3">⚔️</div>
-        <h1 className="font-display text-2xl font-bold mb-1">Ascension Académique</h1>
+        <div className="text-4xl mb-3">🏆</div>
+        <h1 className="font-display text-2xl font-bold mb-1">
+          Ascension{' '}
+          <span
+            style={{
+              color: 'hsl(43 90% 55%)',
+              textShadow: '0 0 14px hsl(43 90% 50% / 0.7)',
+            }}
+          >
+            20
+          </span>
+        </h1>
         <p className="text-muted-foreground text-sm mb-6">Connecte-toi pour continuer.</p>
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           <div>
