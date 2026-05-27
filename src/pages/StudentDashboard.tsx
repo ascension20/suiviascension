@@ -16,6 +16,7 @@ import { WeeklyDeepworkGoal } from '@/components/WeeklyDeepworkGoal';
 import { ProgressComparison } from '@/components/ProgressComparison';
 import { TutorialOverlay } from '@/components/Tutorial/TutorialOverlay';
 import { DSReminderModal } from '@/components/DSReminderModal';
+import { EventFormModal } from '@/components/Planning/EventFormModal';
 import { calculateLevel, getTitleForLevel } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useOnlineTracker, updateStreak } from '@/hooks/useOnlineTracker';
@@ -40,6 +41,7 @@ export default function StudentDashboard() {
   const [chronoDaily,  setChronoDaily]  = useState<LeaderboardEntry[]>([]);
   const [weeklyChampion, setWeeklyChampion] = useState<string | null>(null);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null);
+  const [creatingDs, setCreatingDs] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
   const { isOnline, pendingCount } = useOfflineQueue();
@@ -399,7 +401,15 @@ export default function StudentDashboard() {
       </main>
 
       <LevelUpOverlay data={levelUpData} onDismiss={() => setLevelUpData(null)} />
-      {user && <DSReminderModal userId={user.id} />}
+      {user && <DSReminderModal userId={user.id} onAddDs={() => setCreatingDs(true)} />}
+      {creatingDs && user && (
+        <EventFormModal
+          userId={user.id}
+          defaultType="ds"
+          onClose={() => setCreatingDs(false)}
+          onSaved={() => setCreatingDs(false)}
+        />
+      )}
       {user && <EndOfDayReview userId={user.id} />}
       {showTutorial && user && (
         <TutorialOverlay userId={user.id} onXpGain={addXp} onDone={() => setShowTutorial(false)} />

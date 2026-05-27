@@ -9,12 +9,13 @@ import { Trash2 } from 'lucide-react';
 interface Props {
   userId: string;
   event?: PlanningEvent;
+  defaultType?: EventType;
   onClose: () => void;
   onSaved: () => void;
 }
 
-export function EventFormModal({ userId, event, onClose, onSaved }: Props) {
-  const [type, setType] = useState<EventType>(event?.type ?? 'quest');
+export function EventFormModal({ userId, event, defaultType, onClose, onSaved }: Props) {
+  const [type, setType] = useState<EventType>(event?.type ?? defaultType ?? 'quest');
   const [title, setTitle] = useState(event?.title ?? '');
   const [subject, setSubject] = useState<string>(event?.subject ?? 'Mathématiques');
   const [date, setDate] = useState(event?.event_date ?? new Date().toISOString().slice(0, 10));

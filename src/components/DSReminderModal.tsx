@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, AlertTriangle, Calendar } from 'lucide-react';
+import { X, AlertTriangle, Calendar, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface DSEvent {
@@ -11,7 +11,7 @@ interface DSEvent {
   custom_subject: string | null;
 }
 
-export function DSReminderModal({ userId }: { userId: string }) {
+export function DSReminderModal({ userId, onAddDs }: { userId: string; onAddDs?: () => void }) {
   const [open, setOpen] = useState(false);
   const [upcomingDS, setUpcomingDS] = useState<DSEvent[]>([]);
 
@@ -115,12 +115,22 @@ export function DSReminderModal({ userId }: { userId: string }) {
               ))}
             </div>
 
-            <button
-              onClick={() => setOpen(false)}
-              className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all"
-            >
-              C'est noté — on y va ! 💪
-            </button>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => setOpen(false)}
+                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all"
+              >
+                C'est noté — on y va ! 💪
+              </button>
+              <button
+                onClick={() => { setOpen(false); onAddDs?.(); }}
+                className="w-full py-2.5 rounded-xl border font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:bg-secondary"
+                style={{ borderColor: 'hsl(0 84% 50% / 0.4)', color: 'hsl(0 84% 65%)' }}
+              >
+                <Plus size={14} />
+                Ajouter un nouveau DS
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       )}

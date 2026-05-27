@@ -1,19 +1,37 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, X, Clock, BookOpen, AlertTriangle, Flame } from 'lucide-react';
+import { Bell, X, Clock, BookOpen, AlertTriangle, Flame, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 
 interface SmartNotification {
   id: string;
   icon: React.ReactNode;
   message: string;
-  action?: string;
+  actionLabel?: string;
+  actionHref?: string;
   priority: 'high' | 'medium' | 'low';
   color: string;
 }
 
+const LS_DISMISSED_PREFIX = 'ascension_notif_dismissed_';
+
+function isDismissedToday(id: string): boolean {
+  try {
+    const val = localStorage.getItem(LS_DISMISSED_PREFIX + id);
+    if (!val) return false;
+    return val === new Date().toISOString().slice(0, 10);
+  } catch { return false; }
+}
+
+function dismissForToday(id: string) {
+  try {
+    localStorage.setItem(LS_DISMISSED_PREFIX + id, new Date().toISOString().slice(0, 10));
+  } catch {}
+}
+
 export function SmartNotifications({ userId }: { userId: string }) {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<SmartNotification[]>([]);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 
@@ -22,85 +40,100 @@ export function SmartNotifications({ userId }: { userId: string }) {
       const now = new Date();
       const notifs: SmartNotification[] = [];
 
-      // Fetch all relevant data in parallel
-      const [examsRes, sessionsRes, profileRes, diffsRes, plansRes] = await Promise.all([
-        supabase.from('exams').select('*').eq('user_id', userId).gte('exam_date', now.toISOString().split('T')[0]).order('exam_date', { ascending: true }),
-        supabase.from('timer_sessions').select('*').eq('user_id', userId).gte('created_at', new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()),
+      // ── Fetch all relevant data in parallel ───────────────────────────────
+      const [examsRes, profileRes, diffsRes, lastDeepworkRes] = await Promise.all([
+        supabase
+          .from('exams')
+          .select('*')
+          .eq('user_id', userId)
+          .gte('exam_date', now.toISOString().split('T')[0])
+          .order('exam_date', { ascending: true }),
         supabase.from('profiles').select('*').eq('user_id', userId).single(),
         supabase.from('difficulties').select('*').eq('user_id', userId).eq('resolved', false),
-        supabase.from('weekly_plans').select('*').eq('user_id', userId).eq('validated', true).order('created_at', { ascending: false }).limit(1),
+        supabase
+          .from('deepwork_sessions')
+          .select('started_at')
+          .eq('user_id', userId)
+          .order('started_at', { ascending: false })
+          .limit(1),
       ]);
 
-      const exams = examsRes.data || [];
-      const sessions = sessionsRes.data || [];
+      const exams   = examsRes.data   ?? [];
       const profile = profileRes.data;
-      const diffs = diffsRes.data || [];
-      const latestPlan = plansRes.data?.[0];
+      const diffs   = diffsRes.data   ?? [];
+      const lastDw  = lastDeepworkRes.data?.[0];
 
-      // Calculate last session per subject
-      const lastSessionBySubject: Record<string, Date> = {};
-      sessions.forEach(s => {
-        const d = new Date(s.created_at);
-        if (!lastSessionBySubject[s.subject] || d > lastSessionBySubject[s.subject]) {
-          lastSessionBySubject[s.subject] = d;
-        }
-      });
+      // ── 1. Relance deepwork si inactif depuis 24h ─────────────────────────
+      const hoursSinceDw = lastDw?.started_at
+        ? (now.getTime() - new Date(lastDw.started_at).getTime()) / (1000 * 60 * 60)
+        : 999;
 
-      // 1. DS coming up with no recent study in that subject
+      if (hoursSinceDw >= 24 && !isDismissedToday('deepwork-gap')) {
+        notifs.push({
+          id: 'deepwork-gap',
+          icon: <Zap size={16} />,
+          message: hoursSinceDw >= 48
+            ? `Aucune session deepwork depuis 2+ jours — même 20 min font la différence ! 🎯`
+            : `Pas de session deepwork depuis hier — garde le rythme ! Une session rapide ?`,
+          actionLabel: '⚡ Lancer deepwork',
+          actionHref: '/student/deepwork',
+          priority: hoursSinceDw >= 48 ? 'high' : 'medium',
+          color: 'hsl(43 90% 55%)',
+        });
+      }
+
+      // ── 2. Rappel quotidien DS (1 semaine avant) ──────────────────────────
       exams.forEach(exam => {
-        const daysUntil = Math.ceil((new Date(exam.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        const lastStudied = lastSessionBySubject[exam.subject];
-        const daysSinceStudy = lastStudied ? Math.floor((now.getTime() - lastStudied.getTime()) / (1000 * 60 * 60 * 24)) : 999;
-
-        if (daysUntil <= 7 && daysSinceStudy >= 3) {
+        const daysUntil = Math.ceil(
+          (new Date(exam.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        if (daysUntil >= 1 && daysUntil <= 7 && !isDismissedToday(`ds-daily-${exam.id}`)) {
+          const subject = exam.custom_subject || exam.subject;
+          const urgency = daysUntil <= 2 ? 'high' : daysUntil <= 4 ? 'medium' : 'low';
           notifs.push({
-            id: `exam-gap-${exam.id}`,
+            id: `ds-daily-${exam.id}`,
             icon: <BookOpen size={16} />,
-            message: `Tu n'as pas travaillé les ${exam.subject} depuis ${daysSinceStudy === 999 ? 'longtemps' : `${daysSinceStudy} jours`} et ton DS est dans ${daysUntil} jour${daysUntil > 1 ? 's' : ''} — 25 min maintenant ?`,
-            action: '🎯 Lancer un Pomodoro',
-            priority: daysUntil <= 3 ? 'high' : 'medium',
-            color: daysUntil <= 3 ? 'hsl(var(--destructive))' : 'hsl(var(--streak))',
+            message: daysUntil === 1
+              ? `⚠️ DS ${subject} demain ! Dernière ligne droite — as-tu tout révisé ?`
+              : `DS ${subject} dans ${daysUntil} jours — pense à réviser aujourd'hui.`,
+            actionLabel: '📚 Planifier une session',
+            actionHref: '/student/deepwork',
+            priority: urgency,
+            color: daysUntil <= 2 ? 'hsl(0 84% 60%)' : daysUntil <= 4 ? 'hsl(38 90% 55%)' : 'hsl(213 90% 65%)',
           });
         }
       });
 
-      // 2. Streak about to break
-      if (profile?.last_activity_date) {
+      // ── 3. Streak en danger ───────────────────────────────────────────────
+      if (profile?.last_activity_date && !isDismissedToday('streak-risk')) {
         const lastActive = new Date(profile.last_activity_date);
         const hoursSince = (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60);
         if (hoursSince >= 18 && hoursSince < 48 && profile.streak > 0) {
           notifs.push({
             id: 'streak-risk',
             icon: <Flame size={16} />,
-            message: `Ta série de ${profile.streak} jours 🔥 est en danger ! Une petite session de 25 min pour la maintenir ?`,
-            action: '💪 C\'est parti !',
+            message: `Ta série de ${profile.streak} jours 🔥 est en danger ! Une petite session pour la maintenir ?`,
+            actionLabel: "💪 C'est parti !",
+            actionHref: '/student/deepwork',
             priority: 'high',
             color: 'hsl(var(--streak))',
           });
         }
       }
 
-      // 3. Subject imbalance (one subject not studied in a while but has an upcoming exam or difficulty)
-      const subjectsWithIssues = new Set([
-        ...diffs.map(d => d.subject),
-        ...exams.filter(e => {
-          const d = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-          return d <= 14;
-        }).map(e => e.subject),
-      ]);
-
-      subjectsWithIssues.forEach(subject => {
-        const lastStudied = lastSessionBySubject[subject];
-        const daysSince = lastStudied ? Math.floor((now.getTime() - lastStudied.getTime()) / (1000 * 60 * 60 * 24)) : 999;
-        const hasDiff = diffs.some(d => d.subject === subject && d.severity === 'blocking');
-
-        if (daysSince >= 5 && hasDiff) {
-          // Avoid duplicate with exam notifications
-          if (!notifs.some(n => n.id.startsWith('exam-gap') && n.message.includes(subject))) {
+      // ── 4. DS proche + matière non travaillée ─────────────────────────────
+      // (basé sur deepwork_sessions récentes par subject si disponible)
+      exams.forEach(exam => {
+        const daysUntil = Math.ceil(
+          (new Date(exam.exam_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        const hasDiff = diffs.some(d => d.subject === exam.subject);
+        if (daysUntil <= 5 && daysUntil >= 1 && hasDiff && !isDismissedToday(`exam-diff-${exam.id}`)) {
+          if (!notifs.some(n => n.id === `ds-daily-${exam.id}`)) {
             notifs.push({
-              id: `subject-gap-${subject}`,
+              id: `exam-diff-${exam.id}`,
               icon: <AlertTriangle size={16} />,
-              message: `Tu as une difficulté bloquante en ${subject} et tu n'as pas pratiqué depuis ${daysSince === 999 ? 'longtemps' : `${daysSince}j`}. Même 15 min aideraient !`,
+              message: `Tu as une difficulté en ${exam.custom_subject || exam.subject} et le DS est dans ${daysUntil}j. Même 15 min aideraient !`,
               priority: 'medium',
               color: 'hsl(var(--destructive))',
             });
@@ -108,52 +141,23 @@ export function SmartNotifications({ userId }: { userId: string }) {
         }
       });
 
-      // 4. Weekly plan available
-      if (latestPlan) {
-        const planDate = new Date(latestPlan.created_at);
-        const hoursSincePlan = (now.getTime() - planDate.getTime()) / (1000 * 60 * 60);
-        if (hoursSincePlan < 72) {
-          notifs.push({
-            id: 'plan-ready',
-            icon: <Clock size={16} />,
-            message: 'Ton coach a validé un plan de travail pour cette semaine ! Consulte-le 👇',
-            priority: 'low',
-            color: 'hsl(var(--primary))',
-          });
-        }
-      }
-
-      // 5. Low study time this week
-      const weekStart = new Date();
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
-      weekStart.setHours(0, 0, 0, 0);
-      const thisWeekMinutes = sessions
-        .filter(s => new Date(s.created_at) >= weekStart)
-        .reduce((a, s) => a + s.duration_minutes, 0);
-      const dayOfWeek = now.getDay() || 7; // 1=Mon, 7=Sun
-      if (dayOfWeek >= 4 && thisWeekMinutes < 60) {
-        notifs.push({
-          id: 'low-weekly',
-          icon: <Clock size={16} />,
-          message: `On est ${['', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'][dayOfWeek]} et tu n'as que ${thisWeekMinutes} min cette semaine. Un petit sprint ?`,
-          priority: 'medium',
-          color: 'hsl(var(--xp))',
-        });
-      }
-
-      // Sort by priority
-      const priorityOrder = { high: 0, medium: 1, low: 2 };
-      notifs.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+      // ── Sort high → medium → low ──────────────────────────────────────────
+      const order = { high: 0, medium: 1, low: 2 };
+      notifs.sort((a, b) => order[a.priority] - order[b.priority]);
       setNotifications(notifs);
     };
 
     buildNotifications();
-    // Refresh every 5 minutes
     const interval = setInterval(buildNotifications, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [userId]);
 
-  const visibleNotifs = notifications.filter(n => !dismissed.has(n.id));
+  const handleDismiss = (id: string) => {
+    dismissForToday(id);
+    setDismissed(prev => new Set([...prev, id]));
+  };
+
+  const visibleNotifs = notifications.filter(n => !dismissed.has(n.id) && !isDismissedToday(n.id));
 
   if (visibleNotifs.length === 0) return null;
 
@@ -172,11 +176,24 @@ export function SmartNotifications({ userId }: { userId: string }) {
             <div className="shrink-0 mt-0.5" style={{ color: notif.color }}>
               {notif.icon}
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 flex flex-col gap-1.5">
               <p className="text-sm leading-snug">{notif.message}</p>
+              {notif.actionLabel && notif.actionHref && (
+                <button
+                  onClick={() => { handleDismiss(notif.id); navigate(notif.actionHref!); }}
+                  className="self-start text-xs font-semibold px-2.5 py-1 rounded-full transition-all hover:opacity-80"
+                  style={{
+                    background: `${notif.color}22`,
+                    border: `1px solid ${notif.color}55`,
+                    color: notif.color,
+                  }}
+                >
+                  {notif.actionLabel}
+                </button>
+              )}
             </div>
             <button
-              onClick={() => setDismissed(prev => new Set([...prev, notif.id]))}
+              onClick={() => handleDismiss(notif.id)}
               className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
             >
               <X size={14} />

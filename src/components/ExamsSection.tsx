@@ -156,8 +156,20 @@ export function ExamsSection({ userId }: { userId: string }) {
             {/* ── Past ── */}
             {past.length > 0 && (
               <details className="mt-2">
-                <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-                  {past.length} DS passé{past.length > 1 ? 's' : ''}
+                <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors flex items-center gap-1.5 list-none [&::-webkit-details-marker]:hidden">
+                  <span>{past.length} DS passé{past.length > 1 ? 's' : ''}</span>
+                  {(() => {
+                    const missing = past.filter(e => e.grade === null).length;
+                    return missing > 0 ? (
+                      <span
+                        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full font-bold text-white"
+                        style={{ fontSize: '9px', backgroundColor: 'hsl(0 84% 52%)' }}
+                      >
+                        <AlertCircle size={8} />
+                        {missing} note{missing > 1 ? 's' : ''} manquante{missing > 1 ? 's' : ''}
+                      </span>
+                    ) : null;
+                  })()}
                 </summary>
                 <div className="space-y-1.5 mt-2">
                   {past.map(exam => (
