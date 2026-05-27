@@ -425,6 +425,7 @@ function ConvertToDsModal({
       type: 'ds',
       title: dsTitle,
       subject,
+      description: chapters.trim() || null,
       event_date: event.event_date,
       start_time: event.start_time,
       end_time: event.end_time,

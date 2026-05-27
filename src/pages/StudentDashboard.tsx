@@ -304,7 +304,7 @@ export default function StudentDashboard() {
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
             className="lg:col-span-2"
           >
-            {user && <WeeklyDeepworkGoal userId={user.id} />}
+            {user && <WeeklyDeepworkGoal userId={user.id} onXpGain={addXp} />}
           </motion.div>
         </div>
 

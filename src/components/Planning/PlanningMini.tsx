@@ -194,6 +194,7 @@ export function PlanningMini({ userId, onXpGain }: Props) {
                       </div>
                       <p className="text-xs font-semibold truncate mt-0.5 pr-6">{ev.title}</p>
                       {ev.subject && <p className="text-[10px] text-muted-foreground">{ev.subject}</p>}
+                      {ev.description && <p className="text-[10px] text-muted-foreground/75 truncate">{ev.description}</p>}
                     </button>
 
                     {/* DS: trash button top-right */}

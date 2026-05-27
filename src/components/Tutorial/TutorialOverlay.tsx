@@ -91,11 +91,11 @@ const STEPS: Step[] = [
   },
   {
     id: 'add-quest-2',
-    selector: '[data-tutorial="planning-add"]',
+    selector: '[data-tutorial="planning-expand"]',
     kind: 'action',
     icon: '🔥',
     title: 'Encore une quête !',
-    body: "Super ! Planifie une 2ème quête dans une autre matière. La régularité bat le talent — toujours.",
+    body: "Clique sur ce bouton pour ouvrir la vue complète du planning, puis ajoute une 2ème quête depuis là. C'est la vue que tu utiliseras au quotidien.",
     cta: 'En attente…',
     ctaDone: 'Excellent ! Continuer →',
     waitFor: { type: 'quest', minCount: 2 },
