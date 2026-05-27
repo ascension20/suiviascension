@@ -64,6 +64,7 @@ export function buildAvataaarsUrl(config: AvatarConfig, seed: string): string {
   if (glasses?.dicebearParam) parts.push(glasses.dicebearParam);
   else                        parts.push('accessoriesProbability=0');
   if (outfit?.dicebearParam)  parts.push(outfit.dicebearParam);
+  else                        parts.push('clothing[]=shirtCrewNeck&clothesColor[]=F5F5F5');
   if (bg?.dicebearParam)      parts.push(bg.dicebearParam);
   else                        parts.push('backgroundColor=0d1117&backgroundType[]=solid');
 

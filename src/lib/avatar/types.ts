@@ -54,7 +54,7 @@ export interface AvatarConfig {
 export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
   hat: null,
   glasses: null,
-  outfit: 'outfit_hoodie',
+  outfit: null,
   background: 'bg_dark',
   badge: null,
   skinColor: 'light',
