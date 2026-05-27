@@ -128,13 +128,13 @@ export function WeeklyLeaderboard({ title, datasets, weeklyChampion }: Props) {
 
                   {/* Avatar */}
                   <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0 relative transition-all"
+                    className="w-8 h-8 rounded-full overflow-hidden shrink-0 relative transition-all"
                     style={{
                       border: `2px solid ${isPodium ? rc.border : 'hsl(222 16% 22%)'}`,
                       background: isPodium ? `${rc.bg}` : 'hsl(222 22% 12%)',
                     }}
                   >
-                    {entry.avatar}
+                    <img src={entry.avatar} alt={entry.pseudo} className="w-full h-full object-cover" />
                     {weeklyChampion && entry.pseudo === weeklyChampion && entry.rank === 1 && (
                       <span className="absolute -top-2 -right-2 text-xs champion-glow">👑</span>
                     )}

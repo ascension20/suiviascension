@@ -22,6 +22,9 @@ import { useOnlineTracker, updateStreak } from '@/hooks/useOnlineTracker';
 import { useOfflineQueue } from '@/hooks/useOfflineQueue';
 import { playXpSound } from '@/hooks/useXpAudio';
 import { supabase } from '@/integrations/supabase/client';
+import { buildAvataaarsUrl } from '@/components/avatar/Avatar';
+import { DEFAULT_AVATAR_CONFIG } from '@/lib/avatar/types';
+import type { AvatarConfig } from '@/lib/avatar/types';
 
 export default function StudentDashboard() {
   const { user, profile, signOut, refreshProfile } = useAuth();
@@ -36,6 +39,7 @@ export default function StudentDashboard() {
   const [chronoWeekly, setChronoWeekly] = useState<LeaderboardEntry[]>([]);
   const [chronoDaily,  setChronoDaily]  = useState<LeaderboardEntry[]>([]);
   const [weeklyChampion, setWeeklyChampion] = useState<string | null>(null);
+  const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
 
   const { isOnline, pendingCount } = useOfflineQueue();
@@ -67,7 +71,7 @@ export default function StudentDashboard() {
       dayStart.setHours(0, 0, 0, 0);
 
       // ── Fetch everything in parallel ─────────────────────────────────────
-      const [profsRes, weekXpRes, dayXpRes, weekSecRes, daySecRes] = await Promise.all([
+      const [profsRes, weekXpRes, dayXpRes, weekSecRes, daySecRes, avatarCfgsRes] = await Promise.all([
         supabase
           .from('profiles')
           .select('user_id, pseudo, avatar, total_xp, total_deepwork_seconds'),
@@ -89,18 +93,40 @@ export default function StudentDashboard() {
           .from('deepwork_sessions')
           .select('user_id, duration_seconds')
           .gte('started_at', dayStart.toISOString()),
+        supabase
+          .from('avatar_configs')
+          .select('user_id, hat, glasses, outfit, background, badge, skin_color, hair_style, hair_color'),
       ]);
 
-      const profs       = profsRes.data  ?? [];
-      const weekXpRows  = weekXpRes.data ?? [];
-      const dayXpRows   = dayXpRes.data  ?? [];
-      const weekSessions = weekSecRes.data ?? [];
-      const daySessions  = daySecRes.data  ?? [];
+      const profs        = profsRes.data     ?? [];
+      const weekXpRows   = weekXpRes.data    ?? [];
+      const dayXpRows    = dayXpRes.data     ?? [];
+      const weekSessions = weekSecRes.data   ?? [];
+      const daySessions  = daySecRes.data    ?? [];
+      const avatarCfgs   = avatarCfgsRes.data ?? [];
+
+      // Build avatar config map per user
+      const cfgMap: Record<string, AvatarConfig> = {};
+      avatarCfgs.forEach(ac => {
+        cfgMap[ac.user_id] = {
+          hat:        ac.hat        ?? null,
+          glasses:    ac.glasses    ?? null,
+          outfit:     ac.outfit     ?? null,
+          background: ac.background ?? DEFAULT_AVATAR_CONFIG.background,
+          badge:      ac.badge      ?? null,
+          skinColor:  ac.skin_color ?? DEFAULT_AVATAR_CONFIG.skinColor,
+          hairStyle:  ac.hair_style ?? DEFAULT_AVATAR_CONFIG.hairStyle,
+          hairColor:  ac.hair_color ?? DEFAULT_AVATAR_CONFIG.hairColor,
+        };
+      });
+      const avatarUrl = (uid: string, pseudo: string) =>
+        buildAvataaarsUrl(cfgMap[uid] ?? DEFAULT_AVATAR_CONFIG, pseudo || uid);
 
       // Profile lookup map
       const profMap: Record<string, { pseudo: string; avatar: string }> = {};
       profs.forEach(p => {
-        profMap[p.user_id] = { pseudo: p.pseudo ?? 'Élève', avatar: p.avatar ?? '🐺' };
+        const pseudo = p.pseudo ?? 'Élève';
+        profMap[p.user_id] = { pseudo, avatar: avatarUrl(p.user_id, pseudo) };
       });
 
       // Aggregate rows by user
@@ -144,27 +170,33 @@ export default function StudentDashboard() {
         .filter(p => (p.total_xp ?? 0) > 0)
         .sort((a, b) => (b.total_xp ?? 0) - (a.total_xp ?? 0))
         .slice(0, 10)
-        .map((p, i) => ({
-          rank: i + 1,
-          userId: p.user_id,
-          pseudo:  p.pseudo ?? 'Élève',
-          avatar:  p.avatar ?? '🐺',
-          value:   p.total_xp ?? 0,
-          isCurrentUser: p.user_id === user.id,
-        }));
+        .map((p, i) => {
+          const pseudo = p.pseudo ?? 'Élève';
+          return {
+            rank: i + 1,
+            userId: p.user_id,
+            pseudo,
+            avatar: avatarUrl(p.user_id, pseudo),
+            value:  p.total_xp ?? 0,
+            isCurrentUser: p.user_id === user.id,
+          };
+        });
 
       const chGlobal = profs
         .filter(p => (p.total_deepwork_seconds ?? 0) > 0)
         .sort((a, b) => (b.total_deepwork_seconds ?? 0) - (a.total_deepwork_seconds ?? 0))
         .slice(0, 10)
-        .map((p, i) => ({
-          rank: i + 1,
-          userId: p.user_id,
-          pseudo:  p.pseudo ?? 'Élève',
-          avatar:  p.avatar ?? '🐺',
-          value:   Math.round((p.total_deepwork_seconds ?? 0) / 60),
-          isCurrentUser: p.user_id === user.id,
-        }));
+        .map((p, i) => {
+          const pseudo = p.pseudo ?? 'Élève';
+          return {
+            rank: i + 1,
+            userId: p.user_id,
+            pseudo,
+            avatar: avatarUrl(p.user_id, pseudo),
+            value:  Math.round((p.total_deepwork_seconds ?? 0) / 60),
+            isCurrentUser: p.user_id === user.id,
+          };
+        });
 
       // ── Weekly / daily boards (from deepwork_sessions) ───────────────────
       const xpWeekly  = buildBoard(weekXpByUser);
@@ -181,6 +213,11 @@ export default function StudentDashboard() {
 
       // Weekly champion = #1 chrono this week (shown as crown on Chrono board)
       if (chWeekly.length > 0) setWeeklyChampion(chWeekly[0].pseudo);
+
+      // Current user avatar for HUD
+      if (user) {
+        setCurrentAvatarUrl(avatarUrl(user.id, profile?.pseudo ?? user.id));
+      }
     };
     loadLeaderboards();
   }, [user]);
@@ -252,10 +289,13 @@ export default function StudentDashboard() {
               title="Mon profil"
             >
               <div
-                className="w-9 h-9 rounded-full border flex items-center justify-center text-lg transition-all"
+                className="w-9 h-9 rounded-full border overflow-hidden transition-all"
                 style={{ backgroundColor: 'hsl(222 22% 12%)', borderColor: 'hsl(43 90% 50% / 0.3)' }}
               >
-                {profile?.avatar ?? '🐺'}
+                {currentAvatarUrl
+                  ? <img src={currentAvatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                  : <span className="w-full h-full flex items-center justify-center text-lg">🐺</span>
+                }
               </div>
               {weeklyChampion === profile?.pseudo && (
                 <span className="absolute -top-1 -right-1 text-sm" title="Premier du classement chrono !">👑</span>
