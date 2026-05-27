@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Générer les clés VAPID — Ascension 20</title>
+  <style>
+    body { font-family: monospace; background: #0d1117; color: #e6edf3; padding: 40px; max-width: 700px; margin: auto; }
+    h1 { color: #fbbf24; }
+    button { background: #fbbf24; color: #0d1117; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin: 20px 0; }
+    button:hover { opacity: 0.85; }
+    .box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin: 16px 0; word-break: break-all; }
+    .label { color: #8b949e; font-size: 12px; margin-bottom: 6px; }
+    .key { color: #7ee787; font-size: 13px; line-height: 1.6; }
+    .copy-btn { background: #21262d; color: #e6edf3; border: 1px solid #30363d; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; float: right; }
+    .copy-btn:hover { background: #30363d; }
+    .step { background: #161b22; border-left: 3px solid #fbbf24; padding: 16px; margin: 12px 0; border-radius: 0 8px 8px 0; }
+    code { background: #21262d; padding: 2px 6px; border-radius: 4px; color: #ffa657; }
+  </style>
+</head>
+<body>
+  <h1>🔑 Générer les clés VAPID</h1>
+  <p>Ces clés servent à sécuriser les notifications push. Génère-les une seule fois.</p>
+
+  <button onclick="generate()">Générer mes clés VAPID</button>
+
+  <div id="result" style="display:none">
+    <div class="box">
+      <div class="label">PUBLIC KEY (à mettre dans .env et Supabase secrets)</div>
+      <button class="copy-btn" onclick="copy('pub')">Copier</button>
+      <div class="key" id="pub"></div>
+    </div>
+    <div class="box">
+      <div class="label">PRIVATE KEY (à mettre uniquement dans Supabase secrets — ne partage jamais)</div>
+      <button class="copy-btn" onclick="copy('priv')">Copier</button>
+      <div class="key" id="priv"></div>
+    </div>
+
+    <h2 style="color:#fbbf24; margin-top:32px">Où les coller ?</h2>
+
+    <div class="step">
+      <strong>1. Dans <code>.env</code></strong> (à la racine du projet) :<br><br>
+      <code>VITE_VAPID_PUBLIC_KEY="<span id="pub-inline">…</span>"</code>
+    </div>
+
+    <div class="step">
+      <strong>2. Dans Supabase Dashboard</strong><br>
+      → Project Settings → Edge Functions → Secrets<br><br>
+      Ajoute ces 3 secrets :<br><br>
+      <code>VAPID_PUBLIC_KEY</code> = la public key<br>
+      <code>VAPID_PRIVATE_KEY</code> = la private key<br>
+      <code>VAPID_EMAIL</code> = <code>mailto:ton@email.com</code>
+    </div>
+
+    <div class="step">
+      <strong>3. Déploie l'edge function</strong><br><br>
+      Dans ton terminal, dans le dossier du projet :<br>
+      <code>npx supabase functions deploy send-notifications</code>
+    </div>
+
+    <div class="step">
+      <strong>4. Applique les migrations SQL</strong><br>
+      Supabase Dashboard → SQL Editor → colle et exécute :<br>
+      <code>supabase/migrations/20260527210000_push_subscriptions.sql</code><br>
+      <code>supabase/migrations/20260527220000_notifications_cron.sql</code>
+    </div>
+
+    <p style="color:#8b949e; font-size:12px; margin-top:24px">
+      ⚠️ Ferme cette page une fois les clés copiées — elles ne seront pas régénérées à la fermeture.
+    </p>
+  </div>
+
+  <script>
+    let pubKey = '', privKey = '';
+
+    async function generate() {
+      const keyPair = await crypto.subtle.generateKey(
+        { name: 'ECDH', namedCurve: 'P-256' },
+        true,
+        ['deriveKey']
+      );
+
+      const rawPub  = await crypto.subtle.exportKey('raw',   keyPair.publicKey);
+      const rawPriv = await crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+
+      pubKey  = toBase64url(rawPub);
+      privKey = toBase64url(rawPriv);
+
+      document.getElementById('pub').textContent  = pubKey;
+      document.getElementById('priv').textContent = privKey;
+      document.getElementById('pub-inline').textContent = pubKey;
+      document.getElementById('result').style.display = 'block';
+    }
+
+    function toBase64url(buffer) {
+      return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    function copy(which) {
+      const text = which === 'pub' ? pubKey : privKey;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector(`.copy-btn[onclick="copy('${which}')"]`);
+        btn.textContent = '✓ Copié !';
+        setTimeout(() => btn.textContent = 'Copier', 2000);
+      });
+    }
+  </script>
+</body>
+</html>
