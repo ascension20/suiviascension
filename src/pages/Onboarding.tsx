@@ -89,7 +89,7 @@ function gradeColor(g: number) {
 }
 
 export default function OnboardingPage() {
-  const { user, refreshProfile } = useAuth();
+  const { user, refreshProfile, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
 
@@ -298,8 +298,14 @@ export default function OnboardingPage() {
         } catch { /* iCal import failures are non-blocking */ }
       }
 
-      // Refresh so the profile has onboarding_completed:true before we navigate.
-      await refreshProfile();
+      // Patch the in-memory profile SYNCHRONOUSLY before navigating.
+      // If we called refreshProfile() (async fetch → setProfile) and then
+      // navigate() immediately after, React would render StudentDashboard with
+      // the STALE profile (onboarding_completed:false) on the first pass →
+      // StudentDashboard's effect would redirect back to /onboarding → loop.
+      // By updating the profile state directly here, the context is already
+      // correct when StudentDashboard renders for the first time.
+      updateProfile({ onboarding_completed: true });
       navigate('/student');
     } catch (err) {
       console.error('Onboarding finalize error:', err);

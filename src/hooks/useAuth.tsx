@@ -30,6 +30,10 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  /** Synchronously merge `updates` into the in-memory profile.
+   *  Use this right before a navigate() call to avoid race conditions
+   *  where the DB has been updated but the React state hasn't caught up yet. */
+  updateProfile: (updates: Partial<Profile>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,6 +69,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshProfile = async () => {
     if (user) await fetchUserData(user.id);
+  };
+
+  const updateProfile = (updates: Partial<Profile>) => {
+    setProfile(prev => prev ? { ...prev, ...updates } : null);
   };
 
   useEffect(() => {
@@ -117,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, profile, role, loading, signIn, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ session, user, profile, role, loading, signIn, signOut, refreshProfile, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
