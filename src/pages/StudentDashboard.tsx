@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Flame, LogOut, WifiOff } from 'lucide-react';
+import { Flame, LogOut, WifiOff, Bell, BellOff } from 'lucide-react';
 import { DeepworkWidget } from '@/components/Deepwork/DeepworkWidget';
 import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
 import { PlanningMini } from '@/components/Planning/PlanningMini';
@@ -17,6 +17,7 @@ import { ProgressComparison } from '@/components/ProgressComparison';
 import { TutorialOverlay } from '@/components/Tutorial/TutorialOverlay';
 import { DSReminderModal } from '@/components/DSReminderModal';
 import { EventFormModal } from '@/components/Planning/EventFormModal';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { calculateLevel, getTitleForLevel } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useOnlineTracker, updateStreak } from '@/hooks/useOnlineTracker';
@@ -42,6 +43,7 @@ export default function StudentDashboard() {
   const [weeklyChampion, setWeeklyChampion] = useState<string | null>(null);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null);
   const [creatingDs, setCreatingDs] = useState(false);
+  const { permission, subscribed, loading: pushLoading, isSupported: pushSupported, subscribe: subscribePush, unsubscribe: unsubscribePush } = usePushNotifications(user?.id);
   const [showTutorial, setShowTutorial] = useState(false);
 
   const { isOnline, pendingCount } = useOfflineQueue();
@@ -303,6 +305,25 @@ export default function StudentDashboard() {
                 <span className="absolute -top-1 -right-1 text-sm" title="Premier du classement chrono !">👑</span>
               )}
             </button>
+
+            {/* Notification bell */}
+            {pushSupported && permission !== 'denied' && (
+              <button
+                onClick={() => subscribed ? unsubscribePush() : subscribePush()}
+                disabled={pushLoading}
+                title={subscribed ? 'Désactiver les notifications' : 'Activer les notifications push'}
+                className="relative text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+              >
+                {subscribed
+                  ? <Bell size={18} style={{ color: 'hsl(43 90% 55%)' }} />
+                  : <BellOff size={18} />
+                }
+                {subscribed && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
+                        style={{ background: 'hsl(142 71% 50%)', boxShadow: '0 0 4px hsl(142 71% 50%)' }} />
+                )}
+              </button>
+            )}
 
             <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors" title="Déconnexion">
               <LogOut size={18} />
