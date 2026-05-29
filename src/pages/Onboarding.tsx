@@ -384,10 +384,10 @@ export default function OnboardingPage() {
                 <h1 className="font-display text-2xl font-bold mb-1">Crée ton compte</h1>
                 <p className="text-muted-foreground text-sm mb-6">Quelques infos pour démarrer.</p>
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <input className="bg-secondary border border-border rounded-md px-3 py-2 text-sm" placeholder="Lucas" value={firstName} onChange={e => setFirstName(e.target.value)} />
-                  <input className="bg-secondary border border-border rounded-md px-3 py-2 text-sm" placeholder="Martin" value={lastName} onChange={e => setLastName(e.target.value)} />
+                  <input className="bg-secondary border border-border rounded-md px-3 py-2 text-sm" placeholder="Prénom" value={firstName} onChange={e => setFirstName(e.target.value)} />
+                  <input className="bg-secondary border border-border rounded-md px-3 py-2 text-sm" placeholder="Nom" value={lastName} onChange={e => setLastName(e.target.value)} />
                 </div>
-                <input type="email" className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm mb-3" placeholder="lucas.martin@email.com" value={email} onChange={e => setEmail(e.target.value)} />
+                <input type="email" className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm mb-3" placeholder="ton.email@exemple.com" value={email} onChange={e => setEmail(e.target.value)} />
                 <div className="relative mb-3">
                   <input type={showPwd ? 'text' : 'password'} className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm pr-10" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} />
                   <button type="button" onClick={() => setShowPwd(s => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">
