@@ -344,6 +344,78 @@ function ActivityChart({ sessions }: { sessions: { duration_minutes: number; cre
   );
 }
 
+// ── quests-per-day chart ──────────────────────────────────────────────────────
+function QuestsChart({ quests }: { quests: { completed: boolean; completed_at: string | null }[] }) {
+  const todayKey = new Date().toISOString().slice(0, 10);
+
+  const days = useMemo(() => {
+    const arr: { date: string; count: number; label: string }[] = [];
+    const now = new Date();
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const count = quests.filter(q => q.completed && q.completed_at?.slice(0, 10) === key).length;
+      arr.push({ date: key, count, label: d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) });
+    }
+    return arr;
+  }, [quests]);
+
+  const maxCount = Math.max(...days.map(d => d.count), 1);
+  const totalCompleted = days.reduce((a, d) => a + d.count, 0);
+  const activeDays     = days.filter(d => d.count > 0).length;
+
+  return (
+    <div className="p-3 rounded-xl space-y-2" style={{ background: 'hsl(222 22% 9%)', border: '1px solid hsl(222 16% 16%)' }}>
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Quêtes complétées — 30j</p>
+        <div className="flex gap-3 text-[10px]">
+          <span>
+            <span className="font-bold tabular-nums" style={{ color: '#a78bfa' }}>{totalCompleted}</span>
+            {' '}<span className="text-muted-foreground">total</span>
+          </span>
+          <span>
+            <span className="font-bold tabular-nums" style={{ color: 'hsl(142 71% 50%)' }}>{activeDays}</span>
+            {' '}<span className="text-muted-foreground">jours</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Daily bars */}
+      <div className="flex items-end gap-px" style={{ height: 44 }}>
+        {days.map(d => {
+          const hPct    = d.count > 0 ? Math.max((d.count / maxCount) * 100, 12) : 0;
+          const isToday = d.date === todayKey;
+          return (
+            <div key={d.date}
+              title={`${d.label} : ${d.count > 0 ? `${d.count} quête${d.count > 1 ? 's' : ''}` : '—'}`}
+              className="flex-1 flex items-end" style={{ height: '100%' }}>
+              <div style={{
+                width: '100%',
+                height: d.count > 0 ? `${hPct}%` : '2px',
+                background: isToday
+                  ? 'hsl(43 90% 52%)'
+                  : d.count > 0 ? '#a78bfa' : 'hsl(222 16% 16%)',
+                borderRadius: '2px 2px 0 0',
+                boxShadow: isToday ? '0 0 6px hsl(43 90% 52% / 0.5)' : d.count > 0 ? '0 0 4px rgba(167,139,250,0.25)' : 'none',
+              }} />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Week boundary labels */}
+      <div className="flex text-[8px] text-muted-foreground/40 justify-between px-0.5">
+        {[4, 3, 2, 1].map(w => {
+          const d = new Date(); d.setDate(d.getDate() - w * 7);
+          return <span key={w}>{d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>;
+        })}
+        <span>{new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
+      </div>
+    </div>
+  );
+}
+
 // ── main ─────────────────────────────────────────────────────────────────────
 export default function CoachDashboard() {
   const { signOut } = useAuth();
@@ -772,10 +844,12 @@ export default function CoachDashboard() {
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {[
-                  { label: 'XP total',   value: s.total_xp.toLocaleString('fr-FR'), color: 'hsl(43 90% 55%)' },
-                  { label: 'Streak',     value: `🔥 ${s.streak}j`,                  color: s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(0 84% 60%)' },
-                  { label: 'Heures',     value: `${s.totalHours}h`,                 color: 'hsl(270 70% 65%)' },
-                  { label: 'Complétion', value: `${s.completionRate}%`,             color: s.completionRate >= 80 ? 'hsl(142 71% 45%)' : s.completionRate >= 50 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' },
+                  { label: 'XP total',  value: s.total_xp.toLocaleString('fr-FR'), color: 'hsl(43 90% 55%)' },
+                  { label: 'Streak',    value: `🔥 ${s.streak}j`,                  color: s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(0 84% 60%)' },
+                  { label: 'Heures',    value: `${s.totalHours}h`,                 color: 'hsl(270 70% 65%)' },
+                  { label: 'Quêtes ✓',
+                    value: `${data.quests.filter(q => q.completed).length}/${data.quests.length}`,
+                    color: s.completionRate >= 80 ? 'hsl(142 71% 45%)' : s.completionRate >= 50 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' },
                 ].map(st => (
                   <div key={st.label} className="p-3 rounded-xl" style={{ background: 'hsl(222 22% 9%)', border: '1px solid hsl(222 16% 16%)' }}>
                     <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{st.label}</p>
@@ -810,6 +884,7 @@ export default function CoachDashboard() {
               )}
 
               <ActivityChart sessions={timerSessions.filter(sess => sess.user_id === s.user_id)} />
+              <QuestsChart quests={data.quests} />
             </>
           )}
 
@@ -983,13 +1058,24 @@ export default function CoachDashboard() {
                 const isMissing = isPast && e.grade === null && !e.grade_received;
                 return (
                   <div key={e.id} className={`p-3.5 rounded-xl border text-xs ${isPast && !isMissing ? 'opacity-55' : ''}`}
-                    style={{ background: 'hsl(222 22% 9%)', borderColor: isMissing ? 'hsl(38 92% 55% / 0.3)' : !isPast && daysUntil <= 7 ? 'hsl(0 84% 55% / 0.25)' : 'hsl(222 16% 16%)' }}>
+                    style={{
+                      background: !isPast && daysUntil <= 5 ? 'hsl(0 84% 55% / 0.05)' : 'hsl(222 22% 9%)',
+                      borderColor: isMissing
+                        ? 'hsl(38 92% 55% / 0.35)'
+                        : !isPast && daysUntil <= 5 ? 'hsl(0 84% 55% / 0.45)'
+                        : 'hsl(222 16% 16%)',
+                      boxShadow: !isPast && daysUntil <= 5 ? '0 0 10px hsl(0 84% 55% / 0.08)' : 'none',
+                    }}>
                     <div className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `hsl(var(${SUBJECT_CSS_VAR[e.subject as Subject] || '--muted'}))` }} />
-                      <span className="font-bold">{e.subject}</span>
+                      <span className="font-bold" style={{ color: !isPast && daysUntil <= 5 ? 'hsl(0 84% 72%)' : undefined }}>{e.subject}</span>
                       <span className="text-muted-foreground ml-auto">{new Date(e.exam_date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
-                      {!isPast && <span className="px-1.5 py-0.5 rounded font-bold text-[9px]" style={{ background: daysUntil <= 3 ? 'hsl(0 84% 55% / 0.12)' : 'hsl(222 22% 14%)', color: daysUntil <= 3 ? 'hsl(0 84% 65%)' : 'hsl(220 10% 55%)' }}>
-                        {daysUntil === 0 ? "Aujourd'hui" : `J-${daysUntil}`}
+                      {!isPast && <span className="px-1.5 py-0.5 rounded font-bold text-[9px]" style={{
+                        background: daysUntil <= 5 ? 'hsl(0 84% 55% / 0.15)' : 'hsl(222 22% 14%)',
+                        color:      daysUntil <= 5 ? 'hsl(0 84% 68%)' : 'hsl(220 10% 55%)',
+                        border:     daysUntil <= 5 ? '1px solid hsl(0 84% 55% / 0.25)' : '1px solid transparent',
+                      }}>
+                        {daysUntil === 0 ? "Aujourd'hui !" : daysUntil === 1 ? 'Demain !' : `J-${daysUntil}`}
                       </span>}
                       {e.grade !== null && <span className="font-display font-bold" style={{ color: e.grade >= 14 ? 'hsl(142 71% 50%)' : e.grade >= 10 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' }}>{e.grade}/20</span>}
                     </div>
