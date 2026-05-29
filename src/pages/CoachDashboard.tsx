@@ -987,23 +987,59 @@ export default function CoachDashboard() {
 
                     {/* Active quests */}
                     <div className="space-y-1.5">
-                      {pendingQuests.map(q => (
-                        <div key={q.id} className="flex items-center gap-2.5 p-2.5 rounded-xl text-xs"
-                          style={{ background: 'hsl(270 50% 15% / 0.3)', border: '1px solid hsl(270 60% 45% / 0.25)' }}>
-                          <span className="font-bold" style={{ color: '#a78bfa' }}>⚡</span>
-                          <span className="flex-1 truncate">{q.title}</span>
-                          <span className="text-muted-foreground">{q.subject}</span>
-                          <span className="font-bold text-[9px] px-1.5 py-0.5 rounded" style={{ color: DIFF_COLOR[q.difficulty] || DIFF_COLOR.medium, background: `${DIFF_COLOR[q.difficulty] || DIFF_COLOR.medium}20` }}>
-                            {q.difficulty === 'easy' ? '★' : q.difficulty === 'medium' ? '★★' : '★★★'}
-                          </span>
-                          <span style={{ color: 'hsl(43 90% 55%)' }}>+{q.xp_reward} XP</span>
-                          {q.deadline && (
-                            <span className="text-muted-foreground text-[9px]">
-                              J-{Math.ceil((new Date(q.deadline).getTime() - now.getTime()) / 86400000)}
-                            </span>
-                          )}
-                        </div>
-                      ))}
+                      {pendingQuests.map(q => {
+                        const daysOld    = Math.floor((now.getTime() - new Date(q.created_at).getTime()) / 86400000);
+                        const weeksOld   = Math.floor(daysOld / 7);
+                        const isOld      = daysOld >= 14;
+                        const deadlineDays = q.deadline
+                          ? Math.ceil((new Date(q.deadline).getTime() - now.getTime()) / 86400000)
+                          : null;
+                        const ageLabel   = weeksOld >= 2 ? `${weeksOld} semaines` : `${daysOld} jours`;
+                        const waMsg      = isOld ? encodeURIComponent(
+                          `Salut ${s.pseudo} ! La quête "${q.title}" est toujours en attente depuis ${ageLabel}. Tu as besoin d'aide pour la terminer ? 💪`
+                        ) : '';
+
+                        return (
+                          <div key={q.id} className="rounded-xl text-xs overflow-hidden"
+                            style={{
+                              background: isOld ? 'hsl(38 92% 55% / 0.06)' : 'hsl(270 50% 15% / 0.3)',
+                              border:     isOld ? '1px solid hsl(38 92% 55% / 0.35)' : '1px solid hsl(270 60% 45% / 0.25)',
+                            }}>
+                            <div className="flex items-center gap-2.5 p-2.5">
+                              <span className="font-bold shrink-0" style={{ color: isOld ? 'hsl(38 92% 65%)' : '#a78bfa' }}>
+                                {isOld ? '⏰' : '⚡'}
+                              </span>
+                              <span className="flex-1 truncate">{q.title}</span>
+                              <span className="text-muted-foreground shrink-0">{q.subject}</span>
+                              <span className="font-bold text-[9px] px-1.5 py-0.5 rounded shrink-0"
+                                style={{ color: DIFF_COLOR[q.difficulty] || DIFF_COLOR.medium, background: `${DIFF_COLOR[q.difficulty] || DIFF_COLOR.medium}20` }}>
+                                {q.difficulty === 'easy' ? '★' : q.difficulty === 'medium' ? '★★' : '★★★'}
+                              </span>
+                              <span className="shrink-0" style={{ color: 'hsl(43 90% 55%)' }}>+{q.xp_reward} XP</span>
+                              {deadlineDays !== null && (
+                                <span className="text-[9px] shrink-0"
+                                  style={{ color: deadlineDays < 0 ? 'hsl(0 84% 62%)' : 'hsl(220 10% 50%)' }}>
+                                  {deadlineDays < 0 ? `+${Math.abs(deadlineDays)}j` : `J-${deadlineDays}`}
+                                </span>
+                              )}
+                            </div>
+                            {isOld && (
+                              <div className="flex items-center gap-2 px-2.5 pb-2 border-t"
+                                style={{ borderColor: 'hsl(38 92% 55% / 0.15)' }}>
+                                <span className="text-[10px]" style={{ color: 'hsl(38 92% 60%)' }}>
+                                  En attente depuis {ageLabel}
+                                </span>
+                                <a href={`https://wa.me/?text=${waMsg}`}
+                                  target="_blank" rel="noopener noreferrer"
+                                  className="ml-auto flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-lg transition-all hover:scale-105"
+                                  style={{ background: 'hsl(142 71% 40% / 0.12)', border: '1px solid hsl(142 71% 40% / 0.3)', color: 'hsl(142 71% 62%)' }}>
+                                  💬 Relancer sur WhatsApp
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
 
                     {/* Done quests */}
