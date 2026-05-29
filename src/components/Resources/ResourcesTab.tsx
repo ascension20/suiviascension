@@ -13,54 +13,57 @@ import {
   type Prompt,
 } from './methodes-data';
 
-// ── Design tokens ─────────────────────────────────────────────────────────────
-const C = {
-  bg:       '#faf9f6',
-  surface:  '#ffffff',
-  surface2: '#f3f2ef',
-  border:   '#e0ddd8',
-  border2:  '#ccc9c2',
-  text:     '#1a1916',
-  muted:    '#8a8178',
-  gold:     '#c9973a',
-  seconde:  '#7eb8d4',
-  premiere: '#c9973a',
-  terminale:'#c97a5a',
-} as const;
+// ── Subject color map (matches index.css --subject-* vars) ────────────────────
+const SUBJ_HSL: Record<string, string> = {
+  Mx:  '213 90% 62%',
+  PC:  '142 71% 45%',
+  Fr:  '336 77% 59%',
+  HG:  '30 80% 57%',
+  SVT: '155 58% 48%',
+  SES: '270 50% 60%',
+  Ph:  '290 60% 62%',
+};
+const sc  = (code: string) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'})`;
+const scA = (code: string, a: number) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'} / ${a})`;
+
+// Icon → accent color
+const ICON_HSL = { '✦': '43 90% 55%', '◆': '220 10% 50%', '⏱': '30 80% 57%' } as const;
+
+// Tag config
+const TAG_CFG: Record<Tag, { label: string; hsl: string }> = {
+  ia:     { label: 'IA',                 hsl: '270 50% 65%' },
+  actif:  { label: 'Rappel actif',       hsl: '142 71% 48%' },
+  espace: { label: 'Répétition espacée', hsl: '43 90% 55%'  },
+};
 
 type TabId = 'general' | 'seconde' | 'premiere' | 'terminale' | 'prompts';
-
 const TABS: { id: TabId; label: string }[] = [
-  { id: 'general',   label: '⚡ Conseils généraux' },
+  { id: 'general',   label: '⚡ Général' },
   { id: 'seconde',   label: 'Seconde' },
   { id: 'premiere',  label: 'Première' },
   { id: 'terminale', label: 'Terminale' },
   { id: 'prompts',   label: '✦ Prompts IA' },
 ];
 
-const TAG_CONFIG: Record<Tag, { label: string; color: string; bg: string }> = {
-  ia:     { label: 'IA',                 color: '#9b8ecf', bg: 'rgba(155,142,207,0.15)' },
-  actif:  { label: 'Rappel actif',       color: '#6aab8e', bg: 'rgba(106,171,142,0.15)' },
-  espace: { label: 'Répétition espacée', color: '#c9973a', bg: 'rgba(201,151,58,0.15)'  },
-};
-
 // ── General Tab ───────────────────────────────────────────────────────────────
 function GeneralTab({ sections }: { sections: GeneralSection[] }) {
   return (
-    <div className="m-general">
-      {sections.map(sec => (
-        <div key={sec.title} className="m-general-section">
-          <h2 className="m-section-title">{sec.title}</h2>
-          <div className="m-cards-grid">
-            {sec.cards.map(card => (
-              <div key={card.title} className={`m-card${card.hot ? ' m-card-hot' : ''}`}>
-                {card.hot && <span className="m-hot-badge">✦</span>}
-                <h3 className="m-card-title">{card.title}</h3>
-                <p
-                  className="m-card-desc"
-                  dangerouslySetInnerHTML={{ __html: card.desc }}
-                />
-              </div>
+    <div className="r-general">
+      {sections.map((sec, si) => (
+        <div key={sec.title}>
+          <div className="r-section-label">{sec.title}</div>
+          <div className="r-gen-grid">
+            {sec.cards.map((card, ci) => (
+              <article
+                key={card.title}
+                className={`r-gen-card game-card card-enter card-enter-${ci + 1}${card.hot ? ' r-hot-card' : ''}`}
+              >
+                {card.hot && (
+                  <span className="r-hot-star clip-sm" aria-label="Technique prioritaire">✦</span>
+                )}
+                <h3 className="r-gen-title">{card.title}</h3>
+                <p className="r-gen-desc" dangerouslySetInnerHTML={{ __html: card.desc }} />
+              </article>
             ))}
           </div>
         </div>
@@ -69,65 +72,94 @@ function GeneralTab({ sections }: { sections: GeneralSection[] }) {
   );
 }
 
-// ── Level Tab ─────────────────────────────────────────────────────────────────
-function LevelTab({ subjects, color }: { subjects: SubjectCard[]; color: string }) {
+// ── Subject Picker ─────────────────────────────────────────────────────────────
+function SubjectPicker({
+  subjects, selected, onSelect,
+}: {
+  subjects: SubjectCard[];
+  selected: string;
+  onSelect: (code: string) => void;
+}) {
   return (
-    <div className="m-level">
-      {subjects.map(subj => (
-        <div key={subj.code} className="m-subject-card" style={{ borderLeftColor: color }}>
-          <div className="m-subject-header">
-            <span className="m-subject-code" style={{ color }}>{subj.code}</span>
-            <span className="m-subject-name">{subj.name}</span>
-          </div>
-          <div className="m-categories">
-            {subj.categories.map(cat => (
-              <div key={cat.label} className="m-category">
-                <p className="m-category-label">{cat.label}</p>
-                <ul className="m-methods-list">
-                  {cat.methods.map(m => (
-                    <li key={m.title} className={`m-method${m.hot ? ' m-method-hot' : ''}`}>
-                      <div className="m-method-header">
-                        <span
-                          className="m-method-icon"
-                          style={{ color: m.icon === '⏱' ? C.muted : C.gold }}
-                        >
-                          {m.icon}
-                        </span>
-                        <span className="m-method-title">{m.title}</span>
-                        {m.hot && <span className="m-hot-dot" />}
+    <div className="r-picker">
+      {subjects.map(s => {
+        const count  = s.categories.reduce((n, c) => n + c.methods.length, 0);
+        const active = s.code === selected;
+        return (
+          <button
+            key={s.code}
+            className={`r-pick-btn${active ? ' r-pick-active' : ''}`}
+            style={{
+              '--sc':  sc(s.code),
+              '--scl': scA(s.code, 0.12),
+              '--scb': scA(s.code, active ? 0.55 : 0.3),
+            } as React.CSSProperties}
+            onClick={() => onSelect(s.code)}
+          >
+            <span className="r-pick-code clip-sm">{s.code}</span>
+            <span className="r-pick-name">{s.name}</span>
+            <span className="r-pick-count">{count}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Level Tab ─────────────────────────────────────────────────────────────────
+function LevelTab({ subjects }: { subjects: SubjectCard[] }) {
+  const [selected, setSelected] = useState(subjects[0].code);
+  const subj = subjects.find(s => s.code === selected) ?? subjects[0];
+
+  return (
+    <div className="r-level">
+      <SubjectPicker subjects={subjects} selected={selected} onSelect={setSelected} />
+
+      <div className="r-subject-body">
+        {subj.categories.map(cat => (
+          <section key={cat.label}>
+            <div className="r-cat-label">{cat.label}</div>
+            <ul className="r-methods-list">
+              {cat.methods.map(m => {
+                const iconHsl = ICON_HSL[m.icon] ?? '220 10% 50%';
+                return (
+                  <li
+                    key={m.title}
+                    className={`r-method${m.hot ? ' r-method-hot' : ''}`}
+                    style={{ '--ih': `hsl(${iconHsl})`, '--ib': `hsl(${iconHsl} / 0.1)` } as React.CSSProperties}
+                  >
+                    <div className="r-method-row">
+                      <span className="r-method-icon">{m.icon}</span>
+                      <span className="r-method-title">{m.title}</span>
+                      {m.hot && <span className="r-hot-badge clip-sm">TOP</span>}
+                    </div>
+                    <p
+                      className="r-method-desc"
+                      dangerouslySetInnerHTML={{ __html: m.desc }}
+                    />
+                    {m.tags && m.tags.length > 0 && (
+                      <div className="r-tags">
+                        {m.tags.map(tag => {
+                          const t = TAG_CFG[tag];
+                          return (
+                            <span
+                              key={tag}
+                              className="r-tag"
+                              style={{ color: `hsl(${t.hsl})`, background: `hsl(${t.hsl} / 0.12)`, borderColor: `hsl(${t.hsl} / 0.3)` }}
+                            >
+                              {t.label}
+                            </span>
+                          );
+                        })}
                       </div>
-                      <p
-                        className="m-method-desc"
-                        dangerouslySetInnerHTML={{ __html: m.desc }}
-                      />
-                      {m.tags && m.tags.length > 0 && (
-                        <div className="m-tags">
-                          {m.tags.map(tag => {
-                            const t = TAG_CONFIG[tag];
-                            return (
-                              <span
-                                key={tag}
-                                className="m-tag"
-                                style={{
-                                  color: t.color,
-                                  background: t.bg,
-                                  borderColor: t.color + '40',
-                                }}
-                              >
-                                {t.label}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }
@@ -135,7 +167,7 @@ function LevelTab({ subjects, color }: { subjects: SubjectCard[]; color: string 
 // ── Prompts Tab ───────────────────────────────────────────────────────────────
 function PromptCard({ prompt }: { prompt: Prompt }) {
   const [copied, setCopied] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+  const [open,   setOpen]   = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(prompt.text);
@@ -144,41 +176,39 @@ function PromptCard({ prompt }: { prompt: Prompt }) {
   };
 
   return (
-    <div className={`m-prompt-card${expanded ? ' m-prompt-expanded' : ''}`}>
-      <div className="m-prompt-header">
-        <div className="m-prompt-meta">
-          <p className="m-prompt-title">{prompt.title}</p>
-          <p className="m-prompt-scope">{prompt.scope}</p>
+    <div className={`r-prompt${open ? ' r-prompt-open' : ''}`}>
+      <div className="r-prompt-head">
+        <div>
+          <p className="r-prompt-title">{prompt.title}</p>
+          <p className="r-prompt-scope">{prompt.scope}</p>
         </div>
-        <div className="m-prompt-actions">
-          <button className="m-prompt-btn" onClick={handleCopy} title="Copier le prompt">
-            {copied ? <Check size={12} /> : <Copy size={12} />}
-            <span>{copied ? 'Copié !' : 'Copier'}</span>
-          </button>
+        <div className="r-prompt-btns">
           <button
-            className="m-prompt-toggle"
-            onClick={() => setExpanded(e => !e)}
-            title={expanded ? 'Réduire' : 'Voir le prompt'}
+            className="r-pbtn"
+            onClick={handleCopy}
+            style={copied ? { color: 'hsl(142 71% 45%)', borderColor: 'hsl(142 71% 45% / 0.4)' } : undefined}
           >
-            {expanded ? '−' : '+'}
+            {copied ? <Check size={12} /> : <Copy size={12} />}
+            <span>{copied ? 'Copié' : 'Copier'}</span>
+          </button>
+          <button className="r-pbtn r-ptoggle" onClick={() => setOpen(o => !o)}>
+            {open ? '−' : '+'}
           </button>
         </div>
       </div>
-      {expanded && <pre className="m-prompt-text">{prompt.text}</pre>}
+      {open && <pre className="r-prompt-body">{prompt.text}</pre>}
     </div>
   );
 }
 
 function PromptsTab({ groups }: { groups: PromptGroup[] }) {
   return (
-    <div className="m-prompts">
-      {groups.map(group => (
-        <div key={group.label} className="m-prompt-group">
-          <h2 className="m-section-title">{group.label}</h2>
-          <div className="m-prompts-list">
-            {group.prompts.map(p => (
-              <PromptCard key={p.title} prompt={p} />
-            ))}
+    <div className="r-prompts">
+      {groups.map(g => (
+        <div key={g.label}>
+          <div className="r-section-label">{g.label}</div>
+          <div className="r-prompts-list">
+            {g.prompts.map(p => <PromptCard key={p.title} prompt={p} />)}
           </div>
         </div>
       ))}
@@ -186,357 +216,456 @@ function PromptsTab({ groups }: { groups: PromptGroup[] }) {
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ── Root ──────────────────────────────────────────────────────────────────────
 export function ResourcesTab() {
-  const [activeTab, setActiveTab] = useState<TabId>('general');
+  const [tab, setTab] = useState<TabId>('general');
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
-
-        /* ── Root ── */
-        .m-root {
-          background: ${C.bg};
-          color: ${C.text};
-          font-family: 'DM Sans', sans-serif;
-          font-weight: 300;
-          min-height: calc(100vh - 80px);
-          margin: -1.5rem -1.5rem 0;
-          padding: 0;
+        /* ─── Layout bleed ─── */
+        .r-root {
+          background: hsl(222 22% 4%);
+          color: hsl(42 12% 92%);
+          font-family: 'Geist', 'Inter', sans-serif;
+          font-size: 0.875rem;
+          margin: -1rem -1rem 0;
+          min-height: calc(100vh - 72px);
           position: relative;
+          overflow: hidden;
+        }
+        @media (min-width: 768px) {
+          .r-root { margin: -1.5rem -1.5rem 0; }
         }
 
-        /* Grain texture */
-        .m-root::before {
+        /* Scan-line overlay */
+        .r-root::after {
           content: '';
-          position: absolute; inset: 0;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-          pointer-events: none; z-index: 0; mix-blend-mode: multiply;
+          position: absolute; inset: 0; pointer-events: none; z-index: 0;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            hsl(222 22% 0% / 0.03) 2px,
+            hsl(222 22% 0% / 0.03) 4px
+          );
         }
-        .m-root > * { position: relative; z-index: 1; }
+        .r-root > * { position: relative; z-index: 1; }
 
-        /* ── Stars ── */
-        .m-stars { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-        .m-star  {
-          position: absolute;
-          font-family: 'Cormorant Garamond', serif;
-          color: ${C.gold}; line-height: 1; user-select: none;
-        }
-
-        /* ── Header ── */
-        .m-header {
+        /* ─── Header ─── */
+        .r-header {
+          padding: 2rem 1.5rem 1.25rem;
           text-align: center;
-          padding: 2.5rem 2rem 1.5rem;
           position: relative;
         }
-        .m-header::before {
+        .r-header::before {
           content: '';
-          position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
-          width: 500px; height: 220px;
-          background: radial-gradient(ellipse at center, rgba(201,151,58,0.07) 0%, transparent 70%);
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(ellipse 70% 160px at 50% 0%, hsl(43 90% 50% / 0.06) 0%, transparent 100%);
           pointer-events: none;
         }
 
-        .m-logo-label {
-          font-size: 0.68rem; font-weight: 500;
-          letter-spacing: 0.35em; text-transform: uppercase;
-          color: ${C.muted}; margin-bottom: 0.3rem;
+        .r-eye {
+          display: inline-block;
+          font-size: 0.65rem;
+          font-weight: 600;
+          letter-spacing: 0.3em;
+          text-transform: uppercase;
+          color: hsl(43 90% 50% / 0.7);
+          margin-bottom: 0.6rem;
         }
 
-        .m-gold-divider {
-          width: 32px; height: 1px;
-          background: linear-gradient(to right, transparent, ${C.gold}, transparent);
-          margin: 0.4rem auto 0.8rem;
+        .r-title {
+          font-family: 'Space Grotesk', 'Geist', sans-serif;
+          font-size: clamp(1.75rem, 5vw, 2.8rem);
+          font-weight: 800;
+          line-height: 1;
+          margin: 0 0 0.5rem;
+          background: linear-gradient(135deg, hsl(43 90% 40%), hsl(50 100% 65%));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -0.02em;
+          text-shadow: none;
         }
 
-        .m-title {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(2rem, 5vw, 3.2rem);
-          font-weight: 700; line-height: 0.95;
-          color: ${C.text}; margin: 0 0 0.5rem;
-        }
-        .m-title-gold { color: ${C.gold}; font-style: italic; }
-
-        .m-subtitle {
-          color: ${C.muted}; font-size: 0.85rem; font-weight: 300;
-          max-width: 420px; margin: 0 auto; line-height: 1.7;
+        .r-subtitle {
+          font-size: 0.8rem;
+          color: hsl(220 10% 50%);
+          margin: 0 0 1rem;
+          line-height: 1.6;
         }
 
-        /* ── Tab bar ── */
-        .m-tabbar {
+        /* Method type chips */
+        .r-method-chips {
+          display: flex; justify-content: center;
+          flex-wrap: wrap; gap: 0.4rem;
+          margin-bottom: 0.25rem;
+        }
+        .r-mchip {
+          font-size: 0.62rem; font-weight: 600;
+          letter-spacing: 0.08em; text-transform: uppercase;
+          padding: 0.2rem 0.65rem;
+          border: 1px solid;
+          border-radius: 100px;
+        }
+
+        /* ─── Tab bar ─── */
+        .r-tabbar {
           display: flex;
-          border-bottom: 1px solid ${C.border};
-          padding: 0 2rem;
+          border-bottom: 1px solid hsl(222 16% 18%);
+          padding: 0 1rem;
           overflow-x: auto;
           scrollbar-width: none;
+          background: hsl(222 22% 5%);
         }
-        .m-tabbar::-webkit-scrollbar { display: none; }
+        .r-tabbar::-webkit-scrollbar { display: none; }
 
-        .m-tab {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.78rem; font-weight: 400;
-          letter-spacing: 0.04em;
-          color: ${C.muted};
+        .r-tab {
+          font-family: 'Geist', 'Inter', sans-serif;
+          font-size: 0.78rem;
+          font-weight: 400;
+          color: hsl(220 10% 45%);
           background: transparent; border: none;
           border-bottom: 2px solid transparent;
-          padding: 0.75rem 1.1rem;
+          padding: 0.7rem 1rem;
           cursor: pointer;
-          transition: color 0.18s, border-color 0.18s;
+          transition: color 0.15s, border-color 0.15s;
           white-space: nowrap; margin-bottom: -1px;
+          letter-spacing: 0.02em;
         }
-        .m-tab:hover { color: ${C.text}; }
-        .m-tab.m-tab-active {
-          color: ${C.gold};
-          border-bottom-color: ${C.gold};
+        .r-tab:hover { color: hsl(42 12% 85%); }
+        .r-tab.r-tab-on {
+          color: hsl(43 90% 55%);
+          border-bottom-color: hsl(43 90% 50%);
           font-weight: 500;
         }
 
-        /* ── Content ── */
-        .m-content {
-          padding: 2rem 2rem 3rem;
-          max-width: 900px; margin: 0 auto;
+        /* ─── Content ─── */
+        .r-content {
+          padding: 1.5rem 1.25rem 3rem;
+          max-width: 860px;
+          margin: 0 auto;
+        }
+        @media (min-width: 640px) {
+          .r-content { padding: 2rem 2rem 3rem; }
         }
 
-        .m-section-title {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 1.4rem; font-weight: 600;
-          color: ${C.text}; margin: 0 0 1rem;
-          padding-bottom: 0.5rem;
-          border-bottom: 1px solid ${C.border};
-        }
-
-        /* ── General cards ── */
-        .m-general { display: flex; flex-direction: column; gap: 2.5rem; }
-
-        .m-cards-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 1rem;
-        }
-
-        .m-card {
-          background: ${C.surface};
-          border: 1px solid ${C.border};
-          border-radius: 10px; padding: 1.2rem;
-          position: relative;
-          transition: border-color 0.18s, box-shadow 0.18s;
-        }
-        .m-card:hover {
-          border-color: ${C.border2};
-          box-shadow: 0 2px 16px rgba(26,25,22,0.06);
-        }
-        .m-card-hot {
-          border-color: rgba(201,151,58,0.3);
-          background: linear-gradient(135deg, #fff 0%, rgba(201,151,58,0.03) 100%);
-        }
-        .m-hot-badge {
-          position: absolute; top: 0.8rem; right: 0.9rem;
-          font-family: 'Cormorant Garamond', serif;
-          color: ${C.gold}; font-size: 0.9rem; opacity: 0.7;
-        }
-        .m-card-title {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 1.05rem; font-weight: 600;
-          color: ${C.text}; margin: 0 0 0.5rem; line-height: 1.3;
-        }
-        .m-card-desc {
-          font-size: 0.82rem; line-height: 1.7;
-          color: #4a4845; margin: 0;
-        }
-        .m-card-desc strong { font-weight: 500; color: ${C.text}; }
-
-        /* ── Level subjects ── */
-        .m-level { display: flex; flex-direction: column; gap: 1.5rem; }
-
-        .m-subject-card {
-          background: ${C.surface};
-          border: 1px solid ${C.border};
-          border-left-width: 3px;
-          border-radius: 10px; overflow: hidden;
-        }
-
-        .m-subject-header {
+        /* ─── Section label ─── */
+        .r-section-label {
           display: flex; align-items: center; gap: 0.6rem;
-          padding: 0.85rem 1.2rem;
-          border-bottom: 1px solid ${C.border};
-          background: ${C.surface2};
-        }
-        .m-subject-code {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 1.1rem; font-weight: 700; line-height: 1;
-        }
-        .m-subject-name {
-          font-size: 0.8rem; font-weight: 400;
-          color: ${C.muted}; letter-spacing: 0.03em;
-        }
-
-        .m-categories {
-          padding: 1rem 1.2rem;
-          display: flex; flex-direction: column; gap: 1.2rem;
-        }
-
-        .m-category-label {
-          font-size: 0.66rem; font-weight: 500;
+          font-size: 0.7rem; font-weight: 600;
           letter-spacing: 0.12em; text-transform: uppercase;
-          color: ${C.muted}; margin: 0 0 0.55rem;
+          color: hsl(43 90% 50%);
+          margin-bottom: 0.85rem; margin-top: 0.25rem;
+        }
+        .r-section-label::before {
+          content: '';
+          display: block;
+          width: 2px; height: 0.9rem;
+          background: linear-gradient(180deg, hsl(43 90% 50%), hsl(43 90% 50% / 0));
+          border-radius: 1px;
+          flex-shrink: 0;
+        }
+        .r-section-label::after {
+          content: '';
+          display: block; flex: 1;
+          height: 1px;
+          background: linear-gradient(to right, hsl(43 90% 50% / 0.2), transparent);
         }
 
-        .m-methods-list {
-          list-style: none; margin: 0; padding: 0;
-          display: flex; flex-direction: column; gap: 0.65rem;
+        /* ─── General tab ─── */
+        .r-general { display: flex; flex-direction: column; gap: 2rem; }
+        .r-gen-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          gap: 0.75rem;
         }
 
-        .m-method {
-          padding: 0.8rem 1rem;
-          background: ${C.surface2};
-          border: 1px solid ${C.border};
-          border-radius: 8px;
-          transition: border-color 0.15s;
+        .r-gen-card {
+          background: hsl(222 22% 9%);
+          border: 1px solid hsl(222 16% 18%);
+          border-radius: 10px;
+          padding: 1.1rem 1.1rem 1rem;
+          position: relative;
+          cursor: default;
         }
-        .m-method:hover { border-color: ${C.border2}; }
-        .m-method-hot {
-          border-color: rgba(201,151,58,0.25);
-          background: linear-gradient(135deg, ${C.surface2} 0%, rgba(201,151,58,0.04) 100%);
+        .r-hot-card {
+          border-color: hsl(43 90% 50% / 0.25) !important;
+          background: hsl(222 22% 10%);
         }
-
-        .m-method-header {
-          display: flex; align-items: flex-start;
-          gap: 0.45rem; margin-bottom: 0.35rem;
-        }
-        .m-method-icon {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 1rem; flex-shrink: 0;
-          margin-top: 0.05rem; line-height: 1.3;
-        }
-        .m-method-title {
-          font-size: 0.83rem; font-weight: 500;
-          color: ${C.text}; line-height: 1.4; flex: 1;
-        }
-        .m-hot-dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: ${C.gold}; flex-shrink: 0; margin-top: 0.35rem;
+        .r-hot-card:hover {
+          box-shadow: 0 0 20px hsl(43 90% 50% / 0.1) !important;
         }
 
-        .m-method-desc {
+        .r-hot-star {
+          position: absolute; top: -7px; right: -7px;
+          width: 22px; height: 22px;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 0.65rem;
+          background: linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%));
+          color: hsl(222 22% 8%);
+          font-weight: 900;
+        }
+
+        .r-gen-title {
+          font-family: 'Space Grotesk', 'Geist', sans-serif;
+          font-size: 0.9rem; font-weight: 700;
+          color: hsl(42 12% 92%);
+          margin: 0 0 0.5rem; line-height: 1.35;
+        }
+        .r-gen-desc {
           font-size: 0.79rem; line-height: 1.65;
-          color: #5a5754; margin: 0 0 0.45rem;
-          padding-left: 1.3rem;
+          color: hsl(220 10% 55%); margin: 0;
         }
-        .m-method-desc strong { font-weight: 500; color: ${C.text}; }
+        .r-gen-desc strong { font-weight: 500; color: hsl(42 12% 82%); }
 
-        .m-tags {
-          display: flex; flex-wrap: wrap; gap: 0.3rem;
-          padding-left: 1.3rem;
+        /* ─── Subject picker ─── */
+        .r-picker {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+          gap: 0.6rem;
+          margin-bottom: 1.5rem;
         }
-        .m-tag {
-          font-size: 0.64rem; font-weight: 500;
+        @media (min-width: 640px) {
+          .r-picker { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+        }
+
+        .r-pick-btn {
+          display: flex; flex-direction: column;
+          align-items: flex-start; gap: 0.35rem;
+          padding: 0.75rem 0.85rem;
+          background: hsl(222 22% 9%);
+          border: 1px solid hsl(222 16% 18%);
+          border-radius: 10px;
+          cursor: pointer;
+          text-align: left;
+          transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+          position: relative;
+          overflow: hidden;
+        }
+        .r-pick-btn::before {
+          content: '';
+          position: absolute; inset: 0;
+          background: var(--scl);
+          opacity: 0;
+          transition: opacity 0.18s;
+        }
+        .r-pick-btn:hover { border-color: var(--scb); }
+        .r-pick-btn:hover::before { opacity: 0.6; }
+        .r-pick-active {
+          border-color: var(--scb) !important;
+          box-shadow: 0 0 0 1px var(--scb), 0 0 16px hsl(from var(--sc) h s l / 0.15);
+        }
+        .r-pick-active::before { opacity: 1 !important; }
+
+        .r-pick-code {
+          display: inline-flex; align-items: center; justify-content: center;
+          min-width: 2rem; height: 1.5rem;
+          padding: 0 0.4rem;
+          font-size: 0.7rem; font-weight: 800;
           letter-spacing: 0.04em;
-          padding: 0.16rem 0.52rem;
-          border-radius: 100px; border: 1px solid;
+          color: hsl(222 22% 6%);
+          background: var(--sc);
+        }
+        .r-pick-name {
+          font-size: 0.76rem; font-weight: 500;
+          color: hsl(42 12% 85%);
+          line-height: 1.3; position: relative; z-index: 1;
+        }
+        .r-pick-count {
+          font-size: 0.65rem; font-weight: 600;
+          letter-spacing: 0.08em;
+          color: var(--sc);
+          position: relative; z-index: 1;
+        }
+        .r-pick-count::after { content: ' méthodes'; font-weight: 400; color: hsl(220 10% 45%); }
+
+        /* ─── Level content ─── */
+        .r-level {}
+        .r-subject-body { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .r-cat-label {
+          font-size: 0.64rem; font-weight: 600;
+          letter-spacing: 0.14em; text-transform: uppercase;
+          color: hsl(220 10% 42%);
+          margin-bottom: 0.55rem;
+          padding-left: 0.2rem;
         }
 
-        /* ── Prompts ── */
-        .m-prompts { display: flex; flex-direction: column; gap: 2.5rem; }
-        .m-prompts-list { display: flex; flex-direction: column; gap: 0.6rem; }
+        .r-methods-list {
+          list-style: none; margin: 0; padding: 0;
+          display: flex; flex-direction: column; gap: 0.5rem;
+        }
 
-        .m-prompt-card {
-          background: ${C.surface};
-          border: 1px solid ${C.border};
+        .r-method {
+          background: hsl(222 22% 9%);
+          border: 1px solid hsl(222 16% 18%);
+          border-left: 3px solid var(--ih);
+          border-radius: 8px;
+          padding: 0.75rem 0.9rem;
+          transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .r-method:hover {
+          border-color: hsl(222 16% 24%);
+          border-left-color: var(--ih);
+        }
+        .r-method-hot {
+          border-color: hsl(43 90% 50% / 0.22) !important;
+          border-left-color: hsl(43 90% 50%) !important;
+          background: hsl(222 22% 10%);
+          box-shadow: 0 0 12px hsl(43 90% 50% / 0.07);
+        }
+
+        .r-method-row {
+          display: flex; align-items: center; gap: 0.45rem;
+          margin-bottom: 0.35rem;
+        }
+        .r-method-icon {
+          font-size: 0.85rem; color: var(--ih); flex-shrink: 0; line-height: 1;
+        }
+        .r-method-title {
+          font-size: 0.83rem; font-weight: 600;
+          color: hsl(42 12% 90%); flex: 1; line-height: 1.3;
+        }
+
+        .r-hot-badge {
+          font-size: 0.56rem; font-weight: 800;
+          letter-spacing: 0.08em;
+          padding: 0.15rem 0.4rem;
+          background: linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%));
+          color: hsl(222 22% 6%);
+          flex-shrink: 0;
+        }
+
+        .r-method-desc {
+          font-size: 0.78rem; line-height: 1.65;
+          color: hsl(220 10% 55%);
+          margin: 0 0 0.45rem;
+          padding-left: 1.25rem;
+        }
+        .r-method-desc strong { font-weight: 500; color: hsl(42 12% 80%); }
+
+        .r-tags {
+          display: flex; flex-wrap: wrap; gap: 0.28rem;
+          padding-left: 1.25rem;
+        }
+        .r-tag {
+          font-size: 0.62rem; font-weight: 600;
+          letter-spacing: 0.05em;
+          padding: 0.14rem 0.5rem;
+          border-radius: 100px;
+          border: 1px solid;
+        }
+
+        /* ─── Prompts ─── */
+        .r-prompts { display: flex; flex-direction: column; gap: 2rem; }
+        .r-prompts-list { display: flex; flex-direction: column; gap: 0.55rem; }
+
+        .r-prompt {
+          background: hsl(222 22% 9%);
+          border: 1px solid hsl(222 16% 18%);
           border-radius: 10px; overflow: hidden;
           transition: border-color 0.15s;
         }
-        .m-prompt-card:hover { border-color: ${C.border2}; }
-        .m-prompt-expanded { border-color: rgba(201,151,58,0.3) !important; }
+        .r-prompt:hover { border-color: hsl(222 16% 25%); }
+        .r-prompt-open {
+          border-color: hsl(43 90% 50% / 0.3) !important;
+          box-shadow: 0 0 16px hsl(43 90% 50% / 0.07);
+        }
 
-        .m-prompt-header {
+        .r-prompt-head {
           display: flex; align-items: center;
-          justify-content: space-between; gap: 1rem;
-          padding: 0.85rem 1rem;
+          justify-content: space-between; gap: 0.75rem;
+          padding: 0.8rem 1rem;
         }
-        .m-prompt-meta { flex: 1; min-width: 0; }
-        .m-prompt-title {
-          font-size: 0.85rem; font-weight: 500;
-          color: ${C.text}; margin: 0 0 0.15rem;
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        .r-prompt-title {
+          font-size: 0.83rem; font-weight: 600;
+          color: hsl(42 12% 90%); margin: 0 0 0.15rem;
         }
-        .m-prompt-scope {
-          font-size: 0.71rem; color: ${C.muted}; margin: 0;
+        .r-prompt-scope {
+          font-size: 0.7rem; color: hsl(220 10% 45%); margin: 0;
+        }
+        .r-prompt-btns {
+          display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0;
         }
 
-        .m-prompt-actions {
-          display: flex; align-items: center; gap: 0.35rem; flex-shrink: 0;
-        }
-        .m-prompt-btn, .m-prompt-toggle {
+        .r-pbtn {
           display: inline-flex; align-items: center; gap: 0.3rem;
           background: transparent;
-          border: 1px solid ${C.border};
+          border: 1px solid hsl(222 16% 24%);
           border-radius: 6px;
-          color: ${C.muted};
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.72rem; font-weight: 400;
-          cursor: pointer; padding: 0.28rem 0.6rem;
-          transition: border-color 0.15s, color 0.15s;
+          color: hsl(220 10% 48%);
+          font-family: inherit; font-size: 0.71rem; font-weight: 500;
+          cursor: pointer; padding: 0.27rem 0.55rem;
+          transition: all 0.15s;
         }
-        .m-prompt-btn:hover, .m-prompt-toggle:hover {
-          border-color: ${C.gold}; color: ${C.gold};
-        }
-        .m-prompt-toggle { font-size: 1rem; padding: 0.18rem 0.5rem; }
+        .r-pbtn:hover { border-color: hsl(43 90% 50% / 0.5); color: hsl(43 90% 55%); }
 
-        .m-prompt-text {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.78rem; font-weight: 300;
-          line-height: 1.75; color: #4a4845;
-          background: ${C.surface2};
-          border-top: 1px solid ${C.border};
+        .r-ptoggle { font-size: 1rem; line-height: 1; padding: 0.2rem 0.5rem; }
+
+        .r-prompt-body {
+          font-family: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
+          font-size: 0.75rem; line-height: 1.8;
+          color: hsl(220 10% 58%);
+          background: hsl(222 22% 7%);
+          border-top: 1px solid hsl(222 16% 16%);
           margin: 0; padding: 1rem 1.1rem;
           white-space: pre-wrap; word-break: break-word;
         }
       `}</style>
 
-      <div className="m-root">
+      <div className="r-root">
 
-        {/* Decorative stars */}
-        <div className="m-stars" aria-hidden="true">
-          <span className="m-star" style={{ top: '3%',  left: '3%',   fontSize: '3rem',   opacity: 0.4  }}>✦</span>
-          <span className="m-star" style={{ top: '9%',  left: '9%',   fontSize: '1.2rem', opacity: 0.25 }}>✦</span>
-          <span className="m-star" style={{ top: '2%',  right: '4%',  fontSize: '3.5rem', opacity: 0.38 }}>✦</span>
-          <span className="m-star" style={{ top: '10%', right: '11%', fontSize: '1.8rem', opacity: 0.28 }}>✦</span>
-          <span className="m-star" style={{ top: '6%',  left: '20%',  fontSize: '1rem',   opacity: 0.2  }}>✦</span>
-        </div>
-
-        {/* Header */}
-        <header className="m-header">
-          <p className="m-logo-label">Ascension</p>
-          <div className="m-gold-divider" />
-          <h1 className="m-title">
-            Méthodes <span className="m-title-gold">de révision</span>
-          </h1>
-          <p className="m-subtitle">
-            Uniquement les méthodes qui marchent — rappel actif, répétition espacée, et IA.
+        {/* ── Header ── */}
+        <header className="r-header">
+          <span className="r-eye">Ascension — Méthodes</span>
+          <h1 className="r-title">Méthodes de révision</h1>
+          <p className="r-subtitle">
+            Les techniques qui font la différence — actif, espacé, IA.
           </p>
+          <div className="r-method-chips">
+            {([
+              { label: 'Rappel actif',       hsl: '142 71% 48%' },
+              { label: 'Répétition espacée', hsl: '43 90% 55%'  },
+              { label: 'IA',                 hsl: '270 50% 65%' },
+            ] as const).map(c => (
+              <span
+                key={c.label}
+                className="r-mchip"
+                style={{
+                  color:       `hsl(${c.hsl})`,
+                  background:  `hsl(${c.hsl} / 0.1)`,
+                  borderColor: `hsl(${c.hsl} / 0.3)`,
+                }}
+              >
+                {c.label}
+              </span>
+            ))}
+          </div>
         </header>
 
-        {/* Tab bar */}
-        <nav className="m-tabbar" aria-label="Sections">
+        {/* ── Tab bar ── */}
+        <nav className="r-tabbar">
           {TABS.map(t => (
             <button
               key={t.id}
-              className={`m-tab${activeTab === t.id ? ' m-tab-active' : ''}`}
-              onClick={() => setActiveTab(t.id)}
+              className={`r-tab${tab === t.id ? ' r-tab-on' : ''}`}
+              onClick={() => setTab(t.id)}
             >
               {t.label}
             </button>
           ))}
         </nav>
 
-        {/* Content */}
-        <div className="m-content">
-          {activeTab === 'general'   && <GeneralTab sections={GENERAL_SECTIONS} />}
-          {activeTab === 'seconde'   && <LevelTab subjects={SECONDE_SUBJECTS}   color={C.seconde} />}
-          {activeTab === 'premiere'  && <LevelTab subjects={PREMIERE_SUBJECTS}  color={C.premiere} />}
-          {activeTab === 'terminale' && <LevelTab subjects={TERMINALE_SUBJECTS} color={C.terminale} />}
-          {activeTab === 'prompts'   && <PromptsTab groups={PROMPT_GROUPS} />}
+        {/* ── Content ── */}
+        <div className="r-content">
+          {tab === 'general'   && <GeneralTab   sections={GENERAL_SECTIONS}   />}
+          {tab === 'seconde'   && <LevelTab     subjects={SECONDE_SUBJECTS}   />}
+          {tab === 'premiere'  && <LevelTab     subjects={PREMIERE_SUBJECTS}  />}
+          {tab === 'terminale' && <LevelTab     subjects={TERMINALE_SUBJECTS} />}
+          {tab === 'prompts'   && <PromptsTab   groups={PROMPT_GROUPS}        />}
         </div>
 
       </div>
