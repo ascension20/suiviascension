@@ -63,6 +63,12 @@ export function parseICal(icsText: string, weekStart: Date, weekEnd: Date): ICal
   const results: ICalEvent[] = [];
 
   for (const v of vevents) {
+    // Skip events marked as cancelled in the iCal feed (STATUS:CANCELLED).
+    // This handles both standalone cancelled events and individual cancelled
+    // occurrences of recurring events (via RECURRENCE-ID + STATUS:CANCELLED).
+    const status = v.getFirstPropertyValue('status');
+    if (status && (status as string).toLowerCase() === 'cancelled') continue;
+
     const ev = new ICAL.Event(v);
     try {
       // Handle recurring events: expand within range
