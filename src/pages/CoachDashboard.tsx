@@ -1053,18 +1053,26 @@ export default function CoachDashboard() {
             data.exams.length === 0
               ? <p className="text-xs text-muted-foreground text-center py-8">Aucun DS déclaré 📝</p>
               : data.exams.map(e => {
-                const daysUntil = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / 86400000);
-                const isPast    = daysUntil < 0;
-                const isMissing = isPast && e.grade === null && !e.grade_received;
+                const daysUntil      = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / 86400000);
+                const isPast         = daysUntil < 0;
+                const isMissing      = isPast && e.grade === null && !e.grade_received;
+                const isOverdue2Weeks = isPast && e.grade === null && !e.grade_received && daysUntil <= -14;
                 return (
                   <div key={e.id} className={`p-3.5 rounded-xl border text-xs ${isPast && !isMissing ? 'opacity-55' : ''}`}
                     style={{
-                      background: !isPast && daysUntil <= 5 ? 'hsl(0 84% 55% / 0.05)' : 'hsl(222 22% 9%)',
-                      borderColor: isMissing
-                        ? 'hsl(38 92% 55% / 0.35)'
+                      background: !isPast && daysUntil <= 5
+                        ? 'hsl(0 84% 55% / 0.05)'
+                        : isOverdue2Weeks ? 'hsl(38 92% 55% / 0.05)'
+                        : 'hsl(222 22% 9%)',
+                      borderColor: isOverdue2Weeks
+                        ? 'hsl(38 92% 55% / 0.55)'
+                        : isMissing ? 'hsl(38 92% 55% / 0.3)'
                         : !isPast && daysUntil <= 5 ? 'hsl(0 84% 55% / 0.45)'
                         : 'hsl(222 16% 16%)',
-                      boxShadow: !isPast && daysUntil <= 5 ? '0 0 10px hsl(0 84% 55% / 0.08)' : 'none',
+                      boxShadow: !isPast && daysUntil <= 5
+                        ? '0 0 10px hsl(0 84% 55% / 0.08)'
+                        : isOverdue2Weeks ? '0 0 12px hsl(38 92% 55% / 0.12)'
+                        : 'none',
                     }}>
                     <div className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `hsl(var(${SUBJECT_CSS_VAR[e.subject as Subject] || '--muted'}))` }} />
@@ -1084,6 +1092,34 @@ export default function CoachDashboard() {
                       {e.chapters && <span>· {e.chapters}</span>}
                       {e.photo_url && <button onClick={() => setPreviewPhoto(e.photo_url!)} className="flex items-center gap-1 ml-auto" style={{ color: 'hsl(43 90% 55%)' }}><ImageIcon size={10} /> Voir</button>}
                     </div>
+
+                    {isOverdue2Weeks && (() => {
+                      const examDateStr = new Date(e.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+                      const waMsg = encodeURIComponent(
+                        `Salut ${s.pseudo} ! Tu as eu ta note pour le DS de ${e.subject} du ${examDateStr} ? 📝`
+                      );
+                      return (
+                        <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t"
+                          style={{ borderColor: 'hsl(38 92% 55% / 0.2)' }}>
+                          <span>⏰</span>
+                          <span className="text-[11px] font-medium" style={{ color: 'hsl(38 92% 65%)' }}>
+                            Pas de note depuis +2 semaines
+                          </span>
+                          <a
+                            href={`https://wa.me/?text=${waMsg}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-auto flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all hover:scale-105 hover:brightness-110"
+                            style={{
+                              background: 'hsl(142 71% 40% / 0.12)',
+                              border:     '1px solid hsl(142 71% 40% / 0.35)',
+                              color:      'hsl(142 71% 62%)',
+                            }}>
+                            💬 Relancer sur WhatsApp
+                          </a>
+                        </div>
+                      );
+                    })()}
                   </div>
                 );
               })
