@@ -1,5 +1,8 @@
-import { createClient } from 'npm:@supabase/supabase-js@2';
-import webpush from 'npm:web-push@3';
+// ── Ascension 20 — Edge Function: send-notifications ────────────────────────
+// Appelée par un cron Supabase toutes les heures entre 8h et 20h.
+
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import webpush from 'https://esm.sh/web-push@3';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -36,6 +39,11 @@ async function sendPush(sub: any, notif: any): Promise<boolean> {
 }
 
 Deno.serve(async (req) => {
+  // CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Authorization, Content-Type' } });
+  }
+
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
   const { data: subs } = await db.from('push_subscriptions').select('user_id, endpoint, p256dh, auth');

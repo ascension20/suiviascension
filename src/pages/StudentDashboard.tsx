@@ -18,6 +18,7 @@ import { TutorialOverlay } from '@/components/Tutorial/TutorialOverlay';
 import { DSReminderModal } from '@/components/DSReminderModal';
 import { EventFormModal } from '@/components/Planning/EventFormModal';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useToast } from '@/hooks/use-toast';
 import { calculateLevel, getTitleForLevel } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useOnlineTracker, updateStreak } from '@/hooks/useOnlineTracker';
@@ -31,6 +32,7 @@ import type { AvatarConfig } from '@/lib/avatar/types';
 export default function StudentDashboard() {
   const { user, profile, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; xpGained: number } | null>(null);
   // XP leaderboard: [global, weekly, daily]
   const [xpGlobal,  setXpGlobal]  = useState<LeaderboardEntry[]>([]);
@@ -45,6 +47,30 @@ export default function StudentDashboard() {
   const [creatingDs, setCreatingDs] = useState(false);
   const { permission, subscribed, loading: pushLoading, isSupported: pushSupported, subscribe: subscribePush, unsubscribe: unsubscribePush } = usePushNotifications(user?.id);
   const [showTutorial, setShowTutorial] = useState(false);
+
+  const handleBellClick = useCallback(async () => {
+    if (subscribed) {
+      await unsubscribePush();
+      toast({ title: 'Notifications désactivées', description: 'Tu ne recevras plus de rappels push.' });
+      return;
+    }
+    const result = await subscribePush();
+    if (result.ok) {
+      toast({ title: '🔔 Notifications activées !', description: 'Tu recevras des rappels DS et deepwork sur cet appareil.' });
+    } else if (result.reason === 'no_vapid_key') {
+      toast({ title: 'Config manquante', description: 'La clé VAPID n\'est pas configurée. Ajoute VITE_VAPID_PUBLIC_KEY dans les variables d\'environnement Lovable.', variant: 'destructive' });
+    } else if (result.reason === 'permission_denied') {
+      toast({ title: 'Permission refusée', description: 'Autorise les notifications dans les réglages de ton navigateur.', variant: 'destructive' });
+    } else if (result.reason === 'sw_failed') {
+      toast({ title: 'Service worker échoué', description: 'Recharge la page et réessaie.', variant: 'destructive' });
+    } else if (result.reason === 'db_failed') {
+      toast({ title: 'Tables SQL manquantes', description: 'Lance les migrations push_subscriptions dans Supabase SQL Editor.', variant: 'destructive' });
+    } else if (result.reason === 'subscribe_failed') {
+      toast({ title: 'Abonnement push échoué', description: 'La clé VAPID est peut-être incorrecte. Vérifie VITE_VAPID_PUBLIC_KEY.', variant: 'destructive' });
+    } else {
+      toast({ title: 'Erreur inconnue', description: 'Ouvre la console (F12) pour plus de détails.', variant: 'destructive' });
+    }
+  }, [subscribed, subscribePush, unsubscribePush, toast]);
 
   const { isOnline, pendingCount } = useOfflineQueue();
   useOnlineTracker(user?.id);
@@ -309,7 +335,7 @@ export default function StudentDashboard() {
             {/* Notification bell */}
             {pushSupported && permission !== 'denied' && (
               <button
-                onClick={() => subscribed ? unsubscribePush() : subscribePush()}
+                onClick={handleBellClick}
                 disabled={pushLoading}
                 title={subscribed ? 'Désactiver les notifications' : 'Activer les notifications push'}
                 className="relative text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"

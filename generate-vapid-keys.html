@@ -19,18 +19,21 @@
 </head>
 <body>
   <h1>🔑 Générer les clés VAPID</h1>
-  <p>Ces clés servent à sécuriser les notifications push. Génère-les une seule fois.</p>
+  <p>Ces clés sécurisent les notifications push. <strong>Génère-les une seule fois</strong> et note-les.</p>
+  <div style="background:#2d1f00;border:1px solid #fbbf24;border-radius:8px;padding:12px 16px;margin:12px 0;color:#fbbf24;font-size:13px">
+    ⚠️ Ce générateur utilise <strong>ECDSA P-256</strong> — le seul format compatible avec <code>web-push</code>.
+  </div>
 
   <button onclick="generate()">Générer mes clés VAPID</button>
 
   <div id="result" style="display:none">
     <div class="box">
-      <div class="label">PUBLIC KEY (à mettre dans .env et Supabase secrets)</div>
+      <div class="label">PUBLIC KEY — dans .env ET dans Supabase secrets</div>
       <button class="copy-btn" onclick="copy('pub')">Copier</button>
       <div class="key" id="pub"></div>
     </div>
     <div class="box">
-      <div class="label">PRIVATE KEY (à mettre uniquement dans Supabase secrets — ne partage jamais)</div>
+      <div class="label">PRIVATE KEY — UNIQUEMENT dans Supabase secrets (ne partage jamais)</div>
       <button class="copy-btn" onclick="copy('priv')">Copier</button>
       <div class="key" id="priv"></div>
     </div>
@@ -38,34 +41,33 @@
     <h2 style="color:#fbbf24; margin-top:32px">Où les coller ?</h2>
 
     <div class="step">
-      <strong>1. Dans <code>.env</code></strong> (à la racine du projet) :<br><br>
-      <code>VITE_VAPID_PUBLIC_KEY="<span id="pub-inline">…</span>"</code>
+      <strong>1. Dans <code>.env</code></strong> à la racine du projet :<br><br>
+      <code>VITE_VAPID_PUBLIC_KEY="<span id="pub-inline">…</span>"</code><br><br>
+      <em style="color:#8b949e;font-size:12px">Remplace la valeur existante si elle existe déjà.</em>
     </div>
 
     <div class="step">
       <strong>2. Dans Supabase Dashboard</strong><br>
       → Project Settings → Edge Functions → Secrets<br><br>
-      Ajoute ces 3 secrets :<br><br>
-      <code>VAPID_PUBLIC_KEY</code> = la public key<br>
-      <code>VAPID_PRIVATE_KEY</code> = la private key<br>
-      <code>VAPID_EMAIL</code> = <code>mailto:ton@email.com</code>
+      Ajoute (ou remplace) ces 3 secrets :<br><br>
+      <code>VAPID_PUBLIC_KEY</code> = <span id="pub-secret" style="color:#7ee787;word-break:break-all">la public key</span><br><br>
+      <code>VAPID_PRIVATE_KEY</code> = <span id="priv-secret" style="color:#7ee787;word-break:break-all">la private key</span><br><br>
+      <code>VAPID_EMAIL</code> = <code>mailto:contact@ascension20.fr</code>
     </div>
 
     <div class="step">
-      <strong>3. Déploie l'edge function</strong><br><br>
-      Dans ton terminal, dans le dossier du projet :<br>
-      <code>npx supabase functions deploy send-notifications</code>
+      <strong>3. Dans Supabase SQL Editor</strong><br>
+      → New query → colle et exécute le contenu de :<br><br>
+      <code>supabase/migrations/20260527210000_push_subscriptions.sql</code>
     </div>
 
     <div class="step">
-      <strong>4. Applique les migrations SQL</strong><br>
-      Supabase Dashboard → SQL Editor → colle et exécute :<br>
-      <code>supabase/migrations/20260527210000_push_subscriptions.sql</code><br>
-      <code>supabase/migrations/20260527220000_notifications_cron.sql</code>
+      <strong>4. Déploie l'edge function via Lovable</strong><br>
+      Utilise le prompt fourni dans la conversation pour déployer <code>send-notifications</code>.
     </div>
 
     <p style="color:#8b949e; font-size:12px; margin-top:24px">
-      ⚠️ Ferme cette page une fois les clés copiées — elles ne seront pas régénérées à la fermeture.
+      ⚠️ Ferme cette page une fois les clés copiées — elles ne seront pas affichées à nouveau.
     </p>
   </div>
 
@@ -73,21 +75,27 @@
     let pubKey = '', privKey = '';
 
     async function generate() {
+      // VAPID exige ECDSA P-256 — PAS ECDH
       const keyPair = await crypto.subtle.generateKey(
-        { name: 'ECDH', namedCurve: 'P-256' },
+        { name: 'ECDSA', namedCurve: 'P-256' },
         true,
-        ['deriveKey']
+        ['sign', 'verify']
       );
 
-      const rawPub  = await crypto.subtle.exportKey('raw',   keyPair.publicKey);
-      const rawPriv = await crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+      // Clé publique : export raw = 65 octets (point non compressé) → base64url
+      const rawPub = await crypto.subtle.exportKey('raw', keyPair.publicKey);
+      pubKey = toBase64url(rawPub);
 
-      pubKey  = toBase64url(rawPub);
-      privKey = toBase64url(rawPriv);
+      // Clé privée : export JWK → champ 'd' = 32 octets bruts, déjà en base64url
+      // C'est exactement ce que web-push attend comme privateKey
+      const jwkPriv = await crypto.subtle.exportKey('jwk', keyPair.privateKey);
+      privKey = jwkPriv.d;
 
-      document.getElementById('pub').textContent  = pubKey;
-      document.getElementById('priv').textContent = privKey;
-      document.getElementById('pub-inline').textContent = pubKey;
+      document.getElementById('pub').textContent          = pubKey;
+      document.getElementById('priv').textContent         = privKey;
+      document.getElementById('pub-inline').textContent   = pubKey;
+      document.getElementById('pub-secret').textContent   = pubKey;
+      document.getElementById('priv-secret').textContent  = privKey;
       document.getElementById('result').style.display = 'block';
     }
 
