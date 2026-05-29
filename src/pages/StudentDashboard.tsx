@@ -107,10 +107,6 @@ export default function StudentDashboard() {
       const [profsRes, weekXpRes, dayXpRes, weekSecRes, daySecRes, avatarCfgsRes] = await Promise.all([
         supabase
           .from('profiles')
-      // ── Fetch everything in parallel ─────────────────────────────────────
-      const [profsRes, weekXpRes, dayXpRes, weekSecRes, daySecRes, avatarCfgsRes] = await Promise.all([
-        supabase
-          .from('profiles')
           .select('user_id, pseudo, avatar, total_xp, total_deepwork_seconds'),
         // XP weekly / daily → via secure RPC (aggregated only, no per-row leak)
         supabase.rpc('get_xp_leaderboard', { _since: weekStart.toISOString() }),
@@ -128,10 +124,6 @@ export default function StudentDashboard() {
       const dayXpRows    = (dayXpRes.data     ?? []) as { user_id: string; total: number }[];
       const weekSessions = (weekSecRes.data   ?? []) as { user_id: string; total_seconds: number }[];
       const daySessions  = (daySecRes.data    ?? []) as { user_id: string; total_seconds: number }[];
-      const avatarCfgs   = avatarCfgsRes.data ?? [];
-      const dayXpRows    = dayXpRes.data     ?? [];
-      const weekSessions = weekSecRes.data   ?? [];
-      const daySessions  = daySecRes.data    ?? [];
       const avatarCfgs   = avatarCfgsRes.data ?? [];
 
       // Build avatar config map per user
@@ -158,22 +150,16 @@ export default function StudentDashboard() {
         profMap[p.user_id] = { pseudo, avatar: avatarUrl(p.user_id, pseudo) };
       });
 
-      // Aggregate rows by user
-      const aggXp = (rows: { user_id: string; amount: number }[]): Record<string, number> => {
+      // RPC results are already aggregated per user — just map to score dicts
+      const toMap = <K extends string>(rows: Array<{ user_id: string } & Record<K, number>>, key: K): Record<string, number> => {
         const acc: Record<string, number> = {};
-        rows.forEach(r => { acc[r.user_id] = (acc[r.user_id] ?? 0) + (r.amount ?? 0); });
-        return acc;
-      };
-      const aggSec = (rows: { user_id: string; duration_seconds: number }[]): Record<string, number> => {
-        const acc: Record<string, number> = {};
-        rows.forEach(r => { acc[r.user_id] = (acc[r.user_id] ?? 0) + (r.duration_seconds ?? 0); });
+        rows.forEach(r => { acc[r.user_id] = (r[key] ?? 0) as number; });
         return acc;
       };
 
-      const weekXpByUser  = aggXp(weekXpRows);
-      const dayXpByUser   = aggXp(dayXpRows);
-      const weekSecByUser = aggSec(weekSessions);
-      const daySecByUser  = aggSec(daySessions);
+      const weekXpByUser  = toMap(weekXpRows, 'total');
+      const dayXpByUser   = toMap(dayXpRows, 'total');
+      const weekSecByUser = toMap(weekSessions, 'total_seconds');
 
       // Build a sorted, consecutively ranked leaderboard from a score map
       const buildBoard = (
