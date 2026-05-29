@@ -107,32 +107,28 @@ export default function StudentDashboard() {
       const [profsRes, weekXpRes, dayXpRes, weekSecRes, daySecRes, avatarCfgsRes] = await Promise.all([
         supabase
           .from('profiles')
+      // ── Fetch everything in parallel ─────────────────────────────────────
+      const [profsRes, weekXpRes, dayXpRes, weekSecRes, daySecRes, avatarCfgsRes] = await Promise.all([
+        supabase
+          .from('profiles')
           .select('user_id, pseudo, avatar, total_xp, total_deepwork_seconds'),
-        // XP weekly / daily → from xp_history (captures deepwork + quest + tutorial)
-        supabase
-          .from('xp_history')
-          .select('user_id, amount')
-          .gte('created_at', weekStart.toISOString()),
-        supabase
-          .from('xp_history')
-          .select('user_id, amount')
-          .gte('created_at', dayStart.toISOString()),
-        // Chrono weekly / daily → still from deepwork_sessions (actual time spent)
-        supabase
-          .from('deepwork_sessions')
-          .select('user_id, duration_seconds')
-          .gte('started_at', weekStart.toISOString()),
-        supabase
-          .from('deepwork_sessions')
-          .select('user_id, duration_seconds')
-          .gte('started_at', dayStart.toISOString()),
+        // XP weekly / daily → via secure RPC (aggregated only, no per-row leak)
+        supabase.rpc('get_xp_leaderboard', { _since: weekStart.toISOString() }),
+        supabase.rpc('get_xp_leaderboard', { _since: dayStart.toISOString() }),
+        // Chrono weekly / daily → via secure RPC (aggregated only)
+        supabase.rpc('get_deepwork_leaderboard', { _since: weekStart.toISOString() }),
+        supabase.rpc('get_deepwork_leaderboard', { _since: dayStart.toISOString() }),
         supabase
           .from('avatar_configs')
           .select('user_id, hat, glasses, outfit, background, badge, skin_color, hair_style, hair_color'),
       ]);
 
       const profs        = profsRes.data     ?? [];
-      const weekXpRows   = weekXpRes.data    ?? [];
+      const weekXpRows   = (weekXpRes.data    ?? []) as { user_id: string; total: number }[];
+      const dayXpRows    = (dayXpRes.data     ?? []) as { user_id: string; total: number }[];
+      const weekSessions = (weekSecRes.data   ?? []) as { user_id: string; total_seconds: number }[];
+      const daySessions  = (daySecRes.data    ?? []) as { user_id: string; total_seconds: number }[];
+      const avatarCfgs   = avatarCfgsRes.data ?? [];
       const dayXpRows    = dayXpRes.data     ?? [];
       const weekSessions = weekSecRes.data   ?? [];
       const daySessions  = daySecRes.data    ?? [];
