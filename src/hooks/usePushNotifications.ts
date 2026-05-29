@@ -1,7 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
+// Public VAPID key — safe to expose client-side. Must match VAPID_PUBLIC_KEY secret used by the send-notifications edge function.
+const VAPID_PUBLIC_KEY: string | undefined =
+  (import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined) ||
+  'BLEeZp_WaB-GlwfR86ylArE4znPCJ_DlSjM1MR-DbEk0YD_j5NcVHaFW8Nu9k9m46XS9YJtQNYKhSLydAt-aNXg';
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
