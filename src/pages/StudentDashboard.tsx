@@ -60,6 +60,11 @@ export default function StudentDashboard() {
       return;
     }
     const reason = result.reason;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _ok = false;
+      return;
+    }
+    const reason = result.reason;
     if (reason === 'no_vapid_key') {
       toast({ title: 'Config manquante', description: 'La clé VAPID n\'est pas configurée. Ajoute VITE_VAPID_PUBLIC_KEY dans les variables d\'environnement Lovable.', variant: 'destructive' });
     } else if (reason === 'permission_denied') {
