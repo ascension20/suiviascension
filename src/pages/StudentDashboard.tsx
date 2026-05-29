@@ -57,15 +57,18 @@ export default function StudentDashboard() {
     const result = await subscribePush();
     if (result.ok) {
       toast({ title: '🔔 Notifications activées !', description: 'Tu recevras des rappels DS et deepwork sur cet appareil.' });
-    } else if (result.reason === 'no_vapid_key') {
+      return;
+    }
+    const reason = result.reason;
+    if (reason === 'no_vapid_key') {
       toast({ title: 'Config manquante', description: 'La clé VAPID n\'est pas configurée. Ajoute VITE_VAPID_PUBLIC_KEY dans les variables d\'environnement Lovable.', variant: 'destructive' });
-    } else if (result.reason === 'permission_denied') {
+    } else if (reason === 'permission_denied') {
       toast({ title: 'Permission refusée', description: 'Autorise les notifications dans les réglages de ton navigateur.', variant: 'destructive' });
-    } else if (result.reason === 'sw_failed') {
+    } else if (reason === 'sw_failed') {
       toast({ title: 'Service worker échoué', description: 'Recharge la page et réessaie.', variant: 'destructive' });
-    } else if (result.reason === 'db_failed') {
+    } else if (reason === 'db_failed') {
       toast({ title: 'Tables SQL manquantes', description: 'Lance les migrations push_subscriptions dans Supabase SQL Editor.', variant: 'destructive' });
-    } else if (result.reason === 'subscribe_failed') {
+    } else if (reason === 'subscribe_failed') {
       toast({ title: 'Abonnement push échoué', description: 'La clé VAPID est peut-être incorrecte. Vérifie VITE_VAPID_PUBLIC_KEY.', variant: 'destructive' });
     } else {
       toast({ title: 'Erreur inconnue', description: 'Ouvre la console (F12) pour plus de détails.', variant: 'destructive' });
