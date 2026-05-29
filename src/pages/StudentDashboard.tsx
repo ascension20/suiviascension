@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Flame, LogOut, WifiOff, Bell, BellOff } from 'lucide-react';
+import { Flame, LogOut, WifiOff, Bell, BellOff, LayoutDashboard, BookOpen } from 'lucide-react';
+import { ResourcesTab } from '@/components/Resources/ResourcesTab';
 import { DeepworkWidget } from '@/components/Deepwork/DeepworkWidget';
 import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
 import { PlanningMini } from '@/components/Planning/PlanningMini';
@@ -33,6 +34,7 @@ export default function StudentDashboard() {
   const { user, profile, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'ressources'>('dashboard');
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; xpGained: number } | null>(null);
   // XP leaderboard: [global, weekly, daily]
   const [xpGlobal,  setXpGlobal]  = useState<LeaderboardEntry[]>([]);
@@ -387,6 +389,37 @@ export default function StudentDashboard() {
 
       {/* ─── MAIN ─── */}
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
+
+        {/* ── Tab navigation ── */}
+        <div className="flex gap-1 mb-6 border-b border-border">
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px
+              ${activeTab === 'dashboard'
+                ? 'border-amber-500 text-amber-400'
+                : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+          >
+            <LayoutDashboard size={15} />
+            Dashboard
+          </button>
+          <button
+            onClick={() => setActiveTab('ressources')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px
+              ${activeTab === 'ressources'
+                ? 'border-amber-500 text-amber-400'
+                : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+          >
+            <BookOpen size={15} />
+            Ressources
+          </button>
+        </div>
+
+        {/* ── Ressources tab ── */}
+        {activeTab === 'ressources' && <ResourcesTab />}
+
+        {/* ── Dashboard tab ── */}
+        {activeTab === 'dashboard' && <>
+
         {/* Welcome */}
         <motion.p
           initial={{ opacity: 0, y: 6 }}
@@ -472,6 +505,9 @@ export default function StudentDashboard() {
             ]}
           />
         </div>
+
+        </>} {/* end dashboard tab */}
+
       </main>
 
       <LevelUpOverlay data={levelUpData} onDismiss={() => setLevelUpData(null)} />

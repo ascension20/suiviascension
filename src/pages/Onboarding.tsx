@@ -253,15 +253,15 @@ export default function OnboardingPage() {
     if (!icalUrl) return;
     setIcalStatus('checking');
     try {
-      // fetchICal already guarantees the response contains BEGIN:VCALENDAR
-      // (it falls through all methods and throws if it can't extract calendar data).
-      // If it returns → the EDT is readable → show "Lien valide".
+      // fetchICal guarantees the response contains BEGIN:VCALENDAR; throws otherwise.
       await fetchICal(icalUrl);
       setIcalStatus('ok');
     } catch {
-      // Could not extract calendar data (CORS, auth wall, wrong URL, etc.).
+      // Could not verify (edge function not deployed, school server CORS block, etc.).
+      // Mark as unverified but keep the URL field visible so the student can modify it.
+      // The URL is saved at finalize time and the import will be retried then.
       setIcalStatus('unverified');
-      setIcalSkipped(true);
+      // Do NOT set icalSkipped — keep the form visible with the unverified message.
     }
   };
 
@@ -509,9 +509,9 @@ export default function OnboardingPage() {
                       <p className="text-xs text-destructive">❌ Lien invalide ou format non reconnu. Vérifie l'URL.</p>
                     )}
                     {icalStatus === 'unverified' && (
-                      <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 mt-1">
-                        <p className="text-xs text-emerald-300">
-                          ✓ Lien enregistré — les serveurs scolaires (Pronote, EcoleDirecte…) bloquent la vérification depuis le navigateur, c'est tout à fait normal. Ton calendrier sera importé automatiquement.
+                      <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 mt-1">
+                        <p className="text-xs text-amber-300">
+                          ⚠️ Impossible de vérifier depuis le navigateur — les serveurs Pronote/EcoleDirecte bloquent les requêtes directes, c'est normal. Ton lien est enregistré et sera importé automatiquement.
                         </p>
                       </div>
                     )}
