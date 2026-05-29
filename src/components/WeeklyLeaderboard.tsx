@@ -47,7 +47,7 @@ export function WeeklyLeaderboard({ title, datasets, weeklyChampion }: Props) {
 
   return (
     <div
-      className="bg-card border border-border rounded-lg p-5 flex flex-col game-panel"
+      className="bg-card border border-border rounded-lg p-5 flex flex-col game-panel scan-container"
       style={{ minHeight: 260 }}
     >
       {/* Header */}
@@ -97,20 +97,22 @@ export function WeeklyLeaderboard({ title, datasets, weeklyChampion }: Props) {
               return (
                 <motion.button
                   key={`${entry.userId}-${index}`}
-                  initial={{ opacity: 0, x: -8 }}
+                  initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.04 }}
+                  transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
                   onClick={() => navigate(`/student/profile/${entry.userId}`)}
                   className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all group text-left"
                   style={{
                     background: entry.isCurrentUser
-                      ? 'hsl(43 90% 50% / 0.07)'
+                      ? 'hsl(43 90% 50% / 0.08)'
+                      : entry.rank === 1 ? 'hsl(43 90% 50% / 0.06)'
                       : isPodium ? rc.bg : 'transparent',
                     border: entry.isCurrentUser
-                      ? '1px solid hsl(43 90% 50% / 0.2)'
-                      : isPodium ? `1px solid ${rc.border}22` : '1px solid transparent',
+                      ? '1px solid hsl(43 90% 50% / 0.25)'
+                      : isPodium ? `1px solid ${rc.border}33` : '1px solid transparent',
+                    boxShadow: entry.rank === 1 ? '0 0 20px hsl(43 90% 50% / 0.08)' : undefined,
                   }}
-                  whileHover={{ scale: 1.01, backgroundColor: 'hsl(222 18% 15% / 0.8)' }}
+                  whileHover={{ scale: 1.015, x: 2 }}
                 >
                   {/* Rank badge */}
                   <div

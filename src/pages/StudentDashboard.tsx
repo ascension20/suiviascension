@@ -276,20 +276,41 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-background">
 
       {/* ─── HEADER ─── */}
-      <header className="border-b border-border px-4 md:px-6 py-3 sticky top-0 z-30 backdrop-blur-sm hud-top-line"
-              style={{ backgroundColor: 'hsl(222 22% 5% / 0.92)' }}>
+      <header
+        className="border-b border-border px-4 md:px-6 py-3 sticky top-0 z-30 backdrop-blur-sm hud-top-line"
+        style={{ backgroundColor: 'hsl(222 22% 4% / 0.95)', backdropFilter: 'blur(20px) saturate(1.8)' }}
+      >
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
 
-          {/* Logo / title */}
-          <div className="items-center gap-1 shrink-0 hidden sm:flex">
-            <span className="font-display text-sm font-black tracking-tight"
-                  style={{ color: 'hsl(42 12% 92%)' }}>
-              ASCENSION
+          {/* Logo */}
+          <div className="items-center gap-2 shrink-0 hidden sm:flex">
+            <span className="font-display text-sm font-black tracking-[0.12em] uppercase"
+                  style={{ color: 'hsl(42 12% 75%)' }}>
+              Ascension
             </span>
-            <span className="font-display text-sm font-black tracking-tight neon-gold"
-                  style={{ color: 'hsl(var(--primary))' }}>
+            <span
+              className="font-display text-sm font-black tracking-tight neon-gold stat-badge px-2 py-0.5"
+              style={{
+                background: 'linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%))',
+                color: 'hsl(222 22% 8%)',
+                boxShadow: '0 0 12px hsl(43 90% 50% / 0.6)',
+              }}
+            >
               20
             </span>
+            {/* Online indicator */}
+            {isOnline && (
+              <div className="hidden md:flex items-center gap-1.5 ml-1">
+                <span
+                  className="live-dot w-1.5 h-1.5"
+                  style={{ background: 'hsl(142 71% 50%)', color: 'hsl(142 71% 50%)' }}
+                />
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
+                      style={{ color: 'hsl(142 71% 50% / 0.7)' }}>
+                  online
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2 md:gap-3">
@@ -301,10 +322,19 @@ export default function StudentDashboard() {
             )}
 
             {/* Streak badge */}
-            <div data-tutorial="streak" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
-                 style={{ borderColor: 'hsl(var(--streak) / 0.3)', backgroundColor: 'hsl(var(--streak) / 0.1)' }}>
-              <Flame size={14} className="text-streak" />
-              <span className="font-display text-sm font-semibold text-streak">{streak}</span>
+            <div
+              data-tutorial="streak"
+              className="flex items-center gap-1.5 px-3 py-1.5 stat-badge"
+              style={{
+                background: 'hsl(var(--streak) / 0.12)',
+                border: '1px solid hsl(var(--streak) / 0.35)',
+                boxShadow: streak > 0 ? '0 0 14px hsl(var(--streak) / 0.2)' : undefined,
+              }}
+            >
+              <Flame size={13} className="text-streak" style={{ filter: 'drop-shadow(0 0 4px hsl(var(--streak)))' }} />
+              <span className="font-display text-sm font-black text-streak hud-number" style={{ color: 'hsl(var(--streak))' }}>
+                {streak}
+              </span>
             </div>
 
             <div data-tutorial="xpbar" className="hidden md:flex">
@@ -322,8 +352,12 @@ export default function StudentDashboard() {
               title="Mon profil"
             >
               <div
-                className="w-9 h-9 rounded-full border overflow-hidden transition-all"
-                style={{ backgroundColor: 'hsl(222 22% 12%)', borderColor: 'hsl(43 90% 50% / 0.3)' }}
+                className="w-9 h-9 rounded-full overflow-hidden transition-all duration-300 group-hover:scale-105"
+                style={{
+                  border: '2px solid hsl(43 90% 50% / 0.4)',
+                  background: 'hsl(222 22% 12%)',
+                  boxShadow: '0 0 10px hsl(43 90% 50% / 0.2)',
+                }}
               >
                 {currentAvatarUrl
                   ? <img src={currentAvatarUrl} alt="avatar" className="w-full h-full object-cover" />
@@ -331,7 +365,7 @@ export default function StudentDashboard() {
                 }
               </div>
               {weeklyChampion === profile?.pseudo && (
-                <span className="absolute -top-1 -right-1 text-sm" title="Premier du classement chrono !">👑</span>
+                <span className="absolute -top-1 -right-1 text-sm champion-glow" title="Premier du classement chrono !">👑</span>
               )}
             </button>
 
@@ -341,20 +375,27 @@ export default function StudentDashboard() {
                 onClick={handleBellClick}
                 disabled={pushLoading}
                 title={subscribed ? 'Désactiver les notifications' : 'Activer les notifications push'}
-                className="relative text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                className="relative transition-all duration-200 hover:scale-110 disabled:opacity-50"
+                style={{ color: subscribed ? 'hsl(43 90% 55%)' : 'hsl(220 10% 50%)' }}
               >
                 {subscribed
-                  ? <Bell size={18} style={{ color: 'hsl(43 90% 55%)' }} />
+                  ? <Bell size={18} style={{ filter: 'drop-shadow(0 0 5px hsl(43 90% 55%))' }} />
                   : <BellOff size={18} />
                 }
                 {subscribed && (
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
-                        style={{ background: 'hsl(142 71% 50%)', boxShadow: '0 0 4px hsl(142 71% 50%)' }} />
+                  <span
+                    className="live-dot absolute -top-0.5 -right-0.5 w-2 h-2"
+                    style={{ background: 'hsl(142 71% 50%)', color: 'hsl(142 71% 50%)' }}
+                  />
                 )}
               </button>
             )}
 
-            <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors" title="Déconnexion">
+            <button
+              onClick={signOut}
+              className="text-muted-foreground hover:text-foreground transition-all duration-200 hover:scale-110"
+              title="Déconnexion"
+            >
               <LogOut size={18} />
             </button>
           </div>

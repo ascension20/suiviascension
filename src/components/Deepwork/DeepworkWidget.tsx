@@ -93,7 +93,7 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
     >
       <div
         className={`relative rounded-2xl border overflow-hidden transition-all duration-300 active:scale-[0.995] ${
-          active ? 'border-primary/60 gold-pulse' : 'border-primary/30 hover:border-primary/60'
+          active ? 'border-primary/60 gold-pulse scan-container' : 'border-primary/30 hover:border-primary/60 animated-border'
         }`}
         style={{
           background: 'hsl(222 22% 8%)',
@@ -114,19 +114,22 @@ export function DeepworkWidget({ userId, onXpGain }: { userId: string; onXpGain:
           }}
         />
 
-        {/* 4-corner brackets (manual via absolute divs — game panel look) */}
-        {/* top-left */}
-        <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 rounded-tl-sm pointer-events-none z-10 transition-opacity duration-300"
-             style={{ borderColor: 'hsl(43 90% 55% / 0.6)', opacity: active ? 1 : 0.4 }} />
-        {/* top-right */}
-        <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 rounded-tr-sm pointer-events-none z-10 transition-opacity duration-300"
-             style={{ borderColor: 'hsl(43 90% 55% / 0.6)', opacity: active ? 1 : 0.4 }} />
-        {/* bottom-left */}
-        <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 rounded-bl-sm pointer-events-none z-10 transition-opacity duration-300"
-             style={{ borderColor: 'hsl(43 90% 55% / 0.6)', opacity: active ? 1 : 0.4 }} />
-        {/* bottom-right */}
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 rounded-br-sm pointer-events-none z-10 transition-opacity duration-300"
-             style={{ borderColor: 'hsl(43 90% 55% / 0.6)', opacity: active ? 1 : 0.4 }} />
+        {/* 4-corner brackets */}
+        {['top-0 left-0 border-l-[3px] border-t-[3px] rounded-tl',
+          'top-0 right-0 border-r-[3px] border-t-[3px] rounded-tr',
+          'bottom-0 left-0 border-l-[3px] border-b-[3px] rounded-bl',
+          'bottom-0 right-0 border-r-[3px] border-b-[3px] rounded-br',
+        ].map((cls, i) => (
+          <div
+            key={i}
+            className={`absolute w-6 h-6 pointer-events-none z-10 transition-all duration-300 ${cls}`}
+            style={{
+              borderColor: active ? 'hsl(43 90% 65%)' : 'hsl(43 90% 55% / 0.5)',
+              opacity: active ? 1 : 0.45,
+              filter: active ? 'drop-shadow(0 0 4px hsl(43 90% 55%))' : 'none',
+            }}
+          />
+        ))}
 
         <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 py-10 px-6">
 

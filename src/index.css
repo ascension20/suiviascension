@@ -416,3 +416,228 @@ body::after {
 .border-border {
   border-color: hsl(222 16% 20%);
 }
+
+/* ═══════════════════════════════════════════
+   AURORA ANIMATION — top ambient glow
+═══════════════════════════════════════════ */
+@keyframes aurora {
+  0%, 100% { opacity: 0.65; transform: translateX(-50%) scale(1); }
+  50%       { opacity: 1;    transform: translateX(-50%) scale(1.18) translateY(-18px); }
+}
+body::after {
+  animation: aurora 9s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════
+   NEON GLOWS — renforcés
+═══════════════════════════════════════════ */
+.neon-gold   { text-shadow: 0 0 6px rgba(201,162,39,1),  0 0 14px rgba(201,162,39,0.7), 0 0 32px rgba(201,162,39,0.35), 0 0 70px rgba(201,162,39,0.12); }
+.neon-amber  { text-shadow: 0 0 6px rgba(245,166,35,0.9), 0 0 14px rgba(245,166,35,0.5), 0 0 28px rgba(245,166,35,0.25); }
+.neon-violet { text-shadow: 0 0 6px rgba(139,92,246,0.9), 0 0 14px rgba(139,92,246,0.5), 0 0 28px rgba(139,92,246,0.25); }
+.neon-blue   { text-shadow: 0 0 6px rgba(96,165,250,0.9),  0 0 14px rgba(96,165,250,0.5),  0 0 28px rgba(96,165,250,0.25); }
+.neon-red    { text-shadow: 0 0 6px rgba(248,113,113,0.9), 0 0 14px rgba(248,113,113,0.5), 0 0 28px rgba(248,113,113,0.25); }
+.neon-green  { text-shadow: 0 0 6px rgba(74,222,128,0.9),  0 0 14px rgba(74,222,128,0.5),  0 0 28px rgba(74,222,128,0.25); }
+
+/* ═══════════════════════════════════════════
+   GAME PANEL — enhanced hover
+═══════════════════════════════════════════ */
+.game-panel:hover {
+  border-color: hsl(43 90% 50% / 0.55) !important;
+  box-shadow:
+    0 8px 48px hsl(222 22% 1% / 0.95),
+    0 0 48px hsl(43 90% 50% / 0.12),
+    0 0 0 1px hsl(43 90% 50% / 0.12) inset;
+}
+.game-panel:hover::before { opacity: 1; }
+
+/* ═══════════════════════════════════════════
+   CLIP CORNERS — octagonal game card
+═══════════════════════════════════════════ */
+.clip-sm  { clip-path: polygon(6px 0%,calc(100% - 6px) 0%,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0% calc(100% - 6px),0% 6px); }
+.clip-md  { clip-path: polygon(12px 0%,calc(100% - 12px) 0%,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0% calc(100% - 12px),0% 12px); }
+.clip-lg  { clip-path: polygon(18px 0%,calc(100% - 18px) 0%,100% 18px,100% calc(100% - 18px),calc(100% - 18px) 100%,18px 100%,0% calc(100% - 18px),0% 18px); }
+
+/* ═══════════════════════════════════════════
+   ANIMATED GRADIENT BORDER
+═══════════════════════════════════════════ */
+@keyframes border-flow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-border {
+  position: relative;
+  isolation: isolate;
+}
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    hsl(43 90% 50% / 0),
+    hsl(43 90% 62% / 0.9),
+    hsl(270 80% 68% / 0.55),
+    hsl(43 90% 62% / 0.9),
+    hsl(43 90% 50% / 0)
+  );
+  background-size: 300% 100%;
+  animation: border-flow 3.5s linear infinite;
+}
+.animated-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: hsl(222 22% 8%);
+  z-index: -1;
+}
+
+/* ═══════════════════════════════════════════
+   SCAN BEAM — ligne de scan horizontale
+═══════════════════════════════════════════ */
+@keyframes scan-move {
+  0%   { top: 0%; opacity: 0; }
+  3%   { opacity: 0.7; }
+  90%  { opacity: 0.35; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.scan-container {
+  position: relative;
+  overflow: hidden;
+}
+.scan-container::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    hsl(43 90% 55% / 0.6) 20%,
+    hsl(43 90% 65% / 0.9) 50%,
+    hsl(43 90% 55% / 0.6) 80%,
+    transparent 100%
+  );
+  animation: scan-move 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ═══════════════════════════════════════════
+   LIVE DOT — indicateur status animé
+═══════════════════════════════════════════ */
+@keyframes live-ring {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+.live-dot {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+}
+.live-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: currentColor;
+  animation: live-ring 1.8s ease-out infinite;
+}
+
+/* ═══════════════════════════════════════════
+   HUD NUMBER — chiffre monospace lumineux
+═══════════════════════════════════════════ */
+.hud-number {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 0 8px currentColor,
+    0 0 20px currentColor,
+    0 0 40px currentColor;
+}
+
+/* ═══════════════════════════════════════════
+   GLASS CARD — glassmorphism
+═══════════════════════════════════════════ */
+.glass-card {
+  background: hsl(222 22% 10% / 0.6) !important;
+  backdrop-filter: blur(16px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.8) !important;
+}
+
+/* ═══════════════════════════════════════════
+   PROGRESS TICKS — traits segmentés
+═══════════════════════════════════════════ */
+.progress-ticks {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent calc(10% - 1px),
+    hsl(222 22% 5% / 0.7) calc(10% - 1px),
+    hsl(222 22% 5% / 0.7) 10%
+  );
+}
+
+/* ═══════════════════════════════════════════
+   FLICKER — légère instabilité CRT
+═══════════════════════════════════════════ */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  91%       { opacity: 1; }
+  92%       { opacity: 0.82; }
+  93%       { opacity: 1; }
+  97%       { opacity: 0.91; }
+  98%       { opacity: 1; }
+}
+.flicker { animation: flicker 7s ease-in-out infinite; }
+
+/* ═══════════════════════════════════════════
+   CARD ENTRANCE — entrée staggerée
+═══════════════════════════════════════════ */
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+.card-enter   { animation: card-in 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+.card-enter-1 { animation-delay: 0.06s; }
+.card-enter-2 { animation-delay: 0.12s; }
+.card-enter-3 { animation-delay: 0.18s; }
+.card-enter-4 { animation-delay: 0.24s; }
+
+/* ═══════════════════════════════════════════
+   STAT BADGE — coins coupés + glow
+═══════════════════════════════════════════ */
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(8px 0%,calc(100% - 8px) 0%,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0% calc(100% - 8px),0% 8px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+/* ═══════════════════════════════════════════
+   RANK BADGE — enhanced podium
+═══════════════════════════════════════════ */
+.rank-1 {
+  background: linear-gradient(135deg, hsl(43 90% 40%), hsl(50 100% 65%));
+  box-shadow: 0 0 14px hsl(43 90% 50% / 0.7), 0 0 28px hsl(43 90% 50% / 0.35);
+  color: hsl(222 22% 8%);
+  clip-path: polygon(5px 0%,calc(100% - 5px) 0%,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0% calc(100% - 5px),0% 5px);
+}
+.rank-2 {
+  background: linear-gradient(135deg, hsl(210 12% 42%), hsl(210 12% 66%));
+  box-shadow: 0 0 10px hsl(210 12% 55% / 0.55);
+  color: hsl(222 22% 8%);
+  clip-path: polygon(5px 0%,calc(100% - 5px) 0%,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0% calc(100% - 5px),0% 5px);
+}
+.rank-3 {
+  background: linear-gradient(135deg, hsl(25 60% 40%), hsl(25 60% 60%));
+  box-shadow: 0 0 10px hsl(25 60% 50% / 0.55);
+  color: hsl(222 22% 8%);
+  clip-path: polygon(5px 0%,calc(100% - 5px) 0%,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0% calc(100% - 5px),0% 5px);
+}
