@@ -15,13 +15,16 @@ import {
 
 // ── Subject color map (matches index.css --subject-* vars) ────────────────────
 const SUBJ_HSL: Record<string, string> = {
-  Mx:  '213 90% 62%',
-  PC:  '142 71% 45%',
-  Fr:  '336 77% 59%',
-  HG:  '30 80% 57%',
-  SVT: '155 58% 48%',
-  SES: '270 50% 60%',
-  Ph:  '290 60% 62%',
+  Mx:  '213 90% 62%',   // bleu maths
+  PC:  '142 71% 45%',   // vert physique
+  Fr:  '336 77% 59%',   // rose français
+  HG:  '30 80% 57%',    // orange histoire-géo
+  SV:  '155 58% 48%',   // teal SVT
+  SE:  '270 50% 60%',   // violet SES
+  Ph:  '290 60% 62%',   // lilas philo
+  EN:  '175 60% 50%',   // cyan anglais
+  NS:  '205 85% 60%',   // bleu NSI
+  GO:  '43 90% 55%',    // or Grand Oral
 };
 const sc  = (code: string) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'})`;
 const scA = (code: string, a: number) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'} / ${a})`;
