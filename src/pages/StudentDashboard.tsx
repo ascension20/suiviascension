@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Flame, LogOut, WifiOff, Bell, BellOff, LayoutDashboard, BookOpen } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Flame, WifiOff, Bell, BellOff, Menu, X, LayoutDashboard, BookOpen, LogOut } from 'lucide-react';
 import { ResourcesTab } from '@/components/Resources/ResourcesTab';
 import { DeepworkWidget } from '@/components/Deepwork/DeepworkWidget';
 import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
@@ -35,6 +35,7 @@ export default function StudentDashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'ressources'>('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; xpGained: number } | null>(null);
   // XP leaderboard: [global, weekly, daily]
   const [xpGlobal,  setXpGlobal]  = useState<LeaderboardEntry[]>([]);
@@ -267,6 +268,17 @@ export default function StudentDashboard() {
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
 
+          {/* Left: hamburger + logo */}
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Hamburger */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              title="Menu"
+            >
+              <Menu size={20} />
+            </button>
+
           {/* Logo */}
           <div className="items-center gap-2 shrink-0 hidden sm:flex">
             <span className="font-display text-sm font-black tracking-[0.12em] uppercase"
@@ -297,6 +309,7 @@ export default function StudentDashboard() {
               </div>
             )}
           </div>
+          </div> {/* end left group */}
 
           <div className="flex items-center gap-2 md:gap-3">
             {!isOnline && (
@@ -376,43 +389,91 @@ export default function StudentDashboard() {
               </button>
             )}
 
-            <button
-              onClick={signOut}
-              className="text-muted-foreground hover:text-foreground transition-all duration-200 hover:scale-110"
-              title="Déconnexion"
-            >
-              <LogOut size={18} />
-            </button>
           </div>
         </div>
       </header>
 
+      {/* ─── SIDEBAR ─── */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              key="backdrop"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+              onClick={() => setSidebarOpen(false)}
+            />
+            {/* Drawer */}
+            <motion.div
+              key="drawer"
+              initial={{ x: -260 }} animate={{ x: 0 }} exit={{ x: -260 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+              className="fixed left-0 top-0 bottom-0 w-60 z-50 flex flex-col"
+              style={{
+                background: 'hsl(222 22% 6%)',
+                borderRight: '1px solid hsl(220 15% 18%)',
+                boxShadow: '4px 0 32px hsl(222 22% 0% / 0.6)',
+              }}
+            >
+              {/* Drawer header */}
+              <div className="flex items-center justify-between px-4 py-4 border-b"
+                   style={{ borderColor: 'hsl(220 15% 18%)' }}>
+                <div className="flex items-center gap-2">
+                  <span className="font-display text-sm font-black tracking-[0.12em] uppercase"
+                        style={{ color: 'hsl(42 12% 75%)' }}>Ascension</span>
+                  <span className="font-display text-sm font-black px-1.5 py-0.5 rounded"
+                        style={{
+                          background: 'linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%))',
+                          color: 'hsl(222 22% 8%)',
+                        }}>20</span>
+                </div>
+                <button onClick={() => setSidebarOpen(false)}
+                        className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors">
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Nav items */}
+              <nav className="flex-1 p-3 space-y-1">
+                {([
+                  { id: 'dashboard',  label: 'Dashboard',   icon: LayoutDashboard },
+                  { id: 'ressources', label: 'Ressources',  icon: BookOpen },
+                ] as const).map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => { setActiveTab(id); setSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                      ${activeTab === id
+                        ? 'bg-amber-500/15 text-amber-300 border border-amber-500/25'
+                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground border border-transparent'
+                      }`}
+                  >
+                    <Icon size={16} />
+                    {label}
+                    {activeTab === id && (
+                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    )}
+                  </button>
+                ))}
+              </nav>
+
+              {/* Footer */}
+              <div className="p-3 border-t" style={{ borderColor: 'hsl(220 15% 18%)' }}>
+                <button onClick={signOut}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
+                  <LogOut size={16} />
+                  Déconnexion
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* ─── MAIN ─── */}
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
-
-        {/* ── Tab navigation ── */}
-        <div className="flex gap-1 mb-6 border-b border-border">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px
-              ${activeTab === 'dashboard'
-                ? 'border-amber-500 text-amber-400'
-                : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-          >
-            <LayoutDashboard size={15} />
-            Dashboard
-          </button>
-          <button
-            onClick={() => setActiveTab('ressources')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px
-              ${activeTab === 'ressources'
-                ? 'border-amber-500 text-amber-400'
-                : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-          >
-            <BookOpen size={15} />
-            Ressources
-          </button>
-        </div>
 
         {/* ── Ressources tab ── */}
         {activeTab === 'ressources' && <ResourcesTab />}
