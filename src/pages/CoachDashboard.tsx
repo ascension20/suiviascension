@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LogOut, Loader2, MessageCircle, X, Image as ImageIcon, Trash2,
-  Check, Camera, Shield, Users, ChevronLeft, ChevronRight,
+  Check, Shield, Users, ChevronLeft, ChevronRight,
   Search, Pin, PinOff, CalendarDays,
 } from 'lucide-react';
 import { calculateLevel, getTitleForLevel, SUBJECTS, Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
@@ -249,6 +249,101 @@ function WeekCalendar({ events }: { events: PlanningEvent[] }) {
   );
 }
 
+// ── activity chart ────────────────────────────────────────────────────────────
+function ActivityChart({ sessions }: { sessions: { duration_minutes: number; created_at: string }[] }) {
+  const todayKey = new Date().toISOString().slice(0, 10);
+
+  const days = useMemo(() => {
+    const arr: { date: string; hours: number; label: string }[] = [];
+    const now = new Date();
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const mins = sessions
+        .filter(s => s.created_at?.slice(0, 10) === key)
+        .reduce((a, s) => a + s.duration_minutes, 0);
+      arr.push({ date: key, hours: mins / 60, label: d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) });
+    }
+    return arr;
+  }, [sessions]);
+
+  const maxH = Math.max(...days.map(d => d.hours), 0.5);
+  const totalMonth = days.reduce((a, d) => a + d.hours, 0);
+  const activeDays = days.filter(d => d.hours > 0).length;
+
+  // 4 weekly totals (oldest → newest)
+  const weekTotals = [3, 2, 1, 0].map(w => {
+    const endIdx   = 30 - w * 7;
+    const startIdx = Math.max(0, endIdx - 7);
+    return days.slice(startIdx, endIdx).reduce((a, d) => a + d.hours, 0);
+  });
+
+  return (
+    <div className="p-3 rounded-xl space-y-2" style={{ background: 'hsl(222 22% 9%)', border: '1px solid hsl(222 16% 16%)' }}>
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Activité — 30 derniers jours</p>
+        <div className="flex gap-3 text-[10px]">
+          <span>
+            <span className="font-bold tabular-nums" style={{ color: 'hsl(43 90% 55%)' }}>{Math.round(totalMonth)}h</span>
+            {' '}<span className="text-muted-foreground">total</span>
+          </span>
+          <span>
+            <span className="font-bold tabular-nums" style={{ color: 'hsl(270 70% 65%)' }}>{activeDays}</span>
+            {' '}<span className="text-muted-foreground">j actifs</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Daily bars */}
+      <div className="flex items-end gap-px" style={{ height: 52 }}>
+        {days.map(d => {
+          const hPct    = d.hours > 0 ? Math.max((d.hours / maxH) * 100, 6) : 0;
+          const isToday = d.date === todayKey;
+          return (
+            <div key={d.date}
+              title={`${d.label} : ${d.hours > 0 ? `${Math.round(d.hours * 10) / 10}h` : '—'}`}
+              className="flex-1 flex items-end" style={{ height: '100%' }}>
+              <div style={{
+                width: '100%',
+                height: d.hours > 0 ? `${hPct}%` : '2px',
+                background: isToday
+                  ? 'hsl(43 90% 52%)'
+                  : d.hours > 0 ? 'hsl(270 70% 55%)' : 'hsl(222 16% 16%)',
+                borderRadius: '2px 2px 0 0',
+                boxShadow: isToday ? '0 0 6px hsl(43 90% 52% / 0.5)' : 'none',
+              }} />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Week boundary labels */}
+      <div className="flex text-[8px] text-muted-foreground/40 justify-between px-0.5">
+        {[4, 3, 2, 1].map(w => {
+          const d = new Date(); d.setDate(d.getDate() - w * 7);
+          return <span key={w}>{d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>;
+        })}
+        <span>{new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
+      </div>
+
+      {/* Weekly totals */}
+      <div className="grid grid-cols-4 gap-1">
+        {weekTotals.map((h, i) => (
+          <div key={i} className="text-center p-1.5 rounded-lg" style={{ background: 'hsl(222 22% 12%)' }}>
+            <p className="font-bold text-[11px] tabular-nums" style={{
+              color: h >= 10 ? 'hsl(142 71% 50%)' : h >= 5 ? 'hsl(43 90% 52%)' : 'hsl(220 10% 50%)',
+            }}>{Math.round(h * 10) / 10}h</p>
+            <p className="text-[8px] text-muted-foreground">
+              {i === 3 ? 'Cette sem.' : `S-${3 - i}`}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── main ─────────────────────────────────────────────────────────────────────
 export default function CoachDashboard() {
   const { signOut } = useAuth();
@@ -266,6 +361,7 @@ export default function CoachDashboard() {
   const [quests,         setQuests]         = useState<StudentQuest[]>([]);
   const [planningEvents, setPlanningEvents] = useState<PlanningEvent[]>([]);
   const [baselines,      setBaselines]      = useState<Record<string, boolean>>({});
+  const [timerSessions,  setTimerSessions]  = useState<{ user_id: string; duration_minutes: number; created_at: string }[]>([]);
 
   // UI
   const [selectedId,  setSelectedId]  = useState<string | null>(null);
@@ -312,7 +408,7 @@ export default function CoachDashboard() {
       supabase.from('user_roles').select('user_id, role'),
       supabase.from('user_private').select('user_id, last_seen_at'),
       supabase.from('quests').select('*'),
-      supabase.from('timer_sessions').select('user_id, duration_minutes'),
+      supabase.from('timer_sessions').select('user_id, duration_minutes, created_at'),
       supabase.from('avatar_configs').select('*'),
     ]);
 
@@ -368,6 +464,7 @@ export default function CoachDashboard() {
       };
     });
 
+    setTimerSessions((allSessions || []) as { user_id: string; duration_minutes: number; created_at: string }[]);
     setStudents(enriched);
     setLoading(false);
   };
@@ -588,7 +685,7 @@ export default function CoachDashboard() {
     const TABS = [
       { key: 'overview', label: '📊 Vue d\'ensemble' },
       { key: 'planning', label: '📅 Planning & Quêtes',
-        badge: data.planning.filter(p => p.event_date >= todayStr).length + data.quests.filter(q => !q.completed).length },
+        badge: data.planning.filter(p => p.event_date >= todayStr && p.type !== 'course').length + data.quests.filter(q => !q.completed).length },
       { key: 'diffs',    label: '⚠️ Difficultés',
         badge: data.diffs.filter(d => !d.resolved).length },
       { key: 'exams',    label: '📝 DS',
@@ -640,17 +737,6 @@ export default function CoachDashboard() {
               }>
               {isTutored ? <><PinOff size={11} /> Retirer</> : <><Pin size={11} /> Marquer tutoré</>}
             </button>
-            {!baselines[s.user_id] ? (
-              <button onClick={() => handleCreateBaseline(s.user_id)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all hover:scale-105"
-                style={{ background: 'hsl(222 22% 12%)', border: '1px solid hsl(222 16% 20%)', color: 'hsl(220 10% 65%)' }}>
-                <Camera size={11} /> Snapshot
-              </button>
-            ) : (
-              <span className="text-xs flex items-center gap-1" style={{ color: 'hsl(142 71% 50%)' }}>
-                <Check size={11} /> Snapshot
-              </span>
-            )}
             <button onClick={() => setConfirmDelete({ userId: s.user_id, pseudo: s.pseudo })}
               className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all">
               <Trash2 size={14} />
@@ -722,12 +808,14 @@ export default function CoachDashboard() {
                   </div>
                 </div>
               )}
+
+              <ActivityChart sessions={timerSessions.filter(sess => sess.user_id === s.user_id)} />
             </>
           )}
 
           {/* ── Planning & Quêtes ── */}
           {selectedTab === 'planning' && (() => {
-            const upcoming = data.planning.filter(p => p.event_date >= todayStr).slice(0, 30);
+            const upcoming = data.planning.filter(p => p.event_date >= todayStr && p.type !== 'course').slice(0, 30);
             const pendingQuests = data.quests.filter(q => !q.completed)
               .sort((a, b) => {
                 if (a.deadline && b.deadline) return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
@@ -909,12 +997,6 @@ export default function CoachDashboard() {
                       <span>{STRESS_LABELS[e.stress_level] || e.stress_level}</span>
                       {e.chapters && <span>· {e.chapters}</span>}
                       {e.photo_url && <button onClick={() => setPreviewPhoto(e.photo_url!)} className="flex items-center gap-1 ml-auto" style={{ color: 'hsl(43 90% 55%)' }}><ImageIcon size={10} /> Voir</button>}
-                      {isPast && e.grade === null && (
-                        <label className="flex items-center gap-1.5 ml-auto cursor-pointer hover:text-foreground transition-colors">
-                          <input type="checkbox" checked={e.grade_received} onChange={ev => handleMarkGradeReceived(e.id, ev.target.checked)} className="w-3 h-3 accent-primary" />
-                          Résultat donné
-                        </label>
-                      )}
                     </div>
                   </div>
                 );
