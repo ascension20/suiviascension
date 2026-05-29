@@ -1242,8 +1242,8 @@ export default function CoachDashboard() {
                       {e.grade !== null && <span className="font-display font-bold" style={{ color: e.grade >= 14 ? 'hsl(142 71% 50%)' : e.grade >= 10 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' }}>{e.grade}/20</span>}
                     </div>
                     <div className="flex items-center gap-2 mt-1.5 text-muted-foreground">
-                      <span>{STRESS_LABELS[e.stress_level] || e.stress_level}</span>
-                      {e.chapters && <span>· {e.chapters}</span>}
+                      {e.stress_level === 'stressed' && <span>😰 Stressé</span>}
+                      {e.chapters && <span>{e.stress_level === 'stressed' ? '· ' : ''}{e.chapters}</span>}
                       {e.photo_url && <button onClick={() => setPreviewPhoto(e.photo_url!)} className="flex items-center gap-1 ml-auto" style={{ color: 'hsl(43 90% 55%)' }}><ImageIcon size={10} /> Voir</button>}
                     </div>
 
