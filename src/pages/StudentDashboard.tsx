@@ -55,7 +55,7 @@ export default function StudentDashboard() {
       return;
     }
     const result = await subscribePush();
-    if (result.ok) {
+    if (result.ok === true) {
       toast({ title: '🔔 Notifications activées !', description: 'Tu recevras des rappels DS et deepwork sur cet appareil.' });
       return;
     }
