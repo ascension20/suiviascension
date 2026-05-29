@@ -345,8 +345,13 @@ function ActivityChart({ sessions }: { sessions: { duration_minutes: number; cre
 }
 
 // ── quests-per-day chart ──────────────────────────────────────────────────────
-function QuestsChart({ quests }: { quests: { completed: boolean; completed_at: string | null }[] }) {
+function QuestsChart({ quests }: { quests: { completed: boolean; completed_at: string | null; created_at: string }[] }) {
   const todayKey = new Date().toISOString().slice(0, 10);
+
+  // All-time counts
+  const allTimeCompleted = quests.filter(q => q.completed).length;
+  // Quests completed but without a known completion date (can't be placed on the chart)
+  const undated = quests.filter(q => q.completed && !q.completed_at).length;
 
   const days = useMemo(() => {
     const arr: { date: string; count: number; label: string }[] = [];
@@ -355,28 +360,33 @@ function QuestsChart({ quests }: { quests: { completed: boolean; completed_at: s
       const d = new Date(now);
       d.setDate(d.getDate() - i);
       const key = d.toISOString().slice(0, 10);
+      // Only use completed_at — created_at is the creation date, not completion date
       const count = quests.filter(q => q.completed && q.completed_at?.slice(0, 10) === key).length;
       arr.push({ date: key, count, label: d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) });
     }
     return arr;
   }, [quests]);
 
-  const maxCount = Math.max(...days.map(d => d.count), 1);
-  const totalCompleted = days.reduce((a, d) => a + d.count, 0);
-  const activeDays     = days.filter(d => d.count > 0).length;
+  const maxCount  = Math.max(...days.map(d => d.count), 1);
+  const total30d  = days.reduce((a, d) => a + d.count, 0);
+  const activeDays = days.filter(d => d.count > 0).length;
 
   return (
     <div className="p-3 rounded-xl space-y-2" style={{ background: 'hsl(222 22% 9%)', border: '1px solid hsl(222 16% 16%)' }}>
       <div className="flex items-center justify-between">
-        <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Quêtes complétées — 30j</p>
+        <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Quêtes complétées</p>
         <div className="flex gap-3 text-[10px]">
-          <span>
-            <span className="font-bold tabular-nums" style={{ color: '#a78bfa' }}>{totalCompleted}</span>
+          <span title="Total depuis le début">
+            <span className="font-bold tabular-nums" style={{ color: '#a78bfa' }}>{allTimeCompleted}</span>
             {' '}<span className="text-muted-foreground">total</span>
           </span>
+          <span title="Sur les 30 derniers jours (avec date connue)">
+            <span className="font-bold tabular-nums" style={{ color: 'hsl(142 71% 50%)' }}>{total30d}</span>
+            {' '}<span className="text-muted-foreground">30j</span>
+          </span>
           <span>
-            <span className="font-bold tabular-nums" style={{ color: 'hsl(142 71% 50%)' }}>{activeDays}</span>
-            {' '}<span className="text-muted-foreground">jours</span>
+            <span className="font-bold tabular-nums" style={{ color: 'hsl(220 10% 55%)' }}>{activeDays}</span>
+            {' '}<span className="text-muted-foreground">jours actifs</span>
           </span>
         </div>
       </div>
@@ -412,6 +422,13 @@ function QuestsChart({ quests }: { quests: { completed: boolean; completed_at: s
         })}
         <span>{new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
       </div>
+
+      {/* Undated completed quests notice */}
+      {undated > 0 && (
+        <p className="text-[9px] text-center" style={{ color: 'hsl(220 10% 38%)' }}>
+          {undated} quête{undated > 1 ? 's' : ''} ancienne{undated > 1 ? 's' : ''} sans date de complétion — comptée{undated > 1 ? 's' : ''} dans le total, non représentée{undated > 1 ? 's' : ''} sur le graphique
+        </p>
+      )}
     </div>
   );
 }
@@ -479,8 +496,8 @@ export default function CoachDashboard() {
       supabase.from('profiles').select('*'),
       supabase.from('user_roles').select('user_id, role'),
       supabase.from('user_private').select('user_id, last_seen_at'),
-      supabase.from('quests').select('*'),
-      supabase.from('timer_sessions').select('user_id, duration_minutes, created_at'),
+      supabase.from('quests').select('*').limit(5000),
+      supabase.from('timer_sessions').select('user_id, duration_minutes, created_at').limit(10000),
       supabase.from('avatar_configs').select('*'),
     ]);
 
