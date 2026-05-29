@@ -771,6 +771,50 @@ export default function CoachDashboard() {
       gradesBySubject[e.subject].push(e.grade!);
     });
 
+    // ── period filter for overview stats ──
+    const [statPeriod, setStatPeriod] = useState<'global' | 'monthly' | 'weekly'>('global');
+
+    const periodStats = useMemo(() => {
+      const studentSessions = timerSessions.filter(sess => sess.user_id === s.user_id);
+      const quests = data.quests;
+
+      if (statPeriod === 'global') {
+        return {
+          xpLabel:  'XP total',
+          xp:       s.total_xp.toLocaleString('fr-FR'),
+          hoursLabel: 'Heures totales',
+          hours:    `${s.totalHours}h`,
+          questLabel: 'Quêtes ✓',
+          quests:   `${quests.filter(q => q.completed).length}/${quests.length}`,
+          questRate: s.completionRate,
+        };
+      }
+
+      const days   = statPeriod === 'weekly' ? 7 : 30;
+      const cutoff = new Date(now.getTime() - days * 86_400_000);
+
+      const filteredSessions = studentSessions.filter(sess => new Date(sess.created_at) >= cutoff);
+      const completedInPeriod = quests.filter(q =>
+        q.completed && q.completed_at && new Date(q.completed_at) >= cutoff
+      );
+      const xpInPeriod    = completedInPeriod.reduce((a, q) => a + q.xp_reward, 0);
+      const minsInPeriod  = filteredSessions.reduce((a, sess) => a + sess.duration_minutes, 0);
+      const hoursInPeriod = Math.round((minsInPeriod / 60) * 10) / 10;
+      const rate = quests.length > 0
+        ? Math.round((completedInPeriod.length / quests.length) * 100)
+        : 100;
+
+      return {
+        xpLabel:   'XP gagné',
+        xp:        xpInPeriod.toLocaleString('fr-FR'),
+        hoursLabel: 'Heures',
+        hours:     `${hoursInPeriod}h`,
+        questLabel: 'Quêtes ✓',
+        quests:    `${completedInPeriod.length}`,
+        questRate: rate,
+      };
+    }, [statPeriod, s, timerSessions, data.quests]);
+
     const TABS = [
       { key: 'overview', label: '📊 Vue d\'ensemble' },
       { key: 'planning', label: '📅 Planning & Quêtes',
@@ -859,14 +903,33 @@ export default function CoachDashboard() {
           {/* ── Vue d'ensemble ── */}
           {selectedTab === 'overview' && (
             <>
+              {/* Period selector */}
+              <div className="flex items-center gap-1 p-1 rounded-xl self-start"
+                style={{ background: 'hsl(222 22% 9%)', border: '1px solid hsl(222 16% 16%)' }}>
+                {([
+                  { key: 'global',  label: 'Global' },
+                  { key: 'monthly', label: 'Mensuel' },
+                  { key: 'weekly',  label: 'Hebdo' },
+                ] as const).map(p => (
+                  <button key={p.key} onClick={() => setStatPeriod(p.key)}
+                    className="px-3 py-1 rounded-lg text-[11px] font-bold transition-all"
+                    style={statPeriod === p.key
+                      ? { background: 'hsl(43 90% 50% / 0.18)', color: 'hsl(43 90% 65%)', border: '1px solid hsl(43 90% 50% / 0.3)' }
+                      : { color: 'hsl(220 10% 45%)', border: '1px solid transparent' }
+                    }>
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Stats grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {[
-                  { label: 'XP total',  value: s.total_xp.toLocaleString('fr-FR'), color: 'hsl(43 90% 55%)' },
-                  { label: 'Streak',    value: `🔥 ${s.streak}j`,                  color: s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(0 84% 60%)' },
-                  { label: 'Heures',    value: `${s.totalHours}h`,                 color: 'hsl(270 70% 65%)' },
-                  { label: 'Quêtes ✓',
-                    value: `${data.quests.filter(q => q.completed).length}/${data.quests.length}`,
-                    color: s.completionRate >= 80 ? 'hsl(142 71% 45%)' : s.completionRate >= 50 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' },
+                  { label: periodStats.xpLabel,   value: periodStats.xp,     color: 'hsl(43 90% 55%)' },
+                  { label: 'Streak',               value: `🔥 ${s.streak}j`,  color: s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(0 84% 60%)' },
+                  { label: periodStats.hoursLabel, value: periodStats.hours,  color: 'hsl(270 70% 65%)' },
+                  { label: periodStats.questLabel, value: periodStats.quests,
+                    color: periodStats.questRate >= 80 ? 'hsl(142 71% 45%)' : periodStats.questRate >= 50 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' },
                 ].map(st => (
                   <div key={st.label} className="p-3 rounded-xl" style={{ background: 'hsl(222 22% 9%)', border: '1px solid hsl(222 16% 16%)' }}>
                     <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{st.label}</p>
