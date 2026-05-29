@@ -160,6 +160,7 @@ export default function StudentDashboard() {
       const weekXpByUser  = toMap(weekXpRows, 'total');
       const dayXpByUser   = toMap(dayXpRows, 'total');
       const weekSecByUser = toMap(weekSessions, 'total_seconds');
+      const daySecByUser  = toMap(daySessions, 'total_seconds');
 
       // Build a sorted, consecutively ranked leaderboard from a score map
       const buildBoard = (
