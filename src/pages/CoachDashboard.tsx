@@ -64,6 +64,21 @@ const STRESS_LABELS: Record<string, string> = {
   stressed: '😰 Stressé', neutral: '😐 Neutre', calm: '😊 Serein',
 };
 
+// Returns true if the streak is still "alive" (last activity today or yesterday)
+function isStreakLive(lastActivityDate: string | null): boolean {
+  if (!lastActivityDate) return false;
+  const today = new Date().toISOString().slice(0, 10);
+  const yest  = new Date(); yest.setDate(yest.getDate() - 1);
+  return lastActivityDate === today || lastActivityDate === yest.toISOString().slice(0, 10);
+}
+
+// How many days since last activity (null → never)
+function daysSinceActivity(lastActivityDate: string | null): number | null {
+  if (!lastActivityDate) return null;
+  const diff = new Date().getTime() - new Date(lastActivityDate + 'T12:00:00').getTime();
+  return Math.floor(diff / 86_400_000);
+}
+
 // Event type visual config
 const EVENT_STYLE: Record<string, { color: string; bg: string; label: string }> = {
   course: { color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', label: 'Cours' },
@@ -732,7 +747,16 @@ export default function CoachDashboard() {
           </div>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="text-[10px] text-muted-foreground">Lv.{level}</span>
-            <span className="text-[10px]" style={{ color: s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(0 84% 55%)' }}>🔥{s.streak}</span>
+            {(() => {
+              const live = isStreakLive(s.last_activity_date);
+              return (
+                <span className="text-[10px]"
+                  title={live ? `Streak actif — ${s.streak}j` : `Streak brisé (dernier: ${s.last_activity_date ?? 'jamais'})`}
+                  style={{ color: live && s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(220 10% 38%)' }}>
+                  {live ? '🔥' : '💤'}{s.streak}
+                </span>
+              );
+            })()}
             <OnlineDot lastSeenAt={s.last_seen_at} />
           </div>
         </div>
@@ -764,6 +788,9 @@ export default function CoachDashboard() {
     const title      = getTitleForLevel(level);
     const data       = sData(s.user_id);
     const isTutored  = tutoredIds.has(s.user_id);
+
+    const streakLive  = isStreakLive(s.last_activity_date);
+    const streakDays  = daysSinceActivity(s.last_activity_date);
 
     const gradesBySubject: Record<string, number[]> = {};
     data.exams.filter(e => e.grade !== null).forEach(e => {
@@ -926,14 +953,25 @@ export default function CoachDashboard() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {[
                   { label: periodStats.xpLabel,   value: periodStats.xp,     color: 'hsl(43 90% 55%)' },
-                  { label: 'Streak',               value: `🔥 ${s.streak}j`,  color: s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(0 84% 60%)' },
+                  { label: streakLive ? 'Streak 🔥' : 'Streak brisé 💤',
+                    value: `${s.streak}j`,
+                    color: streakLive && s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(220 10% 42%)' },
                   { label: periodStats.hoursLabel, value: periodStats.hours,  color: 'hsl(270 70% 65%)' },
                   { label: periodStats.questLabel, value: periodStats.quests,
                     color: periodStats.questRate >= 80 ? 'hsl(142 71% 45%)' : periodStats.questRate >= 50 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' },
                 ].map(st => (
-                  <div key={st.label} className="p-3 rounded-xl" style={{ background: 'hsl(222 22% 9%)', border: '1px solid hsl(222 16% 16%)' }}>
-                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{st.label}</p>
+                  <div key={st.label} className="p-3 rounded-xl"
+                    style={{
+                      background: 'hsl(222 22% 9%)',
+                      border: `1px solid ${!streakLive && st.label.startsWith('Streak') ? 'hsl(220 10% 22%)' : 'hsl(222 16% 16%)'}`,
+                    }}>
+                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1 truncate">{st.label}</p>
                     <p className="font-display font-bold text-sm" style={{ color: st.color }}>{st.value}</p>
+                    {!streakLive && st.label.startsWith('Streak') && streakDays !== null && streakDays > 1 && (
+                      <p className="text-[9px] mt-0.5" style={{ color: 'hsl(220 10% 38%)' }}>
+                        inactif depuis {streakDays}j
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
