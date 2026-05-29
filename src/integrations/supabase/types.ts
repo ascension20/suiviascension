@@ -775,6 +775,20 @@ export type Database = {
     }
     Functions: {
       bootstrap_first_coach: { Args: never; Returns: boolean }
+      get_deepwork_leaderboard: {
+        Args: { _since: string }
+        Returns: {
+          total_seconds: number
+          user_id: string
+        }[]
+      }
+      get_xp_leaderboard: {
+        Args: { _since: string }
+        Returns: {
+          total: number
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
