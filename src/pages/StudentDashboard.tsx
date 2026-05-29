@@ -58,7 +58,7 @@ export default function StudentDashboard() {
     if (result.ok) {
       toast({ title: '🔔 Notifications activées !', description: 'Tu recevras des rappels DS et deepwork sur cet appareil.' });
       return;
-    }
+    const reason = 'reason' in result ? result.reason : undefined;
     const reason = result.reason;
     if (reason === 'no_vapid_key') {
       toast({ title: 'Config manquante', description: 'La clé VAPID n\'est pas configurée. Ajoute VITE_VAPID_PUBLIC_KEY dans les variables d\'environnement Lovable.', variant: 'destructive' });
