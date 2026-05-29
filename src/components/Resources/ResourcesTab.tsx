@@ -109,60 +109,115 @@ function SubjectPicker({
   );
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function isExamCat(label: string) {
+  const l = label.toLowerCase();
+  return l.includes('pendant le contrôle') || l.includes("pendant l'épreuve");
+}
+
+function cleanExamLabel(label: string) {
+  const stripped = label
+    .replace(/^pendant le contrôle — /i, '')
+    .replace(/^pendant l['']épreuve — /i, '');
+  if (stripped.toLowerCase() === 'tous types') return '';          // generic → no sub-label
+  return stripped.charAt(0).toUpperCase() + stripped.slice(1);
+}
+
+// ── Method item (shared) ──────────────────────────────────────────────────────
+function MethodItem({ m }: { m: import('./methodes-data').Method }) {
+  const iconHsl = ICON_HSL[m.icon as keyof typeof ICON_HSL] ?? '220 10% 50%';
+  return (
+    <li
+      className={`r-method${m.hot ? ' r-method-hot' : ''}`}
+      style={{ '--ih': `hsl(${iconHsl})` } as React.CSSProperties}
+    >
+      <div className="r-method-row">
+        <span className="r-method-icon">{m.icon}</span>
+        <span className="r-method-title">{m.title}</span>
+        {m.hot && <span className="r-hot-badge clip-sm">TOP</span>}
+      </div>
+      <p className="r-method-desc" dangerouslySetInnerHTML={{ __html: m.desc }} />
+      {m.tags && m.tags.length > 0 && (
+        <div className="r-tags">
+          {m.tags.map(tag => {
+            const t = TAG_CFG[tag];
+            return (
+              <span
+                key={tag}
+                className="r-tag"
+                style={{ color: `hsl(${t.hsl})`, background: `hsl(${t.hsl} / 0.12)`, borderColor: `hsl(${t.hsl} / 0.3)` }}
+              >
+                {t.label}
+              </span>
+            );
+          })}
+        </div>
+      )}
+    </li>
+  );
+}
+
 // ── Level Tab ─────────────────────────────────────────────────────────────────
 function LevelTab({ subjects }: { subjects: SubjectCard[] }) {
   const [selected, setSelected] = useState(subjects[0].code);
   const subj = subjects.find(s => s.code === selected) ?? subjects[0];
+  const clr  = SUBJ_HSL[subj.code] ?? '220 10% 50%';
+
+  const revCats  = subj.categories.filter(c => !isExamCat(c.label));
+  const examCats = subj.categories.filter(c =>  isExamCat(c.label));
 
   return (
     <div className="r-level">
       <SubjectPicker subjects={subjects} selected={selected} onSelect={setSelected} />
 
-      <div className="r-subject-body">
-        {subj.categories.map(cat => (
-          <section key={cat.label}>
-            <div className="r-cat-label">{cat.label}</div>
-            <ul className="r-methods-list">
-              {cat.methods.map(m => {
-                const iconHsl = ICON_HSL[m.icon] ?? '220 10% 50%';
-                return (
-                  <li
-                    key={m.title}
-                    className={`r-method${m.hot ? ' r-method-hot' : ''}`}
-                    style={{ '--ih': `hsl(${iconHsl})`, '--ib': `hsl(${iconHsl} / 0.1)` } as React.CSSProperties}
-                  >
-                    <div className="r-method-row">
-                      <span className="r-method-icon">{m.icon}</span>
-                      <span className="r-method-title">{m.title}</span>
-                      {m.hot && <span className="r-hot-badge clip-sm">TOP</span>}
-                    </div>
-                    <p
-                      className="r-method-desc"
-                      dangerouslySetInnerHTML={{ __html: m.desc }}
-                    />
-                    {m.tags && m.tags.length > 0 && (
-                      <div className="r-tags">
-                        {m.tags.map(tag => {
-                          const t = TAG_CFG[tag];
-                          return (
-                            <span
-                              key={tag}
-                              className="r-tag"
-                              style={{ color: `hsl(${t.hsl})`, background: `hsl(${t.hsl} / 0.12)`, borderColor: `hsl(${t.hsl} / 0.3)` }}
-                            >
-                              {t.label}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        ))}
+      {/* ── Révision ── */}
+      <div className="r-phase">
+        <div
+          className="r-phase-hd"
+          style={{
+            color:            `hsl(${clr})`,
+            background:       `hsl(${clr} / 0.08)`,
+            borderColor:      `hsl(${clr} / 0.22)`,
+            '--ph-line': `hsl(${clr} / 0.5)`,
+          } as React.CSSProperties}
+        >
+          <span className="r-phase-icon">📚</span>
+          Révision
+        </div>
+        <div className="r-phase-body">
+          {revCats.map(cat => (
+            <section key={cat.label}>
+              <div className="r-cat-label">{cat.label}</div>
+              <ul className="r-methods-list">
+                {cat.methods.map(m => <MethodItem key={m.title} m={m} />)}
+              </ul>
+            </section>
+          ))}
+        </div>
       </div>
+
+      {/* ── Pendant le contrôle ── */}
+      {examCats.length > 0 && (
+        <div className="r-phase">
+          <div className="r-phase-hd r-phase-exam">
+            <span className="r-phase-icon">⏱</span>
+            Pendant le contrôle
+          </div>
+          <div className="r-phase-body">
+            {examCats.map(cat => {
+              const sub = cleanExamLabel(cat.label);
+              return (
+                <section key={cat.label}>
+                  {sub && <div className="r-cat-label r-cat-exam">{sub}</div>}
+                  <ul className="r-methods-list">
+                    {cat.methods.map(m => <MethodItem key={m.title} m={m} />)}
+                  </ul>
+                </section>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -459,7 +514,7 @@ export function ResourcesTab() {
         .r-pick-btn:hover::before { opacity: 0.6; }
         .r-pick-active {
           border-color: var(--scb) !important;
-          box-shadow: 0 0 0 1px var(--scb), 0 0 16px hsl(from var(--sc) h s l / 0.15);
+          box-shadow: 0 0 0 1px var(--scb), 0 0 18px var(--scl);
         }
         .r-pick-active::before { opacity: 1 !important; }
 
@@ -487,7 +542,28 @@ export function ResourcesTab() {
 
         /* ─── Level content ─── */
         .r-level {}
-        .r-subject-body { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        /* Phase block */
+        .r-phase { margin-bottom: 1.5rem; }
+
+        .r-phase-hd {
+          display: flex; align-items: center; gap: 0.5rem;
+          font-size: 0.7rem; font-weight: 700;
+          letter-spacing: 0.12em; text-transform: uppercase;
+          padding: 0.45rem 0.85rem;
+          border-radius: 7px;
+          border: 1px solid;
+          margin-bottom: 1rem;
+        }
+        .r-phase-icon { font-size: 0.85rem; line-height: 1; }
+
+        .r-phase-exam {
+          color: hsl(30 80% 57%);
+          background: hsl(30 80% 57% / 0.08);
+          border-color: hsl(30 80% 57% / 0.22);
+        }
+
+        .r-phase-body { display: flex; flex-direction: column; gap: 1.1rem; padding-left: 0.1rem; }
 
         .r-cat-label {
           font-size: 0.64rem; font-weight: 600;
@@ -496,6 +572,7 @@ export function ResourcesTab() {
           margin-bottom: 0.55rem;
           padding-left: 0.2rem;
         }
+        .r-cat-exam { color: hsl(30 80% 45%); }
 
         .r-methods-list {
           list-style: none; margin: 0; padding: 0;
