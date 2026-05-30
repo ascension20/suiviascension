@@ -408,16 +408,16 @@ export default function DeepworkPage() {
                         }}
                       />
 
-                      {/* DiceBear avatar */}
+                      {/* Avataaars avatar — same as profile */}
                       <div
                         className="w-12 h-12 rounded-lg overflow-hidden shrink-0"
-                        style={{ background: 'hsl(222 22% 14%)' }}
+                        style={{ background: 'hsl(222 22% 6%)' }}
                       >
                         <img
-                          src={`https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(u.pseudo)}&backgroundColor=transparent`}
+                          src={u.avatarUrl || `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(u.pseudo)}&backgroundColor=0d1117&backgroundType[]=solid`}
                           alt={u.pseudo}
                           draggable={false}
-                          style={{ width: '100%', height: '100%', imageRendering: 'pixelated' }}
+                          style={{ width: '100%', height: '100%' }}
                         />
                       </div>
 

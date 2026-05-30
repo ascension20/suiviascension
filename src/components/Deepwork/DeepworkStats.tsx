@@ -23,9 +23,9 @@ export function DeepworkStats({ userId }: Props) {
       since.setDate(since.getDate() - 30);
       const { data: sessions } = await supabase
         .from('deepwork_sessions')
-        .select('created_at, xp_earned')
+        .select('started_at, xp_earned')
         .eq('user_id', userId)
-        .gte('created_at', since.toISOString());
+        .gte('started_at', since.toISOString());
 
       const byDate: Record<string, number> = {};
       for (let i = 0; i < 30; i++) {
@@ -34,7 +34,7 @@ export function DeepworkStats({ userId }: Props) {
         byDate[d.toISOString().slice(0, 10)] = 0;
       }
       sessions?.forEach(s => {
-        const k = s.created_at.slice(0, 10);
+        const k = s.started_at.slice(0, 10);
         if (byDate[k] !== undefined) byDate[k] += s.xp_earned;
       });
       setSeries(Object.entries(byDate).map(([date, xp]) => ({ date: date.slice(5), xp })));

@@ -1,8 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
+import { buildAvataaarsUrl } from '@/components/avatar/Avatar';
+import { DEFAULT_AVATAR_CONFIG } from '@/lib/avatar/types';
+import type { AvatarConfig } from '@/lib/avatar/types';
 
-export interface DeepworkPeer { pseudo: string; avatar: string; }
+export interface DeepworkPeer { pseudo: string; avatarUrl: string; }
 
 const Ctx = createContext<DeepworkPeer[]>([]);
 
@@ -16,18 +19,20 @@ interface Props {
  * Provides real-time deepwork presence to the whole app.
  *
  * Design:
+ *  - Fetches the user's avatar_config once (on userId / pseudo change) and
+ *    builds the canonical Avataaars URL — same avatar as the profile page.
  *  - Always subscribes to the channel so we can see who is studying.
  *  - Calls channel.track() INSIDE the subscribe callback (the only safe
- *    place), with the up-to-date isActive value captured in the same
+ *    place), with the up-to-date isActive + avatarUrl captured in the same
  *    closure — no stale-closure race condition.
- *  - Re-creates the channel whenever isActive or profile changes so the
- *    subscribe callback always sees the correct values.
+ *  - Re-creates the channel whenever isActive, profile or avatarUrl changes.
  *  - Reacts to session start/stop via a custom DOM event (same tab) and
  *    the storage event (cross-tab).
  */
 export function DeepworkPresenceProvider({ children, userId, profile }: Props) {
   const [peers, setPeers] = useState<DeepworkPeer[]>([]);
   const [isActive, setIsActive] = useState(() => !!localStorage.getItem(DEEPWORK_STORAGE_KEY));
+  const [avatarUrl, setAvatarUrl] = useState('');
 
   // Listen for session start / stop from any tab / page
   useEffect(() => {
@@ -40,17 +45,45 @@ export function DeepworkPresenceProvider({ children, userId, profile }: Props) {
     };
   }, []);
 
+  // Fetch avatar_config from DB and build the Avataaars URL for this user.
+  // This ensures the deepwork peer card shows the exact same avatar as the profile.
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from('avatar_configs')
+        .select('hat, glasses, outfit, background, badge, skin_color, hair_style, hair_color')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (cancelled) return;
+
+      const config: AvatarConfig = data ? {
+        hat:        data.hat        ?? null,
+        glasses:    data.glasses    ?? null,
+        outfit:     data.outfit     ?? DEFAULT_AVATAR_CONFIG.outfit,
+        background: data.background ?? DEFAULT_AVATAR_CONFIG.background,
+        badge:      data.badge      ?? null,
+        skinColor:  data.skin_color ?? DEFAULT_AVATAR_CONFIG.skinColor,
+        hairStyle:  data.hair_style ?? DEFAULT_AVATAR_CONFIG.hairStyle,
+        hairColor:  data.hair_color ?? DEFAULT_AVATAR_CONFIG.hairColor,
+      } : DEFAULT_AVATAR_CONFIG;
+
+      setAvatarUrl(buildAvataaarsUrl(config, profile?.pseudo ?? 'Élève'));
+    })();
+    return () => { cancelled = true; };
+  }, [userId, profile?.pseudo]);
+
   /**
-   * Channel effect. Dependencies include isActive + profile so that each
-   * time one of them changes we spin up a fresh channel. The subscribe
-   * callback therefore always captures the current values — no stale
-   * closure. track() is called only after SUBSCRIBED and only when active.
+   * Channel effect. Depends on isActive + profile + avatarUrl so the
+   * subscribe callback always captures current values. track() is called
+   * only after SUBSCRIBED, only when active, and only once avatarUrl is set.
    */
   useEffect(() => {
     if (!userId) return;
 
     const pseudo = profile?.pseudo ?? 'Élève';
-    const avatar = profile?.avatar ?? '';
 
     const ch = supabase.channel('deepwork-room', {
       config: { presence: { key: userId } },
@@ -65,13 +98,13 @@ export function DeepworkPresenceProvider({ children, userId, profile }: Props) {
     }).subscribe(async (status) => {
       if (status !== 'SUBSCRIBED') return;
       if (isActive) {
-        await ch.track({ pseudo, avatar });
+        await ch.track({ pseudo, avatarUrl });
       }
     });
 
     return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, isActive, profile?.pseudo, profile?.avatar]);
+  }, [userId, isActive, profile?.pseudo, avatarUrl]);
 
   return <Ctx.Provider value={peers}>{children}</Ctx.Provider>;
 }
