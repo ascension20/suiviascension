@@ -48,7 +48,7 @@ export interface PromptGroup {
 
 export const GENERAL_SECTIONS: GeneralSection[] = [
   {
-    title: `🧠 Mémoriser intelligemment`,
+    title: `Mémoriser intelligemment`,
     cards: [
       {
         hot: true,
@@ -64,10 +64,14 @@ export const GENERAL_SECTIONS: GeneralSection[] = [
         title: `Le journal d'erreurs`,
         desc: `Un cahier dédié : chaque erreur → <strong>type d'erreur → cause racine → règle à retenir</strong>. Relis ce journal la veille de chaque exam, pas tes cours. Ce que tu rates régulièrement = ce qui peut te coûter des points. Ce que tu réussis déjà = ne pas perdre de temps à le réviser.`,
       },
+      {
+        title: `Réviser juste avant de dormir`,
+        desc: `Le sommeil consolide activement les souvenirs de la journée. <strong>Fais ta session Anki ou ta relecture de points flous dans les 30 min avant de dormir</strong> — pas au réveil, pas à midi. Ce que le cerveau traite en dernier avant de s'endormir est rejoué pendant le sommeil. Les études montrent une rétention significativement meilleure pour le contenu révisé avant le coucher.`,
+      },
     ],
   },
   {
-    title: `⚡ Travailler efficacement`,
+    title: `Travailler efficacement`,
     cards: [
       {
         title: `Blocs de travail courts et intenses`,
@@ -81,10 +85,14 @@ export const GENERAL_SECTIONS: GeneralSection[] = [
         title: `L'IA comme prof disponible 24h/24`,
         desc: `Utilise l'IA pour <strong>trois choses précises</strong> : (1) te faire interroger sur un chapitre, (2) critiquer tes productions écrites, (3) générer des exercices ou flashcards ciblés. <strong>Ne lui demande pas de faire à ta place</strong> — demande-lui de créer les conditions pour que tu travailles toi-même.`,
       },
+      {
+        title: `Planifier sa session avant de commencer`,
+        desc: `Avant d'ouvrir un livre, <strong>écris en 2 minutes ce que tu vas produire pendant la session</strong> : "Refaire les exos 3, 5, 7 du chapitre 4 sans regarder le corrigé." Une session sans objectif défini dérive toujours vers la relecture passive. <strong>La session est réussie quand l'objectif est atteint</strong>, pas quand le temps est écoulé.`,
+      },
     ],
   },
   {
-    title: `🎯 Penser stratégiquement`,
+    title: `Penser stratégiquement`,
     cards: [
       {
         hot: true,
@@ -508,6 +516,12 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
             desc: `Écoute 10 min par jour d'un podcast ou d'une vidéo en anglais sur les thèmes du cours (BBC Learning English, TED-Ed...). <strong>Note 3 mots ou expressions que tu n'as pas compris</strong>, cherche leur sens, ajoute-les sur Anki.`,
             tags: ['actif'],
           },
+          {
+            icon: '✦' as Icon,
+            title: `Consommer en anglais ce que tu aimes déjà`,
+            desc: `Sélectionne une série, une chaîne YouTube, un podcast que tu regardes déjà — <strong>passe-le en anglais avec sous-titres anglais</strong> (pas français). 2-3 épisodes par semaine. Le cerveau apprend une langue sans effort conscient à travers l'immersion dans du contenu qui l'intéresse. C'est le moyen le plus sous-estimé pour développer une expression naturelle.`,
+            tags: ['actif'],
+          },
         ],
       },
       {
@@ -657,6 +671,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
             title: `Flashcards formules, identités et propriétés sur Anki`,
             desc: `Une flashcard par élément clé : formules de trigonométrie, dérivées usuelles, identités remarquables, propriétés des fonctions... <strong>"Génère-moi 20 flashcards Q/R sur [chapitre] maths première spé, couvre formules, propriétés et définitions."</strong> 10 min par jour sur Anki = plus jamais de trou sur les formules en DS.`,
             tags: ['ia', 'espace'],
+          },
+          {
+            icon: '✦' as Icon,
+            title: `Retrouver une formule depuis un exemple numérique`,
+            desc: `Tu bloques sur une formule en DS ? <strong>Pars d'un cas ultra-simple et remonte la logique.</strong> Exemple : si tu ne retrouves plus l'aire d'un triangle — prends un carré 2×2 (aire = 4), la diagonale le coupe en deux → ½ × base × hauteur. Ce raisonnement reconstruit la formule en 30 secondes et ancre sa compréhension bien mieux que la mémorisation brute.`,
+            tags: ['actif'],
           },
         ],
       },
@@ -991,6 +1011,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
             desc: `Joue le rôle de la machine : note les valeurs de chaque variable à chaque étape sur papier. <strong>Indispensable pour les boucles et la récursivité</strong> — c'est l'exercice le plus redouté car le moins pratiqué.`,
             tags: ['actif'],
           },
+          {
+            icon: '✦' as Icon,
+            title: `Implémenter chaque algorithme du cours, tester sur 3 cas`,
+            desc: `Pour chaque algorithme vu en cours (tri par insertion, recherche dichotomique, récursivité...) : <strong>ouvre un éditeur, implémente de mémoire, puis teste sur 3 cas — cas normal, liste vide, valeur aux bords.</strong> Comprendre un algorithme sans l'avoir jamais codé soi-même est une illusion : les erreurs de cas limites ne se voient qu'en exécutant.`,
+            tags: ['actif'],
+          },
         ],
       },
       {
@@ -1061,8 +1087,8 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           },
           {
             icon: '✦' as Icon,
-            title: `Expliquer le cours à l'oral, sans support`,
-            desc: `Ferme tout et explique le chapitre à voix haute comme si tu le faisais à quelqu'un qui ne connaît rien. <strong>Ce que tu bafouilles ou esquives = ce que tu n'as pas vraiment compris.</strong>`,
+            title: `Frises chronologiques par chapitre`,
+            desc: `Pour chaque chapitre, construis une frise chronologique sur une feuille A4 avec <strong>dates, événements, acteurs et ruptures</strong>. En HG Première, beaucoup d'erreurs viennent de confusions temporelles. Voir la chronologie d'un coup d'œil ancre la logique causale — et devient un support de révision express en 5 min.`,
             tags: ['actif'],
           },
         ],
@@ -1339,6 +1365,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
             desc: `<strong>"Génère un sujet complet de SES terminale : une EC1, une EC2 avec doc statistique, et une dissertation. Évalue mes réponses question par question avec les critères du bac."</strong>`,
             tags: ['ia', 'actif'],
           },
+          {
+            icon: '✦' as Icon,
+            title: `1 article d'actualité économique par semaine — relier au cours`,
+            desc: `Chaque semaine, lis un article de fond (Les Échos, Le Monde Éco, Alternatives Économiques). <strong>Identifie la notion SES que ça illustre et note-la dans une liste avec date + fait concret.</strong> Ces exemples personnels récents sont bien plus mémorables que les exemples génériques du manuel — et signalent au correcteur que tu comprends la réalité économique au-delà du programme.`,
+            tags: ['actif'],
+          },
         ],
       },
       {
@@ -1525,6 +1557,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
             desc: `Face à un graphe ou tableau de résultats : <strong>lire (extraire la donnée chiffrée) → décrire la tendance → interpréter avec un mécanisme biologique → conclure en répondant à la question.</strong> Entraîne cette structure sur chaque document que tu croises.`,
             tags: ['actif'],
           },
+          {
+            icon: '✦' as Icon,
+            title: `Carte mentale des mécanismes biologiques par chapitre`,
+            desc: `En fin de chapitre, construis une carte mentale qui relie tous les mécanismes entre eux : <strong>chaque flèche représente une régulation, une activation ou une inhibition.</strong> En SVT terminale, les questions croisent souvent plusieurs mécanismes (ex. immunité + génétique, neurone + hormones). Voir leurs interconnexions sur une page évite les réponses cloisonnées qui manquent la logique d'ensemble.`,
+            tags: ['actif'],
+          },
         ],
       },
       {
@@ -1681,8 +1719,8 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           },
           {
             icon: '✦' as Icon,
-            title: `Expliquer le chapitre à l'oral, sans support`,
-            desc: `Ferme tout, explique le chapitre à voix haute comme si tu le présentais à quelqu'un. <strong>Ce que tu bafouilles ou esquives = ce que tu n'as pas vraiment compris.</strong>`,
+            title: `Relier les chapitres entre eux — vision transversale`,
+            desc: `En terminale, les sujets de composition croisent souvent plusieurs chapitres. <strong>Crée une fiche de connexions</strong> : pour chaque notion (mondialisation, démocratie, conflits...), note les chapitres qui l'abordent et les exemples qui circulent entre eux. Un élève qui voit les ponts entre chapitres traite des sujets transversaux sans se perdre.`,
             tags: ['actif'],
           },
         ],
@@ -1773,7 +1811,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
 
 export const PROMPT_GROUPS: PromptGroup[] = [
   {
-    label: `📎 Avec ton cours en pièce jointe`,
+    label: `Avec ton cours en pièce jointe`,
     prompts: [
       {
         title: `Interroge-moi sur mon cours`,
@@ -1839,7 +1877,7 @@ En te basant sur mon cours et ma copie corrigée, analyse mes erreurs en 3 point
     ],
   },
   {
-    label: `💬 Sans cours — de mémoire`,
+    label: `Sans cours — de mémoire`,
     prompts: [
       {
         title: `Interroge-moi sur un chapitre`,
@@ -1888,11 +1926,11 @@ Règle absolue : ne me donne pas la solution. Dis-moi d'abord si ma piste de dé
     ],
   },
   {
-    label: `🎤 Préparer les oraux`,
+    label: `Préparer les oraux`,
     prompts: [
       {
         title: `Grand Oral — jury simulé`,
-        scope: `Terminale · 🎙 Utilise l'assistant vocal`,
+        scope: `Terminale · Utilise l'assistant vocal`,
         text: `Mon sujet de Grand Oral est : [formule ta question]
 Mes deux spécialités : [spécialité 1] et [spécialité 2]
 Mon projet d'études : [décris en une phrase]
@@ -1907,7 +1945,7 @@ Je commence : [présente-toi à voix haute si tu utilises l'assistant vocal, ou 
       },
       {
         title: `Oral EAF — entretien sur l'œuvre`,
-        scope: `Première · 🎙 Utilise l'assistant vocal`,
+        scope: `Première · Utilise l'assistant vocal`,
         text: `L'œuvre que j'ai choisie : [titre + auteur]
 Le parcours associé : [intitulé du parcours]
 Le texte que je viens de présenter : [titre ou incipit du texte]
