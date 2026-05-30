@@ -156,12 +156,12 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Lire tout le sujet avant d'écrire la première ligne`,
-            desc: ``,
+            desc: `Parcourez l'ensemble des questions en 3 minutes. Identifiez les questions indépendantes — certains exercices ne dépendent pas les uns des autres. Commencez par ce que vous maîtrisez pour sécuriser les points avant d'attaquer ce qui est difficile.`,
           },
           {
             icon: '◆' as Icon,
             title: `Ne jamais laisser de blanc`,
-            desc: ``,
+            desc: `Posez toujours les éléments que vous connaissez : l'hypothèse, la propriété que vous pensez utiliser, le début du raisonnement. Une démarche cohérente et incomplète rapporte des points. Un blanc rapporte zéro.`,
           },
         ],
       },
@@ -170,12 +170,12 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Écrire données, inconnue et loi avant toute formule`,
-            desc: ``,
+            desc: `Avant tout calcul, notez les données du problème, ce qu'on cherche (l'inconnue), et la loi ou la propriété que vous allez utiliser. Cette étape force à identifier la bonne formule avant de calculer — et rapporte des points de démarche même si le résultat final est faux.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Vérifier l'ordre de grandeur de chaque résultat numérique`,
-            desc: ``,
+            desc: `Après chaque résultat numérique : est-ce que ce nombre est cohérent avec la situation ? Une probabilité supérieure à 1, une longueur négative, un angle hors de l'intervalle attendu — ce sont des erreurs détectables en 5 secondes. Corrigez avant de passer à la suite.`,
           },
         ],
       },
@@ -226,7 +226,7 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Ne jamais laisser de blanc — poser la démarche même incomplète`,
-            desc: ``,
+            desc: `Si vous bloquez sur le résultat final : rédigez quand même <strong>Données :</strong>, <strong>Inconnue :</strong>, <strong>Loi appliquée :</strong>. Les points de démarche sont distincts des points de résultat. Une démarche correcte avec un calcul final faux rapporte la majorité des points.`,
           },
         ],
       },
@@ -235,12 +235,12 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Les 5 étapes dans l'ordre, sans exception`,
-            desc: ``,
+            desc: `<strong>Données → inconnue → loi → formule littérale → application numérique + unité.</strong> Sans exception. Cette séquence protège des erreurs de conversion et rapporte des points de méthode, même si le résultat final est faux.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Continuer avec une valeur fictive si tu bloques sur un calcul intermédiaire`,
-            desc: ``,
+            desc: `Si un résultat intermédiaire vous échappe : écrivez <strong>On admet que [grandeur] = [valeur estimée]</strong> et continuez. Les questions suivantes sont souvent notées indépendamment — vous pouvez récupérer plusieurs points sur la méthode.`,
           },
         ],
       },
@@ -249,7 +249,7 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Unité à chaque résultat, résultat final encadré`,
-            desc: ``,
+            desc: `Un résultat numérique sans unité ne vaut rien en physique-chimie. Écrivez l'unité à chaque étape, pas seulement à la fin. Le résultat final encadré évite qu'il passe inaperçu pour le correcteur.`,
           },
         ],
       },
@@ -300,7 +300,7 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Relecture syntaxe en toute fin — pas le fond, uniquement ces 3 points`,
-            desc: ``,
+            desc: `Gardez les 10 dernières minutes pour une relecture dédiée exclusivement à la langue : accords sujet-verbe, accords des participes passés, ponctuation des subordonnées. Pas le contenu — uniquement ces points.`,
           },
         ],
       },
@@ -309,17 +309,17 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Annoter le texte avant d'écrire la première phrase`,
-            desc: ``,
+            desc: `Lisez le texte trois fois minimum. À la troisième lecture : entourez chaque procédé, notez l'effet produit dans la marge. L'annotation est une étape à part entière — elle fait apparaître les axes d'analyse. Ne pas écrire avant d'avoir un texte densément annoté.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Plan sur brouillon avant la première phrase — axes + procédés par axe`,
-            desc: ``,
+            desc: `Construisez 2-3 axes sur brouillon avec les procédés rattachés à chacun. L'annotation + le plan complet prennent facilement 45 min — c'est du temps bien investi pour éviter le hors-sujet et les digressions.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Chaque remarque suit la structure procédé → effet → sens`,
-            desc: ``,
+            desc: `Nommez le procédé, citez le texte entre guillemets (même court), décrivez l'effet produit sur le lecteur, puis interprétez ce que ça révèle du sens du texte. Une remarque sans ces quatre éléments ne rapporte pas tous ses points.`,
           },
         ],
       },
@@ -372,7 +372,7 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Répondre explicitement à la question posée — dernière phrase de chaque réponse`,
-            desc: ``,
+            desc: `La dernière phrase de chaque partie ou réponse doit répondre explicitement à la question posée. <strong>« Ainsi, on voit que... »</strong> ou <strong>« Ce phénomène explique donc... »</strong> Le correcteur ne devine pas que vous avez compris — il faut le lui dire.`,
           },
         ],
       },
@@ -381,17 +381,17 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Dégager la problématique en 3 min — avant de chercher ses connaissances`,
-            desc: ``,
+            desc: `Avant d'ouvrir votre mémoire : reformulez le sujet en une question à laquelle votre copie va répondre. Une problématique posée évite le hors-sujet et structure tout ce que vous écrivez.`,
           },
           {
             icon: '⏱' as Icon,
             title: `10 min de plan sur brouillon, deux colonnes : parties + exemples concrets`,
-            desc: ``,
+            desc: `Pour chaque partie : un titre + au moins 2 exemples précis avec dates ou acteurs. Si vous ne trouvez pas d'exemple pour une partie, c'est soit que la partie est mal construite, soit que vous avez une lacune.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Chaque argument illustré d'un exemple daté, situé, nommé`,
-            desc: ``,
+            desc: `<strong>« La guerre a causé beaucoup de morts »</strong> = 0 point. <strong>« 14 millions de morts entre 1914 et 1918, dont 1,4 million de soldats français »</strong> = argument solide. Pas d'argument sans exemple précis, pas d'exemple sans date ou chiffre.`,
           },
         ],
       },
@@ -400,7 +400,7 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Présentation du document en premier — nature, auteur, date, contexte`,
-            desc: ``,
+            desc: `Avant d'analyser le contenu : une phrase de présentation obligatoire — nature du document, auteur ou source, date, et contexte de production. La date seule change souvent l'interprétation du document.`,
           },
         ],
       },
@@ -451,7 +451,7 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Conclure chaque réponse en répondant explicitement à la question`,
-            desc: ``,
+            desc: `La dernière phrase de chaque réponse répond directement à la question posée. <strong>« Ainsi, on peut conclure que [réponse directe à la question]. »</strong> Beaucoup d'élèves développent une analyse juste mais ne concluent jamais.`,
           },
         ],
       },
@@ -460,12 +460,12 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Lire tous les documents avant de répondre à la première question`,
-            desc: ``,
+            desc: `Avant d'écrire quoi que ce soit : 3-4 min pour lire l'ensemble des documents dans l'ordre. En SVT, les réponses croisent souvent plusieurs documents — le document 3 peut invalider ou compléter ce que vous avez compris du document 1.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Citer le document et extraire une donnée chiffrée dans chaque réponse`,
-            desc: ``,
+            desc: `Chaque réponse commence par une référence au document : <strong>« D'après le document 2... »</strong> Et chaque observation s'appuie sur une donnée chiffrée précise : pas <strong>« la valeur augmente »</strong> mais <strong>« la valeur passe de 12 à 47 unités entre t=0 et t=30 min (doc. 2) »</strong>.`,
           },
         ],
       },
@@ -474,7 +474,7 @@ export const SECONDE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Titre + légende structurée + crayon gris — dans cet ordre`,
-            desc: ``,
+            desc: `Un schéma SVT sans titre = incomplet. Sans légende = la moitié des points perdus. Ordre obligatoire : (1) tracé au crayon gris, (2) titre en haut, (3) légende à droite ou en bas, organisée par catégorie si possible.`,
           },
         ],
       },
@@ -578,12 +578,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Gérer le temps dès la lecture du sujet`,
-            desc: ``,
+            desc: `Dès que vous recevez le sujet : lisez tout en 5 min et décidez immédiatement quel exercice vous choisissez (commentaire ou dissertation). Ne revenez pas sur ce choix — changer d'exercice à mi-temps est fatal.`,
           },
           {
             icon: '◆' as Icon,
             title: `Relecture finale : langue uniquement, pas le fond`,
-            desc: ``,
+            desc: `Gardez les 10 dernières minutes pour une relecture dédiée exclusivement à la langue : accords sujet-verbe, accords des participes passés, ponctuation des subordonnées. Pas le contenu — uniquement ces points.`,
           },
         ],
       },
@@ -592,12 +592,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `1h de brouillon minimum avant la première phrase — annotation + plan`,
-            desc: ``,
+            desc: `Lisez le texte trois fois. À la troisième : entourez chaque procédé, notez l'effet dans la marge, puis construisez 2-3 axes sur brouillon avec les procédés rattachés à chacun. L'annotation + le plan complet prennent facilement 45 min à 1h — c'est du temps bien investi.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Structure obligatoire de chaque remarque : procédé → citation → effet → sens`,
-            desc: ``,
+            desc: `Chaque remarque suit toujours le même schéma : nommez le procédé, citez le texte entre guillemets (même court), décrivez l'effet produit sur le lecteur, puis interprétez ce que ça révèle du sens du texte.`,
           },
         ],
       },
@@ -606,7 +606,7 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `1h de brouillon minimum avant la première phrase — problématique + plan complet`,
-            desc: ``,
+            desc: `Avant d'écrire l'intro : formulez une problématique précise qui crée une tension. Puis construisez le plan complet avec, pour chaque sous-partie, l'argument principal et l'exemple ou la citation associée.`,
           },
         ],
       },
@@ -665,12 +665,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Lire tout le sujet avant de commencer`,
-            desc: ``,
+            desc: `Parcourez l'ensemble des questions en 3 minutes. Identifiez les questions indépendantes — beaucoup de sujets de première ont des parties qui ne dépendent pas les unes des autres. Commencez par ce que vous maîtrisez pour sécuriser les points avant d'attaquer ce qui est difficile.`,
           },
           {
             icon: '◆' as Icon,
             title: `Ne jamais laisser de blanc`,
-            desc: ``,
+            desc: `Posez toujours les éléments que vous connaissez : l'hypothèse, la propriété que vous pensez utiliser, le début du raisonnement. Une démarche cohérente et incomplète rapporte des points. Un blanc rapporte zéro.`,
           },
         ],
       },
@@ -679,12 +679,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Rédiger chaque étape avec sa justification`,
-            desc: ``,
+            desc: `Chaque ligne doit être justifiée : <strong>« D'après la propriété X... »</strong>, <strong>« Or, par définition de... »</strong>, <strong>« On en déduit que... »</strong> Une affirmation sans justification ne rapporte pas de point même si elle est vraie. Le correcteur note le raisonnement, pas le résultat seul.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Si tu bloques sur une démonstration, poser ce que tu sais et continuer`,
-            desc: ``,
+            desc: `Si une étape intermédiaire vous résiste : écrivez <strong>On admet que [résultat]</strong> et continuez la démonstration à partir de là. Les étapes suivantes peuvent être correctes et rapporter des points indépendamment du blocage.`,
           },
         ],
       },
@@ -693,7 +693,7 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Vérifier le signe et l'ordre de grandeur de chaque résultat`,
-            desc: ``,
+            desc: `Après chaque résultat numérique : est-ce que ce nombre est cohérent avec la situation ? Une probabilité supérieure à 1, une longueur négative, un angle hors de l'intervalle attendu — ce sont des erreurs détectables en 5 secondes. Corrigez avant de passer à la suite.`,
           },
         ],
       },
@@ -746,12 +746,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Lire toutes les questions avant de commencer`,
-            desc: ``,
+            desc: `En SES, les questions d'un même sujet couvrent souvent plusieurs notions liées. 3 min de lecture globale te donnent la vision d'ensemble et t'évitent de tout mettre dans la première question alors que c'est attendu dans la suivante.`,
           },
           {
             icon: '◆' as Icon,
             title: `Répondre exactement à ce qui est demandé — lire la consigne mot par mot`,
-            desc: ``,
+            desc: `<strong>« Montrez »</strong>, <strong>« illustrez »</strong>, <strong>« présentez »</strong>, <strong>« distinguez »</strong> n'attendent pas la même chose. <em>Montrez</em> demande un raisonnement avec mécanisme et exemple. <em>Illustrez</em> demande un exemple détaillé. <em>Distinguez</em> demande une comparaison explicite.`,
           },
         ],
       },
@@ -760,12 +760,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Définir la notion avant de développer`,
-            desc: ``,
+            desc: `Pour toute question sur une notion économique ou sociologique : commencer par une phrase de définition précise. <strong>« Le chômage structurel désigne... »</strong> Ça cadre votre réponse et montre au correcteur que vous maîtrisez le vocabulaire du programme.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Structure AEI : Affirmation → Explication du mécanisme → Illustration`,
-            desc: ``,
+            desc: `Pour chaque argument : (A) posez l'affirmation, (E) expliquez le mécanisme qui la justifie, (I) illustrez avec un exemple concret ou un chiffre. Sans mécanisme, l'affirmation reste une opinion.`,
           },
         ],
       },
@@ -774,17 +774,17 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Présenter le document avant d'analyser son contenu`,
-            desc: ``,
+            desc: `Première phrase obligatoire : nature du document, source, date, ce qu'il mesure. <strong>« Ce graphique, extrait de l'INSEE (2022), représente l'évolution du taux de chômage en France entre 2010 et 2020. »</strong>`,
           },
           {
             icon: '⏱' as Icon,
             title: `Citer un chiffre précis et expliquer ce qu'il signifie`,
-            desc: ``,
+            desc: `Ne jamais écrire <strong>« la valeur augmente »</strong> — toujours <strong>« la valeur passe de X à Y entre [date] et [date] »</strong>. Et surtout expliquer ce que ça signifie concrètement : <strong>« Cela signifie que sur cette période, une personne de plus sur cent est devenue chômeuse. »</strong>`,
           },
           {
             icon: '⏱' as Icon,
             title: `Relier le document à un mécanisme du cours — jamais paraphraser`,
-            desc: ``,
+            desc: `Décrire le document ne suffit pas. Après avoir cité une donnée, vous devez expliquer pourquoi avec une notion ou un mécanisme du programme. Les copies qui redécrivent le document sans mobiliser le cours obtiennent systématiquement moins de la moitié des points.`,
           },
         ],
       },
@@ -793,7 +793,7 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Conclure en répondant explicitement à la question posée`,
-            desc: ``,
+            desc: `La dernière phrase répond directement à la question, pas au sujet en général. <strong>« Ainsi, on peut conclure que [réponse précise à la question posée]. »</strong>`,
           },
         ],
       },
@@ -858,12 +858,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Identifier le type de problème avant d'écrire quoi que ce soit`,
-            desc: ``,
+            desc: `Avant de poser la moindre formule : nommez le type d'exercice — cinématique, loi des gaz, optique géométrique, circuit électrique... Ce nommage force à activer la bonne séquence de raisonnement et évite d'appliquer une formule correcte dans le mauvais contexte.`,
           },
           {
             icon: '◆' as Icon,
             title: `Ne pas laisser de blanc — poser la démarche même incomplète`,
-            desc: ``,
+            desc: `Si vous bloquez sur le résultat final : rédigez quand même <strong>Données :</strong>, <strong>Inconnue :</strong>, <strong>Loi appliquée :</strong>. En physique spé première, les points de démarche sont distincts des points de résultat. Une démarche correcte avec un calcul final faux rapporte la majorité des points.`,
           },
         ],
       },
@@ -872,17 +872,17 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Formule littérale complète avant tout chiffre — sans exception`,
-            desc: ``,
+            desc: `Règle absolue : exprimez la formule entièrement en lettres avant de substituer les valeurs numériques. <strong>« v = d/t »</strong> avant <strong>« d = 150 m, t = 3 s, donc v = 50 m/s »</strong>. Cette étape protège des erreurs de conversion et rapporte des points de méthode.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Vérifier l'homogénéité des unités avant de valider le résultat`,
-            desc: ``,
+            desc: `Après chaque résultat : vérifiez que l'unité obtenue correspond à ce qu'on cherche. Si vous cherchez une vitesse et obtenez des kg·m, il y a une erreur dans la formule — détectable avant même de regarder le chiffre.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Continuer avec une valeur fictive si un calcul intermédiaire bloque`,
-            desc: ``,
+            desc: `Si un résultat intermédiaire vous échappe : écrivez <strong>On admet que [grandeur] = [valeur estimée]</strong> et continuez. Les questions suivantes sont souvent notées indépendamment — vous pouvez récupérer plusieurs points sur la méthode.`,
           },
         ],
       },
@@ -939,7 +939,7 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Conclure chaque réponse en répondant à la question posée`,
-            desc: ``,
+            desc: `La dernière phrase de chaque réponse répond directement à la question posée. <strong>« Ainsi, on peut conclure que [réponse directe à la question]. »</strong> Beaucoup d'élèves développent une analyse juste mais ne concluent jamais.`,
           },
         ],
       },
@@ -948,17 +948,17 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Lire tous les documents avant de répondre à la première question`,
-            desc: ``,
+            desc: `Avant d'écrire quoi que ce soit : 3-4 min pour lire l'ensemble des documents dans l'ordre. En SVT, les réponses croisent souvent plusieurs documents — le document 3 peut invalider ou compléter ce que vous avez compris du document 1.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Citer le document + donnée chiffrée dans chaque réponse`,
-            desc: ``,
+            desc: `Chaque réponse commence par une référence au document : <strong>« D'après le document 2... »</strong> Et chaque observation s'appuie sur une donnée chiffrée précise : pas <strong>« la valeur augmente »</strong> mais <strong>« la valeur passe de 12 à 47 unités entre t=0 et t=30 min »</strong>.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Relier chaque résultat expérimental à une notion du cours`,
-            desc: ``,
+            desc: `Une donnée sans interprétation n'apporte pas de points supplémentaires. Après avoir cité la donnée chiffrée, reliez systématiquement à un mécanisme ou une notion du cours : <strong>« Cette augmentation de X suggère que... conformément au mécanisme de... »</strong>`,
           },
         ],
       },
@@ -967,7 +967,7 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Titre + légende organisée + crayon gris — dans cet ordre`,
-            desc: ``,
+            desc: `Un schéma SVT sans titre = incomplet. Sans légende = la moitié des points perdus. Ordre obligatoire : (1) tracé au crayon gris, (2) titre en haut, (3) légende à droite ou en bas, organisée par catégorie si possible.`,
           },
         ],
       },
@@ -1018,7 +1018,7 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Lire l'énoncé deux fois avant d'écrire du code`,
-            desc: ``,
+            desc: `Avant de coder : lisez l'énoncé une première fois pour comprendre l'objectif global, une deuxième fois pour identifier les contraintes précises — type des paramètres, format de la valeur de retour, cas particuliers à gérer.`,
           },
         ],
       },
@@ -1027,12 +1027,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Tester mentalement son code avec un exemple simple avant de rendre`,
-            desc: ``,
+            desc: `Avant de passer à la question suivante : jouez le rôle de la machine sur votre propre code avec un exemple simple. Notez sur brouillon les valeurs de chaque variable à chaque étape.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Si tu ne sais pas coder la solution, décrire l'algorithme en français`,
-            desc: ``,
+            desc: `Un algorithme correct décrit en français rapporte des points. <strong>« Je parcours la liste, je compare chaque élément avec le suivant, si l'élément est plus grand je les échange... »</strong> montre que vous avez compris la logique.`,
           },
         ],
       },
@@ -1041,7 +1041,7 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Questions théoriques : justifier, pas juste donner la réponse`,
-            desc: ``,
+            desc: `En NSI première, les questions théoriques attendent une réponse justifiée. La justification est souvent autant valorisée que la réponse elle-même.`,
           },
         ],
       },
@@ -1104,7 +1104,7 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Répondre explicitement à la question — dernière phrase de chaque développement`,
-            desc: ``,
+            desc: `La dernière phrase de chaque partie doit répondre explicitement à la question posée. <strong>« Ainsi, on voit que... »</strong> ou <strong>« Ce phénomène explique donc... »</strong> Le correcteur ne devine pas que vous avez compris — il faut le lui dire.`,
           },
         ],
       },
@@ -1113,12 +1113,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Problématique + plan complet sur brouillon — 10 min minimum`,
-            desc: ``,
+            desc: `10 min de plan sur brouillon avant d'écrire la première ligne : problématique + parties + sous-parties avec exemples. Une copie avec un plan construit vaut systématiquement plus qu'une copie bien rédigée mais mal organisée.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Chaque argument illustré d'un exemple précis daté et situé`,
-            desc: ``,
+            desc: `Pas d'argument sans exemple précis. Pas d'exemple sans date ou chiffre. <strong>« La décolonisation »</strong> = trop vague. <strong>« L'indépendance algérienne de 1962, après 8 ans de guerre »</strong> = argument solide.`,
           },
         ],
       },
@@ -1127,12 +1127,12 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Présentation complète avant l'analyse — nature, auteur, date, contexte`,
-            desc: ``,
+            desc: `Première phrase obligatoire : nature du document, auteur ou source, date, contexte de production. Aucune analyse ne peut commencer sans cette présentation.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Interpréter, pas décrire — ce que le document révèle, pas ce qu'il dit`,
-            desc: ``,
+            desc: `Décrire ce que le document montre ne suffit pas. Chaque information doit être interprétée : <strong>« Cette donnée révèle que... »</strong>, <strong>« Ce choix de représentation traduit... »</strong> Le correcteur évalue votre capacité à analyser, pas à résumer.`,
           },
         ],
       },
@@ -1141,7 +1141,7 @@ export const PREMIERE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Titre + légende organisée + figurés clairs — dans cet ordre`,
-            desc: ``,
+            desc: `Un croquis sans titre = incomplet. Construisez d'abord le titre, puis structurez la légende par thèmes (ex. flux / acteurs / espaces), enfin tracez les figurés correspondants.`,
           },
         ],
       },
@@ -1209,12 +1209,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Lire tout le sujet — identifier les questions indépendantes et les bonus`,
-            desc: ``,
+            desc: `Parcourez l'ensemble du sujet en 3-5 minutes. Identifiez les questions qui ne dépendent pas des précédentes — en terminale, elles sont souvent nombreuses. Repérez aussi les questions ouvertes en fin de partie (potentiels bonus). Commencez par ce que vous maîtrisez.`,
           },
           {
             icon: '◆' as Icon,
             title: `Ne jamais laisser de blanc — rédiger la démarche même sans résultat`,
-            desc: ``,
+            desc: `Si vous bloquez sur une question : rédigez les éléments que vous connaissez (hypothèse, propriété mobilisée, début de raisonnement), admettez le résultat si nécessaire, et passez à la suite. En maths terminale, une démarche cohérente sans résultat final rapporte des points.`,
           },
         ],
       },
@@ -1223,12 +1223,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Chaque affirmation justifiée — référence à la propriété ou au théorème`,
-            desc: ``,
+            desc: `Chaque ligne doit être justifiée : <strong>« D'après le théorème des valeurs intermédiaires... »</strong>, <strong>« Or, f est continue sur [a,b] donc... »</strong> Une affirmation vraie non justifiée ne rapporte pas de point. Le correcteur note le raisonnement.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Si tu bloques sur une étape intermédiaire — admettre et continuer`,
-            desc: ``,
+            desc: `Si une étape vous résiste : écrivez <strong>On admet que [résultat intermédiaire]</strong> et continuez. Les étapes suivantes peuvent être correctes et rapporter des points indépendamment du blocage.`,
           },
         ],
       },
@@ -1237,7 +1237,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Vérifier la cohérence du résultat avec le contexte du problème`,
-            desc: ``,
+            desc: `Après chaque résultat : est-il cohérent avec le contexte ? Une probabilité > 1, une longueur négative, un extremum hors de l'intervalle de définition — ces erreurs se détectent en 5 secondes et se corrigent avant de rendre.`,
           },
         ],
       },
@@ -1288,12 +1288,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Choisir son sujet en 10 min — et ne plus y revenir`,
-            desc: ``,
+            desc: `Lisez les trois sujets en entier. Choisissez celui sur lequel vous pouvez construire une vraie tension philosophique — pas forcément celui dont vous connaissez le mieux le cours. Une fois choisi, ne revenez pas en arrière.`,
           },
           {
             icon: '◆' as Icon,
             title: `Gérer le temps : 1h30 à 2h de brouillon, puis rédaction sans interruption`,
-            desc: ``,
+            desc: `Sur 4h d'épreuve, 1h30 à 2h de brouillon est la norme, pas l'exception. Problématique + plan complet avec, pour chaque sous-partie : l'argument central, l'auteur mobilisé, l'exemple concret, et la transition vers la partie suivante.`,
           },
         ],
       },
@@ -1302,17 +1302,17 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Problématique : créer une tension, pas poser une question fermée`,
-            desc: ``,
+            desc: `Une bonne problématique ne se répond pas par oui ou non. <strong>« En quoi la conscience de notre liberté rend-elle notre existence plus lourde à porter ? »</strong> = tension philosophique réelle. La problématique doit rendre le plan nécessaire.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Chaque sous-partie = argument + auteur + exemple concret`,
-            desc: ``,
+            desc: `Une sous-partie sans auteur philosophique = argument sans autorité. Structure : posez l'argument, mobilisez un auteur précis avec sa thèse, illustrez avec un exemple concret ou une situation.`,
           },
           {
             icon: '⏱' as Icon,
             title: `La thèse doit progresser — chaque partie doit dépasser la précédente`,
-            desc: ``,
+            desc: `Le plan en trois parties n'est pas trois réponses différentes à la question — c'est une progression : thèse, antithèse, synthèse ou dépassement. Chaque partie doit apporter quelque chose que la précédente ne peut pas.`,
           },
         ],
       },
@@ -1321,7 +1321,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Identifier la thèse en une phrase avant de découper les mouvements`,
-            desc: ``,
+            desc: `Première étape obligatoire : formulez la thèse du texte en une phrase. <strong>« L'auteur affirme que [X]. »</strong> Cette thèse guide tout le découpage en mouvements et toute l'explication. Sans elle, le découpage devient arbitraire.`,
           },
         ],
       },
@@ -1372,7 +1372,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Lire toutes les questions avant de répondre à la première`,
-            desc: ``,
+            desc: `En SES, les questions d'un même sujet couvrent souvent plusieurs notions liées. 3 min de lecture globale te donnent la vision d'ensemble et t'évitent de tout mettre dans la première question alors que c'est attendu dans la suivante.`,
           },
         ],
       },
@@ -1381,7 +1381,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Structure non négociable : définition + mécanisme + illustration chiffrée`,
-            desc: ``,
+            desc: `Pour l'EC1 : (1) définissez la notion précisément, (2) expliquez le mécanisme qui justifie l'affirmation, (3) illustrez avec un chiffre ou un exemple concret. Sans ces trois éléments, vous ne pouvez pas obtenir la note maximale.`,
           },
         ],
       },
@@ -1390,7 +1390,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Présentation du document + donnée chiffrée principale avant tout`,
-            desc: ``,
+            desc: `Première phrase EC2 obligatoire : nature du document, source, date, ce qu'il mesure. Deuxième phrase : la donnée la plus importante avec le chiffre précis. <strong>« Ce graphique INSEE (2020) montre que le taux de chômage des 15-24 ans atteignait X% en [année]. »</strong>`,
           },
         ],
       },
@@ -1399,12 +1399,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Problématique économique ou sociologique — pas philosophique`,
-            desc: ``,
+            desc: `La problématique d'une dissertation SES doit articuler un mécanisme économique ou une dynamique sociologique — pas une question philosophique générale. <strong>« Dans quelle mesure la mondialisation réduit-elle les inégalités ? »</strong> pose un vrai enjeu économique.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Chaque argument appuyé sur un auteur + une donnée chiffrée`,
-            desc: ``,
+            desc: `En dissertation terminale SES, chaque argument doit mobiliser : (1) un auteur ou école de pensée précis, (2) une donnée chiffrée (statistique, étude, rapport). L'argument seul, sans autorité ni chiffre, est insuffisant.`,
           },
         ],
       },
@@ -1467,12 +1467,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Identifier le type de problème et la méthode avant d'écrire`,
-            desc: ``,
+            desc: `Avant d'écrire quoi que ce soit : nommez le domaine (mécanique, thermodynamique, électromagnétisme, chimie...) et la méthode à appliquer. Ce nommage mental force à activer la bonne séquence de raisonnement et évite l'erreur classique d'appliquer une formule hors contexte.`,
           },
           {
             icon: '◆' as Icon,
             title: `Ne pas laisser de blanc — rédiger la démarche même sans résultat final`,
-            desc: ``,
+            desc: `Si vous bloquez sur le résultat final : rédigez quand même toutes les étapes de la démarche — identification des grandeurs, loi appliquée, formule littérale. Une démarche complète avec un calcul final faux rapporte la majorité des points.`,
           },
         ],
       },
@@ -1481,17 +1481,17 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Formule littérale avant les valeurs numériques — toujours`,
-            desc: ``,
+            desc: `Règle absolue : exprimez la formule entièrement en lettres avant de substituer les valeurs numériques. Cette étape protège des erreurs de conversion, clarifie les unités, et rapporte des points de méthode même si le résultat final est faux.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Continuer avec une valeur fictive si un calcul intermédiaire bloque`,
-            desc: ``,
+            desc: `Si un résultat intermédiaire vous échappe : écrivez <strong>On admet que [grandeur] = [valeur estimée]</strong> et continuez. Les questions suivantes sont souvent notées indépendamment — vous pouvez récupérer plusieurs points sur la méthode.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Vérifier l'homogénéité des unités et l'ordre de grandeur`,
-            desc: ``,
+            desc: `Deux vérifications systématiques : (1) l'unité du résultat correspond à la grandeur cherchée, (2) l'ordre de grandeur est cohérent avec la physique du problème. Ces deux secondes de vérification évitent des erreurs coûteuses.`,
           },
         ],
       },
@@ -1548,7 +1548,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Conclure chaque réponse en répondant directement à la question`,
-            desc: ``,
+            desc: `La dernière phrase de chaque réponse répond directement à la question posée. <strong>« Ainsi, on peut conclure que [réponse directe à la question]. »</strong> Beaucoup d'élèves développent une analyse juste mais ne concluent jamais.`,
           },
         ],
       },
@@ -1557,12 +1557,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Lire tous les documents avant de répondre à la première question`,
-            desc: ``,
+            desc: `Avant d'écrire quoi que ce soit : 3-4 min pour lire l'ensemble des documents dans l'ordre. En SVT, les réponses croisent souvent plusieurs documents — le document 3 peut invalider ou compléter ce que vous avez compris du document 1.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Citer le document + donnée chiffrée + mécanisme du cours dans chaque réponse`,
-            desc: ``,
+            desc: `Chaque réponse suit la même structure : (1) citer le document avec sa référence, (2) extraire une donnée chiffrée précise, (3) interpréter avec un mécanisme du cours. <strong>« D'après le document 2, la concentration passe de X à Y — ce qui traduit... conformément au mécanisme de... »</strong>`,
           },
         ],
       },
@@ -1571,7 +1571,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Titre précis + légende organisée + crayon gris`,
-            desc: ``,
+            desc: `Un schéma bac sans titre = points perdus. Ordre immuable : (1) crayon gris pour le tracé, (2) titre précis en haut, (3) légende organisée par catégorie. Une légende désorganisée = points perdus même si le schéma est juste.`,
           },
         ],
       },
@@ -1580,7 +1580,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Structurer la réponse : idée principale + données + mécanisme + lien avec la question`,
-            desc: ``,
+            desc: `Pour les questions de synthèse au bac SVT : (1) annoncez l'idée principale, (2) appuyez-la sur des données précises (chiffrées ou expérimentales), (3) expliquez le mécanisme biologique sous-jacent, (4) reliez explicitement à la question posée.`,
           },
         ],
       },
@@ -1633,12 +1633,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Les 30 premières secondes donnent le ton — ne pas les improviser`,
-            desc: ``,
+            desc: `Votre entrée en matière détermine la perception du jury pour toute la suite. Commencez par une accroche forte : une question provocatrice, un chiffre surprenant, une situation concrète. Ces 30 secondes sont les seules que vous pouvez jouer avec une précision absolue — travaillez-les mot pour mot.`,
           },
           {
             icon: '◆' as Icon,
             title: `Parler au jury, pas réciter — regarder, pas lire`,
-            desc: ``,
+            desc: `Le jury évalue votre capacité à communiquer, pas à mémoriser. Regardez chaque membre du jury alternativement. Si vous perdez le fil, faites une pause, reformulez. Un silence réfléchi vaut mieux qu'une récitation mécanique.`,
           },
         ],
       },
@@ -1647,12 +1647,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Si tu ne sais pas répondre — le dire clairement et rebondir`,
-            desc: ``,
+            desc: `Face à une question que vous ne maîtrisez pas : <strong>« C'est une question que je n'ai pas approfondie, mais ce que je peux dire c'est... »</strong> Le jury apprécie l'honnêteté intellectuelle. Ce qui plombe, c'est l'improvisation hasardeuse ou le silence panique.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Utiliser les questions du jury pour renforcer ta thèse`,
-            desc: ``,
+            desc: `Chaque question du jury est une occasion, pas une menace. Si la question touche un angle que vous maîtrisez : <strong>« Cette question rejoint précisément un point central de ma démonstration... »</strong> Reliez systématiquement à votre question de départ.`,
           },
         ],
       },
@@ -1661,7 +1661,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Terminer sur une ouverture qui oriente les questions que tu maîtrises`,
-            desc: ``,
+            desc: `Les 30 dernières secondes de votre présentation orientent l'entretien. Terminez sur une ouverture vers le point fort que vous voulez développer. <strong>« Cette analyse ouvre sur la question de... »</strong> — préparez cette transition mot pour mot.`,
           },
         ],
       },
@@ -1724,7 +1724,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '◆' as Icon,
             title: `Répondre explicitement à la question — ne jamais supposer que c'est implicite`,
-            desc: ``,
+            desc: `La dernière phrase de chaque argument répond explicitement à la question du sujet. <strong>« Ainsi, cela confirme que... »</strong>, <strong>« On peut donc conclure que... »</strong> Ne supposez jamais que le correcteur voit le lien — il faut l'écrire.`,
           },
         ],
       },
@@ -1733,12 +1733,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Problématique + plan complet sur brouillon — 15 min minimum`,
-            desc: ``,
+            desc: `15 min de brouillon avant d'écrire la première ligne : problématique + parties + sous-parties + exemples précis pour chaque argument. Une composition sans plan construit = risque de hors-sujet et de répétition. C'est la différence entre 12 et 16.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Chaque argument doit avoir un exemple précis, daté, situé`,
-            desc: ``,
+            desc: `En composition terminale, les exemples imprécis ne rapportent pas de points. Chaque argument doit être illustré par un fait précis : lieu, date, acteur, chiffre. <strong>« La décolonisation »</strong> = trop vague. <strong>« L'indépendance algérienne de 1962, après 8 ans de guerre »</strong> = argument solide.`,
           },
         ],
       },
@@ -1747,12 +1747,12 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Présentation complète en première phrase — nature, auteur, date, contexte`,
-            desc: ``,
+            desc: `Première phrase obligatoire pour tout document : nature, auteur, date, contexte de production. Ces informations ne sont pas une formalité — elles conditionnent l'interprétation. Un discours de 1939 ne se lit pas comme un discours de 1919.`,
           },
           {
             icon: '⏱' as Icon,
             title: `Confronter le document à tes connaissances — pas juste le décrire`,
-            desc: ``,
+            desc: `Après avoir cité une donnée du document, mobilisez une connaissance du cours pour l'interpréter, la confirmer ou la nuancer. Les copies qui redécrivent le document sans aller au-delà obtiennent systématiquement moins de 10.`,
           },
         ],
       },
@@ -1761,7 +1761,7 @@ export const TERMINALE_SUBJECTS: SubjectCard[] = [
           {
             icon: '⏱' as Icon,
             title: `Titre + légende hiérarchisée + figurés lisibles — dans cet ordre`,
-            desc: ``,
+            desc: `Un croquis sans titre = incomplet. Construisez la légende en niveaux hiérarchiques clairs (ex. flux économiques > flux migratoires > espaces dominants). Les figurés doivent être lisibles — pas de remplissage dense ou de couleurs qui se ressemblent.`,
           },
         ],
       },
