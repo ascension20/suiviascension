@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, ChevronDown } from 'lucide-react';
 import {
   GENERAL_SECTIONS,
   SECONDE_SUBJECTS,
@@ -13,23 +13,27 @@ import {
   type Prompt,
 } from './methodes-data';
 
-// ── Subject color map ──────────────────────────────────────────────────────────
+// ── Subject color map ──────────────────────────────────────────────────────
 const SUBJ_HSL: Record<string, string> = {
-  Mx:  '213 90% 62%',
-  PC:  '142 71% 45%',
-  Fr:  '336 77% 59%',
-  HG:  '30 80% 57%',
-  SV:  '155 58% 48%',
-  SE:  '270 50% 60%',
-  Ph:  '290 60% 62%',
-  EN:  '175 60% 50%',
-  NS:  '205 85% 60%',
-  GO:  '43 90% 55%',
+  Mx: '213 90% 62%',
+  PC: '142 71% 45%',
+  Fr: '336 77% 59%',
+  HG: '30 80% 57%',
+  SV: '155 58% 48%',
+  SE: '270 50% 60%',
+  Ph: '290 60% 62%',
+  EN: '175 60% 50%',
+  NS: '205 85% 60%',
+  GO: '43 90% 55%',
 };
-const sc  = (code: string) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'})`;
-const scA = (code: string, a: number) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'} / ${a})`;
+const hsl  = (code: string) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'})`;
+const hsla = (code: string, a: number) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'} / ${a})`;
 
-const ICON_HSL = { '✦': '43 90% 55%', '◆': '205 60% 60%', '⏱': '30 80% 57%' } as const;
+const ICON_COLOR: Record<string, string> = {
+  '✦': 'hsl(43 90% 55%)',
+  '◆': 'hsl(205 70% 62%)',
+  '⏱': 'hsl(30 80% 57%)',
+};
 
 const TAG_CFG: Record<Tag, { label: string; hsl: string }> = {
   ia:     { label: 'IA',                 hsl: '270 50% 65%' },
@@ -38,124 +42,91 @@ const TAG_CFG: Record<Tag, { label: string; hsl: string }> = {
 };
 
 type TabId = 'general' | 'seconde' | 'premiere' | 'terminale' | 'prompts';
-const TABS: { id: TabId; label: string }[] = [
-  { id: 'general',   label: '⚡ Général' },
-  { id: 'seconde',   label: 'Seconde' },
-  { id: 'premiere',  label: 'Première' },
-  { id: 'terminale', label: 'Terminale' },
-  { id: 'prompts',   label: '✦ Prompts IA' },
+const TABS: { id: TabId; label: string; icon: string }[] = [
+  { id: 'general',   label: 'Général',    icon: '⚡' },
+  { id: 'seconde',   label: 'Seconde',    icon: '' },
+  { id: 'premiere',  label: 'Première',   icon: '' },
+  { id: 'terminale', label: 'Terminale',  icon: '' },
+  { id: 'prompts',   label: 'Prompts IA', icon: '✦' },
 ];
 
-// ── General Tab ───────────────────────────────────────────────────────────────
-function GeneralTab({ sections }: { sections: GeneralSection[] }) {
-  return (
-    <div className="r-general">
-      {sections.map((sec) => (
-        <div key={sec.title}>
-          <div className="r-section-label">{sec.title}</div>
-          <div className="r-gen-grid">
-            {sec.cards.map((card, ci) => (
-              <article
-                key={card.title}
-                className={`r-gen-card game-card card-enter card-enter-${ci + 1}${card.hot ? ' r-hot-card' : ''}`}
-              >
-                {card.hot && (
-                  <span className="r-hot-star clip-sm" aria-label="Technique prioritaire">✦</span>
-                )}
-                <h3 className="r-gen-title">{card.title}</h3>
-                <p className="r-gen-desc" dangerouslySetInnerHTML={{ __html: card.desc }} />
-              </article>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ── Subject Picker ─────────────────────────────────────────────────────────────
-function SubjectPicker({
-  subjects, selected, onSelect,
-}: {
-  subjects: SubjectCard[];
-  selected: string;
-  onSelect: (code: string) => void;
-}) {
-  return (
-    <div className="r-picker">
-      {subjects.map(s => {
-        const count  = s.categories.reduce((n, c) => n + c.methods.length, 0);
-        const active = s.code === selected;
-        return (
-          <button
-            key={s.code}
-            className={`r-pick-btn${active ? ' r-pick-active' : ''}`}
-            style={{
-              '--sc':  sc(s.code),
-              '--scl': scA(s.code, 0.12),
-              '--scb': scA(s.code, active ? 0.55 : 0.3),
-            } as React.CSSProperties}
-            onClick={() => onSelect(s.code)}
-          >
-            <span className="r-pick-code clip-sm">{s.code}</span>
-            <span className="r-pick-name">{s.name}</span>
-            <span className="r-pick-count">{count}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────
 function isExamCat(label: string) {
   const l = label.toLowerCase();
   return l.includes('pendant le contrôle') || l.includes("pendant l'épreuve");
 }
-
 function cleanExamLabel(label: string) {
-  const stripped = label
+  const s = label
     .replace(/^pendant le contrôle — /i, '')
     .replace(/^pendant l['']épreuve — /i, '');
-  if (stripped.toLowerCase() === 'tous types') return '';
-  return stripped.charAt(0).toUpperCase() + stripped.slice(1);
+  if (s.toLowerCase() === 'tous types') return '';
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-// ── Method item ───────────────────────────────────────────────────────────────
+// ── Method item ────────────────────────────────────────────────────────────
 function MethodItem({ m }: { m: import('./methodes-data').Method }) {
-  const iconHsl = ICON_HSL[m.icon as keyof typeof ICON_HSL] ?? '220 10% 50%';
+  const color = ICON_COLOR[m.icon] ?? 'hsl(220 10% 50%)';
   return (
     <li
-      className={`r-method${m.hot ? ' r-method-hot' : ''}`}
-      style={{ '--ih': `hsl(${iconHsl})` } as React.CSSProperties}
+      className="rounded-lg border bg-card transition-colors duration-150 hover:bg-accent/30"
+      style={{
+        borderColor:     'hsl(var(--border))',
+        borderLeftColor: color,
+        borderLeftWidth: '2px',
+      }}
     >
-      <div className="r-method-row">
-        <span className="r-method-icon">{m.icon}</span>
-        <span className="r-method-title">{m.title}</span>
-        {m.hot && <span className="r-hot-badge clip-sm">TOP</span>}
-      </div>
-      <p className="r-method-desc" dangerouslySetInnerHTML={{ __html: m.desc }} />
-      {m.tags && m.tags.length > 0 && (
-        <div className="r-tags">
-          {m.tags.map(tag => {
-            const t = TAG_CFG[tag];
-            return (
-              <span
-                key={tag}
-                className="r-tag"
-                style={{ color: `hsl(${t.hsl})`, background: `hsl(${t.hsl} / 0.12)`, borderColor: `hsl(${t.hsl} / 0.3)` }}
-              >
-                {t.label}
-              </span>
-            );
-          })}
+      <div className="px-3 py-2.5">
+        <div className="flex items-start gap-2 mb-1">
+          <span className="text-sm leading-none mt-[3px] flex-shrink-0" style={{ color }}>
+            {m.icon}
+          </span>
+          <span className="text-sm font-semibold leading-snug text-foreground flex-1">
+            {m.title}
+          </span>
+          {m.hot && (
+            <span
+              className="flex-shrink-0 text-[9px] font-black tracking-widest px-1.5 py-[2px] rounded-sm"
+              style={{
+                background: 'linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%))',
+                color: 'hsl(222 22% 6%)',
+              }}
+            >
+              TOP
+            </span>
+          )}
         </div>
-      )}
+        {m.desc && (
+          <p
+            className="r-desc text-xs leading-relaxed text-muted-foreground pl-[1.375rem]"
+            dangerouslySetInnerHTML={{ __html: m.desc }}
+          />
+        )}
+        {m.tags && m.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1.5 pl-[1.375rem]">
+            {m.tags.map(tag => {
+              const t = TAG_CFG[tag];
+              return (
+                <span
+                  key={tag}
+                  className="text-[10px] font-semibold tracking-wide px-2 py-[2px] rounded-full border"
+                  style={{
+                    color:       `hsl(${t.hsl})`,
+                    background:  `hsl(${t.hsl} / 0.1)`,
+                    borderColor: `hsl(${t.hsl} / 0.25)`,
+                  }}
+                >
+                  {t.label}
+                </span>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </li>
   );
 }
 
-// ── Category section (collapsible) ────────────────────────────────────────────
+// ── Category section (collapsible) ────────────────────────────────────────
 function CategorySection({
   cat, clr, isExam,
 }: {
@@ -166,142 +137,252 @@ function CategorySection({
   const [open, setOpen] = useState(true);
   const rawLabel = isExam ? cleanExamLabel(cat.label) : cat.label;
   const label    = rawLabel || 'Général';
-  const catClr   = isExam ? '30 80% 57%' : clr;
+  const color    = isExam ? 'hsl(30 80% 57%)' : `hsl(${clr})`;
+  const colorA   = isExam ? 'hsl(30 80% 57% / 0.12)' : `hsl(${clr} / 0.12)`;
+  const colorB   = isExam ? 'hsl(30 80% 57% / 0.25)' : `hsl(${clr} / 0.25)`;
+  const railClr  = isExam ? 'hsl(30 80% 57% / 0.18)' : `hsl(${clr} / 0.18)`;
 
   return (
-    <section className="r-cat-section">
+    <div>
       <button
-        className="r-cat-hd"
         onClick={() => setOpen(o => !o)}
-        style={{
-          '--cc':  `hsl(${catClr})`,
-          '--ccl': `hsl(${catClr} / 0.1)`,
-        } as React.CSSProperties}
+        className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-colors duration-100 hover:bg-secondary/40 text-left group"
       >
-        <span className="r-cat-dot" />
-        <span className="r-cat-hd-lbl">{label}</span>
-        <span className="r-cat-count">{cat.methods.length}</span>
-        <svg
-          className="r-cat-chev"
-          viewBox="0 0 10 10"
-          style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
-          aria-hidden="true"
+        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: color }} />
+        <span className="text-[11px] font-semibold flex-1 transition-colors text-muted-foreground group-hover:text-foreground">
+          {label}
+        </span>
+        <span
+          className="text-[10px] font-bold px-1.5 py-[2px] rounded-full border"
+          style={{ color, background: colorA, borderColor: colorB }}
         >
-          <path d="M2 3.5 L5 6.5 L8 3.5" stroke="currentColor" strokeWidth="1.5"
-            fill="none" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+          {cat.methods.length}
+        </span>
+        <ChevronDown
+          size={12}
+          className="text-muted-foreground/50 transition-transform duration-200"
+          style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }}
+        />
       </button>
+
       {open && (
-        <ul
-          className="r-methods-list"
-          style={{ '--ml': `hsl(${catClr} / 0.2)` } as React.CSSProperties}
+        <div
+          className="ml-[0.875rem] pl-3 mt-1 mb-2 flex flex-col gap-1.5 border-l"
+          style={{ borderColor: railClr }}
         >
           {cat.methods.map(m => <MethodItem key={m.title} m={m} />)}
-        </ul>
-      )}
-    </section>
-  );
-}
-
-// ── Level Tab ─────────────────────────────────────────────────────────────────
-function LevelTab({ subjects }: { subjects: SubjectCard[] }) {
-  const [selected, setSelected] = useState(subjects[0].code);
-  const subj = subjects.find(s => s.code === selected) ?? subjects[0];
-  const clr  = SUBJ_HSL[subj.code] ?? '220 10% 50%';
-
-  const revCats   = subj.categories.filter(c => !isExamCat(c.label));
-  const examCats  = subj.categories.filter(c =>  isExamCat(c.label));
-  const revCount  = revCats.reduce((n, c) => n + c.methods.length, 0);
-  const examCount = examCats.reduce((n, c) => n + c.methods.length, 0);
-
-  return (
-    <div className="r-level">
-      <SubjectPicker subjects={subjects} selected={selected} onSelect={setSelected} />
-
-      {revCats.length > 0 && (
-        <div className="r-phase">
-          <div
-            className="r-phase-hd"
-            style={{
-              color:       `hsl(${clr})`,
-              background:  `hsl(${clr} / 0.08)`,
-              borderColor: `hsl(${clr} / 0.22)`,
-            } as React.CSSProperties}
-          >
-            <span className="r-phase-icon">📚</span>
-            Révision
-            <span className="r-phase-count">{revCount} méthodes</span>
-          </div>
-          <div className="r-phase-body">
-            {revCats.map(cat => (
-              <CategorySection key={cat.label} cat={cat} clr={clr} isExam={false} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {examCats.length > 0 && (
-        <div className="r-phase">
-          <div className="r-phase-hd r-phase-exam">
-            <span className="r-phase-icon">⏱</span>
-            Pendant le contrôle
-            <span className="r-phase-count">{examCount} méthodes</span>
-          </div>
-          <div className="r-phase-body">
-            {examCats.map(cat => (
-              <CategorySection key={cat.label} cat={cat} clr={clr} isExam={true} />
-            ))}
-          </div>
         </div>
       )}
     </div>
   );
 }
 
-// ── Prompts Tab ───────────────────────────────────────────────────────────────
+// ── Subject picker ─────────────────────────────────────────────────────────
+function SubjectPicker({
+  subjects, selected, onSelect,
+}: {
+  subjects: SubjectCard[];
+  selected: string;
+  onSelect: (code: string) => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-1.5 mb-5">
+      {subjects.map(s => {
+        const active = s.code === selected;
+        const count  = s.categories.reduce((n, c) => n + c.methods.length, 0);
+        return (
+          <button
+            key={s.code}
+            onClick={() => onSelect(s.code)}
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all duration-150"
+            style={{
+              borderColor: active ? hsla(s.code, 0.5) : 'hsl(var(--border))',
+              background:  active ? hsla(s.code, 0.1) : 'transparent',
+              boxShadow:   active ? `0 0 0 1px ${hsla(s.code, 0.35)}, 0 0 14px ${hsla(s.code, 0.08)}` : 'none',
+              color:       active ? hsl(s.code) : 'hsl(var(--muted-foreground))',
+            }}
+          >
+            <span
+              className="text-[10px] font-black clip-sm px-1 py-[2px] leading-none"
+              style={{ background: hsl(s.code), color: 'hsl(222 22% 6%)' }}
+            >
+              {s.code}
+            </span>
+            <span className={active ? '' : 'hidden sm:inline'}>{s.name}</span>
+            <span
+              className="text-[10px] font-bold opacity-70"
+              style={{ color: active ? hsl(s.code) : 'inherit' }}
+            >
+              {count}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Phase divider ──────────────────────────────────────────────────────────
+function PhaseDivider({
+  icon, label, count, color,
+}: {
+  icon: string; label: string; count: number; color: string;
+}) {
+  return (
+    <div className="flex items-center gap-2.5 mb-3 px-0.5">
+      <span className="text-xs font-bold tracking-widest uppercase" style={{ color }}>
+        {icon} {label}
+      </span>
+      <span
+        className="text-[10px] font-medium pl-2 border-l"
+        style={{ color: 'hsl(var(--muted-foreground))', borderColor: 'hsl(var(--border))' }}
+      >
+        {count} méthodes
+      </span>
+      <div className="flex-1 h-px" style={{ background: `${color}20` }} />
+    </div>
+  );
+}
+
+// ── Section divider (for General + Prompts tabs) ───────────────────────────
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-2.5 mb-3 px-0.5">
+      <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary/70">
+        {label}
+      </span>
+      <div className="flex-1 h-px bg-primary/10" />
+    </div>
+  );
+}
+
+// ── Level Tab ──────────────────────────────────────────────────────────────
+function LevelTab({ subjects }: { subjects: SubjectCard[] }) {
+  const [selected, setSelected] = useState(subjects[0].code);
+  const subj = subjects.find(s => s.code === selected) ?? subjects[0];
+  const clr  = SUBJ_HSL[subj.code] ?? '220 10% 50%';
+
+  const revCats  = subj.categories.filter(c => !isExamCat(c.label));
+  const examCats = subj.categories.filter(c =>  isExamCat(c.label));
+  const revCount  = revCats.reduce((n, c) => n + c.methods.length, 0);
+  const examCount = examCats.reduce((n, c) => n + c.methods.length, 0);
+
+  return (
+    <div>
+      <SubjectPicker subjects={subjects} selected={selected} onSelect={setSelected} />
+      <div className="space-y-5">
+        {revCats.length > 0 && (
+          <div>
+            <PhaseDivider icon="📚" label="Révision" count={revCount} color={hsl(subj.code)} />
+            {revCats.map(cat => (
+              <CategorySection key={cat.label} cat={cat} clr={clr} isExam={false} />
+            ))}
+          </div>
+        )}
+        {examCats.length > 0 && (
+          <div>
+            <PhaseDivider icon="⏱" label="Pendant le contrôle" count={examCount} color="hsl(30 80% 57%)" />
+            {examCats.map(cat => (
+              <CategorySection key={cat.label} cat={cat} clr={clr} isExam={true} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── General Tab ────────────────────────────────────────────────────────────
+function GeneralTab({ sections }: { sections: GeneralSection[] }) {
+  return (
+    <div className="space-y-7">
+      {sections.map(sec => (
+        <div key={sec.title}>
+          <SectionDivider label={sec.title} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+            {sec.cards.map(card => (
+              <article
+                key={card.title}
+                className="relative rounded-xl border bg-card p-4 transition-colors duration-150 hover:bg-accent/20 game-panel"
+                style={{ borderColor: card.hot ? 'hsl(43 90% 50% / 0.3)' : 'hsl(var(--border))' }}
+              >
+                {card.hot && (
+                  <span
+                    className="absolute -top-2 -right-2 text-[9px] font-black tracking-wider px-1.5 py-[3px] clip-sm"
+                    style={{
+                      background: 'linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%))',
+                      color: 'hsl(222 22% 6%)',
+                    }}
+                  >
+                    ✦
+                  </span>
+                )}
+                <h3 className="text-sm font-bold text-foreground mb-1.5 leading-snug">{card.title}</h3>
+                <p
+                  className="r-desc text-xs leading-relaxed text-muted-foreground"
+                  dangerouslySetInnerHTML={{ __html: card.desc }}
+                />
+              </article>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Prompts Tab ────────────────────────────────────────────────────────────
 function PromptCard({ prompt }: { prompt: Prompt }) {
   const [copied, setCopied] = useState(false);
   const [open,   setOpen]   = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(prompt.text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
-    <div className={`r-prompt${open ? ' r-prompt-open' : ''}`}>
-      <div className="r-prompt-head">
-        <div>
-          <p className="r-prompt-title">{prompt.title}</p>
-          <p className="r-prompt-scope">{prompt.scope}</p>
+    <div
+      className="rounded-xl border bg-card overflow-hidden transition-colors duration-150"
+      style={{ borderColor: open ? 'hsl(43 90% 50% / 0.25)' : 'hsl(var(--border))' }}
+    >
+      <div className="flex items-center gap-3 px-4 py-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">{prompt.title}</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{prompt.scope}</p>
         </div>
-        <div className="r-prompt-btns">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           <button
-            className="r-pbtn"
-            onClick={handleCopy}
-            style={copied ? { color: 'hsl(142 71% 45%)', borderColor: 'hsl(142 71% 45% / 0.4)' } : undefined}
+            onClick={() => {
+              navigator.clipboard.writeText(prompt.text);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }}
+            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-md border border-border text-muted-foreground transition-colors hover:text-foreground hover:border-white/15"
+            style={copied ? { color: 'hsl(142 71% 45%)', borderColor: 'hsl(142 71% 45% / 0.35)' } : undefined}
           >
-            {copied ? <Check size={12} /> : <Copy size={12} />}
-            <span>{copied ? 'Copié' : 'Copier'}</span>
+            {copied ? <Check size={11} /> : <Copy size={11} />}
+            {copied ? 'Copié' : 'Copier'}
           </button>
-          <button className="r-pbtn r-ptoggle" onClick={() => setOpen(o => !o)}>
+          <button
+            onClick={() => setOpen(o => !o)}
+            className="w-7 h-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-white/15 transition-colors text-base leading-none"
+          >
             {open ? '−' : '+'}
           </button>
         </div>
       </div>
-      {open && <pre className="r-prompt-body">{prompt.text}</pre>}
+      {open && (
+        <pre className="text-[11px] leading-relaxed font-mono text-muted-foreground border-t border-border bg-background/40 px-4 py-3 whitespace-pre-wrap break-words">
+          {prompt.text}
+        </pre>
+      )}
     </div>
   );
 }
 
 function PromptsTab({ groups }: { groups: PromptGroup[] }) {
   return (
-    <div className="r-prompts">
+    <div className="space-y-6">
       {groups.map(g => (
         <div key={g.label}>
-          <div className="r-section-label">{g.label}</div>
-          <div className="r-prompts-list">
+          <SectionDivider label={g.label} />
+          <div className="space-y-2">
             {g.prompts.map(p => <PromptCard key={p.title} prompt={p} />)}
           </div>
         </div>
@@ -310,398 +391,84 @@ function PromptsTab({ groups }: { groups: PromptGroup[] }) {
   );
 }
 
-// ── Root ──────────────────────────────────────────────────────────────────────
+// ── Root ───────────────────────────────────────────────────────────────────
 export function ResourcesTab() {
   const [tab, setTab] = useState<TabId>('general');
 
   return (
     <>
       <style>{`
-        /* ─── Layout ─── */
-        .r-root {
-          background: hsl(222 22% 4%);
-          color: hsl(42 12% 92%);
-          font-family: 'Geist', 'Inter', sans-serif;
-          font-size: 0.875rem;
-          margin: -1rem -1rem 0;
-          min-height: calc(100vh - 72px);
-          position: relative;
-          overflow: hidden;
-        }
-        @media (min-width: 768px) {
-          .r-root { margin: -1.5rem -1.5rem 0; }
-        }
-        .r-root::after {
-          content: '';
-          position: absolute; inset: 0; pointer-events: none; z-index: 0;
-          background: repeating-linear-gradient(
-            0deg, transparent, transparent 2px,
-            hsl(222 22% 0% / 0.03) 2px, hsl(222 22% 0% / 0.03) 4px
-          );
-        }
-        .r-root > * { position: relative; z-index: 1; }
-
-        /* ─── Header ─── */
-        .r-header {
-          padding: 2rem 1.5rem 1.25rem;
-          text-align: center; position: relative;
-        }
-        .r-header::before {
-          content: ''; position: absolute; inset: 0;
-          background: radial-gradient(ellipse 70% 160px at 50% 0%, hsl(43 90% 50% / 0.06) 0%, transparent 100%);
-          pointer-events: none;
-        }
-        .r-eye {
-          display: inline-block; font-size: 0.65rem; font-weight: 600;
-          letter-spacing: 0.3em; text-transform: uppercase;
-          color: hsl(43 90% 50% / 0.7); margin-bottom: 0.6rem;
-        }
-        .r-title {
-          font-family: 'Space Grotesk', 'Geist', sans-serif;
-          font-size: clamp(1.75rem, 5vw, 2.8rem); font-weight: 800;
-          line-height: 1; margin: 0 0 0.5rem;
-          background: linear-gradient(135deg, hsl(43 90% 40%), hsl(50 100% 65%));
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-          background-clip: text; letter-spacing: -0.02em;
-        }
-        .r-subtitle {
-          font-size: 0.8rem; color: hsl(220 10% 50%);
-          margin: 0 0 1rem; line-height: 1.6;
-        }
-        .r-method-chips {
-          display: flex; justify-content: center; flex-wrap: wrap; gap: 0.4rem;
-          margin-bottom: 0.25rem;
-        }
-        .r-mchip {
-          font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em;
-          text-transform: uppercase; padding: 0.2rem 0.65rem;
-          border: 1px solid; border-radius: 100px;
-        }
-
-        /* ─── Tab bar ─── */
-        .r-tabbar {
-          display: flex; border-bottom: 1px solid hsl(222 16% 18%);
-          padding: 0 1rem; overflow-x: auto; scrollbar-width: none;
-          background: hsl(222 22% 5%);
-        }
-        .r-tabbar::-webkit-scrollbar { display: none; }
-        .r-tab {
-          font-family: 'Geist', 'Inter', sans-serif;
-          font-size: 0.78rem; font-weight: 400;
-          color: hsl(220 10% 45%); background: transparent; border: none;
-          border-bottom: 2px solid transparent;
-          padding: 0.7rem 1rem; cursor: pointer;
-          transition: color 0.15s, border-color 0.15s;
-          white-space: nowrap; margin-bottom: -1px; letter-spacing: 0.02em;
-        }
-        .r-tab:hover { color: hsl(42 12% 85%); }
-        .r-tab.r-tab-on {
-          color: hsl(43 90% 55%); border-bottom-color: hsl(43 90% 50%);
-          font-weight: 500;
-        }
-
-        /* ─── Content ─── */
-        .r-content {
-          padding: 1.5rem 1.25rem 3rem;
-          max-width: 860px; margin: 0 auto;
-        }
-        @media (min-width: 640px) {
-          .r-content { padding: 2rem 2rem 3rem; }
-        }
-
-        /* ─── Section label ─── */
-        .r-section-label {
-          display: flex; align-items: center; gap: 0.6rem;
-          font-size: 0.7rem; font-weight: 600;
-          letter-spacing: 0.12em; text-transform: uppercase;
-          color: hsl(43 90% 50%); margin-bottom: 0.85rem; margin-top: 0.25rem;
-        }
-        .r-section-label::before {
-          content: ''; display: block; width: 2px; height: 0.9rem;
-          background: linear-gradient(180deg, hsl(43 90% 50%), hsl(43 90% 50% / 0));
-          border-radius: 1px; flex-shrink: 0;
-        }
-        .r-section-label::after {
-          content: ''; display: block; flex: 1; height: 1px;
-          background: linear-gradient(to right, hsl(43 90% 50% / 0.2), transparent);
-        }
-
-        /* ─── General tab ─── */
-        .r-general { display: flex; flex-direction: column; gap: 2rem; }
-        .r-gen-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-          gap: 0.75rem;
-        }
-        .r-gen-card {
-          background: hsl(222 22% 9%);
-          border: 1px solid hsl(222 16% 18%);
-          border-radius: 10px; padding: 1.1rem 1.1rem 1rem;
-          position: relative; cursor: default;
-        }
-        .r-hot-card {
-          border-color: hsl(43 90% 50% / 0.25) !important;
-          background: hsl(222 22% 10%);
-        }
-        .r-hot-card:hover { box-shadow: 0 0 20px hsl(43 90% 50% / 0.1) !important; }
-        .r-hot-star {
-          position: absolute; top: -7px; right: -7px;
-          width: 22px; height: 22px;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 0.65rem;
-          background: linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%));
-          color: hsl(222 22% 8%); font-weight: 900;
-        }
-        .r-gen-title {
-          font-family: 'Space Grotesk', 'Geist', sans-serif;
-          font-size: 0.9rem; font-weight: 700; color: hsl(42 12% 92%);
-          margin: 0 0 0.5rem; line-height: 1.35;
-        }
-        .r-gen-desc {
-          font-size: 0.79rem; line-height: 1.65; color: hsl(220 10% 55%); margin: 0;
-        }
-        .r-gen-desc strong { font-weight: 500; color: hsl(42 12% 82%); }
-
-        /* ─── Subject picker ─── */
-        .r-picker {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
-          gap: 0.6rem; margin-bottom: 1.5rem;
-        }
-        @media (min-width: 640px) {
-          .r-picker { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-        }
-        .r-pick-btn {
-          display: flex; flex-direction: column;
-          align-items: flex-start; gap: 0.35rem;
-          padding: 0.75rem 0.85rem;
-          background: hsl(222 22% 9%);
-          border: 1px solid hsl(222 16% 18%);
-          border-radius: 10px; cursor: pointer; text-align: left;
-          transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-          position: relative; overflow: hidden;
-        }
-        .r-pick-btn::before {
-          content: ''; position: absolute; inset: 0;
-          background: var(--scl); opacity: 0; transition: opacity 0.18s;
-        }
-        .r-pick-btn:hover { border-color: var(--scb); }
-        .r-pick-btn:hover::before { opacity: 0.6; }
-        .r-pick-active {
-          border-color: var(--scb) !important;
-          box-shadow: 0 0 0 1px var(--scb), 0 0 18px var(--scl);
-        }
-        .r-pick-active::before { opacity: 1 !important; }
-        .r-pick-code {
-          display: inline-flex; align-items: center; justify-content: center;
-          min-width: 2rem; height: 1.5rem; padding: 0 0.4rem;
-          font-size: 0.7rem; font-weight: 800; letter-spacing: 0.04em;
-          color: hsl(222 22% 6%); background: var(--sc);
-        }
-        .r-pick-name {
-          font-size: 0.76rem; font-weight: 500;
-          color: hsl(42 12% 85%); line-height: 1.3; position: relative; z-index: 1;
-        }
-        .r-pick-count {
-          font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em;
-          color: var(--sc); position: relative; z-index: 1;
-        }
-        .r-pick-count::after { content: ' méthodes'; font-weight: 400; color: hsl(220 10% 45%); }
-
-        /* ─── Phase block ─── */
-        .r-phase { margin-bottom: 1.75rem; }
-        .r-phase-hd {
-          display: flex; align-items: center; gap: 0.5rem;
-          font-size: 0.72rem; font-weight: 700;
-          letter-spacing: 0.1em; text-transform: uppercase;
-          padding: 0.5rem 0.9rem; border-radius: 8px; border: 1px solid;
-          margin-bottom: 0.9rem;
-        }
-        .r-phase-icon { font-size: 0.9rem; line-height: 1; }
-        .r-phase-count {
-          margin-left: auto; font-size: 0.63rem; font-weight: 400;
-          letter-spacing: 0.03em; opacity: 0.65; text-transform: none;
-        }
-        .r-phase-exam {
-          color: hsl(30 80% 57%);
-          background: hsl(30 80% 57% / 0.08);
-          border-color: hsl(30 80% 57% / 0.22);
-        }
-        .r-phase-body { display: flex; flex-direction: column; gap: 0.4rem; padding-left: 0.1rem; }
-
-        /* ─── Category section ─── */
-        .r-cat-section {}
-
-        .r-cat-hd {
-          width: 100%; display: flex; align-items: center; gap: 0.5rem;
-          background: hsl(222 22% 7%);
-          border: 1px solid hsl(222 16% 15%);
-          border-left: 2px solid var(--cc);
-          border-radius: 7px;
-          padding: 0.48rem 0.75rem;
-          cursor: pointer; text-align: left;
-          transition: background 0.14s, border-color 0.14s;
-          margin-bottom: 0.38rem;
-        }
-        .r-cat-hd:hover {
-          background: hsl(222 22% 9%);
-          border-color: hsl(222 16% 22%);
-          border-left-color: var(--cc);
-        }
-
-        .r-cat-dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: var(--cc); flex-shrink: 0;
-        }
-        .r-cat-hd-lbl {
-          font-size: 0.74rem; font-weight: 600;
-          color: hsl(42 12% 80%); flex: 1; line-height: 1.3;
-        }
-        .r-cat-count {
-          font-size: 0.61rem; font-weight: 700; letter-spacing: 0.04em;
-          color: var(--cc); background: var(--ccl);
-          border-radius: 100px; padding: 0.1rem 0.48rem;
-          flex-shrink: 0;
-        }
-        .r-cat-chev {
-          width: 10px; height: 10px; color: hsl(220 10% 38%);
-          flex-shrink: 0; transition: transform 0.2s;
-        }
-
-        /* ─── Methods list ─── */
-        .r-methods-list {
-          list-style: none; margin: 0 0 0.35rem; padding: 0;
-          display: flex; flex-direction: column; gap: 0.35rem;
-          border-left: 2px solid var(--ml, hsl(222 16% 16%));
-          padding-left: 0.65rem; margin-left: 0.3rem;
-        }
-
-        /* ─── Method item ─── */
-        .r-method {
-          background: hsl(222 22% 8%);
-          border: 1px solid hsl(222 16% 14%);
-          border-left: 2px solid var(--ih);
-          border-radius: 6px;
-          padding: 0.6rem 0.85rem;
-          transition: border-color 0.14s, background 0.14s;
-        }
-        .r-method:hover {
-          background: hsl(222 22% 10%);
-          border-color: hsl(222 16% 22%);
-          border-left-color: var(--ih);
-        }
-        .r-method-hot {
-          border-color: hsl(43 90% 50% / 0.2) !important;
-          border-left-color: hsl(43 90% 50%) !important;
-          background: hsl(222 22% 9.5%);
-          box-shadow: 0 0 10px hsl(43 90% 50% / 0.06);
-        }
-        .r-method-row {
-          display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.3rem;
-        }
-        .r-method-icon { font-size: 0.82rem; color: var(--ih); flex-shrink: 0; line-height: 1; }
-        .r-method-title {
-          font-size: 0.82rem; font-weight: 600;
-          color: hsl(42 12% 90%); flex: 1; line-height: 1.3;
-        }
-        .r-hot-badge {
-          font-size: 0.56rem; font-weight: 800; letter-spacing: 0.08em;
-          padding: 0.15rem 0.4rem;
-          background: linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%));
-          color: hsl(222 22% 6%); flex-shrink: 0;
-        }
-        .r-method-desc {
-          font-size: 0.77rem; line-height: 1.65;
-          color: hsl(220 10% 55%); margin: 0 0 0.4rem;
-          padding-left: 1.2rem;
-        }
-        .r-method-desc strong { font-weight: 500; color: hsl(42 12% 80%); }
-        .r-tags {
-          display: flex; flex-wrap: wrap; gap: 0.28rem; padding-left: 1.2rem;
-        }
-        .r-tag {
-          font-size: 0.62rem; font-weight: 600; letter-spacing: 0.05em;
-          padding: 0.14rem 0.5rem; border-radius: 100px; border: 1px solid;
-        }
-
-        /* ─── Prompts ─── */
-        .r-prompts { display: flex; flex-direction: column; gap: 2rem; }
-        .r-prompts-list { display: flex; flex-direction: column; gap: 0.55rem; }
-        .r-prompt {
-          background: hsl(222 22% 9%); border: 1px solid hsl(222 16% 18%);
-          border-radius: 10px; overflow: hidden; transition: border-color 0.15s;
-        }
-        .r-prompt:hover { border-color: hsl(222 16% 25%); }
-        .r-prompt-open { border-color: hsl(43 90% 50% / 0.3) !important; box-shadow: 0 0 16px hsl(43 90% 50% / 0.07); }
-        .r-prompt-head {
-          display: flex; align-items: center;
-          justify-content: space-between; gap: 0.75rem; padding: 0.8rem 1rem;
-        }
-        .r-prompt-title { font-size: 0.83rem; font-weight: 600; color: hsl(42 12% 90%); margin: 0 0 0.15rem; }
-        .r-prompt-scope { font-size: 0.7rem; color: hsl(220 10% 45%); margin: 0; }
-        .r-prompt-btns { display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0; }
-        .r-pbtn {
-          display: inline-flex; align-items: center; gap: 0.3rem;
-          background: transparent; border: 1px solid hsl(222 16% 24%);
-          border-radius: 6px; color: hsl(220 10% 48%);
-          font-family: inherit; font-size: 0.71rem; font-weight: 500;
-          cursor: pointer; padding: 0.27rem 0.55rem; transition: all 0.15s;
-        }
-        .r-pbtn:hover { border-color: hsl(43 90% 50% / 0.5); color: hsl(43 90% 55%); }
-        .r-ptoggle { font-size: 1rem; line-height: 1; padding: 0.2rem 0.5rem; }
-        .r-prompt-body {
-          font-family: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
-          font-size: 0.75rem; line-height: 1.8; color: hsl(220 10% 58%);
-          background: hsl(222 22% 7%); border-top: 1px solid hsl(222 16% 16%);
-          margin: 0; padding: 1rem 1.1rem; white-space: pre-wrap; word-break: break-word;
-        }
+        .r-desc strong { font-weight: 600; color: hsl(42 12% 86%); }
+        .r-desc em     { font-style: italic; }
       `}</style>
 
-      <div className="r-root">
+      <div className="space-y-5 max-w-4xl">
 
-        {/* ── Header ── */}
-        <header className="r-header">
-          <span className="r-eye">Ascension — Méthodes</span>
-          <h1 className="r-title">Méthodes de révision</h1>
-          <p className="r-subtitle">
-            Les techniques qui font la différence — actif, espacé, IA.
-          </p>
-          <div className="r-method-chips">
-            {([
-              { label: 'Rappel actif',       hsl: '142 71% 48%' },
-              { label: 'Répétition espacée', hsl: '43 90% 55%'  },
-              { label: 'IA',                 hsl: '270 50% 65%' },
-            ] as const).map(c => (
+        {/* ── Page header ── */}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-black tracking-[0.22em] uppercase text-primary/50 mb-1">
+              Ascension · Méthodes
+            </p>
+            <h1 className="font-display text-2xl font-black tracking-tight text-foreground leading-none">
+              Méthodes de révision
+            </h1>
+            <p className="text-xs text-muted-foreground mt-1.5">
+              Les techniques qui font la différence — rappel actif, répétition espacée, IA.
+            </p>
+          </div>
+          <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0 mt-1">
+            {[
+              { label: 'Rappel actif',       h: '142 71% 48%' },
+              { label: 'Espacement',          h: '43 90% 55%'  },
+              { label: 'IA',                  h: '270 50% 65%' },
+            ].map(c => (
               <span
                 key={c.label}
-                className="r-mchip"
+                className="text-[10px] font-semibold px-2 py-[3px] rounded-full border"
                 style={{
-                  color:       `hsl(${c.hsl})`,
-                  background:  `hsl(${c.hsl} / 0.1)`,
-                  borderColor: `hsl(${c.hsl} / 0.3)`,
+                  color:       `hsl(${c.h})`,
+                  background:  `hsl(${c.h} / 0.1)`,
+                  borderColor: `hsl(${c.h} / 0.25)`,
                 }}
               >
                 {c.label}
               </span>
             ))}
           </div>
-        </header>
+        </div>
 
-        {/* ── Tab bar ── */}
-        <nav className="r-tabbar">
+        {/* ── Tab bar — segmented control ── */}
+        <div
+          className="flex gap-0.5 p-1 rounded-xl border w-fit"
+          style={{ background: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }}
+        >
           {TABS.map(t => (
             <button
               key={t.id}
-              className={`r-tab${tab === t.id ? ' r-tab-on' : ''}`}
               onClick={() => setTab(t.id)}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 whitespace-nowrap"
+              style={
+                tab === t.id
+                  ? {
+                      background: 'hsl(43 90% 50%)',
+                      color:      'hsl(222 22% 6%)',
+                      boxShadow:  '0 1px 8px hsl(43 90% 50% / 0.35)',
+                    }
+                  : {
+                      background: 'transparent',
+                      color:      'hsl(var(--muted-foreground))',
+                    }
+              }
             >
+              {t.icon && <span className="mr-1">{t.icon}</span>}
               {t.label}
             </button>
           ))}
-        </nav>
+        </div>
 
         {/* ── Content ── */}
-        <div className="r-content">
+        <div>
           {tab === 'general'   && <GeneralTab   sections={GENERAL_SECTIONS}   />}
           {tab === 'seconde'   && <LevelTab     subjects={SECONDE_SUBJECTS}   />}
           {tab === 'premiere'  && <LevelTab     subjects={PREMIERE_SUBJECTS}  />}
