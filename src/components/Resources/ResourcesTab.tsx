@@ -451,7 +451,7 @@ export function ResourcesTab() {
         .r-desc em     { font-style: italic; color: hsl(42 12% 78%); }
       `}</style>
 
-      <div className="space-y-5 max-w-4xl">
+      <div className="space-y-5 max-w-4xl mx-auto">
 
         {/* ── Page header ── */}
         <div className="flex items-start justify-between gap-4">
