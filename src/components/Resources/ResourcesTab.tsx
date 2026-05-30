@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, ChevronDown } from 'lucide-react';
+import { Copy, Check, ChevronDown, BookOpen, Timer, Zap, Brain } from 'lucide-react';
 import {
   GENERAL_SECTIONS,
   SECONDE_SUBJECTS,
@@ -13,7 +13,7 @@ import {
   type Prompt,
 } from './methodes-data';
 
-// ── Subject color map ──────────────────────────────────────────────────────
+// ── Subject colors ─────────────────────────────────────────────────────────
 const SUBJ_HSL: Record<string, string> = {
   Mx: '213 90% 62%',
   PC: '142 71% 45%',
@@ -29,6 +29,7 @@ const SUBJ_HSL: Record<string, string> = {
 const hsl  = (code: string) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'})`;
 const hsla = (code: string, a: number) => `hsl(${SUBJ_HSL[code] ?? '220 10% 50%'} / ${a})`;
 
+// method icon → color
 const ICON_COLOR: Record<string, string> = {
   '✦': 'hsl(43 90% 55%)',
   '◆': 'hsl(205 70% 62%)',
@@ -42,12 +43,12 @@ const TAG_CFG: Record<Tag, { label: string; hsl: string }> = {
 };
 
 type TabId = 'general' | 'seconde' | 'premiere' | 'terminale' | 'prompts';
-const TABS: { id: TabId; label: string; icon: string }[] = [
-  { id: 'general',   label: 'Général',    icon: '⚡' },
-  { id: 'seconde',   label: 'Seconde',    icon: '' },
-  { id: 'premiere',  label: 'Première',   icon: '' },
-  { id: 'terminale', label: 'Terminale',  icon: '' },
-  { id: 'prompts',   label: 'Prompts IA', icon: '✦' },
+const TABS: { id: TabId; label: string; Icon?: React.FC<React.SVGProps<SVGSVGElement> & { size?: number }> }[] = [
+  { id: 'general',   label: 'Général',    Icon: Zap   },
+  { id: 'seconde',   label: 'Seconde' },
+  { id: 'premiere',  label: 'Première' },
+  { id: 'terminale', label: 'Terminale' },
+  { id: 'prompts',   label: 'Prompts IA', Icon: Brain },
 ];
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -63,31 +64,47 @@ function cleanExamLabel(label: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+// ── Method icon renderer (maps ⏱ emoji → Lucide Timer) ────────────────────
+function MethodIcon({ icon, color }: { icon: string; color: string }) {
+  if (icon === '⏱') {
+    return <Timer size={13} style={{ color, flexShrink: 0 }} />;
+  }
+  return (
+    <span
+      className="font-bold leading-none"
+      style={{ color, fontSize: '0.8rem', flexShrink: 0 }}
+    >
+      {icon}
+    </span>
+  );
+}
+
 // ── Method item ────────────────────────────────────────────────────────────
 function MethodItem({ m }: { m: import('./methodes-data').Method }) {
   const color = ICON_COLOR[m.icon] ?? 'hsl(220 10% 50%)';
   return (
     <li
-      className="rounded-lg border bg-card transition-colors duration-150 hover:bg-accent/30"
+      className="rounded-lg border bg-card transition-all duration-150"
       style={{
-        borderColor:     'hsl(var(--border))',
+        borderColor:     m.hot ? 'hsl(43 90% 50% / 0.28)' : 'hsl(var(--border))',
         borderLeftColor: color,
         borderLeftWidth: '2px',
+        boxShadow:       m.hot ? '0 0 18px hsl(43 90% 50% / 0.07), inset 0 0 24px hsl(43 90% 50% / 0.025)' : 'none',
       }}
     >
       <div className="px-3 py-2.5">
-        <div className="flex items-start gap-2 mb-1">
-          <span className="text-sm leading-none mt-[3px] flex-shrink-0" style={{ color }}>
-            {m.icon}
+        <div className="flex items-start gap-2 mb-1.5">
+          <span className="flex-shrink-0 mt-[2px]">
+            <MethodIcon icon={m.icon} color={color} />
           </span>
           <span className="text-sm font-semibold leading-snug text-foreground flex-1">
             {m.title}
           </span>
           {m.hot && (
             <span
-              className="flex-shrink-0 text-[9px] font-black tracking-widest px-1.5 py-[2px] rounded-sm"
+              className="clip-sm flex-shrink-0 text-[9px] font-black tracking-widest px-1.5 py-[3px]"
               style={{
-                background: 'linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%))',
+                background: 'linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 62%))',
                 color: 'hsl(222 22% 6%)',
               }}
             >
@@ -97,22 +114,21 @@ function MethodItem({ m }: { m: import('./methodes-data').Method }) {
         </div>
         {m.desc && (
           <p
-            className="r-desc text-xs leading-relaxed text-muted-foreground pl-[1.375rem]"
+            className="r-desc text-xs leading-relaxed text-muted-foreground pl-[1.4rem]"
             dangerouslySetInnerHTML={{ __html: m.desc }}
           />
         )}
         {m.tags && m.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-1.5 pl-[1.375rem]">
+          <div className="flex flex-wrap gap-1 mt-1.5 pl-[1.4rem]">
             {m.tags.map(tag => {
               const t = TAG_CFG[tag];
               return (
                 <span
                   key={tag}
-                  className="text-[10px] font-semibold tracking-wide px-2 py-[2px] rounded-full border"
+                  className="clip-sm text-[9px] font-black tracking-wide px-2 py-[3px]"
                   style={{
-                    color:       `hsl(${t.hsl})`,
-                    background:  `hsl(${t.hsl} / 0.1)`,
-                    borderColor: `hsl(${t.hsl} / 0.25)`,
+                    color:      `hsl(${t.hsl})`,
+                    background: `hsl(${t.hsl} / 0.14)`,
                   }}
                 >
                   {t.label}
@@ -137,42 +153,85 @@ function CategorySection({
   const [open, setOpen] = useState(true);
   const rawLabel = isExam ? cleanExamLabel(cat.label) : cat.label;
   const label    = rawLabel || 'Général';
-  const color    = isExam ? 'hsl(30 80% 57%)' : `hsl(${clr})`;
-  const colorA   = isExam ? 'hsl(30 80% 57% / 0.12)' : `hsl(${clr} / 0.12)`;
-  const colorB   = isExam ? 'hsl(30 80% 57% / 0.25)' : `hsl(${clr} / 0.25)`;
-  const railClr  = isExam ? 'hsl(30 80% 57% / 0.18)' : `hsl(${clr} / 0.18)`;
+  const rawHsl   = isExam ? '30 80% 57%' : clr;
+  const color    = `hsl(${rawHsl})`;
+  const colorBg  = `hsl(${rawHsl} / 0.12)`;
+  const railClr  = `hsl(${rawHsl} / 0.15)`;
 
   return (
-    <div>
+    <div className="mb-0.5">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-colors duration-100 hover:bg-secondary/40 text-left group"
+        className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg transition-all duration-150 hover:bg-secondary/40 text-left group"
       >
-        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: color }} />
-        <span className="text-[11px] font-semibold flex-1 transition-colors text-muted-foreground group-hover:text-foreground">
+        <span className="text-[10px] font-black leading-none" style={{ color }}>◆</span>
+        <span className="text-[11px] font-semibold flex-1 tracking-wide text-muted-foreground group-hover:text-foreground/80 transition-colors">
           {label}
         </span>
         <span
-          className="text-[10px] font-bold px-1.5 py-[2px] rounded-full border"
-          style={{ color, background: colorA, borderColor: colorB }}
+          className="clip-sm text-[9px] font-black px-1.5 py-[3px]"
+          style={{ background: colorBg, color }}
         >
           {cat.methods.length}
         </span>
         <ChevronDown
-          size={12}
-          className="text-muted-foreground/50 transition-transform duration-200"
+          size={11}
+          className="text-muted-foreground/40 transition-transform duration-200"
           style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }}
         />
       </button>
 
       {open && (
         <div
-          className="ml-[0.875rem] pl-3 mt-1 mb-2 flex flex-col gap-1.5 border-l"
+          className="ml-3 pl-3 mt-1 mb-2.5 flex flex-col gap-1.5 border-l"
           style={{ borderColor: railClr }}
         >
           {cat.methods.map(m => <MethodItem key={m.title} m={m} />)}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Phase divider ──────────────────────────────────────────────────────────
+function PhaseDivider({
+  Icon, label, count, rawHsl,
+}: {
+  Icon: typeof BookOpen;
+  label: string;
+  count: number;
+  rawHsl: string;
+}) {
+  const color = `hsl(${rawHsl})`;
+  return (
+    <div className="flex items-center gap-3 mb-3 mt-1">
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <div
+          className="w-[3px] h-4 rounded-full flex-shrink-0"
+          style={{ background: `linear-gradient(to bottom, ${color}, ${color}50)` }}
+        />
+        <span className="flex items-center gap-1.5 text-[10px] font-black tracking-[0.14em] uppercase" style={{ color }}>
+          <Icon size={11} />
+          {label}
+        </span>
+      </div>
+      <span className="font-mono text-[10px] font-bold text-muted-foreground/40">{count}</span>
+      <div className="flex-1 h-px" style={{ background: `hsl(${rawHsl} / 0.12)` }} />
+    </div>
+  );
+}
+
+// ── Section divider (gold — General + Prompts tabs) ────────────────────────
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <div className="section-header-bar text-[10px] font-black tracking-[0.16em] uppercase text-primary/80">
+        {label}
+      </div>
+      <div
+        className="flex-1 h-px"
+        style={{ background: 'linear-gradient(to right, hsl(43 90% 50% / 0.18), transparent)' }}
+      />
     </div>
   );
 }
@@ -194,23 +253,25 @@ function SubjectPicker({
           <button
             key={s.code}
             onClick={() => onSelect(s.code)}
-            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all duration-150"
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all duration-200"
             style={{
-              borderColor: active ? hsla(s.code, 0.5) : 'hsl(var(--border))',
-              background:  active ? hsla(s.code, 0.1) : 'transparent',
-              boxShadow:   active ? `0 0 0 1px ${hsla(s.code, 0.35)}, 0 0 14px ${hsla(s.code, 0.08)}` : 'none',
+              borderColor: active ? hsla(s.code, 0.55) : 'hsl(var(--border))',
+              background:  active ? hsla(s.code, 0.1) : 'hsl(var(--card))',
               color:       active ? hsl(s.code) : 'hsl(var(--muted-foreground))',
+              boxShadow:   active
+                ? `0 0 0 1px ${hsla(s.code, 0.3)}, 0 0 18px ${hsla(s.code, 0.1)}`
+                : 'none',
             }}
           >
             <span
-              className="text-[10px] font-black clip-sm px-1 py-[2px] leading-none"
+              className="clip-sm text-[9px] font-black px-1.5 py-[3px] leading-none"
               style={{ background: hsl(s.code), color: 'hsl(222 22% 6%)' }}
             >
               {s.code}
             </span>
-            <span className={active ? '' : 'hidden sm:inline'}>{s.name}</span>
+            <span className={`hidden sm:inline ${active ? '' : 'opacity-80'}`}>{s.name}</span>
             <span
-              className="text-[10px] font-bold opacity-70"
+              className={`font-mono text-[10px] font-bold ${active ? 'hud-number' : 'opacity-40'}`}
               style={{ color: active ? hsl(s.code) : 'inherit' }}
             >
               {count}
@@ -218,40 +279,6 @@ function SubjectPicker({
           </button>
         );
       })}
-    </div>
-  );
-}
-
-// ── Phase divider ──────────────────────────────────────────────────────────
-function PhaseDivider({
-  icon, label, count, color,
-}: {
-  icon: string; label: string; count: number; color: string;
-}) {
-  return (
-    <div className="flex items-center gap-2.5 mb-3 px-0.5">
-      <span className="text-xs font-bold tracking-widest uppercase" style={{ color }}>
-        {icon} {label}
-      </span>
-      <span
-        className="text-[10px] font-medium pl-2 border-l"
-        style={{ color: 'hsl(var(--muted-foreground))', borderColor: 'hsl(var(--border))' }}
-      >
-        {count} méthodes
-      </span>
-      <div className="flex-1 h-px" style={{ background: `${color}20` }} />
-    </div>
-  );
-}
-
-// ── Section divider (for General + Prompts tabs) ───────────────────────────
-function SectionDivider({ label }: { label: string }) {
-  return (
-    <div className="flex items-center gap-2.5 mb-3 px-0.5">
-      <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary/70">
-        {label}
-      </span>
-      <div className="flex-1 h-px bg-primary/10" />
     </div>
   );
 }
@@ -273,7 +300,7 @@ function LevelTab({ subjects }: { subjects: SubjectCard[] }) {
       <div className="space-y-5">
         {revCats.length > 0 && (
           <div>
-            <PhaseDivider icon="📚" label="Révision" count={revCount} color={hsl(subj.code)} />
+            <PhaseDivider Icon={BookOpen} label="Révision" count={revCount} rawHsl={clr} />
             {revCats.map(cat => (
               <CategorySection key={cat.label} cat={cat} clr={clr} isExam={false} />
             ))}
@@ -281,7 +308,7 @@ function LevelTab({ subjects }: { subjects: SubjectCard[] }) {
         )}
         {examCats.length > 0 && (
           <div>
-            <PhaseDivider icon="⏱" label="Pendant le contrôle" count={examCount} color="hsl(30 80% 57%)" />
+            <PhaseDivider Icon={Timer} label="Pendant le contrôle" count={examCount} rawHsl="30 80% 57%" />
             {examCats.map(cat => (
               <CategorySection key={cat.label} cat={cat} clr={clr} isExam={true} />
             ))}
@@ -300,24 +327,26 @@ function GeneralTab({ sections }: { sections: GeneralSection[] }) {
         <div key={sec.title}>
           <SectionDivider label={sec.title} />
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-            {sec.cards.map(card => (
+            {sec.cards.map((card, ci) => (
               <article
                 key={card.title}
-                className="relative rounded-xl border bg-card p-4 transition-colors duration-150 hover:bg-accent/20 game-panel"
-                style={{ borderColor: card.hot ? 'hsl(43 90% 50% / 0.3)' : 'hsl(var(--border))' }}
+                className={`relative rounded-xl border bg-card p-4 game-panel game-card card-enter card-enter-${Math.min(ci + 1, 4)}`}
+                style={{
+                  borderColor: card.hot ? 'hsl(43 90% 50% / 0.22)' : 'hsl(var(--border))',
+                }}
               >
                 {card.hot && (
                   <span
-                    className="absolute -top-2 -right-2 text-[9px] font-black tracking-wider px-1.5 py-[3px] clip-sm"
+                    className="absolute -top-2 -right-2 clip-sm text-[9px] font-black tracking-widest px-1.5 py-[4px]"
                     style={{
-                      background: 'linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 60%))',
+                      background: 'linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 62%))',
                       color: 'hsl(222 22% 6%)',
                     }}
                   >
                     ✦
                   </span>
                 )}
-                <h3 className="text-sm font-bold text-foreground mb-1.5 leading-snug">{card.title}</h3>
+                <h3 className="text-sm font-bold text-foreground mb-2 leading-snug">{card.title}</h3>
                 <p
                   className="r-desc text-xs leading-relaxed text-muted-foreground"
                   dangerouslySetInnerHTML={{ __html: card.desc }}
@@ -338,13 +367,16 @@ function PromptCard({ prompt }: { prompt: Prompt }) {
 
   return (
     <div
-      className="rounded-xl border bg-card overflow-hidden transition-colors duration-150"
-      style={{ borderColor: open ? 'hsl(43 90% 50% / 0.25)' : 'hsl(var(--border))' }}
+      className="rounded-xl border bg-card overflow-hidden transition-all duration-150 game-panel"
+      style={{
+        borderColor: open ? 'hsl(43 90% 50% / 0.3)' : 'hsl(var(--border))',
+        boxShadow:   open ? '0 0 20px hsl(43 90% 50% / 0.07)' : 'none',
+      }}
     >
       <div className="flex items-center gap-3 px-4 py-3">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">{prompt.title}</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">{prompt.scope}</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5 font-mono tracking-wide">{prompt.scope}</p>
         </div>
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <button
@@ -353,7 +385,7 @@ function PromptCard({ prompt }: { prompt: Prompt }) {
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             }}
-            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-md border border-border text-muted-foreground transition-colors hover:text-foreground hover:border-white/15"
+            className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 rounded-md border border-border text-muted-foreground transition-all hover:border-primary/30 hover:text-primary"
             style={copied ? { color: 'hsl(142 71% 45%)', borderColor: 'hsl(142 71% 45% / 0.35)' } : undefined}
           >
             {copied ? <Check size={11} /> : <Copy size={11} />}
@@ -361,14 +393,31 @@ function PromptCard({ prompt }: { prompt: Prompt }) {
           </button>
           <button
             onClick={() => setOpen(o => !o)}
-            className="w-7 h-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-white/15 transition-colors text-base leading-none"
+            className="clip-sm w-7 h-7 flex items-center justify-center text-sm font-black transition-all"
+            style={
+              open
+                ? {
+                    background: 'linear-gradient(135deg, hsl(43 90% 38%), hsl(50 100% 62%))',
+                    color: 'hsl(222 22% 6%)',
+                  }
+                : {
+                    background: 'hsl(var(--secondary))',
+                    color: 'hsl(var(--muted-foreground))',
+                  }
+            }
           >
             {open ? '−' : '+'}
           </button>
         </div>
       </div>
       {open && (
-        <pre className="text-[11px] leading-relaxed font-mono text-muted-foreground border-t border-border bg-background/40 px-4 py-3 whitespace-pre-wrap break-words">
+        <pre
+          className="text-[11px] leading-relaxed font-mono text-muted-foreground border-t px-4 py-3 whitespace-pre-wrap break-words"
+          style={{
+            borderColor: 'hsl(var(--border))',
+            background:  'hsl(222 22% 7%)',
+          }}
+        >
           {prompt.text}
         </pre>
       )}
@@ -399,7 +448,7 @@ export function ResourcesTab() {
     <>
       <style>{`
         .r-desc strong { font-weight: 600; color: hsl(42 12% 86%); }
-        .r-desc em     { font-style: italic; }
+        .r-desc em     { font-style: italic; color: hsl(42 12% 78%); }
       `}</style>
 
       <div className="space-y-5 max-w-4xl">
@@ -407,29 +456,41 @@ export function ResourcesTab() {
         {/* ── Page header ── */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[10px] font-black tracking-[0.22em] uppercase text-primary/50 mb-1">
-              Ascension · Méthodes
+            <p
+              className="text-[10px] font-black tracking-[0.25em] uppercase mb-1.5"
+              style={{ color: 'hsl(43 90% 50% / 0.5)' }}
+            >
+              Ascension · Base de connaissances
             </p>
-            <h1 className="font-display text-2xl font-black tracking-tight text-foreground leading-none">
-              Méthodes de révision
+            <h1
+              className="font-display font-black tracking-tight leading-none"
+              style={{
+                fontSize: 'clamp(1.3rem, 3vw, 1.75rem)',
+                background: 'linear-gradient(135deg, hsl(43 90% 44%), hsl(50 100% 66%))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              MÉTHODES DE RÉVISION
             </h1>
-            <p className="text-xs text-muted-foreground mt-1.5">
-              Les techniques qui font la différence — rappel actif, répétition espacée, IA.
+            <p className="text-xs text-muted-foreground mt-1.5 font-mono tracking-wide">
+              Rappel actif · Répétition espacée · IA
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0 mt-1">
+
+          <div className="hidden sm:flex flex-col items-end gap-1.5 flex-shrink-0 mt-1">
             {[
-              { label: 'Rappel actif',       h: '142 71% 48%' },
-              { label: 'Espacement',          h: '43 90% 55%'  },
-              { label: 'IA',                  h: '270 50% 65%' },
+              { label: 'ACTIF',  hsl: '142 71% 48%' },
+              { label: 'ESPACÉ', hsl: '43 90% 55%'  },
+              { label: 'IA',     hsl: '270 50% 65%' },
             ].map(c => (
               <span
                 key={c.label}
-                className="text-[10px] font-semibold px-2 py-[3px] rounded-full border"
+                className="clip-sm text-[9px] font-black tracking-widest px-2.5 py-[4px]"
                 style={{
-                  color:       `hsl(${c.h})`,
-                  background:  `hsl(${c.h} / 0.1)`,
-                  borderColor: `hsl(${c.h} / 0.25)`,
+                  color:      `hsl(${c.hsl})`,
+                  background: `hsl(${c.hsl} / 0.12)`,
                 }}
               >
                 {c.label}
@@ -438,33 +499,44 @@ export function ResourcesTab() {
           </div>
         </div>
 
-        {/* ── Tab bar — segmented control ── */}
+        {/* ── Tab bar ── */}
         <div
-          className="flex gap-0.5 p-1 rounded-xl border w-fit"
-          style={{ background: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }}
+          className="flex gap-0.5 p-1 rounded-xl border"
+          style={{
+            background:  'hsl(var(--card))',
+            borderColor: 'hsl(var(--border))',
+            width:       'fit-content',
+            boxShadow:   '0 0 0 1px hsl(43 90% 50% / 0.04) inset',
+          }}
         >
-          {TABS.map(t => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 whitespace-nowrap"
-              style={
-                tab === t.id
-                  ? {
-                      background: 'hsl(43 90% 50%)',
-                      color:      'hsl(222 22% 6%)',
-                      boxShadow:  '0 1px 8px hsl(43 90% 50% / 0.35)',
-                    }
-                  : {
-                      background: 'transparent',
-                      color:      'hsl(var(--muted-foreground))',
-                    }
-              }
-            >
-              {t.icon && <span className="mr-1">{t.icon}</span>}
-              {t.label}
-            </button>
-          ))}
+          {TABS.map(t => {
+            const active = tab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black tracking-wide transition-all duration-150 whitespace-nowrap"
+                style={
+                  active
+                    ? {
+                        background:  'linear-gradient(135deg, hsl(43 90% 40%), hsl(50 100% 60%))',
+                        color:       'hsl(222 22% 6%)',
+                        borderRadius: '8px',
+                        clipPath:    'polygon(6px 0%,calc(100% - 6px) 0%,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0% calc(100% - 6px),0% 6px)',
+                        boxShadow:   '0 0 14px hsl(43 90% 50% / 0.45)',
+                      }
+                    : {
+                        background:   'transparent',
+                        color:        'hsl(var(--muted-foreground))',
+                        borderRadius: '8px',
+                      }
+                }
+              >
+                {t.Icon && <t.Icon size={11} />}
+                {t.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* ── Content ── */}
