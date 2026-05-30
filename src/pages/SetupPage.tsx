@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, Loader2 } from 'lucide-react';
+import { Shield, Loader2, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -30,7 +30,7 @@ export default function SetupPage() {
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { pseudo: 'Coach', avatar: '🛡️' } },
+      options: { data: { pseudo: 'Coach', avatar: 'shield' } },
     });
 
     if (signUpError || !data.user) {
@@ -61,7 +61,7 @@ export default function SetupPage() {
         <p className="text-muted-foreground text-sm mb-6">Créez le compte Coach pour démarrer.</p>
 
         {done ? (
-          <div className="text-success font-medium">✅ Compte coach créé ! Redirection...</div>
+          <div className="text-success font-medium flex items-center gap-2"><CheckCircle size={16} /> Compte coach créé ! Redirection...</div>
         ) : (
           <form onSubmit={handleSetup} className="space-y-4 text-left">
             <div>

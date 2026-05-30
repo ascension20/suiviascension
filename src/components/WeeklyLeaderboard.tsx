@@ -138,7 +138,7 @@ export function WeeklyLeaderboard({ title, datasets, weeklyChampion }: Props) {
                   >
                     <img src={entry.avatar} alt={entry.pseudo} className="w-full h-full object-cover" />
                     {weeklyChampion && entry.pseudo === weeklyChampion && entry.rank === 1 && (
-                      <span className="absolute -top-2 -right-2 text-xs champion-glow">👑</span>
+                      <Crown size={12} className="absolute -top-2 -right-2 champion-glow" style={{ color: 'hsl(43 90% 55%)' }} />
                     )}
                   </div>
 

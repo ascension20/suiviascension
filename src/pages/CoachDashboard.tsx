@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LogOut, Loader2, MessageCircle, X, Image as ImageIcon, Trash2,
   Check, Shield, Users, ChevronLeft, ChevronRight,
-  Search, Pin, PinOff, CalendarDays,
+  Search, Pin, PinOff, CalendarDays, Flame, Moon, AlarmClock, Zap,
+  BarChart2, Calendar, AlertTriangle, FileText, Star,
 } from 'lucide-react';
 import { calculateLevel, getTitleForLevel, SUBJECTS, Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -56,12 +57,12 @@ interface StudentExam {
 const TUTOR_KEY = 'coach_tutored_students';
 
 const SEVERITY_LABELS: Record<string, { label: string; color: string }> = {
-  blocking: { label: '🔴 Bloquant', color: 'hsl(0 84% 60%)' },
-  fragile:  { label: '🟡 Fragile',  color: 'hsl(38 92% 55%)' },
-  ok:       { label: '🟢 Gérable',  color: 'hsl(142 71% 45%)' },
+  blocking: { label: 'Bloquant', color: 'hsl(0 84% 60%)' },
+  fragile:  { label: 'Fragile',  color: 'hsl(38 92% 55%)' },
+  ok:       { label: 'Gérable',  color: 'hsl(142 71% 45%)' },
 };
 const STRESS_LABELS: Record<string, string> = {
-  stressed: '😰 Stressé', neutral: '😐 Neutre', calm: '😊 Serein',
+  stressed: '◆ Stressé', neutral: '◆ Neutre', calm: '◆ Serein',
 };
 
 // Returns true if the streak is still "alive" (last activity today or yesterday)
@@ -753,7 +754,7 @@ export default function CoachDashboard() {
                 <span className="text-[10px]"
                   title={live ? `Streak actif — ${s.streak}j` : `Streak brisé (dernier: ${s.last_activity_date ?? 'jamais'})`}
                   style={{ color: live && s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(220 10% 38%)' }}>
-                  {live ? '🔥' : '💤'}{s.streak}
+                  {live ? <Flame size={10} style={{ display: 'inline' }} /> : <Moon size={10} style={{ display: 'inline' }} />}{s.streak}
                 </span>
               );
             })()}
@@ -843,12 +844,12 @@ export default function CoachDashboard() {
     }, [statPeriod, s, timerSessions, data.quests]);
 
     const TABS = [
-      { key: 'overview', label: '📊 Vue d\'ensemble' },
-      { key: 'planning', label: '📅 Planning & Quêtes',
+      { key: 'overview', label: 'Vue d\'ensemble',    icon: <BarChart2 size={12} /> },
+      { key: 'planning', label: 'Planning & Quêtes', icon: <Calendar  size={12} />,
         badge: data.planning.filter(p => p.event_date >= todayStr && p.type !== 'course').length + data.quests.filter(q => !q.completed).length },
-      { key: 'diffs',    label: '⚠️ Difficultés',
+      { key: 'diffs',    label: 'Difficultés',        icon: <AlertTriangle size={12} />,
         badge: data.diffs.filter(d => !d.resolved).length },
-      { key: 'exams',    label: '📝 DS',
+      { key: 'exams',    label: 'DS',                 icon: <FileText size={12} />,
         badge: data.exams.filter(e => new Date(e.exam_date) >= now).length },
     ];
 
@@ -881,7 +882,7 @@ export default function CoachDashboard() {
               {isTutored && (
                 <span className="text-[10px] px-2 py-0.5 rounded-lg font-bold"
                   style={{ background: 'hsl(43 90% 50% / 0.12)', color: 'hsl(43 90% 65%)', border: '1px solid hsl(43 90% 50% / 0.2)' }}>
-                  ⭐ Tutoré
+                  ◆ Tutoré
                 </span>
               )}
             </div>
@@ -913,7 +914,7 @@ export default function CoachDashboard() {
                 ? { color: 'hsl(43 90% 62%)', borderColor: 'hsl(43 90% 52%)' }
                 : { color: 'hsl(220 10% 45%)', borderColor: 'transparent' }
               }>
-              {tab.label}
+              {tab.icon}{tab.label}
               {tab.badge != null && tab.badge > 0 && (
                 <span className="min-w-[16px] h-4 rounded-full text-[9px] px-1 flex items-center justify-center"
                   style={{ background: 'hsl(43 90% 50% / 0.15)', color: 'hsl(43 90% 60%)' }}>
@@ -953,7 +954,7 @@ export default function CoachDashboard() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {[
                   { label: periodStats.xpLabel,   value: periodStats.xp,     color: 'hsl(43 90% 55%)' },
-                  { label: streakLive ? 'Streak 🔥' : 'Streak brisé 💤',
+                  { label: streakLive ? 'Streak' : 'Streak brisé',
                     value: `${s.streak}j`,
                     color: streakLive && s.streak > 0 ? 'hsl(25 90% 55%)' : 'hsl(220 10% 42%)' },
                   { label: periodStats.hoursLabel, value: periodStats.hours,  color: 'hsl(270 70% 65%)' },
@@ -1038,7 +1039,7 @@ export default function CoachDashboard() {
 
                 {/* Planning list */}
                 {Object.keys(byDay).length === 0 ? (
-                  <p className="text-xs text-muted-foreground text-center py-4">Aucune session planifiée 📅</p>
+                  <p className="text-xs text-muted-foreground text-center py-4">Aucune session planifiée</p>
                 ) : Object.entries(byDay).sort(([a], [b]) => a.localeCompare(b)).map(([dateKey, evs]) => (
                   <div key={dateKey}>
                     <p className="text-[10px] uppercase tracking-widest text-muted-foreground capitalize mb-1.5">
@@ -1083,7 +1084,7 @@ export default function CoachDashboard() {
                     </p>
 
                     {pendingQuests.length === 0 && doneQuests.length === 0 && (
-                      <p className="text-xs text-muted-foreground text-center py-4">Aucune quête ⚡</p>
+                      <p className="text-xs text-muted-foreground text-center py-4">Aucune quête</p>
                     )}
 
                     {/* Active quests */}
@@ -1097,7 +1098,7 @@ export default function CoachDashboard() {
                           : null;
                         const ageLabel   = weeksOld >= 2 ? `${weeksOld} semaines` : `${daysOld} jours`;
                         const waMsg      = isOld ? encodeURIComponent(
-                          `Salut ${s.pseudo} ! La quête "${q.title}" est toujours en attente depuis ${ageLabel}. Tu as besoin d'aide pour la terminer ? 💪`
+                          `Salut ${s.pseudo} ! La quête "${q.title}" est toujours en attente depuis ${ageLabel}. Tu as besoin d'aide pour la terminer ?`
                         ) : '';
 
                         return (
@@ -1108,7 +1109,7 @@ export default function CoachDashboard() {
                             }}>
                             <div className="flex items-center gap-2.5 p-2.5">
                               <span className="font-bold shrink-0" style={{ color: isOld ? 'hsl(38 92% 65%)' : '#a78bfa' }}>
-                                {isOld ? '⏰' : '⚡'}
+                                {isOld ? <AlarmClock size={11} /> : <Zap size={11} />}
                               </span>
                               <span className="flex-1 truncate">{q.title}</span>
                               <span className="text-muted-foreground shrink-0">{q.subject}</span>
@@ -1134,7 +1135,7 @@ export default function CoachDashboard() {
                                   target="_blank" rel="noopener noreferrer"
                                   className="ml-auto flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-lg transition-all hover:scale-105"
                                   style={{ background: 'hsl(142 71% 40% / 0.12)', border: '1px solid hsl(142 71% 40% / 0.3)', color: 'hsl(142 71% 62%)' }}>
-                                  💬 Relancer sur WhatsApp
+                                  Relancer sur WhatsApp
                                 </a>
                               </div>
                             )}
@@ -1165,7 +1166,7 @@ export default function CoachDashboard() {
           {/* ── Difficultés ── */}
           {selectedTab === 'diffs' && (
             data.diffs.length === 0
-              ? <p className="text-xs text-muted-foreground text-center py-8">Aucune difficulté 🎉</p>
+              ? <p className="text-xs text-muted-foreground text-center py-8">Aucune difficulté</p>
               : data.diffs.map(d => (
                 <div key={d.id} className={`p-3.5 rounded-xl border text-xs ${d.resolved ? 'opacity-50' : ''}`}
                   style={{ background: 'hsl(222 22% 9%)', borderColor: d.severity === 'blocking' && !d.resolved ? 'hsl(0 84% 55% / 0.3)' : 'hsl(222 16% 16%)' }}>
@@ -1179,7 +1180,7 @@ export default function CoachDashboard() {
                   <p className="text-foreground/90 mb-2">{d.description}</p>
                   {d.coach_reply && (
                     <div className="p-2 rounded-lg text-[11px]" style={{ background: 'hsl(43 90% 50% / 0.08)', border: '1px solid hsl(43 90% 50% / 0.15)', color: 'hsl(43 90% 62%)' }}>
-                      💬 {d.coach_reply}
+                      {d.coach_reply}
                     </div>
                   )}
                   {!d.resolved && !d.coach_reply && (
@@ -1205,7 +1206,7 @@ export default function CoachDashboard() {
           {/* ── DS ── */}
           {selectedTab === 'exams' && (
             data.exams.length === 0
-              ? <p className="text-xs text-muted-foreground text-center py-8">Aucun DS déclaré 📝</p>
+              ? <p className="text-xs text-muted-foreground text-center py-8">Aucun DS déclaré</p>
               : data.exams.map(e => {
                 const daysUntil      = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / 86400000);
                 const isPast         = daysUntil < 0;
@@ -1249,12 +1250,12 @@ export default function CoachDashboard() {
                     {isOverdue2Weeks && (() => {
                       const examDateStr = new Date(e.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
                       const waMsg = encodeURIComponent(
-                        `Salut ${s.pseudo} ! Tu as eu ta note pour le DS de ${e.subject} du ${examDateStr} ? 📝`
+                        `Salut ${s.pseudo} ! Tu as eu ta note pour le DS de ${e.subject} du ${examDateStr} ? `
                       );
                       return (
                         <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t"
                           style={{ borderColor: 'hsl(38 92% 55% / 0.2)' }}>
-                          <span>⏰</span>
+                          <AlarmClock size={12} style={{ color: 'hsl(38 92% 65%)', flexShrink: 0 }} />
                           <span className="text-[11px] font-medium" style={{ color: 'hsl(38 92% 65%)' }}>
                             Pas de note depuis +2 semaines
                           </span>
@@ -1268,7 +1269,7 @@ export default function CoachDashboard() {
                               border:     '1px solid hsl(142 71% 40% / 0.35)',
                               color:      'hsl(142 71% 62%)',
                             }}>
-                            💬 Relancer sur WhatsApp
+                            Relancer sur WhatsApp
                           </a>
                         </div>
                       );
@@ -1355,7 +1356,7 @@ export default function CoachDashboard() {
               <>
                 <div className="flex items-center gap-1.5 px-2 py-1.5">
                   <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'hsl(43 90% 55%)' }}>
-                    ⭐ Mes élèves ({tutoredStudents.length})
+                    ◆ Mes élèves ({tutoredStudents.length})
                   </span>
                 </div>
                 {tutoredStudents.map((s, i) => (
@@ -1407,7 +1408,7 @@ export default function CoachDashboard() {
                 <p className="text-sm text-muted-foreground">Sélectionne un élève pour voir son dossier</p>
                 {tutoredIds.size === 0 && students.length > 0 && (
                   <p className="text-xs text-muted-foreground/50 flex items-center gap-1 max-w-xs">
-                    <Pin size={10} /> Clique sur l'icône 📌 pour marquer tes élèves tutorés — ils apparaîtront en surbrillance en haut de la liste
+                    <Pin size={10} /> Clique sur l'icône pour marquer tes élèves tutorés — ils apparaîtront en surbrillance en haut de la liste
                   </p>
                 )}
               </motion.div>
@@ -1499,7 +1500,7 @@ export default function CoachDashboard() {
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
             className="bg-card rounded-2xl p-6 max-w-sm w-full" style={{ border: '1px solid hsl(0 84% 55% / 0.35)' }}
             onClick={e => e.stopPropagation()}>
-            <h2 className="font-display text-sm font-bold mb-2" style={{ color: 'hsl(0 84% 65%)' }}>⚠️ Supprimer l'élève</h2>
+            <h2 className="font-display text-sm font-bold mb-2" style={{ color: 'hsl(0 84% 65%)' }}>Supprimer l'élève</h2>
             <p className="text-sm text-muted-foreground mb-4">
               Supprimer <strong className="text-foreground">{confirmDelete.pseudo}</strong> ? Toutes ses données seront supprimées définitivement.
             </p>

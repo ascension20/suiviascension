@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { BarChart2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 
@@ -65,7 +66,9 @@ export function GradeAverages({ userId }: { userId: string }) {
     <div className="bg-card border border-border rounded-lg p-5">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-display text-base font-semibold">📊 Moyennes</h2>
+        <h2 className="font-display text-base font-semibold flex items-center gap-2">
+          <BarChart2 size={15} style={{ color: 'hsl(43 90% 52%)' }} /> Moyennes
+        </h2>
         {globalAvg !== null && (
           <div className="text-right">
             <span

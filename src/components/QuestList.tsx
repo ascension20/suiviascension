@@ -30,7 +30,7 @@ const item = {
 
 export function QuestList({ quests, onComplete }: Props) {
   if (quests.length === 0) {
-    return <p className="text-muted-foreground text-sm py-4 text-center">Aucune quête active 🎉</p>;
+    return <p className="text-muted-foreground text-sm py-4 text-center">Aucune quête active</p>;
   }
 
   return (

@@ -77,7 +77,7 @@ export function EndOfDayReview({ userId }: EndOfDayReviewProps) {
         exit={{ opacity: 0, y: 50 }}
         className="fixed bottom-4 right-4 z-50 w-80 bg-card border border-border rounded-xl shadow-xl p-5"
       >
-        <h3 className="font-display font-semibold text-sm mb-1">T'as fait tes 3 tâches ? 🤔</h3>
+        <h3 className="font-display font-semibold text-sm mb-1">T'as fait tes 3 tâches ?</h3>
         <p className="text-xs text-muted-foreground mb-4">Coche ce que tu as accompli aujourd'hui</p>
 
         <div className="space-y-3">

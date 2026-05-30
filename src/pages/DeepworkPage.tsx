@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, ArrowLeft, Music, Music2 } from 'lucide-react';
+import { Play, Pause, ArrowLeft, Music, Music2, Swords, Moon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDeepworkXp, DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
 import { TierProgressBar } from '@/components/Deepwork/DeepworkWidget';
@@ -15,9 +15,9 @@ const STORAGE_KEY = DEEPWORK_STORAGE_KEY;
 function xpRateInfo(seconds: number) {
   const m = Math.floor(seconds / 60);
   if (m < 15) return { label: '1 XP / min',                    color: 'hsl(43,90%,60%)' };
-  if (m < 30) return { label: '2 XP / min · Bonus vitesse ⚡', color: 'hsl(38,92%,65%)' };
-  if (m < 90) return { label: '3 XP / min · Mode turbo 🔥',   color: 'hsl(16,100%,65%)' };
-  return             { label: '4 XP / min · Mode ULTRA 🚀',    color: 'hsl(280,90%,70%)' };
+  if (m < 30) return { label: '2 XP / min · Bonus vitesse ◆', color: 'hsl(38,92%,65%)' };
+  if (m < 90) return { label: '3 XP / min · Mode turbo ✦',    color: 'hsl(16,100%,65%)' };
+  return             { label: '4 XP / min · Mode ULTRA ◈',     color: 'hsl(280,90%,70%)' };
 }
 
 // ── Page principale ─────────────────────────────────────────────────────────
@@ -223,7 +223,7 @@ export default function DeepworkPage() {
                     color: 'hsl(270 60% 75%)',
                   }}
                 >
-                  ⚔️ {questTitle}
+                  <Swords size={12} className="inline mr-1" /> {questTitle}
                 </div>
               )}
             </motion.div>
@@ -348,7 +348,7 @@ export default function DeepworkPage() {
         <div className="flex flex-col items-center gap-3 w-full max-w-md">
           {peers.length === 0 ? (
             <p className="text-xs text-muted-foreground text-center">
-              Tu es le premier à étudier en ce moment 🌙
+              <Moon size={11} className="inline mr-1 opacity-60" /> Tu es le premier à étudier en ce moment
             </p>
           ) : (
             <div className="flex flex-col items-center gap-3 w-full">

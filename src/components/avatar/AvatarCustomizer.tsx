@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, User, Crown, Eye, Tag, Award } from 'lucide-react';
 import type { AvatarConfig, AccessorySlot, PlayerStats } from '@/lib/avatar/types';
 import { SLOT_LABELS, SLOT_EMOJIS } from '@/lib/avatar/types';
 import { ACCESSORIES, getAccessoriesBySlot } from '@/lib/avatar/accessories';
@@ -52,12 +52,14 @@ const HAIR_COLORS = [
 // ─────────────────────────────────────────────────────────────
 
 type Tab = 'base' | AccessorySlot;
-const TABS: { id: Tab; emoji: string; label: string }[] = [
-  { id: 'base',    emoji: '👤', label: 'Perso'       },
-  { id: 'hat',     emoji: '🎩', label: 'Couvre-chef' },
-  { id: 'glasses', emoji: '👓', label: 'Lunettes'    },
-  { id: 'outfit',  emoji: '👕', label: 'Tenue'       },
-  { id: 'badge',   emoji: '🏅', label: 'Badge'       },
+import React from 'react';
+
+const TABS: { id: Tab; icon: React.ReactNode; label: string }[] = [
+  { id: 'base',    icon: <User    size={13} />, label: 'Perso'       },
+  { id: 'hat',     icon: <Crown   size={13} />, label: 'Couvre-chef' },
+  { id: 'glasses', icon: <Eye     size={13} />, label: 'Lunettes'    },
+  { id: 'outfit',  icon: <Tag     size={13} />, label: 'Tenue'       },
+  { id: 'badge',   icon: <Award   size={13} />, label: 'Badge'       },
 ];
 
 const PREVIEW_SEED = 'ascension-preview';
@@ -288,7 +290,7 @@ export function AvatarCustomizer({
                 ? { background: 'hsl(43 90% 50%)', color: 'hsl(222 22% 8%)', boxShadow: '0 0 12px hsl(43 90% 50% / 0.4)' }
                 : { background: 'hsl(222 22% 11%)', color: 'hsl(220 10% 55%)' }}
             >
-              <span>{tab.emoji}</span>
+              {tab.icon}
               {tab.label}
               {hasEquipped && (
                 <span

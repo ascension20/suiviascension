@@ -337,7 +337,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
                           <div className="px-1 py-0.5 h-full flex flex-col justify-start overflow-hidden">
                             <p className={`text-[8px] font-bold leading-tight truncate ${ev.validated ? 'text-emerald-400' : c.text}`}>
                               {ev.start_time.slice(0, 5)}
-                              {ev.type === 'ds' ? ' 🔴' : ''}
+                              {ev.type === 'ds' ? <span style={{ color: 'hsl(0 84% 60%)', fontSize: '0.65rem' }}> ●</span> : ''}
                               {ev.validated ? ' ✓' : ''}
                             </p>
                             <p className="text-[8px] font-medium leading-tight text-foreground truncate">
@@ -453,7 +453,7 @@ function ConvertToDsModal({
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Marquer comme DS 🔴</DialogTitle>
+          <DialogTitle>Marquer comme DS</DialogTitle>
         </DialogHeader>
         <div className="space-y-1 mb-4 p-3 rounded-lg bg-secondary/40 border border-border">
           <p className="text-sm font-semibold">{event.title}</p>
@@ -488,7 +488,7 @@ function ConvertToDsModal({
             className="w-full py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50"
             style={{ background: 'hsl(0 84% 60%)', color: 'white' }}
           >
-            {saving ? 'Enregistrement…' : 'Confirmer — c\'est un DS 🔴'}
+            {saving ? 'Enregistrement…' : 'Confirmer — c\'est un DS'}
           </button>
         </div>
       </DialogContent>

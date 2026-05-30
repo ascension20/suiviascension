@@ -50,7 +50,7 @@ export function DeepworkPresenceProvider({ children, userId, profile }: Props) {
     if (!userId) return;
 
     const pseudo = profile?.pseudo ?? 'Élève';
-    const avatar = profile?.avatar ?? '🐺';
+    const avatar = profile?.avatar ?? '';
 
     const ch = supabase.channel('deepwork-room', {
       config: { presence: { key: userId } },

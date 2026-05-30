@@ -73,9 +73,9 @@ export function SmartNotifications({ userId }: { userId: string }) {
           id: 'deepwork-gap',
           icon: <Zap size={16} />,
           message: hoursSinceDw >= 48
-            ? `Aucune session deepwork depuis 2+ jours — même 20 min font la différence ! 🎯`
+            ? `Aucune session deepwork depuis 2+ jours — même 20 min font la différence !`
             : `Pas de session deepwork depuis hier — garde le rythme ! Une session rapide ?`,
-          actionLabel: '⚡ Lancer deepwork',
+          actionLabel: 'Lancer deepwork',
           actionHref: '/student/deepwork',
           priority: hoursSinceDw >= 48 ? 'high' : 'medium',
           color: 'hsl(43 90% 55%)',
@@ -94,9 +94,9 @@ export function SmartNotifications({ userId }: { userId: string }) {
             id: `ds-daily-${exam.id}`,
             icon: <BookOpen size={16} />,
             message: daysUntil === 1
-              ? `⚠️ DS ${subject} demain ! Dernière ligne droite — as-tu tout révisé ?`
+              ? `DS ${subject} demain ! Dernière ligne droite — as-tu tout révisé ?`
               : `DS ${subject} dans ${daysUntil} jours — pense à réviser aujourd'hui.`,
-            actionLabel: '📚 Planifier une session',
+            actionLabel: 'Planifier une session',
             actionHref: '/student/deepwork',
             priority: urgency,
             color: daysUntil <= 2 ? 'hsl(0 84% 60%)' : daysUntil <= 4 ? 'hsl(38 90% 55%)' : 'hsl(213 90% 65%)',
@@ -112,8 +112,8 @@ export function SmartNotifications({ userId }: { userId: string }) {
           notifs.push({
             id: 'streak-risk',
             icon: <Flame size={16} />,
-            message: `Ta série de ${profile.streak} jours 🔥 est en danger ! Une petite session pour la maintenir ?`,
-            actionLabel: "💪 C'est parti !",
+            message: `Ta série de ${profile.streak} jours est en danger ! Une petite session pour la maintenir ?`,
+            actionLabel: "C'est parti !",
             actionHref: '/student/deepwork',
             priority: 'high',
             color: 'hsl(var(--streak))',

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw, Minus, Plus } from 'lucide-react';
+import { Play, Pause, RotateCcw, Minus, Plus, Bell, BellOff, Coffee } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SUBJECTS, Subject, playBeep } from '@/lib/game-utils';
 
@@ -195,7 +195,7 @@ export function PomodoroTimer({ onSessionComplete }: Props) {
           )}
           title={soundEnabled ? 'Son activé' : 'Son désactivé'}
         >
-          {soundEnabled ? '🔔' : '🔕'}
+          {soundEnabled ? <Bell size={14} /> : <BellOff size={14} />}
         </button>
       </div>
 
@@ -212,7 +212,7 @@ export function PomodoroTimer({ onSessionComplete }: Props) {
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            {p.label}{p.isBreak ? ' ☕' : ''}
+            <span className="flex items-center gap-1">{p.label}{p.isBreak ? <Coffee size={10} className="opacity-60" /> : null}</span>
           </button>
         ))}
       </div>

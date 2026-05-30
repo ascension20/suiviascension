@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Swords } from 'lucide-react';
 
 interface LevelUpData {
   level: number;
@@ -111,9 +112,9 @@ export function LevelUpOverlay({ data, onDismiss }: Props) {
                 initial={{ scale: 0, rotate: -20 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ delay: 0.25, type: 'spring', bounce: 0.55 }}
-                className="text-7xl mb-4 select-none"
+                className="mb-4 flex items-center justify-center select-none"
               >
-                ⚔️
+                <Swords size={72} style={{ color: 'hsl(43 90% 55%)', filter: 'drop-shadow(0 0 20px hsl(43 90% 50% / 0.7))' }} />
               </motion.div>
 
               {/* Label */}

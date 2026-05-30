@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Zap, Flame, Timer, Calendar, CalendarDays, Swords, FileText, Trophy, User, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -13,7 +14,7 @@ interface Step {
   id: string;
   selector: string;
   kind: StepKind;
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   body: string;
   cta: string;
@@ -23,12 +24,14 @@ interface Step {
 
 // ── Steps ─────────────────────────────────────────────────────────────────────
 
+const ICON_STYLE = { color: 'hsl(43 90% 55%)', filter: 'drop-shadow(0 0 8px hsl(43 90% 50% / 0.6))' };
+
 const STEPS: Step[] = [
   {
     id: 'welcome',
     selector: 'body',
     kind: 'modal',
-    icon: '🚀',
+    icon: <Zap size={52} style={ICON_STYLE} />,
     title: 'Bienvenue sur Ascension 20 !',
     body: "On fait un tour rapide ensemble pour que tu sois opérationnel en 2 minutes. Chaque fonctionnalité est là pour booster ta progression.",
     cta: "C'est parti !",
@@ -37,7 +40,7 @@ const STEPS: Step[] = [
     id: 'streak',
     selector: '[data-tutorial="streak"]',
     kind: 'info',
-    icon: '🔥',
+    icon: <Flame size={52} style={ICON_STYLE} />,
     title: 'Ta série de jours',
     body: "Chaque jour où tu travailles fait monter ta flamme. Si tu sautes un jour, elle repart à zéro. La régularité, c'est tout.",
     cta: 'Compris !',
@@ -46,7 +49,7 @@ const STEPS: Step[] = [
     id: 'xpbar',
     selector: '[data-tutorial="xpbar"]',
     kind: 'info',
-    icon: '⚡',
+    icon: <Zap size={52} style={ICON_STYLE} />,
     title: 'XP & Niveaux',
     body: "Chaque quête validée et chaque session de deepwork te rapporte de l'XP. Monte en niveau pour débloquer de nouveaux titres et grimpe dans le classement !",
     cta: 'Super !',
@@ -55,7 +58,7 @@ const STEPS: Step[] = [
     id: 'deepwork',
     selector: '[data-tutorial="deepwork"]',
     kind: 'info',
-    icon: '⏱',
+    icon: <Timer size={52} style={ICON_STYLE} />,
     title: 'Le Deepwork',
     body: "Lance ce chrono dès que tu travailles sérieusement. Plus tu tiens longtemps, plus l'XP s'accélère : 1 → 2 → 3 XP/min après 30 min. Zéro distraction.",
     cta: 'Noté !',
@@ -64,7 +67,7 @@ const STEPS: Step[] = [
     id: 'planning',
     selector: '[data-tutorial="planning"]',
     kind: 'info',
-    icon: '📅',
+    icon: <Calendar size={52} style={ICON_STYLE} />,
     title: 'Ton planning',
     body: "Organise ta semaine ici. Ajoute tes quêtes de révision, tes cours et tes DS. Chaque quête validée rapporte de l'XP, les DS s'affichent en rouge.",
     cta: 'Compris !',
@@ -73,16 +76,16 @@ const STEPS: Step[] = [
     id: 'planning-expand',
     selector: '[data-tutorial="planning-expand"]',
     kind: 'info',
-    icon: '🗓️',
+    icon: <CalendarDays size={52} style={ICON_STYLE} />,
     title: 'Vue complète & Cours → DS',
-    body: "Ce bouton ouvre la vue hebdomadaire complète. Si ton EDT est importé, clique sur n'importe quel cours pour le convertir en DS 🔴 — il apparaîtra en rouge dans ton planning.",
+    body: "Ce bouton ouvre la vue hebdomadaire complète. Si ton EDT est importé, clique sur n'importe quel cours pour le convertir en DS — il apparaîtra en rouge dans ton planning.",
     cta: 'Parfait !',
   },
   {
     id: 'add-quest-1',
     selector: '[data-tutorial="planning-add"]',
     kind: 'action',
-    icon: '⚔️',
+    icon: <Swords size={52} style={ICON_STYLE} />,
     title: 'Ajoute ta 1ère quête',
     body: "Clique sur le bouton + juste ici et crée une quête de révision. Choisis la matière et l'horaire, puis valide.",
     cta: 'En attente…',
@@ -93,7 +96,7 @@ const STEPS: Step[] = [
     id: 'add-quest-2',
     selector: '[data-tutorial="planning-expand"]',
     kind: 'action',
-    icon: '🔥',
+    icon: <Flame size={52} style={ICON_STYLE} />,
     title: 'Encore une quête !',
     body: "Clique sur ce bouton pour ouvrir la vue complète du planning, puis ajoute une 2ème quête depuis là. C'est la vue que tu utiliseras au quotidien.",
     cta: 'En attente…',
@@ -104,7 +107,7 @@ const STEPS: Step[] = [
     id: 'add-ds',
     selector: '[data-tutorial="planning-add"]',
     kind: 'action',
-    icon: '📝',
+    icon: <FileText size={52} style={ICON_STYLE} />,
     title: 'Ton prochain DS',
     body: 'Clique sur + et choisis "DS". Entre la date et la matière. Tes DS apparaîtront en rouge dans ton planning.',
     cta: 'En attente…',
@@ -115,16 +118,16 @@ const STEPS: Step[] = [
     id: 'leaderboard',
     selector: '[data-tutorial="leaderboard"]',
     kind: 'info',
-    icon: '🏆',
+    icon: <Trophy size={52} style={ICON_STYLE} />,
     title: 'Le classement',
-    body: "Vois où tu te situes face aux autres élèves en XP et en temps de deepwork. Le #1 du chrono porte une couronne 👑. Grimpe !",
+    body: "Vois où tu te situes face aux autres élèves en XP et en temps de deepwork. Le #1 du chrono porte une couronne. Grimpe !",
     cta: 'Top !',
   },
   {
     id: 'profile',
     selector: '[data-tutorial="profile"]',
     kind: 'info',
-    icon: '🧑‍💻',
+    icon: <User size={52} style={ICON_STYLE} />,
     title: 'Ton profil',
     body: "Clique sur ton avatar pour accéder à ton profil : statistiques, progression, et personnalisation de l'avatar.",
     cta: 'OK !',
@@ -133,10 +136,10 @@ const STEPS: Step[] = [
     id: 'completion',
     selector: 'body',
     kind: 'modal',
-    icon: '🎉',
+    icon: <Sparkles size={52} style={ICON_STYLE} />,
     title: 'Tutoriel terminé !',
     body: "Tu es prêt. Lance-toi : planifie, travaille en deepwork, valide tes quêtes. Dans 3 mois tu regarderas ta moyenne et tu souriras.",
-    cta: 'Jouer ! 🚀',
+    cta: 'Jouer !',
   },
 ];
 
@@ -421,7 +424,7 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
 
               {/* Content */}
               <div className="flex items-start gap-3 mb-4">
-                <span className="text-2xl leading-none mt-0.5 shrink-0">{step.icon}</span>
+                <span className="leading-none mt-0.5 shrink-0 [&>svg]:!w-6 [&>svg]:!h-6">{step.icon}</span>
                 <div>
                   <h3 className="font-display font-bold text-[14px] leading-snug mb-1">{step.title}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">{step.body}</p>
@@ -483,7 +486,7 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
                  }}>
 
               {/* Icon */}
-              <div className="text-5xl mb-4 leading-none">{step.icon}</div>
+              <div className="mb-4 flex items-center justify-center">{step.icon}</div>
 
               <h2 className="font-display font-black text-xl mb-3 leading-tight">{step.title}</h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs mx-auto">{step.body}</p>
@@ -492,7 +495,7 @@ export function TutorialOverlay({ userId, onXpGain, onDone }: Props) {
               {step.id === 'completion' && (
                 <div className="mb-5 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold"
                      style={{ background: 'hsl(43 90% 50% / 0.15)', color: 'hsl(43 90% 55%)', border: '1px solid hsl(43 90% 50% / 0.3)' }}>
-                  ⚡ +15 XP débloqués
+                  <Zap size={13} className="inline mr-1" /> +15 XP débloqués
                 </div>
               )}
 

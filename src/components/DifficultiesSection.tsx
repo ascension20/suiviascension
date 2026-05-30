@@ -22,9 +22,9 @@ interface Difficulty {
 }
 
 const SEVERITY_LABELS: Record<Severity, { label: string; color: string }> = {
-  blocking: { label: '🔴 Bloquant', color: 'hsl(0 84% 60%)' },
-  fragile: { label: '🟡 Fragile', color: 'hsl(38 92% 55%)' },
-  ok: { label: '🟢 Gérable', color: 'hsl(142 71% 45%)' },
+  blocking: { label: 'Bloquant', color: 'hsl(0 84% 60%)' },
+  fragile: { label: 'Fragile', color: 'hsl(38 92% 55%)' },
+  ok: { label: 'Gérable', color: 'hsl(142 71% 45%)' },
 };
 
 export function DifficultiesSection({ userId }: { userId: string }) {
@@ -164,11 +164,11 @@ export function DifficultiesSection({ userId }: { userId: string }) {
 
       <div className="space-y-2 max-h-[320px] overflow-y-auto">
         {difficulties.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-3">Aucune difficulté signalée 💪</p>
+          <p className="text-muted-foreground text-sm text-center py-3">Aucune difficulté signalée</p>
         ) : (
           <>
             {unresolved.length === 0 && resolved.length > 0 && (
-              <p className="text-muted-foreground text-sm text-center py-2">Toutes les difficultés sont résolues 🎉</p>
+              <p className="text-muted-foreground text-sm text-center py-2">Toutes les difficultés sont résolues</p>
             )}
             {unresolved.map(d => <DifficultyCard key={d.id} d={d} />)}
 

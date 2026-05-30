@@ -106,9 +106,9 @@ export const SLOT_LABELS: Record<AccessorySlot, string> = {
 };
 
 export const SLOT_EMOJIS: Record<AccessorySlot, string> = {
-  hat: '🎩',
-  glasses: '👓',
-  outfit: '👕',
-  background: '🌆',
-  badge: '🏅',
+  hat: '◈',
+  glasses: '◆',
+  outfit: '✦',
+  background: '★',
+  badge: '✸',
 };

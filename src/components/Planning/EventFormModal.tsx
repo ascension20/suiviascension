@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlanningEvent, EventType } from '@/lib/planning-utils';
 import { toExamSubject } from '@/lib/planning-utils';
 import { SUBJECTS } from '@/lib/game-utils';
-import { Trash2 } from 'lucide-react';
+import { Trash2, BookOpen, Swords, FileText } from 'lucide-react';
 
 interface Props {
   userId: string;
@@ -69,7 +69,7 @@ export function EventFormModal({ userId, event, defaultType, onClose, onSaved }:
     onSaved();
   };
 
-  const typeBtn = (t: EventType, label: string, cls: string) => (
+  const typeBtn = (t: EventType, label: React.ReactNode, cls: string) => (
     <button
       type="button"
       onClick={() => setType(t)}
@@ -89,9 +89,9 @@ export function EventFormModal({ userId, event, defaultType, onClose, onSaved }:
           <div>
             <label className="text-xs text-muted-foreground mb-1.5 block">Type</label>
             <div className="flex gap-2">
-              {typeBtn('course', '📘 Cours', 'border-amber-500 bg-amber-500/15 text-amber-300')}
-              {typeBtn('quest', '⚔️ Quête', 'border-violet-500 bg-violet-500/15 text-violet-300')}
-              {typeBtn('ds', '📝 DS', 'border-rose-500 bg-rose-500/15 text-rose-300')}
+              {typeBtn('course', <><BookOpen size={12} className="inline mr-1" />Cours</>, 'border-amber-500 bg-amber-500/15 text-amber-300')}
+              {typeBtn('quest', <><Swords size={12} className="inline mr-1" />Quête</>, 'border-violet-500 bg-violet-500/15 text-violet-300')}
+              {typeBtn('ds', <><FileText size={12} className="inline mr-1" />DS</>, 'border-rose-500 bg-rose-500/15 text-rose-300')}
             </div>
           </div>
           <div>

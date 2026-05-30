@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, Unlock } from 'lucide-react';
 import type { Accessory } from '@/lib/avatar/types';
 import { RARITY_COLORS } from '@/lib/avatar/types';
 import { buildAvataaarsUrl } from './Avatar';
@@ -97,7 +97,7 @@ export function UnlockToast({ unlocks, onDismiss }: UnlockToastProps) {
                 className="text-[10px] font-bold tracking-widest uppercase mb-0.5"
                 style={{ color: rc.text }}
               >
-                🔓 Nouveau déblocage !
+                <span className="flex items-center gap-1"><Unlock size={9} /> Nouveau déblocage !</span>
               </p>
               <p className="font-display font-black text-base leading-tight text-foreground truncate">
                 {first.label}

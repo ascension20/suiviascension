@@ -120,7 +120,7 @@ export function DSReminderModal({ userId, onAddDs }: { userId: string; onAddDs?:
                 onClick={() => setOpen(false)}
                 className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all"
               >
-                C'est noté — on y va ! 💪
+                C'est noté — on y va !
               </button>
               <button
                 onClick={() => { setOpen(false); onAddDs?.(); }}

@@ -324,7 +324,7 @@ export default function ProfilePage() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">Lance ta première session ou valide une quête ! 🧠</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Lance ta première session ou valide une quête !</p>
           )}
         </motion.div>
 

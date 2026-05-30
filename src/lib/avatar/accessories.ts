@@ -230,7 +230,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'La connaissance avant tout.',
     condition: { type: 'free', label: 'Disponible dès le début' },
     rarity: 'common',
-    badgeSymbol: '📖',
+    badgeSymbol: '✦',
   },
   {
     id: 'badge_flame',
@@ -239,7 +239,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'Pour ceux qui ne s\'arrêtent jamais.',
     condition: { type: 'streak', value: 7, label: 'Streak 7 jours' },
     rarity: 'rare',
-    badgeSymbol: '🔥',
+    badgeSymbol: '◈',
   },
   {
     id: 'badge_brain',
@@ -248,7 +248,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'La maîtrise intellectuelle totale.',
     condition: { type: 'xp', value: 10000, label: '10 000 XP' },
     rarity: 'epic',
-    badgeSymbol: '🧠',
+    badgeSymbol: '◆',
   },
   {
     id: 'badge_champion',
@@ -257,7 +257,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'Cent jours de discipline. Indestructible.',
     condition: { type: 'streak', value: 100, label: 'Streak 100 jours' },
     rarity: 'legendary',
-    badgeSymbol: '🏆',
+    badgeSymbol: '★',
   },
   {
     id: 'badge_elite',
@@ -266,7 +266,7 @@ export const ACCESSORIES: Accessory[] = [
     description: 'Le sommet de l\'ascension.',
     condition: { type: 'level', value: 50, label: 'Niveau 50' },
     rarity: 'legendary',
-    badgeSymbol: '⚡',
+    badgeSymbol: '✸',
   },
 ];
 

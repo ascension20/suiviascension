@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Rocket } from 'lucide-react';
+import { Rocket, Target } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { SUBJECTS } from '@/lib/game-utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -85,7 +85,9 @@ export function DailyTaskGate({ userId, onComplete }: DailyTaskGateProps) {
           transition={{ delay: 0.1 }}
           className="text-center mb-8"
         >
-          <div className="text-5xl mb-4">🎯</div>
+          <div className="mb-4 flex items-center justify-center">
+            <Target size={56} style={{ color: 'hsl(43 90% 52%)', filter: 'drop-shadow(0 0 14px hsl(43 90% 50% / 0.5))' }} />
+          </div>
           <h1 className="font-display text-2xl font-bold mb-2">Tes 3 tâches du jour</h1>
           <p className="text-muted-foreground">Définis tes 3 tâches avant de commencer</p>
         </motion.div>

@@ -162,7 +162,7 @@ export function WeeklyPlanner({ userId }: { userId: string }) {
       <div className="space-y-2 max-h-[280px] overflow-y-auto">
         {daySlots.length === 0 ? (
           <p className="text-muted-foreground text-sm text-center py-3">
-            Rien de prévu {DAY_LABELS[selectedDay].toLowerCase()} 📅
+            Rien de prévu {DAY_LABELS[selectedDay].toLowerCase()}
           </p>
         ) : (
           <>

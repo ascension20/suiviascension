@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, Check, ListTodo } from 'lucide-react';
+import { Plus, X, Check, ListTodo, Target, PenLine } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Subject, SUBJECTS, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,8 @@ interface StudentTask {
 
 const DIFF_LABELS: Record<string, string> = { easy: '★☆☆', medium: '★★☆', hard: '★★★' };
 const DIFF_XP: Record<string, number> = { easy: 35, medium: 70, hard: 105 };
-const PRIORITY_LABELS: Record<string, string> = { low: '🟢 Imp. faible', medium: '🟡 Imp. moyenne', high: '🔴 Imp. haute' };
+const PRIORITY_LABELS: Record<string, string> = { low: '● Imp. faible', medium: '● Imp. moyenne', high: '● Imp. haute' };
+const PRIORITY_DOT_COLORS: Record<string, string> = { low: 'hsl(142 71% 45%)', medium: 'hsl(43 90% 52%)', high: 'hsl(0 84% 60%)' };
 const PRIORITY_COLORS: Record<string, string> = { low: 'text-green-400', medium: 'text-yellow-400', high: 'text-red-400' };
 
 interface Props {
@@ -144,9 +145,9 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
                 <Select value={priority} onValueChange={v => setPriority(v as 'low' | 'medium' | 'high')}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Importance" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">🟢 Importance faible</SelectItem>
-                    <SelectItem value="medium">🟡 Importance moyenne</SelectItem>
-                    <SelectItem value="high">🔴 Importance haute</SelectItem>
+                    <SelectItem value="low">Importance faible</SelectItem>
+                    <SelectItem value="medium">Importance moyenne</SelectItem>
+                    <SelectItem value="high">Importance haute</SelectItem>
                   </SelectContent>
                 </Select>
                 <Input
@@ -171,7 +172,9 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
         {/* Daily tasks section */}
         {dailyTasks.length > 0 && (
           <div className="mb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5">🎯 Tâches du jour</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5 flex items-center gap-1">
+              <Target size={9} style={{ color: 'hsl(43 90% 52%)' }} /> Tâches du jour
+            </p>
             {dailyTasks.map(dt => (
               <div key={dt.id} className={`flex items-center gap-3 p-2.5 rounded-lg border border-border mb-1.5 ${dt.completed ? 'opacity-50' : ''}`}>
                 {dt.completed ? (
@@ -189,11 +192,13 @@ export function PersonalTasks({ userId, onXpGain }: Props) {
 
         {/* Separator */}
         {dailyTasks.length > 0 && (activeTasks.length > 0 || completedTasks.length > 0) && (
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5 mt-3">✏️ Tâches perso</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5 mt-3 flex items-center gap-1">
+            <PenLine size={9} style={{ color: 'hsl(270 50% 62%)' }} /> Tâches perso
+          </p>
         )}
 
         {activeTasks.length === 0 && completedTasks.length === 0 && dailyTasks.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-3">Aucune tâche ✏️</p>
+          <p className="text-muted-foreground text-sm text-center py-3">Aucune tâche perso</p>
         ) : (
           <>
             {activeTasks.map(task => (

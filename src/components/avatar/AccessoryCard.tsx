@@ -106,13 +106,13 @@ export function AccessoryCard({
             className="w-full h-full rounded-lg flex items-center justify-center"
             style={{ background: `#${hex}` }}
           >
-            <span className="text-xl">{
-              hex === '0d1117' ? '🌑' :
-              hex === '1a2332' ? '🏫' :
-              hex === '2d1500' ? '📚' :
-              hex === '1a0a2e' ? '🏰' :
-              hex === '3d2000' ? '🏛️' :
-              hex === '0a1628' ? '🗼' : '🌌'
+            <span className="text-[8px] font-bold tracking-widest uppercase opacity-60" style={{ color: '#fff' }}>{
+              hex === '0d1117' ? 'NUIT' :
+              hex === '1a2332' ? 'ÉCOLE' :
+              hex === '2d1500' ? 'FORGE' :
+              hex === '1a0a2e' ? 'DONJON' :
+              hex === '3d2000' ? 'TEMPLE' :
+              hex === '0a1628' ? 'TOUR' : 'COSMOS'
             }</span>
           </div>
         ) : accessory.badgeSymbol ? (

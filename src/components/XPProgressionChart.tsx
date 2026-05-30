@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -58,7 +58,9 @@ export function XPProgressionChart({ userId, totalXp }: Props) {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
       <div className="flex items-center justify-between mb-3">
-        <h2 className="font-display text-base font-semibold">📈 Progression XP</h2>
+        <h2 className="font-display text-base font-semibold flex items-center gap-2">
+          <BarChart3 size={15} style={{ color: 'hsl(43 90% 52%)' }} /> Progression XP
+        </h2>
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">7j :</span>
           <span className="text-sm font-bold tabular-nums text-amber-400">+{weekXp} XP</span>
@@ -73,7 +75,7 @@ export function XPProgressionChart({ userId, totalXp }: Props) {
           <div className="flex items-center justify-center h-full text-xs text-muted-foreground">Chargement…</div>
         ) : !hasData ? (
           <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
-            Lance ta première session deepwork pour voir ta progression 🚀
+            Lance ta première session deepwork pour voir ta progression
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">

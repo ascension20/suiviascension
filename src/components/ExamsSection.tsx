@@ -18,10 +18,10 @@ interface Exam {
   custom_subject: string | null;
 }
 
-const STRESS_LABELS: Record<StressLevel, { label: string; emoji: string }> = {
-  stressed: { label: 'Stressé', emoji: '😰' },
-  neutral:  { label: 'Neutre',  emoji: '😐' },
-  calm:     { label: 'Serein',  emoji: '😊' },
+const STRESS_LABELS: Record<StressLevel, { label: string; color: string }> = {
+  stressed: { label: 'Stressé', color: 'hsl(0 84% 60%)' },
+  neutral:  { label: 'Neutre',  color: 'hsl(43 90% 52%)' },
+  calm:     { label: 'Serein',  color: 'hsl(142 71% 45%)' },
 };
 
 const COEFFS = [0.5, 1, 2, 3, 4, 5, 6, 8];
@@ -116,7 +116,7 @@ export function ExamsSection({ userId }: { userId: string }) {
 
       <div className="space-y-2 max-h-[300px] overflow-y-auto">
         {upcoming.length === 0 && past.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-3">Aucun DS déclaré 📝</p>
+          <p className="text-muted-foreground text-sm text-center py-3">Aucun DS déclaré</p>
         ) : (
           <>
             {/* ── Upcoming ── */}
@@ -146,7 +146,9 @@ export function ExamsSection({ userId }: { userId: string }) {
                     <span className="text-xs text-muted-foreground">
                       {daysUntil === 0 ? "Aujourd'hui !" : daysUntil === 1 ? 'Demain' : `Dans ${daysUntil}j`}
                     </span>
-                    <span className="text-xs">{STRESS_LABELS[exam.stress_level]?.emoji ?? '😐'}</span>
+                    <span className="text-xs font-medium" style={{ color: STRESS_LABELS[exam.stress_level]?.color ?? 'hsl(43 90% 52%)' }}>
+                      ◆ {STRESS_LABELS[exam.stress_level]?.label ?? 'Neutre'}
+                    </span>
                     {exam.chapters && <span className="text-xs text-muted-foreground truncate">· {exam.chapters}</span>}
                   </div>
                 </div>
@@ -230,7 +232,7 @@ export function ExamsSection({ userId }: { userId: string }) {
                             <span className="text-xs font-bold tabular-nums" style={{ color: gradeColor(exam.grade) }}>
                               {exam.grade}/20
                             </span>
-                            <span className="text-[9px] text-muted-foreground opacity-0 group-hover/grade:opacity-100 transition-opacity">✏</span>
+                            <span className="text-[9px] text-muted-foreground opacity-0 group-hover/grade:opacity-100 transition-opacity">✦</span>
                           </button>
                         ) : (
                           /* ── note manquante → clic pour saisir ── */
@@ -252,7 +254,7 @@ export function ExamsSection({ userId }: { userId: string }) {
                         <div className="mt-1.5 ml-3.5">
                           <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
                             <MessageCircle size={10} />
-                            Pense à m'envoyer ta note sur WhatsApp 📱
+                            Pense à m'envoyer ta note sur WhatsApp
                           </span>
                         </div>
                       )}

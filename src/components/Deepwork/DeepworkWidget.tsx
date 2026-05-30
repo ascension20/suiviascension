@@ -8,9 +8,9 @@ function XpRate({ minutes }: { minutes: number }) {
   const tier = minutes >= 90 ? 4 : minutes >= 30 ? 3 : minutes >= 15 ? 2 : 1;
   const config = [
     { label: '1 XP/min',                    color: 'hsl(43 90% 55%)' },
-    { label: '2 XP/min · Bonus vitesse ⚡', color: 'hsl(38 90% 60%)' },
-    { label: '3 XP/min · Mode turbo 🔥',   color: 'hsl(16 100% 62%)' },
-    { label: '4 XP/min · Mode ULTRA 🚀',   color: 'hsl(280 90% 70%)' },
+    { label: '2 XP/min · Bonus vitesse ◆', color: 'hsl(38 90% 60%)' },
+    { label: '3 XP/min · Mode turbo ✦',    color: 'hsl(16 100% 62%)' },
+    { label: '4 XP/min · Mode ULTRA ◈',    color: 'hsl(280 90% 70%)' },
   ][tier - 1];
   return (
     <span className="text-xs font-semibold" style={{ color: config.color }}>
@@ -28,19 +28,19 @@ export function TierProgressBar({ elapsedSec }: { elapsedSec: number }) {
   if (isMax) {
     start = 90; end = 90;
     color       = 'hsl(280 90% 70%)';
-    statusLabel = '🚀 Palier MAX — 4 XP/min';
+    statusLabel = '◈ Palier MAX — 4 XP/min';
   } else if (minutes >= 30) {
     start = 30; end = 90;
     color       = 'hsl(16 100% 62%)';
-    statusLabel = `🔥 Palier 3 — 🚀 dans ${Math.ceil(90 - minutes)} min`;
+    statusLabel = `✦ Palier 3 — ◈ dans ${Math.ceil(90 - minutes)} min`;
   } else if (minutes >= 15) {
     start = 15; end = 30;
     color       = 'hsl(38 90% 58%)';
-    statusLabel = `⚡ Palier 2 — 🔥 dans ${Math.ceil(30 - minutes)} min`;
+    statusLabel = `◆ Palier 2 — ✦ dans ${Math.ceil(30 - minutes)} min`;
   } else {
     start = 0; end = 15;
     color       = 'hsl(43 90% 52%)';
-    statusLabel = `Palier 1 — ⚡ dans ${Math.ceil(15 - minutes)} min`;
+    statusLabel = `Palier 1 — ◆ dans ${Math.ceil(15 - minutes)} min`;
   }
 
   const pct = isMax ? 100 : ((minutes - start) / (end - start)) * 100;

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Target, Zap, Lock } from 'lucide-react';
+import { Target, Zap, Lock, Trophy, Flame } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getWeekStart, getWeekDays, formatDateISO } from '@/lib/planning-utils';
 
@@ -272,7 +272,9 @@ export function WeeklyDeepworkGoal({ userId, onXpGain }: Props) {
       {/* Motivational message */}
       <p className="text-[11px] text-center leading-snug">
         {allDone ? (
-          <span className="font-semibold text-emerald-400">Tous les objectifs atteints 🏆</span>
+          <span className="font-semibold text-emerald-400 flex items-center gap-1">
+            <Trophy size={12} /> Tous les objectifs atteints
+          </span>
         ) : nextTier ? (
           <span className="text-muted-foreground">
             Encore{' '}
@@ -289,10 +291,12 @@ export function WeeklyDeepworkGoal({ userId, onXpGain }: Props) {
             >
               +{nextTier.xp} XP
             </span>
-            {' '}⚡
+            {' '}<Zap size={9} style={{ display: 'inline', verticalAlign: 'middle' }} />
           </span>
         ) : (
-          <span className="text-muted-foreground">Lance une session pour démarrer 🔥</span>
+          <span className="text-muted-foreground flex items-center justify-center gap-1">
+            <Flame size={10} style={{ color: 'hsl(25 90% 55%)' }} /> Lance une session pour démarrer
+          </span>
         )}
       </p>
     </div>

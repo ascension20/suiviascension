@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, ChevronLeft, ChevronRight, Check, Loader2, X } from 'lucide-react';
+import { Eye, EyeOff, ChevronLeft, ChevronRight, Check, Loader2, X, Dumbbell, Music2, Palette, Drama, BookOpen, Laptop, Gamepad2, Plane, Heart, TrendingUp, GraduationCap, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { fetchICal, parseICal, icalToPlanningEvent } from '@/lib/ical-parser';
@@ -52,17 +52,17 @@ const OPTIONS_LIST = [
   'Chef-d\'œuvre',
 ];
 
-const ACTIVITIES = [
-  { key: 'sport', icon: '🏃', label: 'Sport' },
-  { key: 'music', icon: '🎵', label: 'Musique' },
-  { key: 'art', icon: '🎨', label: 'Art / Dessin' },
-  { key: 'theatre', icon: '🎭', label: 'Théâtre' },
-  { key: 'reading', icon: '📚', label: 'Lecture' },
-  { key: 'coding', icon: '💻', label: 'Coding' },
-  { key: 'gaming', icon: '🎮', label: 'Jeux vidéo' },
-  { key: 'travel', icon: '✈️', label: 'Voyages' },
-  { key: 'volunteer', icon: '🤝', label: 'Bénévolat' },
-  { key: 'other', icon: '📈', label: 'Autre' },
+const ACTIVITIES: { key: string; icon: React.ReactNode; label: string }[] = [
+  { key: 'sport',     icon: <Dumbbell  size={16} />, label: 'Sport'       },
+  { key: 'music',     icon: <Music2    size={16} />, label: 'Musique'     },
+  { key: 'art',       icon: <Palette   size={16} />, label: 'Art / Dessin'},
+  { key: 'theatre',   icon: <Drama     size={16} />, label: 'Théâtre'     },
+  { key: 'reading',   icon: <BookOpen  size={16} />, label: 'Lecture'     },
+  { key: 'coding',    icon: <Laptop    size={16} />, label: 'Coding'      },
+  { key: 'gaming',    icon: <Gamepad2  size={16} />, label: 'Jeux vidéo' },
+  { key: 'travel',    icon: <Plane     size={16} />, label: 'Voyages'     },
+  { key: 'volunteer', icon: <Heart     size={16} />, label: 'Bénévolat'  },
+  { key: 'other',     icon: <TrendingUp size={16} />, label: 'Autre'     },
 ];
 
 const BASE_SUBJECTS_BY_LEVEL: Record<Level, string[]> = {
@@ -203,7 +203,7 @@ export default function OnboardingPage() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/`,
-        data: { pseudo: `${firstName} ${lastName}`, avatar: '🐺' },
+        data: { pseudo: `${firstName} ${lastName}`, avatar: 'wolf' },
       },
     });
 
@@ -469,7 +469,7 @@ export default function OnboardingPage() {
                   {ACTIVITIES.map(a => (
                     <button key={a.key} onClick={() => toggleArr(activities, a.key, setActivities)}
                       className={`p-3 rounded-lg border flex flex-col items-center gap-1 transition ${activities.includes(a.key) ? 'border-amber-500 bg-amber-500/10' : 'border-border bg-secondary'}`}>
-                      <span className="text-2xl">{a.icon}</span>
+                      <span className="flex items-center justify-center">{a.icon}</span>
                       <span className="text-xs font-medium">{a.label}</span>
                     </button>
                   ))}
@@ -483,9 +483,9 @@ export default function OnboardingPage() {
 
             {step === 5 && (
               <>
-                <h1 className="font-display text-2xl font-bold mb-1">Emploi du temps 📅</h1>
+                <h1 className="font-display text-2xl font-bold mb-1">Emploi du temps</h1>
                 <p className="text-muted-foreground text-sm mb-1">Colle ton lien iCal pour synchroniser ton EDT (Pronote, EcoleDirecte, etc.).</p>
-                <p className="text-xs text-amber-400/80 mb-4">🎓 En cas de problème pour trouver ton lien, demande de l'aide à ton tuteur.</p>
+                <p className="text-xs text-amber-400/80 mb-4">En cas de problème pour trouver ton lien, demande de l'aide à ton tuteur.</p>
 
                 {!icalSkipped ? (
                   <>
@@ -506,12 +506,12 @@ export default function OnboardingPage() {
                       <p className="text-xs text-emerald-400">✓ Lien valide — ton calendrier sera importé automatiquement.</p>
                     )}
                     {icalStatus === 'error' && (
-                      <p className="text-xs text-destructive">❌ Lien invalide ou format non reconnu. Vérifie l'URL.</p>
+                      <p className="text-xs text-destructive">Lien invalide ou format non reconnu. Vérifie l'URL.</p>
                     )}
                     {icalStatus === 'unverified' && (
                       <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 mt-1">
                         <p className="text-xs text-amber-300">
-                          ⚠️ Impossible de vérifier depuis le navigateur — les serveurs Pronote/EcoleDirecte bloquent les requêtes directes, c'est normal. Ton lien est enregistré et sera importé automatiquement.
+                          Impossible de vérifier depuis le navigateur — les serveurs Pronote/EcoleDirecte bloquent les requêtes directes, c'est normal. Ton lien est enregistré et sera importé automatiquement.
                         </p>
                       </div>
                     )}
@@ -600,7 +600,7 @@ export default function OnboardingPage() {
                     , et réaliser tes projets scolaires.
                   </p>
                   <p className="font-semibold text-foreground">
-                    Dans 3 mois, tu vas regarder ta moyenne et sourire. Dans 6 mois, tu ne te reconnaîtras plus. Allez, on y va. 🚀
+                    Dans 3 mois, tu vas regarder ta moyenne et sourire. Dans 6 mois, tu ne te reconnaîtras plus. Allez, on y va.
                   </p>
                 </div>
 
@@ -615,7 +615,7 @@ export default function OnboardingPage() {
                 </button>
                 <button onClick={finalize} disabled={!engagement || finalizing}
                   className="w-full mt-4 bg-amber-500 text-white rounded-md py-3 text-sm font-bold hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-2">
-                  {finalizing && <Loader2 size={14} className="animate-spin" />} C'est parti 🚀
+                  {finalizing && <Loader2 size={14} className="animate-spin" />} C'est parti
                 </button>
               </>
             )}

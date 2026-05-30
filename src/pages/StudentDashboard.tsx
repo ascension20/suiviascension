@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, WifiOff, Bell, BellOff, Menu, X, LayoutDashboard, BookOpen, LogOut } from 'lucide-react';
+import { Flame, WifiOff, Bell, BellOff, Menu, X, LayoutDashboard, BookOpen, LogOut, Crown, Trophy, Timer, User } from 'lucide-react';
 import { ResourcesTab } from '@/components/Resources/ResourcesTab';
 import { DeepworkWidget } from '@/components/Deepwork/DeepworkWidget';
 import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
@@ -59,7 +59,7 @@ export default function StudentDashboard() {
     }
     const result = await subscribePush();
     if (result.ok === true) {
-      toast({ title: '🔔 Notifications activées !', description: 'Tu recevras des rappels DS et deepwork sur cet appareil.' });
+      toast({ title: 'Notifications activées !', description: 'Tu recevras des rappels DS et deepwork sur cet appareil.' });
       return;
     }
     const reason = result.reason;
@@ -179,7 +179,7 @@ export default function StudentDashboard() {
             rank:  i + 1,                                  // consecutive ranks
             userId: x.uid,
             pseudo:  profMap[x.uid]?.pseudo ?? 'Élève',
-            avatar:  profMap[x.uid]?.avatar ?? '🐺',
+            avatar:  profMap[x.uid]?.avatar ?? '',
             value:   x.val,
             isCurrentUser: x.uid === user.id,
           }));
@@ -359,11 +359,11 @@ export default function StudentDashboard() {
               >
                 {currentAvatarUrl
                   ? <img src={currentAvatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                  : <span className="w-full h-full flex items-center justify-center text-lg">🐺</span>
+                  : <User size={18} style={{ color: "hsl(220 10% 50%)" }} />
                 }
               </div>
               {weeklyChampion === profile?.pseudo && (
-                <span className="absolute -top-1 -right-1 text-sm champion-glow" title="Premier du classement chrono !">👑</span>
+                <Crown size={14} className="absolute -top-1 -right-1 champion-glow" style={{ color: 'hsl(43 90% 55%)' }} title="Premier du classement chrono !" />
               )}
             </button>
 
@@ -549,7 +549,7 @@ export default function StudentDashboard() {
         {/* ══ ROW 5 : Classements (pleine largeur) ══ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-tutorial="leaderboard">
           <WeeklyLeaderboard
-            title="🏆 Classement XP"
+            title="Classement XP"
             datasets={[
               { label: 'Global',  data: xpGlobal,  unit: 'XP',  emptyLabel: 'Aucun élève' },
               { label: 'Semaine', data: xpWeekly,  unit: 'XP',  emptyLabel: 'Aucun deepwork cette semaine' },
@@ -557,7 +557,7 @@ export default function StudentDashboard() {
             ]}
           />
           <WeeklyLeaderboard
-            title="⏱ Classement Chrono"
+            title="Classement Chrono"
             weeklyChampion={weeklyChampion}
             datasets={[
               { label: 'Global',  data: chronoGlobal, unit: 'min', emptyLabel: 'Aucune session' },

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Flame, Brain, Star, Trophy, Swords } from 'lucide-react';
+import { ArrowLeft, Flame, Brain, Star, Trophy, Swords, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { calculateLevel, getTitleForLevel } from '@/lib/game-utils';
@@ -221,7 +221,7 @@ export default function PublicProfilePage() {
                 >
                   {avatarUrl
                     ? <img src={avatarUrl} alt={profile.pseudo} className="w-full h-full object-cover" />
-                    : <span className="w-full h-full flex items-center justify-center text-3xl">🐺</span>
+                    : <span className="w-full h-full flex items-center justify-center"><User size={32} style={{ color: 'hsl(220 10% 50%)' }} /></span>
                   }
                 </div>
                 {/* LVL badge */}
