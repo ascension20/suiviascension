@@ -1221,49 +1221,108 @@ export default function CoachDashboard() {
               ))
           )}
 
-          {/* ── DS (unified: planning events + declared exams) ── */}
+          {/* ── DS — liste fusionnée (planning + exams, dédupliqué) ── */}
           {selectedTab === 'exams' && (() => {
-            // ── Section A: DS events from planning calendar ──────────────────
-            const allDsEvents = data.planning
-              .filter(p => p.type === 'ds')
-              .sort((a, b) => a.event_date.localeCompare(b.event_date) || a.start_time.localeCompare(b.start_time));
-            const upcomingDs = allDsEvents.filter(p => p.event_date >= todayStr);
-            const pastDs     = allDsEvents.filter(p => p.event_date < todayStr);
+            // Build a single merged list so the same DS never appears twice.
+            // Strategy:
+            //  1. Start with all exams (grade-tracking source).
+            //  2. For each planning DS event, check if an exam already covers it
+            //     (same subject, date within ±3 days). If yes → enrich the exam
+            //     entry with planning time info. If no → add as a planning-only entry.
+            // Result: one card per real DS, combining data from both sources.
 
-            // Match a planning DS event to a declared exam (same subject, within ±3 days)
-            const matchedExam = (ev: PlanningEvent): StudentExam | undefined =>
-              data.exams.find(e =>
-                e.subject.toLowerCase() === (ev.subject ?? '').toLowerCase() &&
-                Math.abs(new Date(e.exam_date + 'T12:00:00').getTime() - new Date(ev.event_date + 'T12:00:00').getTime()) <= 3 * 86_400_000
-              );
+            type MergedEntry = {
+              key:        string;
+              date:       string;          // YYYY-MM-DD (canonical sort key)
+              subject:    string;
+              startTime?: string;
+              endTime?:   string;
+              chapters?:  string | null;
+              grade?:     number | null;
+              gradeReceived?: boolean;
+              photoUrl?:  string | null;
+              examId?:    string;
+            };
 
-            const DsEventRow = ({ ev, dimmed = false }: { ev: PlanningEvent; dimmed?: boolean }) => {
-              const matched = matchedExam(ev);
-              const daysUntil = Math.round(
-                (new Date(ev.event_date + 'T12:00:00').getTime() - now.getTime()) / 86_400_000
+            const matched = new Set<string>(); // exam IDs already paired
+
+            // Pass 1: exams enriched with planning time when a match exists
+            const fromExams: MergedEntry[] = data.exams.map(e => {
+              const pair = data.planning.find(p =>
+                p.type === 'ds' &&
+                p.subject?.toLowerCase() === e.subject.toLowerCase() &&
+                Math.abs(
+                  new Date(p.event_date + 'T12:00:00').getTime() -
+                  new Date(e.exam_date  + 'T12:00:00').getTime()
+                ) <= 3 * 86_400_000
               );
-              const isUrgent = !dimmed && daysUntil >= 0 && daysUntil <= 5;
+              if (pair) matched.add(pair.id);
+              return {
+                key:          e.id,
+                date:         e.exam_date,
+                subject:      e.subject,
+                startTime:    pair?.start_time,
+                endTime:      pair?.end_time,
+                chapters:     e.chapters,
+                grade:        e.grade,
+                gradeReceived: e.grade_received,
+                photoUrl:     e.photo_url,
+                examId:       e.id,
+              };
+            });
+
+            // Pass 2: planning-only DS events (no corresponding exam)
+            const fromPlanning: MergedEntry[] = data.planning
+              .filter(p => p.type === 'ds' && !matched.has(p.id))
+              .map(p => ({
+                key:       p.id,
+                date:      p.event_date,
+                subject:   p.subject ?? p.title,
+                startTime: p.start_time,
+                endTime:   p.end_time,
+              }));
+
+            const allEntries = [...fromExams, ...fromPlanning]
+              .sort((a, b) => a.date.localeCompare(b.date));
+
+            const upcoming = allEntries.filter(e => e.date >= todayStr);
+            const past     = allEntries.filter(e => e.date <  todayStr);
+
+            if (allEntries.length === 0) {
+              return <p className="text-xs text-muted-foreground text-center py-8">Aucun DS déclaré</p>;
+            }
+
+            const DsCard = ({ entry, dimmed = false }: { entry: MergedEntry; dimmed?: boolean }) => {
+              const daysUntil     = Math.ceil(
+                (new Date(entry.date + 'T12:00:00').getTime() - now.getTime()) / 86_400_000
+              );
+              const isPast        = daysUntil < 0;
+              const isMissing     = isPast && entry.grade == null && !entry.gradeReceived;
+              const isOverdue2Wks = isPast && entry.grade == null && !entry.gradeReceived && daysUntil <= -14;
+              const isUrgent      = !dimmed && !isPast && daysUntil <= 5;
+
               return (
-                <div className={`p-3 rounded-xl border text-xs ${dimmed ? 'opacity-50' : ''}`}
+                <div className={`p-3.5 rounded-xl border text-xs ${dimmed ? 'opacity-50' : ''}`}
                   style={{
-                    background:   isUrgent ? 'hsl(0 84% 55% / 0.05)' : 'hsl(222 22% 9%)',
-                    borderColor:  isUrgent ? 'hsl(0 84% 55% / 0.45)'  : 'hsl(222 16% 16%)',
-                    boxShadow:    isUrgent ? '0 0 8px hsl(0 84% 55% / 0.07)' : 'none',
+                    background:  isUrgent ? 'hsl(0 84% 55% / 0.05)' : isOverdue2Wks ? 'hsl(38 92% 55% / 0.05)' : 'hsl(222 22% 9%)',
+                    borderColor: isOverdue2Wks ? 'hsl(38 92% 55% / 0.55)'
+                               : isMissing    ? 'hsl(38 92% 55% / 0.3)'
+                               : isUrgent     ? 'hsl(0 84% 55% / 0.45)'
+                               : 'hsl(222 16% 16%)',
+                    boxShadow:   isUrgent ? '0 0 10px hsl(0 84% 55% / 0.08)'
+                               : isOverdue2Wks ? '0 0 12px hsl(38 92% 55% / 0.12)' : 'none',
                   }}>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'hsl(0 84% 60%)' }} />
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0"
+                      style={{ background: `hsl(var(${SUBJECT_CSS_VAR[entry.subject as Subject] || '--muted'}))` }} />
                     <span className="font-bold" style={{ color: isUrgent ? 'hsl(0 84% 72%)' : undefined }}>
-                      {ev.subject ?? ev.title}
+                      {entry.subject}
                     </span>
-                    {ev.subject && ev.title !== ev.subject && (
-                      <span className="text-muted-foreground truncate">{ev.title}</span>
-                    )}
                     <span className="text-muted-foreground ml-auto shrink-0">
-                      {new Date(ev.event_date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
-                      {' · '}{ev.start_time.slice(0, 5)}
-                      {ev.end_time && '–' + ev.end_time.slice(0, 5)}
+                      {new Date(entry.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                      {entry.startTime && ` · ${entry.startTime.slice(0, 5)}${entry.endTime ? '–' + entry.endTime.slice(0, 5) : ''}`}
                     </span>
-                    {!dimmed && daysUntil >= 0 && (
+                    {!isPast && !dimmed && (
                       <span className="px-1.5 py-0.5 rounded font-bold text-[9px] shrink-0" style={{
                         background: isUrgent ? 'hsl(0 84% 55% / 0.15)' : 'hsl(222 22% 14%)',
                         color:      isUrgent ? 'hsl(0 84% 68%)'        : 'hsl(220 10% 55%)',
@@ -1272,62 +1331,29 @@ export default function CoachDashboard() {
                         {daysUntil === 0 ? "Aujourd'hui !" : daysUntil === 1 ? 'Demain !' : `J-${daysUntil}`}
                       </span>
                     )}
-                    {matched?.grade != null && (
+                    {entry.grade != null && (
                       <span className="font-display font-bold shrink-0"
-                        style={{ color: matched.grade >= 14 ? 'hsl(142 71% 50%)' : matched.grade >= 10 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' }}>
-                        {matched.grade}/20
+                        style={{ color: entry.grade >= 14 ? 'hsl(142 71% 50%)' : entry.grade >= 10 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' }}>
+                        {entry.grade}/20
                       </span>
                     )}
                   </div>
-                </div>
-              );
-            };
 
-            // ── Section B: declared exams (grade tracking) ───────────────────
-            const ExamRow = ({ e }: { e: StudentExam }) => {
-              const daysUntil      = Math.ceil((new Date(e.exam_date + 'T12:00:00').getTime() - now.getTime()) / 86_400_000);
-              const isPast         = daysUntil < 0;
-              const isMissing      = isPast && e.grade === null && !e.grade_received;
-              const isOverdue2Wks  = isPast && e.grade === null && !e.grade_received && daysUntil <= -14;
-              return (
-                <div className={`p-3.5 rounded-xl border text-xs ${isPast && !isMissing ? 'opacity-55' : ''}`}
-                  style={{
-                    background:   !isPast && daysUntil <= 5 ? 'hsl(0 84% 55% / 0.05)' : isOverdue2Wks ? 'hsl(38 92% 55% / 0.05)' : 'hsl(222 22% 9%)',
-                    borderColor:  isOverdue2Wks ? 'hsl(38 92% 55% / 0.55)' : isMissing ? 'hsl(38 92% 55% / 0.3)' : !isPast && daysUntil <= 5 ? 'hsl(0 84% 55% / 0.45)' : 'hsl(222 16% 16%)',
-                    boxShadow:    !isPast && daysUntil <= 5 ? '0 0 10px hsl(0 84% 55% / 0.08)' : isOverdue2Wks ? '0 0 12px hsl(38 92% 55% / 0.12)' : 'none',
-                  }}>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `hsl(var(${SUBJECT_CSS_VAR[e.subject as Subject] || '--muted'}))` }} />
-                    <span className="font-bold" style={{ color: !isPast && daysUntil <= 5 ? 'hsl(0 84% 72%)' : undefined }}>{e.subject}</span>
-                    <span className="text-muted-foreground ml-auto">
-                      {new Date(e.exam_date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
-                    </span>
-                    {!isPast && (
-                      <span className="px-1.5 py-0.5 rounded font-bold text-[9px]" style={{
-                        background: daysUntil <= 5 ? 'hsl(0 84% 55% / 0.15)' : 'hsl(222 22% 14%)',
-                        color:      daysUntil <= 5 ? 'hsl(0 84% 68%)'        : 'hsl(220 10% 55%)',
-                        border:     daysUntil <= 5 ? '1px solid hsl(0 84% 55% / 0.25)' : '1px solid transparent',
-                      }}>
-                        {daysUntil === 0 ? "Aujourd'hui !" : daysUntil === 1 ? 'Demain !' : `J-${daysUntil}`}
-                      </span>
-                    )}
-                    {e.grade !== null && (
-                      <span className="font-display font-bold" style={{ color: e.grade >= 14 ? 'hsl(142 71% 50%)' : e.grade >= 10 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' }}>
-                        {e.grade}/20
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 mt-1.5 text-muted-foreground">
-                    {e.chapters && <span>{e.chapters}</span>}
-                    {e.photo_url && (
-                      <button onClick={() => setPreviewPhoto(e.photo_url!)} className="flex items-center gap-1 ml-auto" style={{ color: 'hsl(43 90% 55%)' }}>
-                        <ImageIcon size={10} /> Voir
-                      </button>
-                    )}
-                  </div>
+                  {(entry.chapters || entry.photoUrl) && (
+                    <div className="flex items-center gap-2 mt-1.5 text-muted-foreground">
+                      {entry.chapters && <span>{entry.chapters}</span>}
+                      {entry.photoUrl && (
+                        <button onClick={() => setPreviewPhoto(entry.photoUrl!)}
+                          className="flex items-center gap-1 ml-auto" style={{ color: 'hsl(43 90% 55%)' }}>
+                          <ImageIcon size={10} /> Voir
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   {isOverdue2Wks && (() => {
-                    const dateStr = new Date(e.exam_date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
-                    const waMsg   = encodeURIComponent(`Salut ${s.pseudo} ! Tu as eu ta note pour le DS de ${e.subject} du ${dateStr} ? `);
+                    const dateStr = new Date(entry.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+                    const waMsg   = encodeURIComponent(`Salut ${s.pseudo} ! Tu as eu ta note pour le DS de ${entry.subject} du ${dateStr} ? `);
                     return (
                       <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t" style={{ borderColor: 'hsl(38 92% 55% / 0.2)' }}>
                         <AlarmClock size={12} style={{ color: 'hsl(38 92% 65%)', flexShrink: 0 }} />
@@ -1346,53 +1372,22 @@ export default function CoachDashboard() {
 
             return (
               <>
-                {/* ── A: DS depuis le planning ── */}
-                {allDsEvents.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                      DS dans l'emploi du temps
-                      {upcomingDs.length > 0 && (
-                        <span className="ml-2 px-1.5 py-0.5 rounded font-bold text-[9px]"
-                          style={{ background: 'hsl(0 84% 55% / 0.12)', color: 'hsl(0 84% 65%)' }}>
-                          {upcomingDs.length} à venir
-                        </span>
-                      )}
-                    </p>
-                    {upcomingDs.length === 0 && (
-                      <p className="text-xs text-muted-foreground italic">Aucun DS à venir dans le planning</p>
-                    )}
-                    {upcomingDs.map(ev => <DsEventRow key={ev.id} ev={ev} />)}
-                    {pastDs.length > 0 && (
-                      <details className="group">
-                        <summary className="cursor-pointer text-[10px] text-muted-foreground/60 hover:text-muted-foreground flex items-center gap-1 select-none py-1">
-                          <span className="group-open:rotate-90 transition-transform inline-block">▶</span>
-                          {pastDs.length} DS passé{pastDs.length > 1 ? 's' : ''}
-                        </summary>
-                        <div className="space-y-1.5 mt-1.5">
-                          {pastDs.map(ev => <DsEventRow key={ev.id} ev={ev} dimmed />)}
-                        </div>
-                      </details>
-                    )}
-                  </div>
+                {upcoming.length === 0 && (
+                  <p className="text-xs text-muted-foreground italic text-center py-2">Aucun DS à venir</p>
                 )}
-                {allDsEvents.length === 0 && (
-                  <p className="text-xs text-muted-foreground text-center py-3">Aucun DS dans l'emploi du temps</p>
-                )}
+                {upcoming.map(e => <DsCard key={e.key} entry={e} />)}
 
-                {/* ── B: Exams déclarés (suivi notes) ── */}
-                <div className={`space-y-2 ${allDsEvents.length > 0 ? 'border-t border-border/30 pt-4 mt-2' : ''}`}>
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                    Suivi des notes
-                  </p>
-                  {data.exams.length === 0 ? (
-                    <p className="text-xs text-muted-foreground text-center py-3">Aucun DS déclaré</p>
-                  ) : (
-                    data.exams
-                      .slice()
-                      .sort((a, b) => a.exam_date.localeCompare(b.exam_date))
-                      .map(e => <ExamRow key={e.id} e={e} />)
-                  )}
-                </div>
+                {past.length > 0 && (
+                  <details className="group mt-1">
+                    <summary className="cursor-pointer text-[10px] text-muted-foreground/60 hover:text-muted-foreground flex items-center gap-1.5 select-none py-1">
+                      <span className="group-open:rotate-90 transition-transform inline-block">▶</span>
+                      {past.length} DS passé{past.length > 1 ? 's' : ''}
+                    </summary>
+                    <div className="space-y-1.5 mt-1.5">
+                      {past.map(e => <DsCard key={e.key} entry={e} dimmed />)}
+                    </div>
+                  </details>
+                )}
               </>
             );
           })()}
