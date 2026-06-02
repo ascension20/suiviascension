@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, ArrowLeft, Music, Music2, Swords, Moon } from 'lucide-react';
+import { Play, Pause, ArrowLeft, Music, Music2, Swords, Moon, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDeepworkXp, DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
 import { TierProgressBar } from '@/components/Deepwork/DeepworkWidget';
@@ -10,7 +10,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { updateStreak } from '@/hooks/useOnlineTracker';
 import { useDeepworkPresence } from '@/hooks/useDeepworkPresence';
 
-const STORAGE_KEY = DEEPWORK_STORAGE_KEY;
+const STORAGE_KEY         = DEEPWORK_STORAGE_KEY;
+const CHECKIN_INTERVAL    = 3600; // trigger every 1 h (seconds)
+const CHECKIN_WINDOW      = 600;  // 10 min to respond (seconds)
 
 function xpRateInfo(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -31,11 +33,24 @@ export default function DeepworkPage() {
     const v = localStorage.getItem(STORAGE_KEY);
     return v ? Number(v) : null;
   });
-  const [now, setNow]       = useState(Date.now());
-  const [xpPop, setXpPop]   = useState<number | null>(null);
-  const [questTitle, setQuestTitle] = useState<string | null>(() => localStorage.getItem('deepwork_quest_title'));
+  const [now, setNow]     = useState(Date.now());
+  const [xpPop, setXpPop] = useState<number | null>(null);
+  const [questTitle, setQuestTitle] = useState<string | null>(
+    () => localStorage.getItem('deepwork_quest_title')
+  );
   const intervalRef = useRef<number | null>(null);
 
+  // ── Hourly check-in state ─────────────────────────────────────────────────
+  const [showCheckin, setShowCheckin]         = useState(false);
+  const [checkinDeadline, setCheckinDeadline] = useState<number | null>(null);
+  const [checkinCountdown, setCheckinCountdown] = useState(CHECKIN_WINDOW);
+  // Which hour we last triggered a check-in for. Initialised from current
+  // elapsed time so we don't immediately pop on page reload mid-session.
+  const lastCheckinHour = useRef(
+    startedAt ? Math.floor((Date.now() - startedAt) / 1000 / CHECKIN_INTERVAL) : 0
+  );
+
+  // 1-second ticker
   useEffect(() => {
     if (startedAt) {
       intervalRef.current = window.setInterval(() => setNow(Date.now()), 1000);
@@ -52,23 +67,21 @@ export default function DeepworkPage() {
   const { label: rateLabel, color: rateColor } = xpRateInfo(elapsedSec);
   const active     = !!startedAt;
 
-  const handleStart = () => {
-    const t = Date.now();
-    localStorage.setItem(STORAGE_KEY, String(t));
-    window.dispatchEvent(new Event('deepwork-session-change'));
-    setStartedAt(t);
-  };
-
-  const handleStop = async () => {
+  // ── handleStop (stable via useCallback + ref) ────────────────────────────
+  const handleStop = useCallback(async () => {
     if (!startedAt || !user) return;
     const ended    = Date.now();
     const duration = Math.floor((ended - startedAt) / 1000);
     const xp       = computeDeepworkXp(duration);
+
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('deepwork_quest_title');
     window.dispatchEvent(new Event('deepwork-session-change'));
     setStartedAt(null);
     setQuestTitle(null);
+    setShowCheckin(false);
+    setCheckinDeadline(null);
+    lastCheckinHour.current = 0;
 
     if (duration >= 60) {
       await supabase.from('deepwork_sessions').insert({
@@ -79,11 +92,7 @@ export default function DeepworkPage() {
         xp_earned:        xp,
       });
       if (xp > 0) {
-        await supabase.from('xp_history').insert({
-          user_id: user.id,
-          amount: xp,
-          source: 'deepwork',
-        });
+        await supabase.from('xp_history').insert({ user_id: user.id, amount: xp, source: 'deepwork' });
       }
       const { data: prof } = await supabase
         .from('profiles')
@@ -93,7 +102,7 @@ export default function DeepworkPage() {
         await supabase.from('profiles').update({
           total_deepwork_seconds:  (prof.total_deepwork_seconds  ?? 0) + duration,
           total_deepwork_sessions: (prof.total_deepwork_sessions ?? 0) + 1,
-          total_xp: (prof.total_xp ?? 0) + xp,
+          total_xp:                (prof.total_xp                ?? 0) + xp,
         }).eq('user_id', user.id);
       }
       await updateStreak(user.id);
@@ -104,22 +113,72 @@ export default function DeepworkPage() {
       }
       await refreshProfile();
     }
+  }, [startedAt, user, refreshProfile]);
+
+  // Keep a ref so the countdown effect always calls the latest version
+  const handleStopRef = useRef(handleStop);
+  useEffect(() => { handleStopRef.current = handleStop; }, [handleStop]);
+
+  // ── Hourly check-in: trigger ──────────────────────────────────────────────
+  useEffect(() => {
+    if (!active || showCheckin) return;
+    const currentHour = Math.floor(elapsedSec / CHECKIN_INTERVAL);
+    if (currentHour > 0 && currentHour > lastCheckinHour.current) {
+      lastCheckinHour.current = currentHour;
+      const deadline = Date.now() + CHECKIN_WINDOW * 1000;
+      setCheckinDeadline(deadline);
+      setCheckinCountdown(CHECKIN_WINDOW);
+      setShowCheckin(true);
+      // Notify if tab is hidden or browser notifications are granted
+      if (Notification.permission === 'granted') {
+        new Notification('Deepwork — Tu es toujours là ?', {
+          body: `${currentHour}h de session. Tu as 10 minutes pour confirmer, sinon le chrono s'arrête.`,
+          icon: '/favicon.ico',
+          requireInteraction: true,
+        });
+      }
+    }
+  }, [elapsedSec, active, showCheckin]);
+
+  // ── Hourly check-in: countdown + auto-stop ───────────────────────────────
+  useEffect(() => {
+    if (!showCheckin || checkinDeadline === null) return;
+    const remaining = Math.ceil((checkinDeadline - now) / 1000);
+    setCheckinCountdown(Math.max(0, remaining));
+    if (remaining <= 0) {
+      setShowCheckin(false);
+      setCheckinDeadline(null);
+      void handleStopRef.current();
+    }
+  }, [now, showCheckin, checkinDeadline]);
+
+  const handleCheckinConfirm = () => {
+    setShowCheckin(false);
+    setCheckinDeadline(null);
   };
 
-  // ── Fond bibliothèque ─────────────────────────────────────────────────────
+  const handleStart = () => {
+    const t = Date.now();
+    localStorage.setItem(STORAGE_KEY, String(t));
+    window.dispatchEvent(new Event('deepwork-session-change'));
+    setStartedAt(t);
+    lastCheckinHour.current = 0;
+  };
+
+  // ── Background ────────────────────────────────────────────────────────────
   const libBg = {
     background: [
-      /* vertical planches de bibliothèque */
       'repeating-linear-gradient(90deg, transparent 0px, transparent 28px, hsl(30 30% 40% / 0.025) 28px, hsl(30 30% 40% / 0.025) 30px)',
-      /* étagères horizontales */
       'repeating-linear-gradient(180deg, transparent 0px, transparent 64px, hsl(28 25% 35% / 0.06) 64px, hsl(28 25% 35% / 0.06) 68px)',
-      /* chaleur ambiante gauche */
       'radial-gradient(ellipse at 10% 80%, hsl(30 60% 28% / 0.14) 0%, transparent 55%)',
-      /* chaleur ambiante droite */
       'radial-gradient(ellipse at 90% 20%, hsl(43 70% 38% / 0.10) 0%, transparent 55%)',
       'hsl(222 22% 5%)',
     ].join(', '),
   };
+
+  const checkinMin = String(Math.floor(checkinCountdown / 60)).padStart(2, '0');
+  const checkinSec = String(checkinCountdown % 60).padStart(2, '0');
+  const checkinUrgent = checkinCountdown <= 60;
 
   return (
     <div className="min-h-screen flex flex-col" style={libBg}>
@@ -285,7 +344,7 @@ export default function DeepworkPage() {
           )}
         </div>
 
-        {/* Lofi button — centré */}
+        {/* Lofi button */}
         <button
           onClick={toggleLofi}
           title={lofiOn ? 'Couper la musique lofi' : 'Activer la musique lofi'}
@@ -308,8 +367,6 @@ export default function DeepworkPage() {
             </p>
           ) : (
             <div className="flex flex-col items-center gap-3 w-full">
-
-              {/* Header */}
               <div className="flex items-center gap-2">
                 <span
                   className="w-1.5 h-1.5 rounded-full"
@@ -326,8 +383,6 @@ export default function DeepworkPage() {
                   {peers.length} élève{peers.length > 1 ? 's' : ''} en session
                 </span>
               </div>
-
-              {/* Peer cards */}
               <div className="flex flex-wrap gap-3 justify-center">
                 <AnimatePresence>
                   {peers.map((u, i) => (
@@ -345,7 +400,6 @@ export default function DeepworkPage() {
                         boxShadow: '0 0 20px hsl(43 90% 50% / 0.06), inset 0 0 20px hsl(43 90% 50% / 0.03)',
                       }}
                     >
-                      {/* Corner brackets */}
                       <div className="absolute top-0 left-0 w-3 h-3 border-l border-t pointer-events-none rounded-tl-lg"
                            style={{ borderColor: 'hsl(43 90% 55% / 0.5)' }} />
                       <div className="absolute top-0 right-0 w-3 h-3 border-r border-t pointer-events-none rounded-tr-lg"
@@ -354,17 +408,10 @@ export default function DeepworkPage() {
                            style={{ borderColor: 'hsl(43 90% 55% / 0.5)' }} />
                       <div className="absolute bottom-0 right-0 w-3 h-3 border-r border-b pointer-events-none rounded-br-lg"
                            style={{ borderColor: 'hsl(43 90% 55% / 0.5)' }} />
-
-                      {/* Live dot */}
                       <div
                         className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full hud-live"
-                        style={{
-                          background: 'hsl(142 71% 50%)',
-                          boxShadow: '0 0 6px hsl(142 71% 50% / 0.8)',
-                        }}
+                        style={{ background: 'hsl(142 71% 50%)', boxShadow: '0 0 6px hsl(142 71% 50% / 0.8)' }}
                       />
-
-                      {/* Avataaars avatar — same as profile */}
                       <div
                         className="w-12 h-12 rounded-lg overflow-hidden shrink-0"
                         style={{ background: 'hsl(222 22% 6%)' }}
@@ -376,20 +423,13 @@ export default function DeepworkPage() {
                           style={{ width: '100%', height: '100%' }}
                         />
                       </div>
-
-                      {/* Name */}
                       <p
                         className="text-[10px] font-bold text-center leading-tight w-full truncate"
                         style={{ color: 'hsl(42 12% 82%)' }}
                       >
                         {u.pseudo}
                       </p>
-
-                      {/* Status */}
-                      <p
-                        className="text-[9px] text-center leading-none"
-                        style={{ color: 'hsl(142 71% 45%)' }}
-                      >
+                      <p className="text-[9px] text-center leading-none" style={{ color: 'hsl(142 71% 45%)' }}>
                         ● focus
                       </p>
                     </motion.div>
@@ -400,6 +440,141 @@ export default function DeepworkPage() {
           )}
         </div>
       </div>
+
+      {/* ── Hourly check-in overlay ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showCheckin && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: 'hsl(222 22% 4% / 0.88)', backdropFilter: 'blur(16px)' }}
+          >
+            <motion.div
+              initial={{ scale: 0.85, y: 24 }}
+              animate={{ scale: 1,    y: 0  }}
+              exit={{ scale: 0.9,    y: 12 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+              className="relative flex flex-col items-center gap-6 p-8 rounded-2xl border max-w-sm w-full mx-6 text-center"
+              style={{
+                borderColor: checkinUrgent ? 'hsl(0 84% 60% / 0.5)' : 'hsl(43 90% 50% / 0.4)',
+                background: 'linear-gradient(145deg, hsl(222 22% 11%) 0%, hsl(222 22% 7%) 100%)',
+                boxShadow: checkinUrgent
+                  ? '0 0 60px hsl(0 84% 60% / 0.18), 0 0 120px hsl(0 84% 60% / 0.07)'
+                  : '0 0 60px hsl(43 90% 50% / 0.14), 0 0 120px hsl(43 90% 50% / 0.06)',
+              }}
+            >
+              {/* Corner brackets */}
+              {(['tl','tr','bl','br'] as const).map(c => (
+                <div
+                  key={c}
+                  className="absolute w-5 h-5 pointer-events-none"
+                  style={{
+                    top:    c.startsWith('t') ? 0 : undefined,
+                    bottom: c.startsWith('b') ? 0 : undefined,
+                    left:   c.endsWith('l')   ? 0 : undefined,
+                    right:  c.endsWith('r')   ? 0 : undefined,
+                    borderTop:    c.startsWith('t') ? `2px solid ${checkinUrgent ? 'hsl(0 84% 60% / 0.7)' : 'hsl(43 90% 55% / 0.6)'}` : undefined,
+                    borderBottom: c.startsWith('b') ? `2px solid ${checkinUrgent ? 'hsl(0 84% 60% / 0.7)' : 'hsl(43 90% 55% / 0.6)'}` : undefined,
+                    borderLeft:   c.endsWith('l')   ? `2px solid ${checkinUrgent ? 'hsl(0 84% 60% / 0.7)' : 'hsl(43 90% 55% / 0.6)'}` : undefined,
+                    borderRight:  c.endsWith('r')   ? `2px solid ${checkinUrgent ? 'hsl(0 84% 60% / 0.7)' : 'hsl(43 90% 55% / 0.6)'}` : undefined,
+                    borderRadius:
+                      c === 'tl' ? '0.75rem 0 0 0' :
+                      c === 'tr' ? '0 0.75rem 0 0' :
+                      c === 'bl' ? '0 0 0 0.75rem' : '0 0 0.75rem 0',
+                  }}
+                />
+              ))}
+
+              {/* Icon */}
+              <motion.div
+                animate={{ scale: checkinUrgent ? [1, 1.08, 1] : 1 }}
+                transition={{ repeat: Infinity, duration: 1.2 }}
+                className="w-16 h-16 rounded-full flex items-center justify-center"
+                style={{
+                  background: checkinUrgent
+                    ? 'linear-gradient(145deg, hsl(0 84% 60% / 0.2), hsl(0 84% 60% / 0.05))'
+                    : 'linear-gradient(145deg, hsl(43 90% 50% / 0.2), hsl(43 90% 50% / 0.05))',
+                  border: `2px solid ${checkinUrgent ? 'hsl(0 84% 60% / 0.5)' : 'hsl(43 90% 50% / 0.45)'}`,
+                  boxShadow: checkinUrgent
+                    ? '0 0 30px hsl(0 84% 60% / 0.25)'
+                    : '0 0 30px hsl(43 90% 50% / 0.2)',
+                }}
+              >
+                <Zap
+                  size={30}
+                  style={{ color: checkinUrgent ? 'hsl(0 84% 68%)' : 'hsl(43 90% 62%)' }}
+                />
+              </motion.div>
+
+              {/* Label + title */}
+              <div className="flex flex-col gap-1">
+                <p
+                  className="text-[10px] font-black tracking-[0.22em] uppercase"
+                  style={{ color: checkinUrgent ? 'hsl(0 84% 60% / 0.7)' : 'hsl(43 90% 50% / 0.6)' }}
+                >
+                  Vérification de présence
+                </p>
+                <h2
+                  className="font-display text-xl font-black"
+                  style={{ color: 'hsl(42 12% 92%)' }}
+                >
+                  Tu es toujours là ?
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {Math.floor(elapsedSec / CHECKIN_INTERVAL)}h de session en cours
+                </p>
+              </div>
+
+              {/* Countdown */}
+              <div className="flex flex-col items-center gap-1.5">
+                <motion.span
+                  key={checkinMin + checkinSec}
+                  animate={checkinUrgent ? { scale: [1, 1.04, 1] } : {}}
+                  transition={{ duration: 0.8 }}
+                  className="font-display font-black tabular-nums"
+                  style={{
+                    fontSize: 'clamp(2.5rem, 10vw, 3.5rem)',
+                    color: checkinUrgent ? 'hsl(0 84% 65%)' : 'hsl(var(--primary))',
+                    textShadow: checkinUrgent
+                      ? '0 0 24px hsl(0 84% 60% / 0.55)'
+                      : '0 0 24px hsl(43 90% 50% / 0.45)',
+                    lineHeight: 1,
+                  }}
+                >
+                  {checkinMin}:{checkinSec}
+                </motion.span>
+                <p className="text-xs text-muted-foreground">
+                  Le chrono s'arrête automatiquement ensuite
+                </p>
+              </div>
+
+              {/* Confirm */}
+              <button
+                onClick={handleCheckinConfirm}
+                className="w-full py-3.5 rounded-xl font-display font-black text-sm tracking-[0.18em] uppercase transition-all active:scale-[0.97] hover:brightness-110"
+                style={{
+                  background: 'linear-gradient(135deg, hsl(43 90% 40%), hsl(50 100% 60%))',
+                  color: 'hsl(222 22% 6%)',
+                  boxShadow: '0 0 22px hsl(43 90% 50% / 0.45)',
+                }}
+              >
+                ◆ Je suis là !
+              </button>
+
+              {/* Stop */}
+              <button
+                onClick={() => { setShowCheckin(false); setCheckinDeadline(null); void handleStop(); }}
+                className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+              >
+                Arrêter la session
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
