@@ -33,14 +33,13 @@ export function ProgressComparison({ userId, totalXp, streak }: { userId: string
       if (!bl) return;
       setBaseline(bl as unknown as Baseline);
 
-      const [sessionsRes, examsRes, questsRes] = await Promise.all([
-        supabase.from('timer_sessions').select('duration_minutes').eq('user_id', userId),
+      const [profileRes, examsRes, questsRes] = await Promise.all([
+        supabase.from('profiles').select('total_deepwork_seconds').eq('user_id', userId).single(),
         supabase.from('exams').select('subject, grade').eq('user_id', userId).not('grade', 'is', null),
         supabase.from('quests').select('completed').eq('assigned_to', userId),
       ]);
 
-      const totalMin = (sessionsRes.data || []).reduce((a, s) => a + s.duration_minutes, 0);
-      setCurrentHours(Math.round(totalMin / 60));
+      setCurrentHours(Math.round((profileRes.data?.total_deepwork_seconds ?? 0) / 3600));
 
       const grades: Record<string, number[]> = {};
       (examsRes.data || []).forEach((e: any) => {

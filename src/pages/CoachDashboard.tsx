@@ -279,8 +279,8 @@ function WeekCalendar({ events }: { events: PlanningEvent[] }) {
 }
 
 // ── activity chart ────────────────────────────────────────────────────────────
-function ActivityChart({ sessions }: { sessions: { duration_minutes: number; created_at: string }[] }) {
-  const todayKey = new Date().toISOString().slice(0, 10);
+function ActivityChart({ sessions }: { sessions: { duration_seconds: number; started_at: string }[] }) {
+  const todayKey = toLocalDateKey(new Date());
 
   const days = useMemo(() => {
     const arr: { date: string; hours: number; label: string }[] = [];
@@ -288,10 +288,10 @@ function ActivityChart({ sessions }: { sessions: { duration_minutes: number; cre
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
-      const key = d.toISOString().slice(0, 10);
+      const key = toLocalDateKey(d);   // local date, never UTC-shifted
       const mins = sessions
-        .filter(s => s.created_at?.slice(0, 10) === key)
-        .reduce((a, s) => a + s.duration_minutes, 0);
+        .filter(s => s.started_at && toLocalDateKey(new Date(s.started_at)) === key)
+        .reduce((a, s) => a + s.duration_seconds / 60, 0);
       arr.push({ date: key, hours: mins / 60, label: d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) });
     }
     return arr;
@@ -479,7 +479,7 @@ export default function CoachDashboard() {
   const [quests,         setQuests]         = useState<StudentQuest[]>([]);
   const [planningEvents, setPlanningEvents] = useState<PlanningEvent[]>([]);
   const [baselines,      setBaselines]      = useState<Record<string, boolean>>({});
-  const [timerSessions,  setTimerSessions]  = useState<{ user_id: string; duration_minutes: number; created_at: string }[]>([]);
+  const [deepworkSessions, setDeepworkSessions] = useState<{ user_id: string; duration_seconds: number; started_at: string }[]>([]);
 
   // UI
   const [selectedId,  setSelectedId]  = useState<string | null>(null);
@@ -526,7 +526,8 @@ export default function CoachDashboard() {
       supabase.from('user_roles').select('user_id, role'),
       supabase.from('user_private').select('user_id, last_seen_at'),
       supabase.from('quests').select('*').limit(5000),
-      supabase.from('timer_sessions').select('user_id, duration_minutes, created_at').limit(10000),
+      supabase.from('deepwork_sessions').select('user_id, duration_seconds, started_at')
+        .order('started_at', { ascending: false }).limit(10000),
       supabase.from('avatar_configs').select('*'),
     ]);
 
@@ -567,8 +568,8 @@ export default function CoachDashboard() {
       const userQuests     = (allQuests  || []).filter(q => q.assigned_to === p.user_id);
       const completed      = userQuests.filter(q => q.completed).length;
       const completionRate = userQuests.length > 0 ? Math.round((completed / userQuests.length) * 100) : 100;
-      const totalMinutes   = (allSessions || []).filter(s => s.user_id === p.user_id).reduce((a, s) => a + s.duration_minutes, 0);
-      const totalHours     = Math.round(totalMinutes / 60);
+      // Use the pre-aggregated total from profiles (kept in sync by deepwork save hooks)
+      const totalHours = Math.round((p.total_deepwork_seconds ?? 0) / 3600);
       const lastActive     = p.last_activity_date
         ? (new Date(p.last_activity_date).toDateString() === new Date().toDateString() ? "Aujourd'hui" : p.last_activity_date)
         : 'Jamais';
@@ -582,7 +583,7 @@ export default function CoachDashboard() {
       };
     });
 
-    setTimerSessions((allSessions || []) as { user_id: string; duration_minutes: number; created_at: string }[]);
+    setDeepworkSessions((allSessions || []) as { user_id: string; duration_seconds: number; started_at: string }[]);
     setStudents(enriched);
     setLoading(false);
   };
@@ -592,7 +593,7 @@ export default function CoachDashboard() {
     const ch = supabase.channel('coach-rt3')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' },        () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'quests' },          () => loadData())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'timer_sessions' },  () => loadData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'deepwork_sessions' }, () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'difficulties' },    () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'exams' },           () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'planning_events' }, () => loadData())
@@ -816,7 +817,7 @@ export default function CoachDashboard() {
     const [statPeriod, setStatPeriod] = useState<'global' | 'monthly' | 'weekly'>('global');
 
     const periodStats = useMemo(() => {
-      const studentSessions = timerSessions.filter(sess => sess.user_id === s.user_id);
+      const studentSessions = deepworkSessions.filter(sess => sess.user_id === s.user_id);
       const quests = data.quests;
 
       if (statPeriod === 'global') {
@@ -834,13 +835,13 @@ export default function CoachDashboard() {
       const days   = statPeriod === 'weekly' ? 7 : 30;
       const cutoff = new Date(now.getTime() - days * 86_400_000);
 
-      const filteredSessions = studentSessions.filter(sess => new Date(sess.created_at) >= cutoff);
+      const filteredSessions = studentSessions.filter(sess => new Date(sess.started_at) >= cutoff);
       const completedInPeriod = quests.filter(q =>
         q.completed && q.completed_at && new Date(q.completed_at) >= cutoff
       );
       const xpInPeriod    = completedInPeriod.reduce((a, q) => a + q.xp_reward, 0);
-      const minsInPeriod  = filteredSessions.reduce((a, sess) => a + sess.duration_minutes, 0);
-      const hoursInPeriod = Math.round((minsInPeriod / 60) * 10) / 10;
+      const secsInPeriod  = filteredSessions.reduce((a, sess) => a + sess.duration_seconds, 0);
+      const hoursInPeriod = Math.round((secsInPeriod / 3600) * 10) / 10;
       const rate = quests.length > 0
         ? Math.round((completedInPeriod.length / quests.length) * 100)
         : 100;
@@ -854,7 +855,7 @@ export default function CoachDashboard() {
         quests:    `${completedInPeriod.length}`,
         questRate: rate,
       };
-    }, [statPeriod, s, timerSessions, data.quests]);
+    }, [statPeriod, s, deepworkSessions, data.quests]);
 
     // DS from planning calendar (upcoming)
     const upcomingDsEvents = data.planning.filter(p => p.type === 'ds' && p.event_date >= todayStr);
@@ -1020,7 +1021,7 @@ export default function CoachDashboard() {
                 </div>
               )}
 
-              <ActivityChart sessions={timerSessions.filter(sess => sess.user_id === s.user_id)} />
+              <ActivityChart sessions={deepworkSessions.filter(sess => sess.user_id === s.user_id)} />
               <QuestsChart quests={data.quests} />
             </>
           )}
