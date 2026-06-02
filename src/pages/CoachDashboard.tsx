@@ -99,6 +99,19 @@ function toDecHour(timeStr: string): number {
   return h + m / 60;
 }
 
+/**
+ * Returns a YYYY-MM-DD string in the LOCAL timezone.
+ * Never use d.toISOString().slice(0,10) for date keys — that gives a UTC date
+ * which in UTC+2 shifts every day back by one, making Tuesday events appear
+ * on Wednesday in the calendar grid.
+ */
+function toLocalDateKey(d: Date): string {
+  const y   = d.getFullYear();
+  const mo  = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${mo}-${day}`;
+}
+
 function WeekCalendar({ events }: { events: PlanningEvent[] }) {
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -124,7 +137,7 @@ function WeekCalendar({ events }: { events: PlanningEvent[] }) {
   [days]);
 
   const weekDateKeys = useMemo(() =>
-    days.map(d => d.toISOString().slice(0, 10)),
+    days.map(d => toLocalDateKey(d)),
   [days]);
 
   // Group events by event_date key
@@ -637,7 +650,7 @@ export default function CoachDashboard() {
 
   // ── derived ──
   const now      = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
+  const todayStr = toLocalDateKey(now);
 
   const filteredStudents = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -843,6 +856,11 @@ export default function CoachDashboard() {
       };
     }, [statPeriod, s, timerSessions, data.quests]);
 
+    // DS from planning calendar (upcoming)
+    const upcomingDsEvents = data.planning.filter(p => p.type === 'ds' && p.event_date >= todayStr);
+    // Upcoming exams from exams table
+    const upcomingExams    = data.exams.filter(e => new Date(e.exam_date + 'T12:00:00') >= now);
+
     const TABS = [
       { key: 'overview', label: 'Vue d\'ensemble',    icon: <BarChart2 size={12} /> },
       { key: 'planning', label: 'Planning & Quêtes', icon: <Calendar  size={12} />,
@@ -850,7 +868,7 @@ export default function CoachDashboard() {
       { key: 'diffs',    label: 'Difficultés',        icon: <AlertTriangle size={12} />,
         badge: data.diffs.filter(d => !d.resolved).length },
       { key: 'exams',    label: 'DS',                 icon: <FileText size={12} />,
-        badge: data.exams.filter(e => new Date(e.exam_date) >= now).length },
+        badge: upcomingDsEvents.length + upcomingExams.length || undefined },
     ];
 
     return (
@@ -1203,81 +1221,181 @@ export default function CoachDashboard() {
               ))
           )}
 
-          {/* ── DS ── */}
-          {selectedTab === 'exams' && (
-            data.exams.length === 0
-              ? <p className="text-xs text-muted-foreground text-center py-8">Aucun DS déclaré</p>
-              : data.exams.map(e => {
-                const daysUntil      = Math.ceil((new Date(e.exam_date).getTime() - now.getTime()) / 86400000);
-                const isPast         = daysUntil < 0;
-                const isMissing      = isPast && e.grade === null && !e.grade_received;
-                const isOverdue2Weeks = isPast && e.grade === null && !e.grade_received && daysUntil <= -14;
-                return (
-                  <div key={e.id} className={`p-3.5 rounded-xl border text-xs ${isPast && !isMissing ? 'opacity-55' : ''}`}
-                    style={{
-                      background: !isPast && daysUntil <= 5
-                        ? 'hsl(0 84% 55% / 0.05)'
-                        : isOverdue2Weeks ? 'hsl(38 92% 55% / 0.05)'
-                        : 'hsl(222 22% 9%)',
-                      borderColor: isOverdue2Weeks
-                        ? 'hsl(38 92% 55% / 0.55)'
-                        : isMissing ? 'hsl(38 92% 55% / 0.3)'
-                        : !isPast && daysUntil <= 5 ? 'hsl(0 84% 55% / 0.45)'
-                        : 'hsl(222 16% 16%)',
-                      boxShadow: !isPast && daysUntil <= 5
-                        ? '0 0 10px hsl(0 84% 55% / 0.08)'
-                        : isOverdue2Weeks ? '0 0 12px hsl(38 92% 55% / 0.12)'
-                        : 'none',
-                    }}>
-                    <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `hsl(var(${SUBJECT_CSS_VAR[e.subject as Subject] || '--muted'}))` }} />
-                      <span className="font-bold" style={{ color: !isPast && daysUntil <= 5 ? 'hsl(0 84% 72%)' : undefined }}>{e.subject}</span>
-                      <span className="text-muted-foreground ml-auto">{new Date(e.exam_date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
-                      {!isPast && <span className="px-1.5 py-0.5 rounded font-bold text-[9px]" style={{
+          {/* ── DS (unified: planning events + declared exams) ── */}
+          {selectedTab === 'exams' && (() => {
+            // ── Section A: DS events from planning calendar ──────────────────
+            const allDsEvents = data.planning
+              .filter(p => p.type === 'ds')
+              .sort((a, b) => a.event_date.localeCompare(b.event_date) || a.start_time.localeCompare(b.start_time));
+            const upcomingDs = allDsEvents.filter(p => p.event_date >= todayStr);
+            const pastDs     = allDsEvents.filter(p => p.event_date < todayStr);
+
+            // Match a planning DS event to a declared exam (same subject, within ±3 days)
+            const matchedExam = (ev: PlanningEvent): StudentExam | undefined =>
+              data.exams.find(e =>
+                e.subject.toLowerCase() === (ev.subject ?? '').toLowerCase() &&
+                Math.abs(new Date(e.exam_date + 'T12:00:00').getTime() - new Date(ev.event_date + 'T12:00:00').getTime()) <= 3 * 86_400_000
+              );
+
+            const DsEventRow = ({ ev, dimmed = false }: { ev: PlanningEvent; dimmed?: boolean }) => {
+              const matched = matchedExam(ev);
+              const daysUntil = Math.round(
+                (new Date(ev.event_date + 'T12:00:00').getTime() - now.getTime()) / 86_400_000
+              );
+              const isUrgent = !dimmed && daysUntil >= 0 && daysUntil <= 5;
+              return (
+                <div className={`p-3 rounded-xl border text-xs ${dimmed ? 'opacity-50' : ''}`}
+                  style={{
+                    background:   isUrgent ? 'hsl(0 84% 55% / 0.05)' : 'hsl(222 22% 9%)',
+                    borderColor:  isUrgent ? 'hsl(0 84% 55% / 0.45)'  : 'hsl(222 16% 16%)',
+                    boxShadow:    isUrgent ? '0 0 8px hsl(0 84% 55% / 0.07)' : 'none',
+                  }}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'hsl(0 84% 60%)' }} />
+                    <span className="font-bold" style={{ color: isUrgent ? 'hsl(0 84% 72%)' : undefined }}>
+                      {ev.subject ?? ev.title}
+                    </span>
+                    {ev.subject && ev.title !== ev.subject && (
+                      <span className="text-muted-foreground truncate">{ev.title}</span>
+                    )}
+                    <span className="text-muted-foreground ml-auto shrink-0">
+                      {new Date(ev.event_date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                      {' · '}{ev.start_time.slice(0, 5)}
+                      {ev.end_time && '–' + ev.end_time.slice(0, 5)}
+                    </span>
+                    {!dimmed && daysUntil >= 0 && (
+                      <span className="px-1.5 py-0.5 rounded font-bold text-[9px] shrink-0" style={{
+                        background: isUrgent ? 'hsl(0 84% 55% / 0.15)' : 'hsl(222 22% 14%)',
+                        color:      isUrgent ? 'hsl(0 84% 68%)'        : 'hsl(220 10% 55%)',
+                        border:     isUrgent ? '1px solid hsl(0 84% 55% / 0.25)' : '1px solid transparent',
+                      }}>
+                        {daysUntil === 0 ? "Aujourd'hui !" : daysUntil === 1 ? 'Demain !' : `J-${daysUntil}`}
+                      </span>
+                    )}
+                    {matched?.grade != null && (
+                      <span className="font-display font-bold shrink-0"
+                        style={{ color: matched.grade >= 14 ? 'hsl(142 71% 50%)' : matched.grade >= 10 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' }}>
+                        {matched.grade}/20
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            };
+
+            // ── Section B: declared exams (grade tracking) ───────────────────
+            const ExamRow = ({ e }: { e: StudentExam }) => {
+              const daysUntil      = Math.ceil((new Date(e.exam_date + 'T12:00:00').getTime() - now.getTime()) / 86_400_000);
+              const isPast         = daysUntil < 0;
+              const isMissing      = isPast && e.grade === null && !e.grade_received;
+              const isOverdue2Wks  = isPast && e.grade === null && !e.grade_received && daysUntil <= -14;
+              return (
+                <div className={`p-3.5 rounded-xl border text-xs ${isPast && !isMissing ? 'opacity-55' : ''}`}
+                  style={{
+                    background:   !isPast && daysUntil <= 5 ? 'hsl(0 84% 55% / 0.05)' : isOverdue2Wks ? 'hsl(38 92% 55% / 0.05)' : 'hsl(222 22% 9%)',
+                    borderColor:  isOverdue2Wks ? 'hsl(38 92% 55% / 0.55)' : isMissing ? 'hsl(38 92% 55% / 0.3)' : !isPast && daysUntil <= 5 ? 'hsl(0 84% 55% / 0.45)' : 'hsl(222 16% 16%)',
+                    boxShadow:    !isPast && daysUntil <= 5 ? '0 0 10px hsl(0 84% 55% / 0.08)' : isOverdue2Wks ? '0 0 12px hsl(38 92% 55% / 0.12)' : 'none',
+                  }}>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `hsl(var(${SUBJECT_CSS_VAR[e.subject as Subject] || '--muted'}))` }} />
+                    <span className="font-bold" style={{ color: !isPast && daysUntil <= 5 ? 'hsl(0 84% 72%)' : undefined }}>{e.subject}</span>
+                    <span className="text-muted-foreground ml-auto">
+                      {new Date(e.exam_date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                    </span>
+                    {!isPast && (
+                      <span className="px-1.5 py-0.5 rounded font-bold text-[9px]" style={{
                         background: daysUntil <= 5 ? 'hsl(0 84% 55% / 0.15)' : 'hsl(222 22% 14%)',
-                        color:      daysUntil <= 5 ? 'hsl(0 84% 68%)' : 'hsl(220 10% 55%)',
+                        color:      daysUntil <= 5 ? 'hsl(0 84% 68%)'        : 'hsl(220 10% 55%)',
                         border:     daysUntil <= 5 ? '1px solid hsl(0 84% 55% / 0.25)' : '1px solid transparent',
                       }}>
                         {daysUntil === 0 ? "Aujourd'hui !" : daysUntil === 1 ? 'Demain !' : `J-${daysUntil}`}
-                      </span>}
-                      {e.grade !== null && <span className="font-display font-bold" style={{ color: e.grade >= 14 ? 'hsl(142 71% 50%)' : e.grade >= 10 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' }}>{e.grade}/20</span>}
-                    </div>
-                    <div className="flex items-center gap-2 mt-1.5 text-muted-foreground">
-                      {e.chapters && <span>{e.chapters}</span>}
-                      {e.photo_url && <button onClick={() => setPreviewPhoto(e.photo_url!)} className="flex items-center gap-1 ml-auto" style={{ color: 'hsl(43 90% 55%)' }}><ImageIcon size={10} /> Voir</button>}
-                    </div>
-
-                    {isOverdue2Weeks && (() => {
-                      const examDateStr = new Date(e.exam_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
-                      const waMsg = encodeURIComponent(
-                        `Salut ${s.pseudo} ! Tu as eu ta note pour le DS de ${e.subject} du ${examDateStr} ? `
-                      );
-                      return (
-                        <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t"
-                          style={{ borderColor: 'hsl(38 92% 55% / 0.2)' }}>
-                          <AlarmClock size={12} style={{ color: 'hsl(38 92% 65%)', flexShrink: 0 }} />
-                          <span className="text-[11px] font-medium" style={{ color: 'hsl(38 92% 65%)' }}>
-                            Pas de note depuis +2 semaines
-                          </span>
-                          <a
-                            href={`https://wa.me/?text=${waMsg}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-auto flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all hover:scale-105 hover:brightness-110"
-                            style={{
-                              background: 'hsl(142 71% 40% / 0.12)',
-                              border:     '1px solid hsl(142 71% 40% / 0.35)',
-                              color:      'hsl(142 71% 62%)',
-                            }}>
-                            Relancer sur WhatsApp
-                          </a>
-                        </div>
-                      );
-                    })()}
+                      </span>
+                    )}
+                    {e.grade !== null && (
+                      <span className="font-display font-bold" style={{ color: e.grade >= 14 ? 'hsl(142 71% 50%)' : e.grade >= 10 ? 'hsl(43 90% 52%)' : 'hsl(0 84% 60%)' }}>
+                        {e.grade}/20
+                      </span>
+                    )}
                   </div>
-                );
-              })
-          )}
+                  <div className="flex items-center gap-2 mt-1.5 text-muted-foreground">
+                    {e.chapters && <span>{e.chapters}</span>}
+                    {e.photo_url && (
+                      <button onClick={() => setPreviewPhoto(e.photo_url!)} className="flex items-center gap-1 ml-auto" style={{ color: 'hsl(43 90% 55%)' }}>
+                        <ImageIcon size={10} /> Voir
+                      </button>
+                    )}
+                  </div>
+                  {isOverdue2Wks && (() => {
+                    const dateStr = new Date(e.exam_date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+                    const waMsg   = encodeURIComponent(`Salut ${s.pseudo} ! Tu as eu ta note pour le DS de ${e.subject} du ${dateStr} ? `);
+                    return (
+                      <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t" style={{ borderColor: 'hsl(38 92% 55% / 0.2)' }}>
+                        <AlarmClock size={12} style={{ color: 'hsl(38 92% 65%)', flexShrink: 0 }} />
+                        <span className="text-[11px] font-medium" style={{ color: 'hsl(38 92% 65%)' }}>Pas de note depuis +2 semaines</span>
+                        <a href={`https://wa.me/?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
+                          className="ml-auto flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all hover:scale-105"
+                          style={{ background: 'hsl(142 71% 40% / 0.12)', border: '1px solid hsl(142 71% 40% / 0.35)', color: 'hsl(142 71% 62%)' }}>
+                          Relancer sur WhatsApp
+                        </a>
+                      </div>
+                    );
+                  })()}
+                </div>
+              );
+            };
+
+            return (
+              <>
+                {/* ── A: DS depuis le planning ── */}
+                {allDsEvents.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                      DS dans l'emploi du temps
+                      {upcomingDs.length > 0 && (
+                        <span className="ml-2 px-1.5 py-0.5 rounded font-bold text-[9px]"
+                          style={{ background: 'hsl(0 84% 55% / 0.12)', color: 'hsl(0 84% 65%)' }}>
+                          {upcomingDs.length} à venir
+                        </span>
+                      )}
+                    </p>
+                    {upcomingDs.length === 0 && (
+                      <p className="text-xs text-muted-foreground italic">Aucun DS à venir dans le planning</p>
+                    )}
+                    {upcomingDs.map(ev => <DsEventRow key={ev.id} ev={ev} />)}
+                    {pastDs.length > 0 && (
+                      <details className="group">
+                        <summary className="cursor-pointer text-[10px] text-muted-foreground/60 hover:text-muted-foreground flex items-center gap-1 select-none py-1">
+                          <span className="group-open:rotate-90 transition-transform inline-block">▶</span>
+                          {pastDs.length} DS passé{pastDs.length > 1 ? 's' : ''}
+                        </summary>
+                        <div className="space-y-1.5 mt-1.5">
+                          {pastDs.map(ev => <DsEventRow key={ev.id} ev={ev} dimmed />)}
+                        </div>
+                      </details>
+                    )}
+                  </div>
+                )}
+                {allDsEvents.length === 0 && (
+                  <p className="text-xs text-muted-foreground text-center py-3">Aucun DS dans l'emploi du temps</p>
+                )}
+
+                {/* ── B: Exams déclarés (suivi notes) ── */}
+                <div className={`space-y-2 ${allDsEvents.length > 0 ? 'border-t border-border/30 pt-4 mt-2' : ''}`}>
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    Suivi des notes
+                  </p>
+                  {data.exams.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-3">Aucun DS déclaré</p>
+                  ) : (
+                    data.exams
+                      .slice()
+                      .sort((a, b) => a.exam_date.localeCompare(b.exam_date))
+                      .map(e => <ExamRow key={e.id} e={e} />)
+                  )}
+                </div>
+              </>
+            );
+          })()}
 
         </div>
       </div>
