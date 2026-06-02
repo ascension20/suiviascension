@@ -23,11 +23,12 @@ interface Props {
   title: string;
   datasets: LeaderboardDataset[];
   weeklyChampion?: string | null;
+  defaultPeriodIdx?: number;
 }
 
-export function WeeklyLeaderboard({ title, datasets, weeklyChampion }: Props) {
+export function WeeklyLeaderboard({ title, datasets, weeklyChampion, defaultPeriodIdx = 0 }: Props) {
   const navigate = useNavigate();
-  const [periodIdx, setPeriodIdx] = useState(0);
+  const [periodIdx, setPeriodIdx] = useState(defaultPeriodIdx);
 
   const current = datasets[periodIdx] ?? datasets[0];
   const { data, unit, emptyLabel } = current;

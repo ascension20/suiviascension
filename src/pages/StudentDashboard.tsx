@@ -550,15 +550,17 @@ export default function StudentDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-tutorial="leaderboard">
           <WeeklyLeaderboard
             title="Classement XP"
+            defaultPeriodIdx={1}
             datasets={[
               { label: 'Global',  data: xpGlobal,  unit: 'XP',  emptyLabel: 'Aucun élève' },
-              { label: 'Semaine', data: xpWeekly,  unit: 'XP',  emptyLabel: 'Aucun deepwork cette semaine' },
-              { label: 'Jour',    data: xpDaily,   unit: 'XP',  emptyLabel: 'Aucun XP aujourd\'hui' },
+              { label: 'Semaine', data: xpWeekly,  unit: 'XP',  emptyLabel: 'Aucune activité cette semaine' },
+              { label: 'Jour',    data: xpDaily,   unit: 'XP',  emptyLabel: 'Aucune activité aujourd\'hui' },
             ]}
           />
           <WeeklyLeaderboard
             title="Classement Chrono"
             weeklyChampion={weeklyChampion}
+            defaultPeriodIdx={1}
             datasets={[
               { label: 'Global',  data: chronoGlobal, unit: 'min', emptyLabel: 'Aucune session' },
               { label: 'Semaine', data: chronoWeekly, unit: 'min', emptyLabel: 'Aucun deepwork cette semaine' },
