@@ -45,50 +45,6 @@ export default function DeepworkPage() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [startedAt]);
 
-  // Auto-stop : sauvegarde l'heure de fermeture si une session est active
-  useEffect(() => {
-    if (!startedAt) return;
-    const saveEndTime = () => {
-      localStorage.setItem('deepwork_ended_at', String(Date.now()));
-    };
-    window.addEventListener('pagehide', saveEndTime);
-    window.addEventListener('beforeunload', saveEndTime);
-    return () => {
-      window.removeEventListener('pagehide', saveEndTime);
-      window.removeEventListener('beforeunload', saveEndTime);
-    };
-  }, [startedAt]);
-
-  // Récupération d'une session interrompue (fermeture du site)
-  useEffect(() => {
-    if (!user) return;
-    const started = localStorage.getItem(STORAGE_KEY);
-    const ended   = localStorage.getItem('deepwork_ended_at');
-    if (!started || !ended) return;
-    const endedTs = Number(ended);
-    const startTs = Number(started);
-    // Seulement si l'heure de fin est dans le passé (fermeture réelle)
-    if (endedTs <= Date.now() - 2000) {
-      const duration = Math.floor((endedTs - startTs) / 1000);
-      localStorage.removeItem('deepwork_ended_at');
-      if (duration >= 60) {
-        const xp = computeDeepworkXp(duration);
-        supabase.from('deepwork_sessions').insert({
-          user_id: user.id,
-          started_at: new Date(startTs).toISOString(),
-          ended_at: new Date(endedTs).toISOString(),
-          duration_seconds: duration,
-          xp_earned: xp,
-        });
-        if (xp > 0) {
-          supabase.from('xp_history').insert({ user_id: user.id, amount: xp, source: 'deepwork' });
-        }
-      }
-      localStorage.removeItem(STORAGE_KEY);
-      setStartedAt(null);
-    }
-  }, [user]);
-
   const elapsedSec = startedAt ? Math.floor((now - startedAt) / 1000) : 0;
   const minutes    = Math.floor(elapsedSec / 60);
   const seconds    = elapsedSec % 60;

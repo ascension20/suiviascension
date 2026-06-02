@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { DeepworkPresenceProvider } from "@/hooks/useDeepworkPresence";
+import { useDeepworkAutoSave } from "@/hooks/useDeepworkAutoSave";
 import LoginPage from "./pages/LoginPage";
 import SetupPage from "./pages/SetupPage";
 import OnboardingPage from "./pages/Onboarding";
@@ -51,6 +52,7 @@ function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode;
 
 function AppRoutes() {
   const { user, role, loading, profile } = useAuth();
+  useDeepworkAutoSave(user?.id);
 
   if (loading) {
     return (
