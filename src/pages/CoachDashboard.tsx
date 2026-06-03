@@ -479,7 +479,7 @@ export default function CoachDashboard() {
   const [quests,         setQuests]         = useState<StudentQuest[]>([]);
   const [planningEvents, setPlanningEvents] = useState<PlanningEvent[]>([]);
   const [baselines,      setBaselines]      = useState<Record<string, boolean>>({});
-  const [deepworkSessions, setDeepworkSessions] = useState<{ user_id: string; duration_seconds: number; started_at: string }[]>([]);
+  const [deepworkSessions, setDeepworkSessions] = useState<{ user_id: string; duration_seconds: number; started_at: string; xp_earned: number }[]>([]);
 
   // UI
   const [selectedId,  setSelectedId]  = useState<string | null>(null);
@@ -526,7 +526,7 @@ export default function CoachDashboard() {
       supabase.from('user_roles').select('user_id, role'),
       supabase.from('user_private').select('user_id, last_seen_at'),
       supabase.from('quests').select('*').limit(5000),
-      supabase.from('deepwork_sessions').select('user_id, duration_seconds, started_at')
+      supabase.from('deepwork_sessions').select('user_id, duration_seconds, started_at, xp_earned')
         .order('started_at', { ascending: false }).limit(10000),
       supabase.from('avatar_configs').select('*'),
     ]);
@@ -583,7 +583,7 @@ export default function CoachDashboard() {
       };
     });
 
-    setDeepworkSessions((allSessions || []) as { user_id: string; duration_seconds: number; started_at: string }[]);
+    setDeepworkSessions((allSessions || []) as { user_id: string; duration_seconds: number; started_at: string; xp_earned: number }[]);
     setStudents(enriched);
     setLoading(false);
   };
@@ -839,7 +839,9 @@ export default function CoachDashboard() {
       const completedInPeriod = quests.filter(q =>
         q.completed && q.completed_at && new Date(q.completed_at) >= cutoff
       );
-      const xpInPeriod    = completedInPeriod.reduce((a, q) => a + q.xp_reward, 0);
+      const xpFromQuests   = completedInPeriod.reduce((a, q) => a + q.xp_reward, 0);
+      const xpFromDeepwork = filteredSessions.reduce((a, sess) => a + (sess.xp_earned ?? 0), 0);
+      const xpInPeriod     = xpFromQuests + xpFromDeepwork;
       const secsInPeriod  = filteredSessions.reduce((a, sess) => a + sess.duration_seconds, 0);
       const hoursInPeriod = Math.round((secsInPeriod / 3600) * 10) / 10;
       const rate = quests.length > 0
