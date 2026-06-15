@@ -68,9 +68,9 @@ const STRESS_LABELS: Record<string, string> = {
 // Returns true if the streak is still "alive" (last activity today or yesterday)
 function isStreakLive(lastActivityDate: string | null): boolean {
   if (!lastActivityDate) return false;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toLocalDateKey(new Date());
   const yest  = new Date(); yest.setDate(yest.getDate() - 1);
-  return lastActivityDate === today || lastActivityDate === yest.toISOString().slice(0, 10);
+  return lastActivityDate === today || lastActivityDate === toLocalDateKey(yest);
 }
 
 // How many days since last activity (null → never)
@@ -375,7 +375,7 @@ function ActivityChart({ sessions }: { sessions: { duration_seconds: number; sta
 
 // ── quests-per-day chart ──────────────────────────────────────────────────────
 function QuestsChart({ quests }: { quests: { completed: boolean; completed_at: string | null; created_at: string }[] }) {
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayKey = toLocalDateKey(new Date());
 
   // All-time counts
   const allTimeCompleted = quests.filter(q => q.completed).length;
@@ -388,9 +388,9 @@ function QuestsChart({ quests }: { quests: { completed: boolean; completed_at: s
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
-      const key = d.toISOString().slice(0, 10);
+      const key = toLocalDateKey(d);
       // Only use completed_at — created_at is the creation date, not completion date
-      const count = quests.filter(q => q.completed && q.completed_at?.slice(0, 10) === key).length;
+      const count = quests.filter(q => q.completed && q.completed_at && toLocalDateKey(new Date(q.completed_at)) === key).length;
       arr.push({ date: key, count, label: d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) });
     }
     return arr;
@@ -664,7 +664,7 @@ export default function CoachDashboard() {
 
   const onlineCount          = students.filter(s => s.last_seen_at && (Date.now() - new Date(s.last_seen_at).getTime()) < 120_000).length;
   const totalUnresolvedDiffs = difficulties.filter(d => !d.resolved).length;
-  const totalMissingGrades   = exams.filter(e => new Date(e.exam_date) < now && e.grade === null && !(e as any).grade_received).length;
+  const totalMissingGrades   = exams.filter(e => new Date(e.exam_date + 'T12:00:00') < now && e.grade === null && !(e as any).grade_received).length;
 
   // Per-student helpers
   const sData = (uid: string) => ({
