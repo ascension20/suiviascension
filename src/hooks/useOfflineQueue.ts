@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface QueuedAction {
   id: string;
-  type: 'timer_session' | 'task_complete' | 'quest_complete' | 'task_create';
+  type: 'task_complete' | 'quest_complete' | 'task_create';
   payload: any;
   timestamp: number;
 }
@@ -39,9 +39,6 @@ export function useOfflineQueue() {
     for (const action of queue) {
       try {
         switch (action.type) {
-          case 'timer_session':
-            await supabase.from('timer_sessions').insert(action.payload);
-            break;
           case 'task_complete':
             await supabase.from('student_tasks').update({ completed: true, completed_at: new Date().toISOString() }).eq('id', action.payload.id);
             break;

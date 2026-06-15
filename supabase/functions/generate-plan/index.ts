@@ -37,7 +37,7 @@ serve(async (req) => {
       supabase.from("exams").select("*").eq("user_id", studentUserId).gte("exam_date", now.toISOString().split("T")[0]).order("exam_date", { ascending: true }),
       supabase.from("student_tasks").select("*").eq("user_id", studentUserId).eq("completed", false),
       supabase.from("quests").select("*").eq("assigned_to", studentUserId).eq("completed", false),
-      supabase.from("timer_sessions").select("*").eq("user_id", studentUserId).gte("created_at", new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()),
+      supabase.from("deepwork_sessions").select("duration_seconds, started_at").eq("user_id", studentUserId).gte("started_at", new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()),
     ]);
 
     const profile = profileRes.data;
@@ -47,12 +47,12 @@ serve(async (req) => {
     const pendingQuests = questsRes.data || [];
     const recentSessions = sessionsRes.data || [];
 
-    // Calculate hours by subject over last 2 weeks
+    // Calculate total deepwork hours over last 2 weeks
+    // Note: deepwork_sessions has no per-subject breakdown
     const hoursBySubject: Record<string, number> = {};
     let totalMinutes = 0;
     recentSessions.forEach((s: any) => {
-      hoursBySubject[s.subject] = (hoursBySubject[s.subject] || 0) + s.duration_minutes;
-      totalMinutes += s.duration_minutes;
+      totalMinutes += (s.duration_seconds || 0) / 60;
     });
 
     // Get past grades for context

@@ -345,7 +345,9 @@ export default function StudentDashboard() {
                 }
               </div>
               {weeklyChampion === profile?.pseudo && (
-                <Crown size={14} className="absolute -top-1 -right-1 champion-glow" style={{ color: 'hsl(43 90% 55%)' }} title="Premier du classement chrono !" />
+                <span className="absolute -top-1 -right-1" title="Premier du classement chrono !">
+                  <Crown size={14} className="champion-glow" style={{ color: 'hsl(43 90% 55%)' }} />
+                </span>
               )}
             </button>
 
