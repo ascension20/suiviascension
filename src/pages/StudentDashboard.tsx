@@ -107,14 +107,20 @@ export default function StudentDashboard() {
       dayStart.setHours(0, 0, 0, 0);
 
       // ── Fetch everything in parallel ─────────────────────────────────────
-      const [profsRes, weekXpRes, dayXpRes, weekSecRes, daySecRes, avatarCfgsRes] = await Promise.all([
+      // Epoch = all-time anchor so global boards use the same RPC as weekly/daily
+      // → prevents impossible "weekly XP > global XP" when profiles.total_xp drifts
+      const epoch = new Date(0).toISOString();
+
+      const [profsRes, allXpRes, weekXpRes, dayXpRes, allSecRes, weekSecRes, daySecRes, avatarCfgsRes] = await Promise.all([
         supabase
           .from('profiles')
-          .select('user_id, pseudo, avatar, total_xp, total_deepwork_seconds'),
-        // XP weekly / daily → via secure RPC (aggregated only, no per-row leak)
+          .select('user_id, pseudo, avatar'),
+        // XP global / weekly / daily → all via the same RPC (xp_history source)
+        supabase.rpc('get_xp_leaderboard', { _since: epoch }),
         supabase.rpc('get_xp_leaderboard', { _since: weekStart.toISOString() }),
         supabase.rpc('get_xp_leaderboard', { _since: dayStart.toISOString() }),
-        // Chrono weekly / daily → via secure RPC (aggregated only)
+        // Chrono global / weekly / daily → all via the same RPC (deepwork_sessions source)
+        supabase.rpc('get_deepwork_leaderboard', { _since: epoch }),
         supabase.rpc('get_deepwork_leaderboard', { _since: weekStart.toISOString() }),
         supabase.rpc('get_deepwork_leaderboard', { _since: dayStart.toISOString() }),
         supabase
@@ -123,8 +129,10 @@ export default function StudentDashboard() {
       ]);
 
       const profs        = profsRes.data     ?? [];
+      const allXpRows    = (allXpRes.data     ?? []) as { user_id: string; total: number }[];
       const weekXpRows   = (weekXpRes.data    ?? []) as { user_id: string; total: number }[];
       const dayXpRows    = (dayXpRes.data     ?? []) as { user_id: string; total: number }[];
+      const allSessions  = (allSecRes.data    ?? []) as { user_id: string; total_seconds: number }[];
       const weekSessions = (weekSecRes.data   ?? []) as { user_id: string; total_seconds: number }[];
       const daySessions  = (daySecRes.data    ?? []) as { user_id: string; total_seconds: number }[];
       const avatarCfgs   = avatarCfgsRes.data ?? [];
@@ -160,12 +168,16 @@ export default function StudentDashboard() {
         return acc;
       };
 
-      const weekXpByUser  = toMap(weekXpRows, 'total');
-      const dayXpByUser   = toMap(dayXpRows, 'total');
+      const allXpByUser   = toMap(allXpRows,    'total');
+      const weekXpByUser  = toMap(weekXpRows,   'total');
+      const dayXpByUser   = toMap(dayXpRows,    'total');
+      const allSecByUser  = toMap(allSessions,  'total_seconds');
       const weekSecByUser = toMap(weekSessions, 'total_seconds');
-      const daySecByUser  = toMap(daySessions, 'total_seconds');
+      const daySecByUser  = toMap(daySessions,  'total_seconds');
 
       // Build a sorted, consecutively ranked leaderboard from a score map
+      // All boards (global, weekly, daily) come from the same RPC source so
+      // it is impossible for a period board to show more than the global board.
       const buildBoard = (
         scores: Record<string, number>,
         transform: (v: number) => number = v => v,
@@ -184,40 +196,10 @@ export default function StudentDashboard() {
             isCurrentUser: x.uid === user.id,
           }));
 
-      // ── Global boards (from profiles, all-time) ──────────────────────────
-      const xpGlobal = profs
-        .filter(p => (p.total_xp ?? 0) > 0)
-        .sort((a, b) => (b.total_xp ?? 0) - (a.total_xp ?? 0))
-        .slice(0, 10)
-        .map((p, i) => {
-          const pseudo = p.pseudo ?? 'Élève';
-          return {
-            rank: i + 1,
-            userId: p.user_id,
-            pseudo,
-            avatar: avatarUrl(p.user_id, pseudo),
-            value:  p.total_xp ?? 0,
-            isCurrentUser: p.user_id === user.id,
-          };
-        });
+      // ── All boards from the same RPC source ──────────────────────────────
+      const xpGlobal  = buildBoard(allXpByUser);
+      const chGlobal  = buildBoard(allSecByUser,  v => Math.round(v / 60));
 
-      const chGlobal = profs
-        .filter(p => (p.total_deepwork_seconds ?? 0) > 0)
-        .sort((a, b) => (b.total_deepwork_seconds ?? 0) - (a.total_deepwork_seconds ?? 0))
-        .slice(0, 10)
-        .map((p, i) => {
-          const pseudo = p.pseudo ?? 'Élève';
-          return {
-            rank: i + 1,
-            userId: p.user_id,
-            pseudo,
-            avatar: avatarUrl(p.user_id, pseudo),
-            value:  Math.round((p.total_deepwork_seconds ?? 0) / 60),
-            isCurrentUser: p.user_id === user.id,
-          };
-        });
-
-      // ── Weekly / daily boards (from deepwork_sessions) ───────────────────
       const xpWeekly  = buildBoard(weekXpByUser);
       const xpDaily   = buildBoard(dayXpByUser);
       const chWeekly  = buildBoard(weekSecByUser, v => Math.round(v / 60));
