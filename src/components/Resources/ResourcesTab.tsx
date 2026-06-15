@@ -43,7 +43,7 @@ const TAG_CFG: Record<Tag, { label: string; hsl: string }> = {
 };
 
 type TabId = 'general' | 'seconde' | 'premiere' | 'terminale' | 'prompts';
-const TABS: { id: TabId; label: string; Icon?: React.FC<React.SVGProps<SVGSVGElement> & { size?: number }> }[] = [
+const TABS: { id: TabId; label: string; Icon?: React.ComponentType<{ size?: number; className?: string }> }[] = [
   { id: 'general',   label: 'Général',    Icon: Zap   },
   { id: 'seconde',   label: 'Seconde' },
   { id: 'premiere',  label: 'Première' },
