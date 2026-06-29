@@ -23,20 +23,23 @@ export function XPProgressionChart({ userId, totalXp }: Props) {
         .eq('user_id', userId)
         .gte('started_at', since.toISOString());
 
+      const toLocalKey = (d: Date) =>
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
       // Build day buckets
       const byDay: Record<string, number> = {};
       for (let i = 0; i <= 20; i++) {
         const d = new Date();
         d.setDate(d.getDate() - (20 - i));
-        byDay[d.toISOString().slice(0, 10)] = 0;
+        byDay[toLocalKey(d)] = 0;
       }
 
       sessions?.forEach(s => {
-        const key = (s.started_at ?? '').slice(0, 10);
+        const key = toLocalKey(new Date(s.started_at ?? Date.now()));
         if (key in byDay) byDay[key] += s.xp_earned ?? 0;
       });
 
-      const todayKey = new Date().toISOString().slice(0, 10);
+      const todayKey = toLocalKey(new Date());
       const days = Object.entries(byDay).map(([date, xp]) => ({
         label: new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
         xp,

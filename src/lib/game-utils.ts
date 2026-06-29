@@ -98,7 +98,7 @@ export function calculateLevel(totalXp: number): { level: number; currentXp: num
     xpUsed += needed;
     level++;
   }
-  return { level: 50, currentXp: 0, requiredXp: 1 };
+  return { level: 50, currentXp: totalXp - xpUsed, requiredXp: 200 * 50 };
 }
 
 export function questXpReward(difficulty: 1 | 2 | 3, isCoachQuest: boolean): number {

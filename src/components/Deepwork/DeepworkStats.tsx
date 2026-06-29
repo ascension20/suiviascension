@@ -27,14 +27,17 @@ export function DeepworkStats({ userId }: Props) {
         .eq('user_id', userId)
         .gte('started_at', since.toISOString());
 
+      const toLocalKey = (d: Date) =>
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
       const byDate: Record<string, number> = {};
       for (let i = 0; i < 30; i++) {
         const d = new Date();
         d.setDate(d.getDate() - (29 - i));
-        byDate[d.toISOString().slice(0, 10)] = 0;
+        byDate[toLocalKey(d)] = 0;
       }
       sessions?.forEach(s => {
-        const k = s.started_at.slice(0, 10);
+        const k = toLocalKey(new Date(s.started_at));
         if (byDate[k] !== undefined) byDate[k] += s.xp_earned;
       });
       setSeries(Object.entries(byDate).map(([date, xp]) => ({ date: date.slice(5), xp })));

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, CalendarDays, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -54,7 +54,9 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
   const [validating, setValidating] = useState<PlanningEvent | null>(null);
   const [converting, setConverting] = useState<PlanningEvent | null>(null);
   const [suppressedSlots, setSuppressedSlots] = useState<Set<string>>(new Set());
+  const [icalError, setIcalError] = useState(false);
   const [selectedDay, setSelectedDay] = useState(0);
+  const loadCounter = useRef(0);
   const isMobile = useIsMobile();
 
   const weekEnd = useMemo(() => {
@@ -62,25 +64,32 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
   }, [weekStart]);
 
   const load = async () => {
-    const { data } = await supabase
-      .from('planning_events').select('*')
-      .eq('user_id', userId)
-      .gte('event_date', formatDateISO(weekStart))
-      .lte('event_date', formatDateISO(weekEnd))
-      .order('start_time');
-    if (data) {
-      setEvents(data as PlanningEvent[]);
+    const thisLoad = ++loadCounter.current;
+
+    const [eventsRes, profRes] = await Promise.all([
+      supabase
+        .from('planning_events').select('*')
+        .eq('user_id', userId)
+        .gte('event_date', formatDateISO(weekStart))
+        .lte('event_date', formatDateISO(weekEnd))
+        .order('start_time'),
+      supabase.from('user_private').select('ical_url').eq('user_id', userId).maybeSingle(),
+    ]);
+
+    if (thisLoad !== loadCounter.current) return; // résultat périmé, semaine changée entre-temps
+
+    if (eventsRes.data) {
+      setEvents(eventsRes.data as PlanningEvent[]);
       // Rebuild suppressed slots from DB DS events (persists after remount)
       const slots = new Set<string>(
-        (data as PlanningEvent[])
+        (eventsRes.data as PlanningEvent[])
           .filter(e => e.type === 'ds')
-          .map(e => `${e.event_date}|${e.start_time.slice(0, 5)}`)
+          .map(e => `${e.event_date}|${(e.start_time ?? '').slice(0, 5)}`)
       );
       setSuppressedSlots(slots);
     }
 
-    const { data: prof } = await supabase.from('user_private').select('ical_url').eq('user_id', userId).maybeSingle();
-    setIcalUrl(prof?.ical_url ?? null);
+    setIcalUrl(profRes.data?.ical_url ?? null);
   };
 
   useEffect(() => { load(); }, [userId, weekStart.getTime(), reloadTrigger]);
@@ -92,8 +101,10 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
       try {
         const txt    = await fetchICal(icalUrl);
         const parsed = parseICal(txt, weekStart, weekEnd);
-        if (!cancelled) setIcalEvents(parsed.map(e => icalToPlanningEvent(e, userId)));
-      } catch { /* ignore */ }
+        if (!cancelled) { setIcalEvents(parsed.map(e => icalToPlanningEvent(e, userId))); setIcalError(false); }
+      } catch {
+        if (!cancelled) setIcalError(true);
+      }
     })();
     return () => { cancelled = true; };
   }, [icalUrl, weekStart.getTime()]);
@@ -105,14 +116,15 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
   //   (b) A DS exists at that slot (the course was converted)
   //   (c) Client-side immediate suppression flag (set on convert before DB round-trip)
   const dbIcalSlots = new Set(
-    events.filter(e => e.source === 'ical')
+    events.filter(e => e.source === 'ical' && e.start_time)
           .map(e => `${e.event_date}|${e.start_time.slice(0, 5)}`)
   );
   const dbDsSlots = new Set(
-    events.filter(e => e.type === 'ds')
+    events.filter(e => e.type === 'ds' && e.start_time)
           .map(e => `${e.event_date}|${e.start_time.slice(0, 5)}`)
   );
   const filteredIcal = icalEvents.filter(ev => {
+    if (!ev.start_time) return false;
     const slot = `${ev.event_date}|${ev.start_time.slice(0, 5)}`;
     if (dbIcalSlots.has(slot))      return false; // (a) already in DB → show DB version
     if (dbDsSlots.has(slot))        return false; // (b) converted to DS
@@ -121,7 +133,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
   });
   // Also hide DB iCal courses that are covered by a DS (course was converted but NOT deleted)
   const visibleDbEvents = events.filter(e => {
-    if (e.source === 'ical' && e.type === 'course') {
+    if (e.source === 'ical' && e.type === 'course' && e.start_time) {
       const slot = `${e.event_date}|${e.start_time.slice(0, 5)}`;
       if (dbDsSlots.has(slot) || suppressedSlots.has(slot)) return false;
     }
@@ -155,7 +167,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
         <div className="flex items-center justify-between gap-1">
           <span className={`text-[10px] font-bold uppercase ${c.text}`}>{eventTypeLabel(ev.type)}</span>
           <span className="text-[10px] text-muted-foreground tabular-nums">
-            {ev.start_time.slice(0, 5)}–{ev.end_time.slice(0, 5)}
+            {(ev.start_time ?? '').slice(0, 5)}–{(ev.end_time ?? '').slice(0, 5)}
           </span>
         </div>
         <p className="text-xs font-medium leading-tight mt-1">{ev.title}</p>
@@ -203,6 +215,13 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
         </div>
       </header>
 
+      {/* ── Bandeau erreur iCal ── */}
+      {icalError && (
+        <div className="px-3 py-1.5 text-[11px] text-amber-400 bg-amber-500/10 border-b border-amber-500/30 flex-shrink-0">
+          ⚠ Impossible de charger l'emploi du temps iCal. Les cours importés peuvent être absents.
+        </div>
+      )}
+
       {/* ── Mobile view ── */}
       {isMobile ? (
         <>
@@ -229,7 +248,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
             })}
           </div>
           <div className="flex-1 overflow-y-auto p-3">
-            {eventsForDay(days[selectedDay]).length === 0 ? (
+            {!days[selectedDay] || eventsForDay(days[selectedDay]).length === 0 ? (
               <p className="text-center text-muted-foreground text-sm py-8">Rien de prévu.</p>
             ) : eventsForDay(days[selectedDay]).map(renderEventCard)}
           </div>
@@ -316,7 +335,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
                     key={i}
                     className={`relative border-r border-border last:border-r-0 ${isToday ? 'bg-primary/5' : ''}`}
                   >
-                    {dayEvs.map(ev => {
+                    {dayEvs.filter(ev => ev.start_time && ev.end_time).map(ev => {
                       const topPct    = timeToPct(ev.start_time);
                       const heightPct = Math.max(
                         timeToPct(ev.end_time) - topPct,
@@ -336,7 +355,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
                         >
                           <div className="px-1 py-0.5 h-full flex flex-col justify-start overflow-hidden">
                             <p className={`text-[8px] font-bold leading-tight truncate ${ev.validated ? 'text-emerald-400' : c.text}`}>
-                              {ev.start_time.slice(0, 5)}
+                              {(ev.start_time ?? '').slice(0, 5)}
                               {ev.type === 'ds' ? <span style={{ color: 'hsl(0 84% 60%)', fontSize: '0.65rem' }}> ●</span> : ''}
                               {ev.validated ? ' ✓' : ''}
                             </p>
@@ -458,7 +477,7 @@ function ConvertToDsModal({
         <div className="space-y-1 mb-4 p-3 rounded-lg bg-secondary/40 border border-border">
           <p className="text-sm font-semibold">{event.title}</p>
           <p className="text-xs text-muted-foreground">
-            {event.event_date} · {event.start_time.slice(0,5)}–{event.end_time.slice(0,5)}
+            {event.event_date} · {(event.start_time ?? '').slice(0,5)}–{(event.end_time ?? '').slice(0,5)}
           </p>
         </div>
         <div className="space-y-3">
