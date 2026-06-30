@@ -460,7 +460,7 @@ export default function StudentDashboard() {
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
 
         {/* ── Ressources tab ── */}
-        {activeTab === 'ressources' && <ResourcesTab />}
+        {activeTab === 'ressources' && <ResourcesTab onXpGain={addXp} />}
 
         {/* ── Dashboard tab ── */}
         {activeTab === 'dashboard' && <>
