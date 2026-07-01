@@ -282,9 +282,9 @@ export const PHYSICS_MODULES: PhysicsModule[] = [
     title: 'Newton & champ uniforme',
     subtitle: 'Lois de Newton · Projectile · Champ électrique',
     accentHsl: '205 85% 60%',
-    pdfCours:      null,   // Upload dans Supabase Storage puis remplacer par l'URL signée
-    pdfFiche:      null,
-    pdfExercices:  null,
+    pdfCours:      '/modules/phys-newton/cours.pdf',
+    pdfFiche:      '/modules/phys-newton/fiche.pdf',
+    pdfExercices:  '/modules/phys-newton/exercices.pdf',
     levels: NEWTON_LEVELS,
   },
 ];
