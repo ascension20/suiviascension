@@ -272,6 +272,33 @@ export type Database = {
         }
         Relationships: []
       }
+      module_progress: {
+        Row: {
+          completed_at: string
+          id: string
+          level_id: string
+          module_id: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          level_id: string
+          module_id: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          level_id?: string
+          module_id?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
       notification_log: {
         Row: {
           id: string
