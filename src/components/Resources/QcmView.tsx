@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Zap } from 'lucide-react';
 import { QcmQuestion } from '@/lib/newton-content';
+import { MixedText } from './Math';
 
 interface QcmViewProps {
   questions: QcmQuestion[];
@@ -127,7 +128,7 @@ export function QcmView({ questions, xpReward, onComplete, onBack }: QcmViewProp
         >
           <div className="bg-white/5 rounded-xl border border-white/10 p-5 mb-5">
             <p className="text-white font-semibold text-base leading-relaxed">
-              {q.n}. {q.text}
+              {q.n}. <MixedText text={q.text} />
             </p>
           </div>
 
@@ -151,7 +152,7 @@ export function QcmView({ questions, xpReward, onComplete, onBack }: QcmViewProp
                   <span className="shrink-0 w-7 h-7 rounded-full border border-current/40 bg-white/10 text-sm font-bold flex items-center justify-center uppercase">
                     {opt.label}
                   </span>
-                  <span className="text-sm">{opt.text}</span>
+                  <span className="text-sm"><MixedText text={opt.text} /></span>
                   {revealed && isCorrect && <CheckCircle2 size={18} className="ml-auto text-emerald-400" />}
                   {revealed && isSelected && !isCorrect && <XCircle size={18} className="ml-auto text-red-400" />}
                 </button>
