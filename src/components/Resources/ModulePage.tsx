@@ -788,7 +788,7 @@ function CourseTab() {
         </ul>
         <div className="px-4 py-2 border-t border-amber-700/20">
           <p className="text-[11px] text-white/35 text-center">
-            {"Conventions : repère $(O,\\,\\vec{i},\\,\\vec{j})$, $g = 9{,}81\\,\\text{m\\,s}^{-2}$, frottements négligés sauf mention contraire."}
+            Conventions : repère <InlineMath tex="(O,\vec{i},\vec{j})" />, <InlineMath tex="g=9{,}81\,\text{m\,s}^{-2}" />, frottements négligés sauf mention contraire.
           </p>
         </div>
       </div>
@@ -825,7 +825,7 @@ function CourseTab() {
    ═══════════════════════════════════════════════════════════════════════════ */
 const FICHE_DATA = [
   {
-    title: '§1  Cinématique',
+    title: '1  Cinématique',
     rows: [
       { label: 'Position',     tex: '\\overrightarrow{OM}(t) = x(t)\\,\\vec{i}+y(t)\\,\\vec{j}' },
       { label: 'Vitesse',      tex: '\\vec{v}=\\dfrac{d\\overrightarrow{OM}}{dt}\\quad(\\text{tangente})' },
@@ -834,15 +834,15 @@ const FICHE_DATA = [
     ],
   },
   {
-    title: '§2  Lois de Newton',
+    title: '2  Lois de Newton',
     rows: [
       { label: '1ʳᵉ loi', tex: '\\sum\\vec{F}_{\\text{ext}}=\\vec{0}\\iff\\vec{v}_G=\\overrightarrow{\\text{cte}}' },
       { label: '2ᵉ loi',  tex: '\\sum\\vec{F}_{\\text{ext}}=m\\vec{a}_G' },
-      { label: '3ᵉ loi',  tex: '\\vec{F}_{A/B}=-\\vec{F}_{B/A}\\;(\\text{corps ≠})' },
+      { label: '3ᵉ loi',  tex: '\\vec{F}_{A/B}=-\\vec{F}_{B/A}\\quad(A\\neq B)' },
     ],
   },
   {
-    title: '§4  Projectile (sans frottement)',
+    title: '4  Projectile (sans frottement)',
     rows: [
       { label: 'Horaires',    tex: 'x=v_0\\cos\\alpha\\cdot t\\;,\\;\\;y=v_0\\sin\\alpha\\cdot t-\\tfrac{1}{2}g\\,t^2' },
       { label: 'Trajectoire', tex: 'y=-\\dfrac{g}{2v_0^2\\cos^2\\!\\alpha}\\,x^2+(\\tan\\alpha)\\,x' },
@@ -851,7 +851,7 @@ const FICHE_DATA = [
     ],
   },
   {
-    title: '§5  Particule chargée',
+    title: '5  Particule chargée',
     rows: [
       { label: 'Champ',        tex: 'E=U/d' },
       { label: 'Force',        tex: '\\vec{F}=q\\vec{E}\\;(\\text{opposée à }\\vec{E}\\text{ si }q<0)' },
