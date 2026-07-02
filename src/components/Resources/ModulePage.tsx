@@ -128,129 +128,236 @@ type BlockType =
 interface Section { id: string; num: string; title: string; blocks: BlockType[] }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SCHÉMAS SVG
+   SCHÉMAS SVG — clairs, sans décalage, étiquettes soignées
    ═══════════════════════════════════════════════════════════════════════════ */
+
+/** Flèche réutilisable : évite les id en conflit entre figures */
+function Arrow({ id, color }: { id: string; color: string }) {
+  return (
+    <marker id={id} markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill={color} />
+    </marker>
+  );
+}
+
+/* ── Figure 1 : vecteurs cinématique ──────────────────────────────────────── */
 function FigVecteurs() {
+  const OX = 40; const OY = 170;  // origine repère
   return (
-    <svg viewBox="0 0 320 180" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 330 195" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <marker id="fg1" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-          <path d="M0,0 L7,3.5 L0,7 Z" fill="#6b7280"/>
-        </marker>
-        <marker id="fg2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
-        </marker>
-        <marker id="fg3" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
-        </marker>
-        <marker id="fg4" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-          <path d="M0,0 L7,3.5 L0,7 Z" fill="#9ca3af"/>
-        </marker>
+        <Arrow id="av-axis" color="#4b5563" />
+        <Arrow id="av-om"   color="#9ca3af" />
+        <Arrow id="av-v"    color="#f59e0b" />
+        <Arrow id="av-a"    color="#fb923c" />
       </defs>
-      {/* axes */}
-      <line x1="30" y1="155" x2="300" y2="155" stroke="#374151" strokeWidth="1.5" markerEnd="url(#fg1)"/>
-      <line x1="30" y1="155" x2="30"  y2="15"  stroke="#374151" strokeWidth="1.5" markerEnd="url(#fg1)"/>
-      <text x="295" y="168" fill="#6b7280" fontSize="12" fontFamily="sans-serif" fontStyle="italic">x</text>
-      <text x="22"  y="14"  fill="#6b7280" fontSize="12" fontFamily="sans-serif" fontStyle="italic">y</text>
-      {/* trajectoire */}
-      <path d="M50,148 C90,60 200,30 280,110" fill="none" stroke="#6b7280" strokeWidth="1.5"/>
-      {/* Point M */}
-      <circle cx="170" cy="54" r="4" fill="#f59e0b"/>
-      <text x="175" y="50" fill="#d1d5db" fontSize="12" fontFamily="sans-serif" fontStyle="italic">M</text>
-      {/* OM */}
-      <line x1="30" y1="155" x2="167" y2="56" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="5,3" markerEnd="url(#fg4)"/>
-      <text x="70" y="118" fill="#9ca3af" fontSize="11" fontFamily="sans-serif" fontStyle="italic">OM</text>
-      {/* v (tangent, orange) */}
-      <line x1="170" y1="54" x2="228" y2="28" stroke="#f59e0b" strokeWidth="2.5" markerEnd="url(#fg2)"/>
-      <text x="228" y="24" fill="#f59e0b" fontSize="13" fontFamily="sans-serif" fontWeight="bold">v</text>
-      {/* a (vers intérieur, orange) */}
-      <line x1="170" y1="54" x2="195" y2="94" stroke="#f59e0b" strokeWidth="2.5" markerEnd="url(#fg3)"/>
-      <text x="196" y="96" fill="#f59e0b" fontSize="13" fontFamily="sans-serif" fontWeight="bold">a</text>
-      {/* O */}
-      <text x="20" y="168" fill="#6b7280" fontSize="12" fontFamily="sans-serif">O</text>
+
+      {/* ── axes ── */}
+      <line x1={OX} y1={OY} x2={310} y2={OY} stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#av-axis)"/>
+      <line x1={OX} y1={OY} x2={OX}  y2={20}  stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#av-axis)"/>
+      <text x={314} y={OY+4}  fill="#6b7280" fontSize="13" fontFamily="Georgia,serif" fontStyle="italic">x</text>
+      <text x={OX-8} y={14}   fill="#6b7280" fontSize="13" fontFamily="Georgia,serif" fontStyle="italic">y</text>
+      <text x={OX-14} y={OY+14} fill="#6b7280" fontSize="12" fontFamily="Georgia,serif">O</text>
+
+      {/* ── trajectoire courbe ── */}
+      {/* de (80,160) à (280,90) en passant par le sommet (165,38) */}
+      <path d="M 80,158 C 100,80 230,20 280,90"
+        fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
+      <text x="82" y="175" fill="#6b7280" fontSize="11" fontFamily="Georgia,serif">trajectoire</text>
+
+      {/* ── point M (sur la courbe ≈ mi-chemin) ── */}
+      {/* M est à peu près sur la courbe à t=0.45 */}
+      {/* Approximation du point de Bézier à t=0.45:
+          P = (1-t)³P0 + 3(1-t)²tP1 + 3(1-t)t²P2 + t³P3
+          P0=(80,158) P1=(100,80) P2=(230,20) P3=(280,90) t=0.45
+          ≈ (168, 67) */}
+      <circle cx="168" cy="67" r="5" fill="#f59e0b"/>
+      <text x="174" y="62" fill="#e5e7eb" fontSize="13" fontFamily="Georgia,serif" fontStyle="italic">M</text>
+
+      {/* ── vecteur OM (pointillé, gris) ── */}
+      {/* de O=(40,170) à M=(168,67) — on stoppe juste avant M pour la flèche */}
+      <line x1={OX} y1={OY} x2="163" y2="70"
+        stroke="#6b7280" strokeWidth="1.5" strokeDasharray="5,3" markerEnd="url(#av-om)"/>
+      {/* étiquette OM au milieu */}
+      <text x="85" y="130" fill="#9ca3af" fontSize="11" fontFamily="Georgia,serif" fontStyle="italic"
+        transform="rotate(-40 85 130)">OM⃗</text>
+
+      {/* ── vecteur vitesse v (tangent à la courbe en M, orange) ──
+           La dérivée du Bézier en t=0.45 donne une direction ~(-70, -120) normalisée.
+           On dessine de M vers M + 60 * dir_normalisée.
+           dir ≈ (0.5, -0.87) → arrivée ≈ (168+30, 67-52) = (198, 15) */}
+      <line x1="168" y1="67" x2="196" y2="18"
+        stroke="#f59e0b" strokeWidth="2.5" markerEnd="url(#av-v)"/>
+      <text x="200" y="16" fill="#f59e0b" fontSize="14" fontFamily="Georgia,serif" fontWeight="bold" fontStyle="italic">v⃗</text>
+
+      {/* ── vecteur accélération a (vers intérieur de courbure, orange clair) ──
+           En M sur cette courbe, l'accélération centripète pointe vers le bas-gauche (vers le centre de courbure).
+           dir ≈ (-0.35, 0.94) → arrivée ≈ (168-21, 67+56) = (147, 123) */}
+      <line x1="168" y1="67" x2="149" y2="120"
+        stroke="#fb923c" strokeWidth="2.5" markerEnd="url(#av-a)"/>
+      <text x="132" y="130" fill="#fb923c" fontSize="14" fontFamily="Georgia,serif" fontWeight="bold" fontStyle="italic">a⃗</text>
+
+      {/* ── légende ── */}
+      <g transform="translate(220,140)">
+        <line x1="0" y1="0" x2="20" y2="0" stroke="#f59e0b" strokeWidth="2"/>
+        <circle cx="0" cy="0" r="3" fill="#f59e0b"/>
+        <text x="24" y="4" fill="#f59e0b" fontSize="10" fontFamily="sans-serif">vitesse v⃗ (tangente)</text>
+        <line x1="0" y1="16" x2="20" y2="16" stroke="#fb923c" strokeWidth="2"/>
+        <circle cx="0" cy="16" r="3" fill="#fb923c"/>
+        <text x="24" y="20" fill="#fb923c" fontSize="10" fontFamily="sans-serif">accél. a⃗ (centripète)</text>
+        <line x1="0" y1="32" x2="20" y2="32" stroke="#6b7280" strokeWidth="1.5" strokeDasharray="4,2"/>
+        <text x="24" y="36" fill="#9ca3af" fontSize="10" fontFamily="sans-serif">vecteur OM⃗</text>
+      </g>
     </svg>
   );
 }
 
+/* ── Figure 2 : trajectoire parabolique du projectile ────────────────────── */
 function FigProjectile() {
+  // Origine du repère : (50, 160)
+  const OX = 50; const OY = 160;
+  // Sommet de la parabole : (190, 30)  → H = 130 px
+  // Portée D jusqu'à x=310, y=160
   return (
-    <svg viewBox="0 0 320 175" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 360 195" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <marker id="fp1" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-          <path d="M0,0 L7,3.5 L0,7 Z" fill="#6b7280"/>
-        </marker>
-        <marker id="fp2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
-        </marker>
+        <Arrow id="ap-axis" color="#4b5563" />
+        <Arrow id="ap-v0"   color="#f59e0b" />
+        <Arrow id="ap-dim"  color="#6b7280" />
       </defs>
-      {/* sol */}
-      <line x1="20" y1="148" x2="300" y2="148" stroke="#374151" strokeWidth="2"/>
-      {/* axes */}
-      <line x1="30" y1="148" x2="295" y2="148" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#fp1)"/>
-      <line x1="30" y1="148" x2="30"  y2="15"  stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#fp1)"/>
-      <text x="290" y="162" fill="#6b7280" fontSize="11" fontStyle="italic">x</text>
-      <text x="22"  y="14"  fill="#6b7280" fontSize="11" fontStyle="italic">y</text>
-      {/* trajectoire */}
-      <path d="M30,148 Q170,10 272,148" fill="none" stroke="#f59e0b" strokeWidth="2.5"/>
-      {/* v0 */}
-      <line x1="30" y1="148" x2="67" y2="118" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#fp2)"/>
-      <text x="56" y="113" fill="#f59e0b" fontSize="11" fontStyle="italic">v₀</text>
-      {/* angle α */}
-      <path d="M48,148 A20,20 0 0,0 58,131" fill="none" stroke="#9ca3af" strokeWidth="1.2"/>
-      <text x="55" y="144" fill="#9ca3af" fontSize="10" fontStyle="italic">α</text>
-      {/* H */}
-      <circle cx="151" cy="22" r="3.5" fill="#f59e0b"/>
-      <line x1="151" y1="22" x2="151" y2="148" stroke="#f59e0b" strokeWidth="1.2" strokeDasharray="4,3"/>
-      <text x="155" y="90" fill="#f59e0b" fontSize="12" fontStyle="italic">H</text>
-      <text x="137" y="14" fill="#9ca3af" fontSize="10">(flèche)</text>
-      {/* D */}
-      <line x1="30"  y1="158" x2="272" y2="158" stroke="#9ca3af" strokeWidth="1.2"/>
-      <line x1="30"  y1="153" x2="30"  y2="163" stroke="#9ca3af" strokeWidth="1.2"/>
-      <line x1="272" y1="153" x2="272" y2="163" stroke="#9ca3af" strokeWidth="1.2"/>
-      <text x="138" y="170" fill="#9ca3af" fontSize="12" fontStyle="italic">D</text>
-      <text x="120" y="170" fill="#9ca3af" fontSize="10">(portée)</text>
+
+      {/* ── sol ── */}
+      <line x1="10" y1={OY} x2={350} y2={OY} stroke="#1f2937" strokeWidth="3"/>
+
+      {/* ── axes ── */}
+      <line x1={OX} y1={OY} x2={345} y2={OY} stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#ap-axis)"/>
+      <line x1={OX} y1={OY} x2={OX}   y2={12}  stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#ap-axis)"/>
+      <text x={348} y={OY+4}  fill="#6b7280" fontSize="13" fontFamily="Georgia,serif" fontStyle="italic">x</text>
+      <text x={OX-8} y={8}    fill="#6b7280" fontSize="13" fontFamily="Georgia,serif" fontStyle="italic">y</text>
+      <text x={OX-16} y={OY+14} fill="#6b7280" fontSize="12" fontFamily="Georgia,serif">O</text>
+
+      {/* ── parabole : de (50,160) par sommet (190,30) jusqu'à (330,160) ── */}
+      <path d={`M ${OX},${OY} Q 190,28 330,${OY}`}
+        fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round"/>
+
+      {/* ── vecteur v₀ au départ ── */}
+      {/* angle ~40° : Δx=28, Δy=-24 → arrivée (78,136) */}
+      <line x1={OX} y1={OY} x2="82" y2="128"
+        stroke="#f59e0b" strokeWidth="2.5" markerEnd="url(#ap-v0)"/>
+      <text x="84" y="122" fill="#f59e0b" fontSize="12" fontFamily="Georgia,serif" fontStyle="italic">v₀</text>
+
+      {/* ── arc angle α ── */}
+      <path d={`M ${OX+22},${OY} A 22,22 0 0,0 ${OX+16},${OY-18}`}
+        fill="none" stroke="#9ca3af" strokeWidth="1.3"/>
+      <text x={OX+24} y={OY-6} fill="#9ca3af" fontSize="11" fontFamily="Georgia,serif" fontStyle="italic">α</text>
+
+      {/* ── point sommet ── */}
+      <circle cx="190" cy="30" r="4" fill="#f59e0b"/>
+
+      {/* ── H (flèche verticale) ── */}
+      {/* de y=30 à y=160 en x=190 */}
+      <line x1="190" y1="32" x2="190" y2={OY-4} stroke="#60a5fa" strokeWidth="1.5" strokeDasharray="5,3"/>
+      {/* accolades simplifiées : petits tirets horizontaux */}
+      <line x1="185" y1="32"  x2="195" y2="32"  stroke="#60a5fa" strokeWidth="1.5"/>
+      <line x1="185" y1={OY}  x2="195" y2={OY}  stroke="#60a5fa" strokeWidth="1.5"/>
+      <text x="196" y="100" fill="#60a5fa" fontSize="13" fontFamily="Georgia,serif" fontStyle="italic">H</text>
+
+      {/* ── D (cotation horizontale sous le sol) ── */}
+      <line x1={OX}  y1={OY+14} x2={328}  y2={OY+14} stroke="#9ca3af" strokeWidth="1.3"/>
+      <line x1={OX}  y1={OY+8}  x2={OX}   y2={OY+20} stroke="#9ca3af" strokeWidth="1.3"/>
+      <line x1="330" y1={OY+8}  x2="330"  y2={OY+20} stroke="#9ca3af" strokeWidth="1.3"/>
+      <text x="175" y={OY+28} fill="#9ca3af" fontSize="12" fontFamily="Georgia,serif" fontStyle="italic">D (portée)</text>
+
+      {/* ── légende ── */}
+      <g transform="translate(12,20)">
+        <rect x="-4" y="-12" width="118" height="46" rx="5" fill="#111827" opacity="0.7"/>
+        <line x1="0" y1="0" x2="18" y2="0" stroke="#f59e0b" strokeWidth="2"/>
+        <text x="22" y="4" fill="#f59e0b" fontSize="10" fontFamily="sans-serif">trajectoire / v₀</text>
+        <line x1="0" y1="16" x2="18" y2="16" stroke="#60a5fa" strokeWidth="1.5" strokeDasharray="4,2"/>
+        <text x="22" y="20" fill="#60a5fa" fontSize="10" fontFamily="sans-serif">flèche H</text>
+        <line x1="0" y1="30" x2="18" y2="30" stroke="#9ca3af" strokeWidth="1.3"/>
+        <text x="22" y="34" fill="#9ca3af" fontSize="10" fontFamily="sans-serif">portée D</text>
+      </g>
     </svg>
   );
 }
 
+/* ── Figure 3 : condensateur plan ────────────────────────────────────────── */
 function FigCondensateur() {
+  // Condensateur : plaque+ en y=30, plaque- en y=148, x de 60 à 290
+  // Largeur des plaques : 230 px
+  const PX1 = 60; const PX2 = 290;
+  const PY_PLUS = 30; const PY_MOINS = 148;
+  const MID_Y = (PY_PLUS + PY_MOINS) / 2;  // 89
   return (
-    <svg viewBox="0 0 300 170" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 360 190" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <marker id="fc1" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
-        </marker>
-        <marker id="fc2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
-        </marker>
+        <Arrow id="ac-e"   color="#f59e0b" />
+        <Arrow id="ac-v0"  color="#34d399" />
+        <Arrow id="ac-dim" color="#6b7280" />
       </defs>
-      {/* plaque + */}
-      <rect x="35" y="22" width="220" height="12" rx="2" fill="#78350f" stroke="#f59e0b" strokeWidth="1.5"/>
-      <text x="264" y="32" fill="#f59e0b" fontSize="14" fontWeight="bold">+</text>
-      {/* plaque − */}
-      <rect x="35" y="136" width="220" height="12" rx="2" fill="#1c1917" stroke="#9ca3af" strokeWidth="1.5"/>
-      <text x="264" y="147" fill="#9ca3af" fontSize="14" fontWeight="bold">−</text>
-      {/* champ E */}
-      {[90, 155, 220].map(x => (
-        <line key={x} x1={x} y1="44" x2={x} y2="130" stroke="#f59e0b" strokeWidth="1.5" markerEnd="url(#fc1)"/>
+
+      {/* ── plaque + (orange) ── */}
+      <rect x={PX1} y={PY_PLUS} width={PX2-PX1} height="10" rx="3"
+        fill="#78350f" stroke="#f59e0b" strokeWidth="1.5"/>
+      <text x={PX2+6} y={PY_PLUS+9} fill="#f59e0b" fontSize="16" fontFamily="sans-serif" fontWeight="bold">+</text>
+      {/* label */}
+      <text x={PX1-48} y={PY_PLUS+9} fill="#f59e0b" fontSize="11" fontFamily="sans-serif">plaque +</text>
+
+      {/* ── plaque − (gris) ── */}
+      <rect x={PX1} y={PY_MOINS} width={PX2-PX1} height="10" rx="3"
+        fill="#1c1917" stroke="#9ca3af" strokeWidth="1.5"/>
+      <text x={PX2+6} y={PY_MOINS+9} fill="#9ca3af" fontSize="16" fontFamily="sans-serif" fontWeight="bold">−</text>
+      <text x={PX1-48} y={PY_MOINS+9} fill="#9ca3af" fontSize="11" fontFamily="sans-serif">plaque −</text>
+
+      {/* ── lignes de champ E (3 flèches verticales) ── */}
+      {[110, 175, 240].map(x => (
+        <line key={x} x1={x} y1={PY_PLUS+14} x2={x} y2={PY_MOINS-6}
+          stroke="#f59e0b" strokeWidth="1.8" markerEnd="url(#ac-e)"/>
       ))}
-      <text x="230" y="92" fill="#f59e0b" fontSize="13" fontStyle="italic" fontWeight="bold">E</text>
-      {/* d */}
-      <line x1="16" y1="34"  x2="16" y2="136" stroke="#6b7280" strokeWidth="1" markerEnd="url(#fc2)"/>
-      <text x="4"  y="92"  fill="#9ca3af" fontSize="11" fontStyle="italic">d</text>
-      {/* L */}
-      <line x1="35" y1="160" x2="255" y2="160" stroke="#6b7280" strokeWidth="1"/>
-      <line x1="35" y1="156" x2="35" y2="164" stroke="#6b7280" strokeWidth="1"/>
-      <line x1="255" y1="156" x2="255" y2="164" stroke="#6b7280" strokeWidth="1"/>
-      <text x="138" y="170" fill="#9ca3af" fontSize="11" fontStyle="italic">L</text>
-      {/* électron */}
-      <circle cx="48" cy="85" r="7" fill="#1e293b" stroke="#9ca3af" strokeWidth="1.5"/>
-      <text x="43" y="89" fill="#9ca3af" fontSize="8">e⁻</text>
-      {/* v0 */}
-      <line x1="22" y1="85" x2="40" y2="85" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#fc2)"/>
-      <text x="8" y="80" fill="#f59e0b" fontSize="10" fontStyle="italic">v₀</text>
-      {/* trajectoire électron (vers +) */}
-      <path d="M55,85 Q150,80 240,44" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="5,3"/>
+      {/* étiquette E à droite du condensateur */}
+      <text x="246" y={MID_Y+4} fill="#f59e0b" fontSize="15" fontFamily="Georgia,serif" fontWeight="bold" fontStyle="italic">E⃗</text>
+
+      {/* ── cotation d (distance entre plaques) ── */}
+      <line x1="42" y1={PY_PLUS+10} x2="42" y2={PY_MOINS} stroke="#6b7280" strokeWidth="1.2"/>
+      <line x1="36" y1={PY_PLUS+10} x2="48" y2={PY_PLUS+10} stroke="#6b7280" strokeWidth="1.2"/>
+      <line x1="36" y1={PY_MOINS}   x2="48" y2={PY_MOINS}   stroke="#6b7280" strokeWidth="1.2"/>
+      <text x="16" y={MID_Y+4} fill="#9ca3af" fontSize="12" fontFamily="Georgia,serif" fontStyle="italic">d</text>
+
+      {/* ── particule (électron) entrant par la gauche ── */}
+      {/* e⁻ entre à mi-hauteur en x=60, y=89 */}
+      <circle cx="60" cy={MID_Y} r="9" fill="#1e3a5f" stroke="#60a5fa" strokeWidth="1.8"/>
+      <text x="55" y={MID_Y+4} fill="#60a5fa" fontSize="9" fontFamily="sans-serif" fontWeight="bold">e⁻</text>
+
+      {/* vecteur v₀ vers la droite */}
+      <line x1="20" y1={MID_Y} x2="48" y2={MID_Y}
+        stroke="#34d399" strokeWidth="2.2" markerEnd="url(#ac-v0)"/>
+      <text x="5" y={MID_Y-8} fill="#34d399" fontSize="11" fontFamily="Georgia,serif" fontStyle="italic">v₀</text>
+
+      {/* ── trajectoire parabolique de l'électron (dévié vers +, vers le haut) ── */}
+      {/* de (69,89) courbée vers (290, 50) — électron charge négative, force vers + */}
+      <path d="M 69,89 Q 180,82 282,45"
+        fill="none" stroke="#60a5fa" strokeWidth="2" strokeDasharray="6,3" strokeLinecap="round"/>
+      {/* point d'arrivée */}
+      <circle cx="282" cy="45" r="4" fill="#60a5fa"/>
+
+      {/* ── formules intégrées ── */}
+      <g transform="translate(295,80)">
+        <rect x="-4" y="-12" width="62" height="30" rx="4" fill="#111827" opacity="0.85"/>
+        <text x="0" y="0" fill="#f59e0b" fontSize="10" fontFamily="sans-serif">E = U/d</text>
+        <text x="0" y="14" fill="#60a5fa" fontSize="10" fontFamily="sans-serif">F = qE</text>
+      </g>
+
+      {/* ── légende ── */}
+      <g transform="translate(295,125)">
+        <rect x="-4" y="-12" width="62" height="46" rx="4" fill="#111827" opacity="0.85"/>
+        <line x1="0" y1="0" x2="16" y2="0" stroke="#f59e0b" strokeWidth="2"/>
+        <text x="20" y="4"  fill="#f59e0b" fontSize="9" fontFamily="sans-serif">champ E⃗</text>
+        <line x1="0" y1="14" x2="16" y2="14" stroke="#34d399" strokeWidth="2"/>
+        <text x="20" y="18" fill="#34d399" fontSize="9" fontFamily="sans-serif">vitesse v₀</text>
+        <line x1="0" y1="28" x2="16" y2="28" stroke="#60a5fa" strokeWidth="1.5" strokeDasharray="4,2"/>
+        <text x="20" y="32" fill="#60a5fa" fontSize="9" fontFamily="sans-serif">trajectoire</text>
+      </g>
     </svg>
   );
 }
