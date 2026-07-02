@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { PhysicsModule, ModuleLevel, TIER_META, DIFF_LABEL } from '@/lib/modules-data';
 import { NEWTON_QCM, NEWTON_EXERCISES } from '@/lib/newton-content';
-import { BlockMath, MixedText } from './Math';
+import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
 
@@ -49,6 +49,7 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
 
   return (
     <div className="flex flex-col min-h-full">
+      {/* Header */}
       <div className="flex items-start gap-3 mb-5">
         <button onClick={onBack}
           className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white/50 hover:text-white mt-0.5">
@@ -63,23 +64,25 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
         </div>
       </div>
 
+      {/* Progress */}
       <div className="mb-5 px-1">
         <div className="flex justify-between text-xs mb-1.5 text-white/40">
           <span>{completedIds.size} / {module.levels.length} niveaux complétés</span>
           <span className="font-bold text-white/60">{earnedXp} / {totalXp} XP</span>
         </div>
         <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-          <motion.div className="h-full rounded-full bg-sky-500"
+          <motion.div className="h-full rounded-full bg-amber-500"
             initial={{ width: 0 }} animate={{ width: `${pct}%` }}
             transition={{ duration: 0.6, ease: 'easeOut' }} />
         </div>
       </div>
 
+      {/* Tabs */}
       <div className="flex gap-1 mb-6 p-1 bg-white/5 rounded-xl border border-white/8">
         {([
-          { key: 'cours',     icon: BookOpen,  label: 'Cours' },
-          { key: 'fiche',     icon: FileText,  label: 'Fiche' },
-          { key: 'exercices', icon: Gamepad2,  label: 'Exercices' },
+          { key: 'cours', icon: BookOpen, label: 'Cours' },
+          { key: 'fiche', icon: FileText, label: 'Fiche' },
+          { key: 'exercices', icon: Gamepad2, label: 'Exercices' },
         ] as const).map(({ key, icon: Icon, label }) => (
           <button key={key} onClick={() => setTab(key)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-[13px] font-semibold transition-all
@@ -102,445 +105,463 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   TYPES DE BLOCS
+   TYPES DE BLOCS — fidèles au PDF
    ═══════════════════════════════════════════════════════════════════════════ */
 type BlockType =
-  | { type: 'para';       text: string }
-  | { type: 'formula';    tex: string; label?: string }
-  | { type: 'definition'; title: string; text: string }
-  | { type: 'law';        n: string; title: string; text: string }
-  | { type: 'property';   title: string; items: string[] }
-  | { type: 'method';     steps: string[] }
-  | { type: 'example';    title: string; lines: string[] }
-  | { type: 'figure';     caption: string; svg: () => JSX.Element }
-  | { type: 'attention';  text: string }
-  | { type: 'astuce';     text: string };
+  | { type: 'para';      text: string }
+  | { type: 'subsection'; num: string; title: string }
+  | { type: 'formula';   tex: string; label?: string }
+  | { type: 'formules';  label?: string; rows: { desc?: string; tex: string }[] }
+  | { type: 'vocabulaire'; title: string; intro?: string; items: string[] }
+  | { type: 'definition'; badge?: string; title?: string; content: string; formulas?: string[] }
+  | { type: 'propriete'; text: string }
+  | { type: 'idee_cle'; text: string }
+  | { type: 'idee_comprendre'; items: string[] }
+  | { type: 'methode';   title?: string; steps: string[] }
+  | { type: 'exemple';   title?: string; lines: string[] }
+  | { type: 'application'; title: string; steps: { n: string; bold: string; rest?: string; formulas?: string[] }[] }
+  | { type: 'piege';     badge?: string; text: string }
+  | { type: 'reflex';    text: string }
+  | { type: 'lien_ex';   text: string }
+  | { type: 'figure';    caption: string; svg: () => JSX.Element };
 
 interface Section { id: string; num: string; title: string; blocks: BlockType[] }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SCHÉMAS SVG
    ═══════════════════════════════════════════════════════════════════════════ */
-
-function FigTrajectoire() {
+function FigVecteurs() {
   return (
-    <svg viewBox="0 0 300 160" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-      {/* Axes */}
-      <line x1="20" y1="140" x2="280" y2="140" stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#arrowG)" />
-      <line x1="20" y1="140" x2="20" y2="10" stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#arrowG)" />
+    <svg viewBox="0 0 320 180" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <marker id="arrowG" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#4b5563" />
+        <marker id="fg1" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#6b7280"/>
         </marker>
-        <marker id="arrowB" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8" />
+        <marker id="fg2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
         </marker>
-        <marker id="arrowV" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#34d399" />
+        <marker id="fg3" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
+        </marker>
+        <marker id="fg4" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#9ca3af"/>
         </marker>
       </defs>
-      {/* Étiquettes axes */}
-      <text x="282" y="144" fill="#6b7280" fontSize="11" fontFamily="sans-serif">x</text>
-      <text x="12" y="10" fill="#6b7280" fontSize="11" fontFamily="sans-serif">y</text>
-      {/* Trajectoire parabolique */}
-      <path d="M40,130 Q160,20 270,115" fill="none" stroke="#38bdf8" strokeWidth="2" strokeDasharray="5,3" />
+      {/* axes */}
+      <line x1="30" y1="155" x2="300" y2="155" stroke="#374151" strokeWidth="1.5" markerEnd="url(#fg1)"/>
+      <line x1="30" y1="155" x2="30"  y2="15"  stroke="#374151" strokeWidth="1.5" markerEnd="url(#fg1)"/>
+      <text x="295" y="168" fill="#6b7280" fontSize="12" fontFamily="sans-serif" fontStyle="italic">x</text>
+      <text x="22"  y="14"  fill="#6b7280" fontSize="12" fontFamily="sans-serif" fontStyle="italic">y</text>
+      {/* trajectoire */}
+      <path d="M50,148 C90,60 200,30 280,110" fill="none" stroke="#6b7280" strokeWidth="1.5"/>
       {/* Point M */}
-      <circle cx="130" cy="52" r="4" fill="#38bdf8" />
-      <text x="135" y="50" fill="#38bdf8" fontSize="11" fontFamily="sans-serif">M</text>
-      {/* Vecteur vitesse (tangente) */}
-      <line x1="130" y1="52" x2="180" y2="28" stroke="#34d399" strokeWidth="2" markerEnd="url(#arrowV)" />
-      <text x="178" y="22" fill="#34d399" fontSize="11" fontFamily="sans-serif" fontStyle="italic">v⃗</text>
-      {/* Vecteur accélération */}
-      <line x1="130" y1="52" x2="130" y2="88" stroke="#fb923c" strokeWidth="2" markerEnd="url(#arrowO)" />
-      <text x="135" y="86" fill="#fb923c" fontSize="11" fontFamily="sans-serif" fontStyle="italic">a⃗</text>
-      <defs>
-        <marker id="arrowO" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#fb923c" />
-        </marker>
-      </defs>
-      {/* Vecteur position */}
-      <line x1="20" y1="140" x2="128" y2="54" stroke="#a78bfa" strokeWidth="1.5" markerEnd="url(#arrowP)" />
-      <text x="55" y="108" fill="#a78bfa" fontSize="10" fontFamily="sans-serif" fontStyle="italic">OM⃗</text>
-      <defs>
-        <marker id="arrowP" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#a78bfa" />
-        </marker>
-      </defs>
-      {/* Origine O */}
-      <text x="8" y="152" fill="#6b7280" fontSize="11" fontFamily="sans-serif">O</text>
-    </svg>
-  );
-}
-
-function FigPlanIncline() {
-  return (
-    <svg viewBox="0 0 300 180" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <marker id="arrW" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="white" />
-        </marker>
-        <marker id="arrGr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#34d399" />
-        </marker>
-        <marker id="arrR" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#f87171" />
-        </marker>
-      </defs>
-      {/* Plan incliné */}
-      <polygon points="30,160 250,160 250,80" fill="#1e293b" stroke="#475569" strokeWidth="1.5"/>
-      <line x1="30" y1="160" x2="250" y2="80" stroke="#64748b" strokeWidth="2"/>
-      {/* Angle β */}
-      <path d="M230,160 A20,20 0 0,0 240,143" fill="none" stroke="#94a3b8" strokeWidth="1.2"/>
-      <text x="222" y="155" fill="#94a3b8" fontSize="11" fontFamily="sans-serif" fontStyle="italic">β</text>
-      {/* Solide (carré sur la pente) */}
-      <rect x="120" y="95" width="28" height="24"
-        transform="rotate(-18.4, 134, 107)"
-        fill="#0f172a" stroke="#38bdf8" strokeWidth="1.5" rx="2"/>
-      {/* Centre de masse */}
-      <circle cx="140" cy="108" r="3" fill="#38bdf8" />
-      {/* Poids P */}
-      <line x1="140" y1="108" x2="140" y2="158" stroke="#f87171" strokeWidth="2" markerEnd="url(#arrR)" />
-      <text x="144" y="148" fill="#f87171" fontSize="12" fontFamily="sans-serif" fontStyle="italic">P⃗</text>
-      {/* Réaction N */}
-      <line x1="140" y1="108" x2="108" y2="72" stroke="#34d399" strokeWidth="2" markerEnd="url(#arrGr)" />
-      <text x="96" y="72" fill="#34d399" fontSize="12" fontFamily="sans-serif" fontStyle="italic">N⃗</text>
-      {/* Axe x (parallèle pente) */}
-      <line x1="140" y1="108" x2="200" y2="86" stroke="#94a3b8" strokeWidth="1" strokeDasharray="4,2" markerEnd="url(#arrW)" />
-      <text x="202" y="84" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">x</text>
-      {/* Axe y (perpendiculaire) */}
-      <line x1="140" y1="108" x2="118" y2="70" stroke="#94a3b8" strokeWidth="1" strokeDasharray="4,2" markerEnd="url(#arrW)" />
-      <text x="109" y="66" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">y</text>
+      <circle cx="170" cy="54" r="4" fill="#f59e0b"/>
+      <text x="175" y="50" fill="#d1d5db" fontSize="12" fontFamily="sans-serif" fontStyle="italic">M</text>
+      {/* OM */}
+      <line x1="30" y1="155" x2="167" y2="56" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="5,3" markerEnd="url(#fg4)"/>
+      <text x="70" y="118" fill="#9ca3af" fontSize="11" fontFamily="sans-serif" fontStyle="italic">OM</text>
+      {/* v (tangent, orange) */}
+      <line x1="170" y1="54" x2="228" y2="28" stroke="#f59e0b" strokeWidth="2.5" markerEnd="url(#fg2)"/>
+      <text x="228" y="24" fill="#f59e0b" fontSize="13" fontFamily="sans-serif" fontWeight="bold">v</text>
+      {/* a (vers intérieur, orange) */}
+      <line x1="170" y1="54" x2="195" y2="94" stroke="#f59e0b" strokeWidth="2.5" markerEnd="url(#fg3)"/>
+      <text x="196" y="96" fill="#f59e0b" fontSize="13" fontFamily="sans-serif" fontWeight="bold">a</text>
+      {/* O */}
+      <text x="20" y="168" fill="#6b7280" fontSize="12" fontFamily="sans-serif">O</text>
     </svg>
   );
 }
 
 function FigProjectile() {
   return (
-    <svg viewBox="0 0 320 170" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 320 175" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <marker id="arrProj" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#4b5563" />
+        <marker id="fp1" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#6b7280"/>
         </marker>
-        <marker id="arrBlue" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8" />
+        <marker id="fp2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
         </marker>
       </defs>
-      {/* Sol */}
-      <line x1="20" y1="145" x2="300" y2="145" stroke="#374151" strokeWidth="2"/>
-      {/* Axes */}
-      <line x1="30" y1="145" x2="295" y2="145" stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#arrProj)" />
-      <line x1="30" y1="145" x2="30" y2="15" stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#arrProj)" />
-      <text x="297" y="149" fill="#6b7280" fontSize="10">x</text>
-      <text x="22" y="13" fill="#6b7280" fontSize="10">y</text>
-      {/* Trajectoire parabolique */}
-      <path d="M30,145 Q170,10 270,145" fill="none" stroke="#38bdf8" strokeWidth="2.5"/>
-      {/* Sommet */}
-      <circle cx="150" cy="23" r="3.5" fill="#f59e0b" />
-      {/* H — trait vertical pointillé */}
-      <line x1="150" y1="23" x2="150" y2="145" stroke="#f59e0b" strokeWidth="1.2" strokeDasharray="4,3"/>
-      <text x="154" y="88" fill="#f59e0b" fontSize="12" fontStyle="italic">H</text>
-      {/* D — trait horizontal pointillé */}
-      <line x1="30" y1="152" x2="270" y2="152" stroke="#34d399" strokeWidth="1.2" strokeDasharray="4,3"/>
-      <line x1="30" y1="148" x2="30" y2="156" stroke="#34d399" strokeWidth="1.5"/>
-      <line x1="270" y1="148" x2="270" y2="156" stroke="#34d399" strokeWidth="1.5"/>
-      <text x="143" y="165" fill="#34d399" fontSize="12" fontStyle="italic">D</text>
-      {/* Angle α */}
-      <path d="M50,145 A22,22 0 0,0 64,126" fill="none" stroke="#a78bfa" strokeWidth="1.3"/>
-      <text x="55" y="136" fill="#a78bfa" fontSize="11" fontStyle="italic">α</text>
-      {/* Vecteur vitesse initiale */}
-      <line x1="30" y1="145" x2="68" y2="117" stroke="#a78bfa" strokeWidth="2" markerEnd="url(#arrP2)"/>
-      <text x="56" y="113" fill="#a78bfa" fontSize="11" fontStyle="italic">v₀</text>
-      <defs>
-        <marker id="arrP2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#a78bfa" />
-        </marker>
-      </defs>
-      {/* Labels lancement/impact */}
-      <text x="22" y="158" fill="#6b7280" fontSize="9">O</text>
-      <circle cx="30" cy="145" r="3" fill="#38bdf8"/>
-      <circle cx="270" cy="145" r="3" fill="#38bdf8"/>
+      {/* sol */}
+      <line x1="20" y1="148" x2="300" y2="148" stroke="#374151" strokeWidth="2"/>
+      {/* axes */}
+      <line x1="30" y1="148" x2="295" y2="148" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#fp1)"/>
+      <line x1="30" y1="148" x2="30"  y2="15"  stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#fp1)"/>
+      <text x="290" y="162" fill="#6b7280" fontSize="11" fontStyle="italic">x</text>
+      <text x="22"  y="14"  fill="#6b7280" fontSize="11" fontStyle="italic">y</text>
+      {/* trajectoire */}
+      <path d="M30,148 Q170,10 272,148" fill="none" stroke="#f59e0b" strokeWidth="2.5"/>
+      {/* v0 */}
+      <line x1="30" y1="148" x2="67" y2="118" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#fp2)"/>
+      <text x="56" y="113" fill="#f59e0b" fontSize="11" fontStyle="italic">v₀</text>
+      {/* angle α */}
+      <path d="M48,148 A20,20 0 0,0 58,131" fill="none" stroke="#9ca3af" strokeWidth="1.2"/>
+      <text x="55" y="144" fill="#9ca3af" fontSize="10" fontStyle="italic">α</text>
+      {/* H */}
+      <circle cx="151" cy="22" r="3.5" fill="#f59e0b"/>
+      <line x1="151" y1="22" x2="151" y2="148" stroke="#f59e0b" strokeWidth="1.2" strokeDasharray="4,3"/>
+      <text x="155" y="90" fill="#f59e0b" fontSize="12" fontStyle="italic">H</text>
+      <text x="137" y="14" fill="#9ca3af" fontSize="10">(flèche)</text>
+      {/* D */}
+      <line x1="30"  y1="158" x2="272" y2="158" stroke="#9ca3af" strokeWidth="1.2"/>
+      <line x1="30"  y1="153" x2="30"  y2="163" stroke="#9ca3af" strokeWidth="1.2"/>
+      <line x1="272" y1="153" x2="272" y2="163" stroke="#9ca3af" strokeWidth="1.2"/>
+      <text x="138" y="170" fill="#9ca3af" fontSize="12" fontStyle="italic">D</text>
+      <text x="120" y="170" fill="#9ca3af" fontSize="10">(portée)</text>
     </svg>
   );
 }
 
 function FigCondensateur() {
   return (
-    <svg viewBox="0 0 300 180" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 300 170" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <marker id="arrE" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#f59e0b" />
+        <marker id="fc1" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
         </marker>
-        <marker id="arrEl" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8" />
+        <marker id="fc2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#f59e0b"/>
         </marker>
       </defs>
-      {/* Plaque + (rouge) */}
-      <rect x="30" y="25" width="240" height="14" rx="3" fill="#7f1d1d" stroke="#f87171" strokeWidth="1.5"/>
-      <text x="8" y="37" fill="#f87171" fontSize="13" fontWeight="bold">+</text>
-      {/* Plaque − (bleu) */}
-      <rect x="30" y="142" width="240" height="14" rx="3" fill="#1e3a5f" stroke="#60a5fa" strokeWidth="1.5"/>
-      <text x="10" y="155" fill="#60a5fa" fontSize="13" fontWeight="bold">−</text>
-      {/* Champ E (flèches vers le bas) */}
-      {[80, 140, 200].map(x => (
-        <line key={x} x1={x} y1="50" x2={x} y2="135" stroke="#f59e0b" strokeWidth="1.5"
-          markerEnd="url(#arrE)" strokeDasharray="none"/>
+      {/* plaque + */}
+      <rect x="35" y="22" width="220" height="12" rx="2" fill="#78350f" stroke="#f59e0b" strokeWidth="1.5"/>
+      <text x="264" y="32" fill="#f59e0b" fontSize="14" fontWeight="bold">+</text>
+      {/* plaque − */}
+      <rect x="35" y="136" width="220" height="12" rx="2" fill="#1c1917" stroke="#9ca3af" strokeWidth="1.5"/>
+      <text x="264" y="147" fill="#9ca3af" fontSize="14" fontWeight="bold">−</text>
+      {/* champ E */}
+      {[90, 155, 220].map(x => (
+        <line key={x} x1={x} y1="44" x2={x} y2="130" stroke="#f59e0b" strokeWidth="1.5" markerEnd="url(#fc1)"/>
       ))}
-      <text x="220" y="96" fill="#f59e0b" fontSize="12" fontStyle="italic">E⃗</text>
-      {/* d — flèche */}
-      <line x1="280" y1="39" x2="280" y2="142" stroke="#94a3b8" strokeWidth="1.2" markerEnd="url(#arrE2)"/>
-      <line x1="280" y1="39" x2="280" y2="142" stroke="#94a3b8" strokeWidth="1.2"/>
-      <text x="284" y="96" fill="#94a3b8" fontSize="11" fontStyle="italic">d</text>
-      <defs>
-        <marker id="arrE2" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto">
-          <path d="M0,0 L5,2.5 L0,5 Z" fill="#94a3b8" />
-        </marker>
-      </defs>
-      {/* Électron (entrant horizontalement) */}
-      <circle cx="52" cy="88" r="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2"/>
-      <text x="48" y="92" fill="#38bdf8" fontSize="8">e⁻</text>
-      {/* Trajectoire de l'électron (parabole vers +) */}
-      <path d="M58,88 Q140,88 230,50" fill="none" stroke="#38bdf8" strokeWidth="2" strokeDasharray="5,3" markerEnd="url(#arrEl)"/>
+      <text x="230" y="92" fill="#f59e0b" fontSize="13" fontStyle="italic" fontWeight="bold">E</text>
+      {/* d */}
+      <line x1="16" y1="34"  x2="16" y2="136" stroke="#6b7280" strokeWidth="1" markerEnd="url(#fc2)"/>
+      <text x="4"  y="92"  fill="#9ca3af" fontSize="11" fontStyle="italic">d</text>
+      {/* L */}
+      <line x1="35" y1="160" x2="255" y2="160" stroke="#6b7280" strokeWidth="1"/>
+      <line x1="35" y1="156" x2="35" y2="164" stroke="#6b7280" strokeWidth="1"/>
+      <line x1="255" y1="156" x2="255" y2="164" stroke="#6b7280" strokeWidth="1"/>
+      <text x="138" y="170" fill="#9ca3af" fontSize="11" fontStyle="italic">L</text>
+      {/* électron */}
+      <circle cx="48" cy="85" r="7" fill="#1e293b" stroke="#9ca3af" strokeWidth="1.5"/>
+      <text x="43" y="89" fill="#9ca3af" fontSize="8">e⁻</text>
       {/* v0 */}
-      <line x1="30" y1="88" x2="50" y2="88" stroke="#a78bfa" strokeWidth="2" markerEnd="url(#arrV0)"/>
-      <text x="16" y="84" fill="#a78bfa" fontSize="10" fontStyle="italic">v₀</text>
-      <defs>
-        <marker id="arrV0" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-          <path d="M0,0 L6,3 L0,6 Z" fill="#a78bfa" />
-        </marker>
-      </defs>
-      {/* U */}
-      <text x="7" y="90" fill="#d1d5db" fontSize="10">U</text>
-      <line x1="20" y1="39" x2="20" y2="142" stroke="#d1d5db" strokeWidth="0.8" strokeDasharray="3,2"/>
+      <line x1="22" y1="85" x2="40" y2="85" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#fc2)"/>
+      <text x="8" y="80" fill="#f59e0b" fontSize="10" fontStyle="italic">v₀</text>
+      {/* trajectoire électron (vers +) */}
+      <path d="M55,85 Q150,80 240,44" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="5,3"/>
     </svg>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CONTENU DU COURS
+   CONTENU DU COURS — fidèle au PDF page par page
    ═══════════════════════════════════════════════════════════════════════════ */
 const COURS: Section[] = [
+  /* ──────────────────────────────────────────────────────────────────────
+   * 1  Décrire un mouvement
+   * ─────────────────────────────────────────────────────────────────────── */
   {
-    id: 'cine', num: '1', title: 'Cinématique vectorielle',
+    id: 'cinematique', num: '1', title: 'Décrire un mouvement',
     blocks: [
       {
-        type: 'figure',
-        caption: 'Vecteur position $\\overrightarrow{OM}$, vecteur vitesse $\\vec{v}$ (tangent) et vecteur accélération $\\vec{a}$',
-        svg: FigTrajectoire,
+        type: 'para',
+        text: 'Avant de comprendre *pourquoi* les objets bougent (la **dynamique**, partie 2), il faut savoir *comment* ils bougent : c\'est la **cinématique**. Tout repose sur un cadre (le référentiel) et trois vecteurs : position, vitesse, accélération.',
+      },
+
+      { type: 'subsection', num: '1.1', title: 'Référentiel et repère' },
+      {
+        type: 'para',
+        text: 'Première question à se poser, toujours : **« en mouvement par rapport à quoi ? »** Tout mouvement se décrit **par rapport à un référentiel**, c\'est-à-dire un solide de référence (le wagon, le sol…) muni d\'une horloge.',
       },
       {
-        type: 'definition', title: 'Vecteur position',
-        text: 'Le vecteur $\\overrightarrow{OM}(t)$ relie l\'origine O du repère au point mobile M à l\'instant $t$.',
+        type: 'para',
+        text: 'À ce référentiel on attache un **repère** $(O,\\vec{i},\\vec{j})$ : une origine et deux axes. La position du point $M$ est décrite par le **vecteur position**, la flèche qui va de l\'origine jusqu\'à $M$ :',
       },
       { type: 'formula', tex: '\\overrightarrow{OM}(t) = x(t)\\,\\vec{i} + y(t)\\,\\vec{j}' },
       {
-        type: 'definition', title: 'Vecteur vitesse',
-        text: 'Dérivée du vecteur position. Il est **tangent à la trajectoire** et orienté dans le **sens du mouvement**.',
+        type: 'para',
+        text: 'Les deux fonctions $x(t)$ et $y(t)$ sont les **équations horaires** : elles disent où se trouve $M$ à chaque instant. **Décrire un mouvement, c\'est connaître ces deux fonctions.**',
       },
-      { type: 'formula', tex: '\\vec{v}(t) = \\frac{d\\,\\overrightarrow{OM}}{dt} = \\dot{x}\\,\\vec{i} + \\dot{y}\\,\\vec{j} \\qquad v = \\sqrt{v_x^2 + v_y^2}' },
       {
-        type: 'definition', title: 'Vecteur accélération',
-        text: 'Dérivée du vecteur vitesse par rapport au temps.',
-      },
-      { type: 'formula', tex: '\\vec{a}(t) = \\frac{d\\,\\vec{v}}{dt} = \\ddot{x}\\,\\vec{i} + \\ddot{y}\\,\\vec{j}' },
-      {
-        type: 'property', title: 'Intégration (sens inverse)',
+        type: 'vocabulaire',
+        title: 'TRAJECTOIRE & TYPES DE MOUVEMENT',
+        intro: 'La **trajectoire** est la courbe formée par les positions successives de $M$. On qualifie tout mouvement par **deux critères** :',
         items: [
-          'Si $\\vec{a}(t)$ est connue : $\\vec{v}(t) = \\int \\vec{a}\\,dt + \\vec{v}_0$',
-          'Puis : $\\overrightarrow{OM}(t) = \\int \\vec{v}\\,dt + \\overrightarrow{OM}_0$',
-          'Les constantes $\\vec{v}_0$ et $\\overrightarrow{OM}_0$ sont les **conditions initiales**.',
+          'sa **forme** : **rectiligne** (trajectoire droite) ou **curviligne** (courbe — par exemple circulaire ou parabolique) ;',
+          'l\'évolution de sa vitesse : **uniforme** (valeur constante), **accéléré** (qui augmente) ou **ralenti** (qui diminue).',
+        ],
+      },
+
+      { type: 'subsection', num: '1.2', title: 'Vecteur vitesse' },
+      {
+        type: 'para',
+        text: 'La vitesse mesure **à quelle allure et dans quelle direction la position change**. Or « comment une grandeur varie au cours du temps » se traduit en maths par une **dérivée** : le vecteur vitesse est donc la dérivée du vecteur position.',
+      },
+      { type: 'formula', tex: '\\vec{v}(t) = \\frac{d\\overrightarrow{OM}}{dt} \\qquad\\Longrightarrow\\qquad v_x = \\frac{dx}{dt},\\quad v_y = \\frac{dy}{dt}' },
+      {
+        type: 'para',
+        text: 'En pratique, on dérive simplement **chaque coordonnée** de son côté.',
+      },
+      {
+        type: 'propriete',
+        text: 'Le vecteur vitesse est toujours **tangent à la trajectoire** et orienté dans le sens du mouvement. Sa norme s\'exprime en $\\text{m\\,s}^{-1}$.',
+      },
+
+      { type: 'subsection', num: '1.3', title: 'Vecteur accélération' },
+      {
+        type: 'para',
+        text: 'De la même façon, l\'accélération mesure **comment la vitesse change** : c\'est la dérivée du vecteur vitesse — donc la dérivée seconde de la position. Elle s\'exprime en $\\text{m\\,s}^{-2}$.',
+      },
+      { type: 'formula', tex: '\\vec{a}(t) = \\frac{d\\vec{v}}{dt} = \\frac{d^2\\overrightarrow{OM}}{dt^2} \\qquad\\Longrightarrow\\qquad a_x = \\frac{dv_x}{dt},\\quad a_y = \\frac{dv_y}{dt}' },
+      {
+        type: 'idee_cle',
+        text: '« Accélérer » ne veut pas seulement dire *aller plus vite*. Un vecteur change aussi quand sa **direction** change. En voiture à vitesse constante dans un virage, ta vitesse *tourne* : il y a une accélération, dirigée **vers l\'intérieur du virage**. À retenir : **tout changement de la vitesse — en norme ou en direction — est une accélération.**',
+      },
+      {
+        type: 'methode',
+        title: 'DÉRIVER / INTÉGRER',
+        steps: [
+          'On travaille toujours **composante par composante** : dériver $\\overrightarrow{OM}\\to\\vec{v}\\to\\vec{a}$, ou intégrer dans l\'autre sens $\\vec{a}\\to\\vec{v}\\to\\overrightarrow{OM}$.',
+          'N\'oublier jamais les **constantes d\'intégration**, fixées par les conditions initiales.',
         ],
       },
       {
-        type: 'example',
-        title: 'Exemple — dériver un vecteur position',
+        type: 'exemple',
+        title: 'EXEMPLE EXPRESS',
         lines: [
-          'Données : $\\overrightarrow{OM}(t) = 3t\\,\\vec{i} + (4t - t^2)\\,\\vec{j}$ (en m)',
-          '',
-          '**Vitesse :** $\\vec{v}(t) = 3\\,\\vec{i} + (4 - 2t)\\,\\vec{j}$ m·s⁻¹',
-          '**Accélération :** $\\vec{a} = 0\\,\\vec{i} - 2\\,\\vec{j}$ m·s⁻²  → constante (MRUA)',
-          '**Norme de la vitesse à t = 1 s :** $v = \\sqrt{3^2+2^2} = \\sqrt{13} \\approx 3{,}6$ m·s⁻¹',
+          'Soit $\\overrightarrow{OM}(t) = (3t)\\,\\vec{i} + (5t - t^2)\\,\\vec{j}$ (en m). En dérivant :',
+          '$\\vec{v}(t) = 3\\,\\vec{i} + (5-2t)\\,\\vec{j}$, puis $\\vec{a}(t) = 0\\,\\vec{i} - 2\\,\\vec{j}$.',
+          'L\'accélération est **constante** : le mouvement est **uniformément accéléré**.',
         ],
       },
-    ],
-  },
-
-  {
-    id: 'newton', num: '2–3', title: 'Les trois lois de Newton',
-    blocks: [
       {
         type: 'figure',
-        caption: 'Bilan des forces sur un solide posé sur un plan incliné — vecteurs $\\vec{P}$ et $\\vec{N}$',
-        svg: FigPlanIncline,
+        caption: 'Vecteur vitesse $\\vec{v}$ tangent à la trajectoire ; le vecteur accélération $\\vec{a}$ est dirigé vers l\'intérieur de la courbe.',
+        svg: FigVecteurs,
       },
-      {
-        type: 'law', n: '1', title: 'Principe d\'inertie',
-        text: 'Dans un **référentiel galiléen**, si $\\sum\\vec{F}_{\\text{ext}} = \\vec{0}$, alors le centre de masse est **au repos ou en MRU**.',
-      },
-      { type: 'formula', tex: '\\sum \\vec{F}_{\\text{ext}} = \\vec{0} \\iff \\vec{a} = \\vec{0} \\iff \\vec{v} = \\text{constante}' },
-      {
-        type: 'law', n: '2', title: 'Relation fondamentale de la dynamique',
-        text: 'Dans un référentiel galiléen :',
-      },
-      { type: 'formula', tex: '\\sum \\vec{F}_{\\text{ext}} = m\\,\\vec{a}', label: 'RFD' },
-      {
-        type: 'law', n: '3', title: 'Actions réciproques',
-        text: 'Si A exerce $\\vec{F}_{A/B}$ sur B, alors B exerce sur A une force opposée :',
-      },
-      { type: 'formula', tex: '\\vec{F}_{B/A} = -\\vec{F}_{A/B}' },
-      {
-        type: 'property', title: 'Caractéristiques de la paire action–réaction',
-        items: [
-          'Même **droite d\'action**, même norme',
-          'Sens **opposés**',
-          'S\'exercent sur **deux corps différents**',
-        ],
-      },
-      {
-        type: 'attention',
-        text: 'Le poids $\\vec{P}$ et la réaction $\\vec{N}$ de la table sur un livre immobile **ne sont pas** une paire action–réaction : elles s\'exercent toutes deux sur le livre. Elles sont égales et opposées par la **1ʳᵉ loi** (objet immobile).',
-      },
-      {
-        type: 'example',
-        title: 'Exemple — plan incliné sans frottement',
-        lines: [
-          'Données : $m = 2{,}0$ kg, $\\beta = 30°$, sans frottement, part du repos.',
-          '',
-          '**Forces :** poids $\\vec{P} = m\\vec{g}$ vers le bas, réaction $\\vec{N}$ perpendiculaire à la pente.',
-          '**RFD :** $\\vec{P} + \\vec{N} = m\\vec{a}$',
-          '**Projection sur x** (axe ↗ parallèle à la pente) :',
-          '$mg\\sin\\beta = ma \\Rightarrow a = g\\sin 30° = 10 \\times 0{,}5 = 5{,}0$ m·s⁻²',
-        ],
-      },
+      { type: 'lien_ex', text: '→ Exercices 1 et 2 : dériver puis intégrer un vecteur position' },
     ],
   },
 
+  /* ──────────────────────────────────────────────────────────────────────
+   * 2  Les trois lois de Newton
+   * ─────────────────────────────────────────────────────────────────────── */
   {
-    id: 'methode', num: '4', title: 'Méthode en 5 étapes',
+    id: 'newton', num: '2', title: 'Les trois lois de Newton',
     blocks: [
       {
         type: 'para',
-        text: 'Cette méthode **universelle** s\'applique à tout problème de mécanique (chute, plan incliné, projectile, condensateur…). Elle est indispensable pour une copie de bac.',
+        text: 'Après avoir *décrit* le mouvement, on cherche à l\'**expliquer** : qu\'est-ce qui le crée ou le modifie ? La réponse tient en un mot — les **forces** — et en trois lois posées par Isaac Newton.',
       },
       {
-        type: 'method',
+        type: 'definition',
+        badge: 'DÉFINITIONS — FORCE, SYSTÈME, CENTRE D\'INERTIE',
+        content: 'Une **force** modélise une action capable de **modifier le mouvement** d\'un objet (ou de le déformer). On la représente par un vecteur, défini par son point d\'application, sa direction, son sens et sa **valeur**, qui se mesure en newtons ($\\text{N}$).\n\nLe **système** est l\'objet (ou l\'ensemble) qu\'on choisit d\'étudier. On suit le mouvement de son **centre d\'inertie** $G$ — le point qui se comporte comme si toute la masse y était concentrée. Une force est dite **extérieure** lorsqu\'elle est exercée par autre chose que le système lui-même : ce sont les seules qui comptent dans les lois de Newton.',
+      },
+
+      { type: 'subsection', num: '2.1', title: 'Première loi — principe d\'inertie' },
+      {
+        type: 'para',
+        text: 'L\'idée est simple mais contre-intuitive : **un objet ne s\'arrête pas tout seul**. Ce qui ralentit les objets du quotidien, ce sont les **frottements**, pas une tendance naturelle à s\'arrêter.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Dans un **référentiel galiléen**, le centre d\'inertie d\'un système est immobile ou en mouvement rectiligne uniforme **si et seulement si** la somme des forces extérieures est nulle :',
+      },
+      { type: 'formula', tex: '\\sum \\vec{F}_{\\text{ext}} = \\vec{0} \\iff \\vec{v}_G = \\overrightarrow{\\text{cte}}' },
+      {
+        type: 'para',
+        text: 'En clair : **sans force (ou si les forces se compensent), pas de changement de mouvement.** Cette loi sert aussi à **définir les référentiels galiléens** — ceux où elle est vérifiée (terrestre sur une courte durée, géocentrique, héliocentrique). On s\'y place toujours pour appliquer les lois de Newton.',
+      },
+
+      { type: 'subsection', num: '2.2', title: 'Deuxième loi — principe fondamental de la dynamique' },
+      {
+        type: 'para',
+        text: 'Si les forces ne se compensent pas, le mouvement change. Mais de combien ? La deuxième loi répond exactement, et c\'est l\'**outil central** de tout le chapitre :',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — LOI CENTRALE',
+        content: 'Dans un référentiel galiléen, la somme des forces extérieures appliquées à un système de masse $m$ constante est égale au produit de sa masse par l\'accélération de son centre d\'inertie :',
+      },
+      { type: 'formula', tex: '\\sum \\vec{F}_{\\text{ext}} = m\\,\\vec{a}_G \\qquad\\left(= \\frac{d\\vec{p}}{dt},\\quad \\vec{p}=m\\vec{v}\\right)' },
+      {
+        type: 'idee_cle',
+        text: 'Lis cette relation comme **cause → effet** : la somme des forces (la cause) fixe l\'accélération (l\'effet). Plus la **force** est grande, plus l\'accélération est grande ; plus la **masse** est grande, moins l\'objet accélère pour une même force — la masse mesure l\'**inertie**, la résistance au changement de vitesse. Et $\\vec{a}$ est dans le **sens de la somme des forces**, pas forcément dans celui du mouvement.',
+      },
+
+      { type: 'subsection', num: '2.3', title: 'Troisième loi — actions réciproques' },
+      {
+        type: 'para',
+        text: 'Une force n\'existe jamais seule. Quand tu marches, ton pied pousse le sol vers l\'arrière… et le sol te pousse vers l\'avant. Une fusée éjecte ses gaz vers le bas, les gaz la propulsent vers le haut.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Si un corps A exerce une force sur un corps B, alors B exerce sur A une force **opposée**, de même droite d\'action et de même norme :',
+      },
+      { type: 'formula', tex: '\\vec{F}_{A/B} = -\\vec{F}_{B/A}' },
+      {
+        type: 'piege',
+        badge: 'PIÈGE FRÉQUENT',
+        text: 'Les deux forces d\'une paire action–réaction s\'exercent **sur deux corps différents** (A sur B, et B sur A) : elles ne se compensent donc jamais entre elles. Le poids d\'un livre et la réaction de la table ne forment *pas* une telle paire — ils s\'appliquent tous deux **au même corps**, le livre.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 3 à 7 : bilan des forces, inertie, projection et 3ᵉ loi' },
+    ],
+  },
+
+  /* ──────────────────────────────────────────────────────────────────────
+   * 3  La méthode universelle (5 étapes)
+   * ─────────────────────────────────────────────────────────────────────── */
+  {
+    id: 'methode', num: '3', title: 'La méthode universelle (5 étapes)',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Bonne nouvelle : tous les exercices de dynamique se résolvent avec **la même méthode**. L\'idée d\'ensemble est simple — on repère les forces (la cause), on en déduit l\'accélération par la 2ᵉ loi, puis on « remonte » jusqu\'à la position. **Apprends ces 5 étapes une fois, applique-les partout.**',
+      },
+      {
+        type: 'methode',
+        title: '',
         steps: [
-          'Choisir le **système** étudié et un **référentiel galiléen** adapté.',
-          'Faire le **bilan des forces extérieures** s\'exerçant sur le système (schéma avec flèches).',
-          'Appliquer la **2ᵉ loi de Newton** : $\\sum\\vec{F}_{\\text{ext}} = m\\vec{a}$.',
-          '**Projeter** sur les axes du repère pour obtenir les équations scalaires.',
-          '**Intégrer** avec les conditions initiales pour trouver $\\vec{v}(t)$ puis $\\overrightarrow{OM}(t)$.',
+          '**Système & référentiel.** Définir le système étudié et choisir un référentiel galiléen.',
+          '**Bilan des forces.** Lister toutes les forces extérieures et faire un schéma.',
+          '**Deuxième loi.** Écrire $\\sum\\vec{F}_{\\text{ext}} = m\\vec{a}$.',
+          '**Projeter.** Projeter la relation vectorielle sur les axes $\\vec{i},\\vec{j}$ pour obtenir $a_x$ et $a_y$.',
+          '**Intégrer.** Remonter $\\vec{a}\\to\\vec{v}\\to\\overrightarrow{OM}$ à l\'aide des conditions initiales.',
         ],
       },
       {
-        type: 'astuce',
-        text: 'Toujours écrire la relation vectorielle $\\sum\\vec{F} = m\\vec{a}$ **avant** de projeter. Choisir les axes de façon à aligner un axe avec une force ou avec l\'accélération.',
-      },
-      {
-        type: 'example',
-        title: 'Exemple — chute libre verticale',
-        lines: [
-          '**Système :** bille de masse $m$. **Réf. :** terrestre (galiléen). **Axe :** $y$ vers le bas.',
-          '',
-          '**Bilan des forces :** poids $\\vec{P} = mg\\,\\vec{j}$ (seule force, frottements négligés).',
-          '**RFD :** $mg\\,\\vec{j} = m\\vec{a}$ → $a_y = g = 9{,}81$ m·s⁻²',
-          '**Intégration :** $v_y(t) = gt + v_0 = gt$ (lâché sans vitesse initiale)',
-          '$y(t) = \\dfrac{1}{2}g\\,t^2$ (origine au point de lâcher)',
-        ],
+        type: 'para',
+        text: 'Les étapes 1 à 3 traduisent la **physique** en équations ; les étapes 4 et 5 ne sont plus que des **mathématiques** (projeter, puis intégrer deux fois). Si tu bloques, demande-toi toujours à quelle étape tu en es.',
       },
     ],
   },
 
+  /* ──────────────────────────────────────────────────────────────────────
+   * 4  Mouvement dans un champ de pesanteur uniforme
+   * ─────────────────────────────────────────────────────────────────────── */
   {
-    id: 'projectile', num: '5', title: 'Mouvement d\'un projectile',
+    id: 'projectile', num: '4', title: 'Mouvement dans un champ de pesanteur uniforme',
     blocks: [
       {
+        type: 'para',
+        text: 'Première grande application de la méthode : la chute et le tir d\'objets près du sol, là où règne le **champ de pesanteur** $\\vec{g}$.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITIONS — CHAMP UNIFORME, POIDS, PROJECTILE',
+        content: 'Un **champ** associe un vecteur à chaque point de l\'espace ; il est **uniforme** dans une région si ce vecteur y a partout la **même direction, le même sens et la même valeur**.\n\nLe **champ de pesanteur** $\\vec{g}$ est, localement, uniforme : vertical, dirigé vers le bas, de valeur $g \\approx 9{,}81\\,\\text{m\\,s}^{-2}$.\n\nLe **poids** est la force exercée par ce champ sur un objet de masse $m$ : $\\vec{P}=m\\vec{g}$. Un **projectile** est un objet lancé, puis soumis à son **seul poids** (frottements de l\'air négligés).',
+      },
+      {
+        type: 'idee_comprendre',
+        items: [
+          'Une fois lâché, le projectile ne subit **que son poids**, vertical.',
+          'Horizontalement, **aucune force** : le mouvement horizontal est donc **uniforme** (vitesse constante).',
+          'Verticalement, le poids tire vers le bas : le mouvement vertical est **uniformément accéléré**, comme une chute.',
+          'Ces deux mouvements se déroulent **en même temps mais indépendamment** — leur composition dessine la parabole.',
+          'Comme $\\vec{a} = \\vec{g}$ ne dépend pas de la masse, une plume et une bille tombent **exactement ensemble** dans le vide (l\'expérience de Galilée).',
+        ],
+      },
+      {
+        type: 'application',
+        title: 'APPLICATION DE LA MÉTHODE — LE PROJECTILE',
+        steps: [
+          { n: '①', bold: 'Système / réf. :', rest: 'le projectile, dans le référentiel terrestre supposé galiléen.' },
+          { n: '②', bold: 'Bilan :', rest: 'une seule force, le poids $\\vec{P} = m\\vec{g}$ (frottements négligés).' },
+          { n: '③', bold: '2ᵉ loi :', rest: '$m\\vec{g} = m\\vec{a}$, donc $\\vec{a} = \\vec{g}$ : *l\'accélération ne dépend pas de la masse*.' },
+          { n: '④', bold: 'Projection', rest: '(axe $y$ vers le haut) :', formulas: ['a_x = 0 \\qquad;\\qquad a_y = -g'] },
+          { n: '⑤', bold: 'Intégration', rest: 'avec $\\vec{v}_0 = (v_0\\cos\\alpha\\;,\\;v_0\\sin\\alpha)$ et un départ à l\'origine :', formulas: [
+            'v_x = v_0\\cos\\alpha \\qquad;\\qquad v_y = -g\\,t + v_0\\sin\\alpha',
+            'x(t) = (v_0\\cos\\alpha)\\,t \\qquad;\\qquad y(t) = -\\tfrac{1}{2}g\\,t^2 + (v_0\\sin\\alpha)\\,t',
+          ]},
+        ],
+      },
+
+      { type: 'subsection', num: '4.1', title: 'Équation de la trajectoire' },
+      {
+        type: 'para',
+        text: 'Le mouvement est la **composition** d\'un mouvement **rectiligne uniforme** horizontal et d\'un mouvement **uniformément accéléré** vertical, indépendants l\'un de l\'autre — c\'est ce qui rend la trajectoire parabolique. En éliminant le temps $\\left(t = \\dfrac{x}{v_0\\cos\\alpha}\\right)$ on obtient :',
+      },
+      { type: 'formula', tex: 'y(x) = -\\frac{g}{2\\,v_0^2\\cos^2\\!\\alpha}\\,x^2 + (\\tan\\alpha)\\,x' },
+
+      { type: 'subsection', num: '4.2', title: 'Grandeurs caractéristiques' },
+      {
+        type: 'para',
+        text: 'Deux grandeurs résument la trajectoire : la **flèche** $H$, hauteur maximale atteinte au sommet, et la **portée** $D$, distance horizontale parcourue avant de retomber au niveau de départ.',
+      },
+      {
+        type: 'formules',
+        label: 'FORMULES',
+        rows: [
+          { desc: 'Date du sommet ($v_y = 0$) :', tex: 't_s = \\dfrac{v_0\\sin\\alpha}{g}' },
+          { desc: 'Flèche (hauteur maximale) :', tex: 'H = \\dfrac{v_0^2\\sin^2\\!\\alpha}{2g}' },
+          { desc: 'Portée (retour au sol, tir depuis le sol) :', tex: 'D = \\dfrac{v_0^2\\sin(2\\alpha)}{g}' },
+        ],
+      },
+      {
+        type: 'para',
+        text: 'Le sommet est atteint quand $v_y = 0$. Et comme $\\sin(2\\alpha)$ est maximal pour $2\\alpha = 90°$, la portée est **maximale pour un angle de $45°$**.',
+      },
+      {
         type: 'figure',
-        caption: 'Trajectoire parabolique, flèche $H$, portée $D$ et angle de lancement $\\alpha$',
+        caption: 'Trajectoire parabolique d\'un projectile : flèche $H$ au sommet, portée $D$ au retour au sol.',
         svg: FigProjectile,
       },
-      {
-        type: 'para',
-        text: 'Seule la pesanteur agit ($\\vec{P} = m\\vec{g}$, frottements négligés). La RFD donne $a_x = 0$ et $a_y = -g$ (axe $y$ vers le haut).',
-      },
-      {
-        type: 'property', title: 'Équations horaires (lancement depuis l\'origine à l\'angle $\\alpha$)',
-        items: [
-          '$v_x(t) = v_0\\cos\\alpha = \\text{constante}$',
-          '$v_y(t) = v_0\\sin\\alpha - g\\,t$',
-          '$x(t) = v_0\\cos\\alpha \\cdot t$',
-          '$y(t) = v_0\\sin\\alpha \\cdot t - \\dfrac{1}{2}g\\,t^2$',
-        ],
-      },
-      {
-        type: 'definition', title: 'Équation de la trajectoire (parabole)',
-        text: 'En éliminant $t = x/(v_0\\cos\\alpha)$ :',
-      },
-      { type: 'formula', tex: 'y = x\\tan\\alpha - \\frac{g}{2v_0^2\\cos^2\\!\\alpha}\\,x^2' },
-      {
-        type: 'property', title: 'Grandeurs caractéristiques',
-        items: [
-          '**Flèche** (sommet, $v_y=0$ à $t_H = v_0\\sin\\alpha/g$) : $H = \\dfrac{v_0^2\\sin^2\\!\\alpha}{2g}$',
-          '**Portée** (impact, $y=0$) : $D = \\dfrac{v_0^2\\sin 2\\alpha}{g}$',
-          '**Portée max** pour $\\alpha = 45°$ : $D_{\\max} = \\dfrac{v_0^2}{g}$',
-        ],
-      },
-      {
-        type: 'example',
-        title: 'Exemple — ballon de foot',
-        lines: [
-          'Données : $v_0 = 20$ m·s⁻¹, $\\alpha = 30°$, $g = 10$ m·s⁻²',
-          '',
-          '**Flèche :** $H = \\dfrac{20^2\\sin^2 30°}{2\\times 10} = \\dfrac{400\\times 0{,}25}{20} = 5{,}0$ m',
-          '**Portée :** $D = \\dfrac{20^2\\sin 60°}{10} = \\dfrac{400\\times 0{,}866}{10} \\approx 34{,}6$ m',
-          '**Durée totale :** $t_D = 2v_0\\sin\\alpha/g = 2\\times 20\\times 0{,}5/10 = 2{,}0$ s',
-        ],
-      },
+      { type: 'lien_ex', text: '→ Exercices 12, 13, 16 et 17 : projectile complet, tir horizontal, lancer franc, saut en longueur' },
     ],
   },
 
+  /* ──────────────────────────────────────────────────────────────────────
+   * 5  Particule chargée dans un champ électrique uniforme
+   * ─────────────────────────────────────────────────────────────────────── */
   {
-    id: 'champ', num: '6', title: 'Particule chargée en champ uniforme',
+    id: 'champ', num: '5', title: 'Particule chargée dans un champ électrique uniforme',
     blocks: [
       {
+        type: 'para',
+        text: 'Le même raisonnement s\'applique mot pour mot à une particule chargée placée dans un **champ électrique** : c\'est l\'autre grand exemple de mouvement à accélération constante (au cœur des écrans cathodiques, des imprimantes à jet d\'encre, des accélérateurs de particules).',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITIONS — CONDENSATEUR, CHAMP ÉLECTRIQUE, CHARGE',
+        content: 'Un **condensateur plan** est formé de deux plaques parallèles entre lesquelles on applique une **tension** $U$ (en volts, $\\text{V}$). Il y règne un **champ électrique uniforme** $\\vec{E}$, dirigé de la plaque $+$ vers la plaque $-$.\n\nUne particule de **charge** $q$ (en coulombs, $\\text{C}$) placée dans ce champ subit la **force électrique** :',
+        formulas: ['\\vec{F} = q\\,\\vec{E} \\qquad;\\qquad E = \\frac{U}{d} \\quad (d\\text{ : distance entre plaques})'],
+      },
+      {
+        type: 'para',
+        text: 'Une particule de charge $q$ et de masse $m$ pénètre entre les plaques avec une vitesse $\\vec{v}_0$ horizontale ; on lui applique la méthode.',
+      },
+      {
+        type: 'reflex',
+        text: 'La force $\\vec{F} = q\\vec{E}$ est **parallèle au champ** si la charge est positive, et **opposée au champ** si la charge est négative (un électron). C\'est ce signe qui décide **vers quelle plaque** la particule est déviée — commence toujours par le déterminer.',
+      },
+      {
+        type: 'piege',
+        badge: 'PIÈGE — POIDS NÉGLIGEABLE',
+        text: 'Pour une particule élémentaire (électron, ion), le **poids est négligeable** devant la force électrique. Il faut le *justifier* par un rapport d\'ordres de grandeur, puis l\'ignorer.',
+      },
+      {
+        type: 'para',
+        text: 'La 2ᵉ loi donne alors une accélération **constante**, donc une trajectoire **parabolique** : c\'est exactement l\'analogue du projectile, avec $\\vec{g}$ remplacé par $\\dfrac{q}{m}\\vec{E}$.',
+      },
+      {
+        type: 'formules',
+        label: 'FORMULE',
+        rows: [
+          { tex: 'm\\vec{a} = q\\vec{E} \\implies \\vec{a} = \\dfrac{q}{m}\\,\\vec{E}' },
+          { desc: 'Avec $\\vec{v}_0$ selon $x$ et $\\vec{E}$ selon $y$ :', tex: 'x = v_0 t,\\quad y = \\dfrac{1}{2}\\dfrac{qE}{m}\\,t^2 \\implies y(x) = \\dfrac{qE}{2m\\,v_0^2}\\,x^2' },
+        ],
+      },
+      {
         type: 'figure',
-        caption: 'Électron entrant entre les plaques d\'un condensateur : déviation parabolique vers la plaque $+$',
+        caption: 'Déflexion d\'un électron (charge négative) : la force $q\\vec{E}$ est opposée à $\\vec{E}$, l\'électron est dévié vers la plaque $+$. Trajectoire parabolique entre les plaques, rectiligne ensuite.',
         svg: FigCondensateur,
       },
-      {
-        type: 'definition', title: 'Condensateur plan',
-        text: 'Deux plaques conductrices parallèles distantes de $d$, portées à des potentiels différant de $U$. Le champ est **uniforme** et **perpendiculaire aux plaques**.',
-      },
-      { type: 'formula', tex: 'E = \\frac{U}{d} \\quad (\\text{V\\,m}^{-1})' },
-      {
-        type: 'definition', title: 'Force sur un électron',
-        text: 'L\'électron de charge $-e < 0$ subit une force **opposée à $\\vec{E}$**, donc dirigée vers la plaque positive.',
-      },
-      { type: 'formula', tex: '\\vec{F} = -e\\vec{E} \\qquad F = eE = \\frac{eU}{d}' },
-      {
-        type: 'property', title: 'Résolution (poids négligé devant $\\vec{F}$)',
-        items: [
-          'Axe $x$ (sens de $\\vec{v}_0$) : aucune force → **MRU** : $x = v_0 t$',
-          'Axe $y$ (sens de $\\vec{F}$) : MRUA : $a = eE/m_e$, $y = \\frac{1}{2}at^2$',
-          '**Trajectoire** (en éliminant $t$) : $y = \\dfrac{a}{2v_0^2}x^2$ (parabole)',
-        ],
-      },
-      {
-        type: 'definition', title: 'Déviation totale sur l\'écran (à distance $D$ des plaques)',
-        text: 'La déviation à la sortie des plaques est $y_1$, puis l\'électron continue en ligne droite :',
-      },
-      { type: 'formula', tex: 'Y = y_1 + y_2 = \\frac{eEL}{m_e v_0^2}\\!\\left(D + \\frac{L}{2}\\right)', label: 'formule écran' },
-      {
-        type: 'example',
-        title: 'Exemple numérique',
-        lines: [
-          'Données : $d = 2{,}0$ cm, $U = 400$ V, $v_0 = 3{,}0\\times10^7$ m·s⁻¹',
-          '',
-          '**Champ :** $E = 400/0{,}02 = 2{,}0\\times10^4$ V·m⁻¹',
-          '**Force :** $F = eE = 1{,}6\\times10^{-19}\\times 2{,}0\\times10^4 = 3{,}2\\times10^{-15}$ N',
-          '**Accélération :** $a = F/m_e = 3{,}2\\times10^{-15}/9{,}1\\times10^{-31} \\approx 3{,}5\\times10^{15}$ m·s⁻²',
-          '→ Très grande devant $g = 9{,}8$ m·s⁻² : **poids justifié négligé**.',
-        ],
-      },
+      { type: 'lien_ex', text: '→ Exercices 8, 9, 14, 15, 18 et 19 : champ, accélération, déflexion, oscilloscope et canon à électrons' },
     ],
   },
 ];
@@ -548,26 +569,277 @@ const COURS: Section[] = [
 /* ═══════════════════════════════════════════════════════════════════════════
    RENDU DES BLOCS
    ═══════════════════════════════════════════════════════════════════════════ */
+
+/** Toutes les boxes ambrées partagent cette palette */
+const A = {
+  bg:       'bg-amber-950/20',
+  border:   'border-amber-700/35',
+  head:     'bg-amber-600/20',
+  headTxt:  'text-amber-300',
+  bodyTxt:  'text-amber-100/85',
+  label:    'text-amber-400',
+  dot:      'bg-amber-500',
+};
+
 function Block({ b }: { b: BlockType }) {
   switch (b.type) {
 
+    /* ── Paragraphe ──────────────────────────────────────────────────────── */
     case 'para':
-      return <p className="text-[13.5px] text-white/70 leading-relaxed"><MixedText text={b.text} /></p>;
-
-    case 'formula':
       return (
-        <div className="relative my-1">
-          <div className="rounded-lg bg-[#0b1622] border border-sky-900/50 py-3 px-4 text-center overflow-x-auto">
-            <BlockMath tex={b.tex} />
-          </div>
-          {b.label && (
-            <span className="absolute top-1.5 right-2.5 text-[10px] font-bold text-sky-600 uppercase tracking-wider">
-              {b.label}
-            </span>
-          )}
+        <p className="text-[13.5px] text-white/75 leading-relaxed">
+          <MixedText text={b.text} />
+        </p>
+      );
+
+    /* ── Sous-section ▸ X.X ──────────────────────────────────────────────── */
+    case 'subsection':
+      return (
+        <div className="flex items-center gap-2 mt-1 mb-0.5">
+          <span className="text-amber-500 font-bold text-sm">▸</span>
+          <h4 className="text-[14px] font-bold text-white">
+            <span className="text-amber-400 mr-1">{b.num}</span>{b.title}
+          </h4>
         </div>
       );
 
+    /* ── Formule unique ───────────────────────────────────────────────────── */
+    case 'formula':
+      return (
+        <div className={`relative rounded-lg ${A.bg} border ${A.border} py-3 px-4 text-center overflow-x-auto`}>
+          {b.label && (
+            <span className={`absolute top-1.5 left-3 text-[9px] font-black ${A.label} uppercase tracking-widest`}>
+              {b.label}
+            </span>
+          )}
+          <BlockMath tex={b.tex} />
+        </div>
+      );
+
+    /* ── Bloc de plusieurs formules ───────────────────────────────────────── */
+    case 'formules':
+      return (
+        <div className={`rounded-lg ${A.bg} border ${A.border} overflow-hidden`}>
+          {b.label && (
+            <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+              <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>{b.label}</span>
+            </div>
+          )}
+          <div className="px-4 py-2 space-y-2">
+            {b.rows.map((r, i) => (
+              <div key={i}>
+                {r.desc && (
+                  <p className={`text-[12px] ${A.bodyTxt} mb-0.5`}><MixedText text={r.desc} /></p>
+                )}
+                <div className="overflow-x-auto"><BlockMath tex={r.tex} /></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    /* ── Vocabulaire ─────────────────────────────────────────────────────── */
+    case 'vocabulaire':
+      return (
+        <div className={`rounded-lg ${A.bg} border ${A.border} overflow-hidden`}>
+          <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>
+              VOCABULAIRE — {b.title}
+            </span>
+          </div>
+          <div className="px-3 py-2.5">
+            {b.intro && (
+              <p className={`text-[13px] ${A.bodyTxt} mb-2 leading-relaxed`}>
+                <MixedText text={b.intro} />
+              </p>
+            )}
+            <ul className="space-y-1.5">
+              {b.items.map((item, i) => (
+                <li key={i} className="flex gap-2 items-start">
+                  <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${A.dot} mt-[6px]`}/>
+                  <span className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={item} /></span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      );
+
+    /* ── Définition ──────────────────────────────────────────────────────── */
+    case 'definition':
+      return (
+        <div className={`rounded-lg border-l-[3px] border-amber-500 border ${A.border} ${A.bg} overflow-hidden`}>
+          {b.badge && (
+            <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+              <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>{b.badge}</span>
+            </div>
+          )}
+          <div className="px-3 py-2.5 space-y-2">
+            {b.content.split('\n\n').map((para, i) => (
+              <p key={i} className={`text-[13px] ${A.bodyTxt} leading-relaxed`}>
+                <MixedText text={para} />
+              </p>
+            ))}
+            {b.formulas?.map((tex, i) => (
+              <div key={i} className="overflow-x-auto"><BlockMath tex={tex} /></div>
+            ))}
+          </div>
+        </div>
+      );
+
+    /* ── Propriété ───────────────────────────────────────────────────────── */
+    case 'propriete':
+      return (
+        <div className={`rounded-lg border-l-[3px] border-amber-500 border ${A.border} ${A.bg} px-3 py-2.5`}>
+          <div className={`mb-1`}>
+            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>PROPRIÉTÉ</span>
+          </div>
+          <p className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={b.text} /></p>
+        </div>
+      );
+
+    /* ── Idée clé 💡 ─────────────────────────────────────────────────────── */
+    case 'idee_cle':
+      return (
+        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
+          <div className={`flex items-center gap-1.5 px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+            <span>💡</span>
+            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>IDÉE CLÉ</span>
+          </div>
+          <p className={`px-3 py-2.5 text-[13px] ${A.bodyTxt} leading-relaxed`}>
+            <MixedText text={b.text} />
+          </p>
+        </div>
+      );
+
+    /* ── L'idée à comprendre 💡 ──────────────────────────────────────────── */
+    case 'idee_comprendre':
+      return (
+        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
+          <div className={`flex items-center gap-1.5 px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+            <span>💡</span>
+            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>L'IDÉE À COMPRENDRE</span>
+          </div>
+          <ul className="px-3 py-2.5 space-y-1.5">
+            {b.items.map((item, i) => (
+              <li key={i} className="flex gap-2 items-start">
+                <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${A.dot} mt-[6px]`}/>
+                <span className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={item} /></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+
+    /* ── Méthode (étapes numérotées) ─────────────────────────────────────── */
+    case 'methode':
+      return (
+        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
+          <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>
+              MÉTHODE{b.title ? ` — ${b.title}` : ''}
+            </span>
+          </div>
+          <ol className="divide-y divide-amber-700/15">
+            {b.steps.map((step, i) => (
+              <li key={i} className="flex gap-3 items-start px-3 py-2.5">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500 text-[11px] font-black text-black flex items-center justify-center mt-0.5">
+                  {i + 1}
+                </span>
+                <span className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={step} /></span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      );
+
+    /* ── Exemple express ─────────────────────────────────────────────────── */
+    case 'exemple':
+      return (
+        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
+          <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>
+              EXEMPLE EXPRESS{b.title ? ` — ${b.title}` : ''}
+            </span>
+          </div>
+          <div className="px-3 py-2.5 space-y-1">
+            {b.lines.map((line, i) =>
+              line === '' ? <div key={i} className="h-1" /> : (
+                <p key={i} className={`text-[13px] ${A.bodyTxt} leading-relaxed`}>
+                  <MixedText text={line} />
+                </p>
+              )
+            )}
+          </div>
+        </div>
+      );
+
+    /* ── Application de la méthode ①②③④⑤ ───────────────────────────────── */
+    case 'application':
+      return (
+        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
+          <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>{b.title}</span>
+          </div>
+          <div className="divide-y divide-amber-700/15">
+            {b.steps.map((step, i) => (
+              <div key={i} className="px-3 py-2.5 space-y-1.5">
+                <p className={`text-[13px] ${A.bodyTxt} leading-relaxed`}>
+                  <span className="font-bold text-amber-300 mr-1">{step.n}</span>
+                  <strong className={A.headTxt}>{step.bold}</strong>
+                  {step.rest && <> <MixedText text={step.rest} /></>}
+                </p>
+                {step.formulas?.map((tex, j) => (
+                  <div key={j} className="overflow-x-auto pl-7">
+                    <BlockMath tex={tex} />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    /* ── Piège fréquent ──────────────────────────────────────────────────── */
+    case 'piege':
+      return (
+        <div className="rounded-lg border border-red-800/40 bg-red-950/15 overflow-hidden">
+          <div className="px-3 py-1.5 bg-red-800/20 border-b border-red-800/35">
+            <span className="text-[9px] font-black text-red-400 uppercase tracking-widest">
+              {b.badge ?? 'PIÈGE FRÉQUENT'}
+            </span>
+          </div>
+          <p className="px-3 py-2.5 text-[13px] text-red-100/80 leading-relaxed">
+            <MixedText text={b.text} />
+          </p>
+        </div>
+      );
+
+    /* ── Le bon réflexe ──────────────────────────────────────────────────── */
+    case 'reflex':
+      return (
+        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
+          <div className={`flex items-center gap-1.5 px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+            <span>🎯</span>
+            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>LE BON RÉFLEXE</span>
+          </div>
+          <p className={`px-3 py-2.5 text-[13px] ${A.bodyTxt} leading-relaxed`}>
+            <MixedText text={b.text} />
+          </p>
+        </div>
+      );
+
+    /* ── Lien vers les exercices ─────────────────────────────────────────── */
+    case 'lien_ex':
+      return (
+        <div className="flex">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/12 border border-amber-600/35 text-[11px] font-semibold text-amber-300/80">
+            {b.text}
+          </span>
+        </div>
+      );
+
+    /* ── Figure SVG ──────────────────────────────────────────────────────── */
     case 'figure':
       return (
         <div className="rounded-xl overflow-hidden border border-white/10 bg-[#0d1520]">
@@ -582,116 +854,6 @@ function Block({ b }: { b: BlockType }) {
         </div>
       );
 
-    case 'definition':
-      return (
-        <div className="rounded-lg overflow-hidden border-l-4 border-sky-500 border border-sky-800/30 bg-sky-950/25">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500/12 border-b border-sky-800/25">
-            <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest">Définition</span>
-            <span className="text-[11px] text-sky-200/80">— {b.title}</span>
-          </div>
-          <p className="px-3 py-2.5 text-[13.5px] text-white/80 leading-relaxed">
-            <MixedText text={b.text} />
-          </p>
-        </div>
-      );
-
-    case 'law':
-      return (
-        <div className="rounded-lg overflow-hidden border border-emerald-700/40 bg-emerald-950/20">
-          <div className="flex items-center gap-2.5 px-3 py-1.5 bg-emerald-700/18 border-b border-emerald-700/30">
-            <span className="w-5 h-5 rounded-full bg-emerald-500 text-[10px] font-black text-white flex items-center justify-center shrink-0">
-              {b.n}
-            </span>
-            <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Loi</span>
-            <span className="text-[11px] text-emerald-200/80">— {b.title}</span>
-          </div>
-          <p className="px-3 py-2.5 text-[13.5px] text-white/80 leading-relaxed">
-            <MixedText text={b.text} />
-          </p>
-        </div>
-      );
-
-    case 'property':
-      return (
-        <div className="rounded-lg overflow-hidden border-l-4 border-violet-500 border border-violet-800/25 bg-violet-950/18">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-500/10 border-b border-violet-800/22">
-            <span className="text-[10px] font-black text-violet-400 uppercase tracking-widest">Propriété</span>
-            <span className="text-[11px] text-violet-200/80">— {b.title}</span>
-          </div>
-          <ul className="px-3 py-2.5 space-y-2">
-            {b.items.map((item, i) => (
-              <li key={i} className="flex gap-2.5 items-baseline">
-                <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-violet-400 mt-[7px]" />
-                <span className="text-[13.5px] text-white/80 leading-relaxed"><MixedText text={item} /></span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-
-    case 'method':
-      return (
-        <div className="rounded-lg overflow-hidden border border-amber-700/35 bg-amber-950/15">
-          <div className="px-3 py-1.5 bg-amber-600/12 border-b border-amber-700/28">
-            <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest">Méthode</span>
-          </div>
-          <ol className="px-3 py-2.5 space-y-2.5">
-            {b.steps.map((step, i) => (
-              <li key={i} className="flex gap-3 items-start">
-                <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500/22 border border-amber-500/45 text-amber-300 text-[11px] font-bold flex items-center justify-center mt-0.5">
-                  {i + 1}
-                </span>
-                <span className="text-[13.5px] text-white/80 leading-relaxed"><MixedText text={step} /></span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      );
-
-    case 'example':
-      return (
-        <div className="rounded-lg overflow-hidden border border-teal-700/35 bg-teal-950/15">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-600/12 border-b border-teal-700/28">
-            <span className="text-base">📐</span>
-            <span className="text-[10px] font-black text-teal-400 uppercase tracking-widest">Exemple</span>
-            <span className="text-[11px] text-teal-200/70">— {b.title}</span>
-          </div>
-          <div className="px-3 py-2.5 space-y-1">
-            {b.lines.map((line, i) =>
-              line === '' ? (
-                <div key={i} className="h-1" />
-              ) : (
-                <p key={i} className="text-[13px] text-white/75 leading-relaxed">
-                  <MixedText text={line} />
-                </p>
-              )
-            )}
-          </div>
-        </div>
-      );
-
-    case 'attention':
-      return (
-        <div className="rounded-lg border border-red-700/40 bg-red-950/18 px-3 py-2.5 flex gap-2.5 items-start">
-          <span className="text-red-400 text-base shrink-0 mt-0.5">⚠</span>
-          <div>
-            <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-0.5">Attention</p>
-            <p className="text-[13px] text-red-100/80 leading-relaxed"><MixedText text={b.text} /></p>
-          </div>
-        </div>
-      );
-
-    case 'astuce':
-      return (
-        <div className="rounded-lg border border-teal-700/40 bg-teal-950/15 px-3 py-2.5 flex gap-2.5 items-start">
-          <span className="text-teal-400 text-base shrink-0 mt-0.5">💡</span>
-          <div>
-            <p className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-0.5">Astuce</p>
-            <p className="text-[13px] text-teal-100/80 leading-relaxed"><MixedText text={b.text} /></p>
-          </div>
-        </div>
-      );
-
     default:
       return null;
   }
@@ -700,19 +862,53 @@ function Block({ b }: { b: BlockType }) {
 /* ═══════════════════════════════════════════════════════════════════════════
    ONGLET COURS
    ═══════════════════════════════════════════════════════════════════════════ */
+
+// Objectifs du chapitre — page de couverture
+const OBJECTIFS = [
+  'Décrire un mouvement à l\'aide des vecteurs **position**, **vitesse** et **accélération**.',
+  'Énoncer et exploiter les **trois lois de Newton**.',
+  'Appliquer une **méthode unique en 5 étapes** à n\'importe quel problème de dynamique.',
+  'Établir les **équations horaires** et l\'**équation de la trajectoire** d\'un projectile.',
+  'Étudier le mouvement d\'une **particule chargée** dans un champ électrique uniforme.',
+];
+
 function CourseTab() {
-  const [open, setOpen] = useState<Set<string>>(new Set(['cine']));
+  const [open, setOpen] = useState<Set<string>>(new Set(['cinematique']));
   const toggle = (id: string) =>
     setOpen(p => { const s = new Set(p); s.has(id) ? s.delete(id) : s.add(id); return s; });
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }} className="space-y-2 pb-6">
+
+      {/* Objectifs */}
+      <div className={`rounded-xl border ${A.border} ${A.bg} overflow-hidden`}>
+        <div className={`px-4 py-2 ${A.head} border-b ${A.border}`}>
+          <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>
+            OBJECTIFS DU CHAPITRE
+          </span>
+        </div>
+        <ul className="px-4 py-3 space-y-1.5">
+          {OBJECTIFS.map((o, i) => (
+            <li key={i} className="flex gap-2 items-start">
+              <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${A.dot} mt-[6px]`}/>
+              <span className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={o} /></span>
+            </li>
+          ))}
+        </ul>
+        <div className="px-4 py-2 border-t border-amber-700/20">
+          <p className="text-[11px] text-white/35 text-center">
+            Conventions : repère $(O,\,\vec{i},\,\vec{j})$, $g = 9{,}81\,\text{m\,s}^{-2}$, frottements négligés sauf mention contraire.
+          </p>
+        </div>
+      </div>
+
+      {/* Sections */}
       {COURS.map(sec => (
-        <div key={sec.id} className="rounded-xl overflow-hidden border border-white/10 bg-white/[0.025]">
+        <div key={sec.id} className="rounded-xl overflow-hidden border border-white/10 bg-white/[0.02]">
           <button onClick={() => toggle(sec.id)}
             className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white/5 transition-colors">
-            <span className="shrink-0 w-8 h-8 rounded-lg bg-sky-500/18 border border-sky-500/38 text-sky-300 text-[12px] font-black flex items-center justify-center">
+            <span className="shrink-0 w-8 h-8 rounded-lg bg-amber-500 text-black text-[13px] font-black flex items-center justify-center">
               {sec.num}
             </span>
             <span className="flex-1 font-bold text-white text-[14.5px]">{sec.title}</span>
@@ -737,10 +933,9 @@ function CourseTab() {
 /* ═══════════════════════════════════════════════════════════════════════════
    ONGLET FICHE
    ═══════════════════════════════════════════════════════════════════════════ */
-const FICHE = [
+const FICHE_DATA = [
   {
     title: '§1  Cinématique',
-    cls: { bg: 'bg-sky-950/35', border: 'border-sky-700/35', head: 'bg-sky-700/18', label: 'text-sky-300' },
     rows: [
       { label: 'Position',     tex: '\\overrightarrow{OM}(t) = x(t)\\,\\vec{i}+y(t)\\,\\vec{j}' },
       { label: 'Vitesse',      tex: '\\vec{v}=\\dfrac{d\\overrightarrow{OM}}{dt}\\quad(\\text{tangente})' },
@@ -749,33 +944,29 @@ const FICHE = [
     ],
   },
   {
-    title: '§2–3  Lois de Newton',
-    cls: { bg: 'bg-emerald-950/35', border: 'border-emerald-700/35', head: 'bg-emerald-700/18', label: 'text-emerald-300' },
+    title: '§2  Lois de Newton',
     rows: [
-      { label: '1ʳᵉ loi', tex: '\\sum\\vec{F}_{\\text{ext}}=\\vec{0}\\Rightarrow\\vec{v}=\\text{cste}' },
-      { label: '2ᵉ loi',  tex: '\\sum\\vec{F}_{\\text{ext}}=m\\vec{a}' },
-      { label: '3ᵉ loi',  tex: '\\vec{F}_{B/A}=-\\vec{F}_{A/B}\\;(\\text{corps ≠})' },
+      { label: '1ʳᵉ loi', tex: '\\sum\\vec{F}_{\\text{ext}}=\\vec{0}\\iff\\vec{v}_G=\\overrightarrow{\\text{cte}}' },
+      { label: '2ᵉ loi',  tex: '\\sum\\vec{F}_{\\text{ext}}=m\\vec{a}_G' },
+      { label: '3ᵉ loi',  tex: '\\vec{F}_{A/B}=-\\vec{F}_{B/A}\\;(\\text{corps ≠})' },
     ],
   },
   {
-    title: '§5  Projectile (sans frottement)',
-    cls: { bg: 'bg-violet-950/35', border: 'border-violet-700/35', head: 'bg-violet-700/18', label: 'text-violet-300' },
+    title: '§4  Projectile (sans frottement)',
     rows: [
-      { label: 'Horaires',    tex: 'x=v_0\\cos\\alpha\\cdot t\\;,\\;\\; y=v_0\\sin\\alpha\\cdot t-\\tfrac{1}{2}g\\,t^2' },
-      { label: 'Trajectoire', tex: 'y=x\\tan\\alpha-\\dfrac{g}{2v_0^2\\cos^2\\!\\alpha}\\,x^2' },
+      { label: 'Horaires',    tex: 'x=v_0\\cos\\alpha\\cdot t\\;,\\;\\;y=v_0\\sin\\alpha\\cdot t-\\tfrac{1}{2}g\\,t^2' },
+      { label: 'Trajectoire', tex: 'y=-\\dfrac{g}{2v_0^2\\cos^2\\!\\alpha}\\,x^2+(\\tan\\alpha)\\,x' },
       { label: 'Flèche H',    tex: 'H=\\dfrac{v_0^2\\sin^2\\!\\alpha}{2g}' },
-      { label: 'Portée D',    tex: 'D=\\dfrac{v_0^2\\sin 2\\alpha}{g}\\quad(D_{\\max}\\text{ à }45°)' },
+      { label: 'Portée D',    tex: 'D=\\dfrac{v_0^2\\sin2\\alpha}{g}\\quad(D_{\\max}\\text{ à }45°)' },
     ],
   },
   {
-    title: '§6  Particule chargée',
-    cls: { bg: 'bg-amber-950/35', border: 'border-amber-700/35', head: 'bg-amber-700/18', label: 'text-amber-300' },
+    title: '§5  Particule chargée',
     rows: [
-      { label: 'Champ',       tex: 'E=U/d\\quad(\\text{V\\,m}^{-1})' },
-      { label: 'Force e⁻',    tex: 'F=eE\\;(\\text{opposée à }\\vec{E})' },
-      { label: 'Accélération',tex: 'a=eE/m_e' },
-      { label: 'Trajectoire', tex: 'y=ax^2/(2v_0^2)' },
-      { label: 'Écran',       tex: 'Y=\\dfrac{eEL}{m_e v_0^2}\\!\\left(D+\\dfrac{L}{2}\\right)' },
+      { label: 'Champ',        tex: 'E=U/d' },
+      { label: 'Force',        tex: '\\vec{F}=q\\vec{E}\\;(\\text{opposée à }\\vec{E}\\text{ si }q<0)' },
+      { label: 'Accélération', tex: 'a=qE/m' },
+      { label: 'Trajectoire',  tex: 'y=\\dfrac{qE}{2mv_0^2}\\,x^2' },
     ],
   },
 ];
@@ -784,21 +975,21 @@ function FicheTab() {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }} className="pb-6 space-y-3">
-      <div className="text-center pt-1 pb-2">
+      <div className="text-center pt-1 pb-1">
         <p className="text-white font-black text-base">Newton & Champ uniforme</p>
         <p className="text-[11px] text-white/35 uppercase tracking-widest mt-0.5">Fiche de révision · Terminale</p>
       </div>
 
-      {FICHE.map(sec => (
-        <div key={sec.title} className={`rounded-xl overflow-hidden border ${sec.cls.bg} ${sec.cls.border}`}>
-          <div className={`px-4 py-2 ${sec.cls.head} border-b ${sec.cls.border}`}>
-            <span className={`text-[11px] font-black ${sec.cls.label} uppercase tracking-wider`}>{sec.title}</span>
+      {FICHE_DATA.map(sec => (
+        <div key={sec.title} className={`rounded-xl overflow-hidden border ${A.border} ${A.bg}`}>
+          <div className={`px-4 py-2 ${A.head} border-b ${A.border}`}>
+            <span className={`text-[11px] font-black ${A.headTxt} uppercase tracking-wider`}>{sec.title}</span>
           </div>
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-amber-900/30">
             {sec.rows.map((row, i) => (
               <div key={i} className="flex items-center min-h-[2.75rem]">
-                <div className="w-[92px] shrink-0 px-3 py-2 self-stretch flex items-center border-r border-white/8">
-                  <span className="text-[11px] font-semibold text-white/35 leading-tight">{row.label}</span>
+                <div className="w-[95px] shrink-0 px-3 py-2 self-stretch flex items-center border-r border-amber-900/30">
+                  <span className="text-[11px] font-semibold text-amber-400/60 leading-tight">{row.label}</span>
                 </div>
                 <div className="flex-1 px-3 py-1 overflow-x-auto">
                   <BlockMath tex={row.tex} className="!py-0" />
@@ -809,18 +1000,18 @@ function FicheTab() {
         </div>
       ))}
 
-      <div className="rounded-xl overflow-hidden border border-white/10 bg-white/[0.02]">
-        <div className="px-4 py-2 bg-white/5 border-b border-white/8">
-          <span className="text-[11px] font-black text-white/45 uppercase tracking-wider">Constantes</span>
+      <div className={`rounded-xl overflow-hidden border ${A.border} ${A.bg}`}>
+        <div className={`px-4 py-2 ${A.head} border-b ${A.border}`}>
+          <span className={`text-[11px] font-black ${A.headTxt} uppercase tracking-wider`}>Constantes</span>
         </div>
         {[
-          { sym: 'g', tex: '9{,}81\\;\\text{m\\,s}^{-2}' },
-          { sym: 'e', tex: '1{,}6\\times10^{-19}\\;\\text{C}' },
+          { sym: 'g',   tex: '9{,}81\\;\\text{m\\,s}^{-2}' },
+          { sym: 'e',   tex: '1{,}6\\times10^{-19}\\;\\text{C}' },
           { sym: 'm_e', tex: '9{,}1\\times10^{-31}\\;\\text{kg}' },
         ].map(c => (
-          <div key={c.sym} className="flex items-center min-h-[2.5rem] border-t border-white/5">
-            <div className="w-[92px] shrink-0 px-3 py-1 self-stretch flex items-center border-r border-white/8">
-              <span className="text-[11px] font-mono text-white/35">{c.sym}</span>
+          <div key={c.sym} className="flex items-center min-h-[2.5rem] border-t border-amber-900/30">
+            <div className="w-[95px] shrink-0 px-3 py-1 self-stretch flex items-center border-r border-amber-900/30">
+              <span className="text-[11px] font-mono text-amber-400/60">{c.sym} =</span>
             </div>
             <div className="flex-1 px-3 py-1 overflow-x-auto">
               <BlockMath tex={c.tex} className="!py-0" />
