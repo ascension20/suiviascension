@@ -837,22 +837,22 @@ const FICHE_DATA = [
       {
         label: 'Position',
         tex: '\\overrightarrow{OM}(t) = x(t)\\,\\vec{i}+y(t)\\,\\vec{j}',
-        vars: 'O : origine · x(t), y(t) : coordonnées (équations horaires) · i⃗, j⃗ : vecteurs unitaires des axes',
+        vars: '$O$ : origine · $x(t),y(t)$ : coordonnées (équations horaires) · $\\vec{i},\\vec{j}$ : vecteurs unitaires des axes',
       },
       {
         label: 'Vitesse',
         tex: '\\vec{v}=\\dfrac{d\\overrightarrow{OM}}{dt}',
-        vars: 'v⃗ : vecteur vitesse (m·s⁻¹) — toujours tangent à la trajectoire · vₓ = dx/dt, vᵧ = dy/dt',
+        vars: '$\\vec{v}$ : vecteur vitesse (m·s⁻¹) — toujours tangent à la trajectoire · $v_x=dx/dt$, $v_y=dy/dt$',
       },
       {
         label: 'Accélération',
         tex: '\\vec{a}=\\dfrac{d\\vec{v}}{dt}=\\dfrac{d^2\\overrightarrow{OM}}{dt^2}',
-        vars: 'a⃗ : vecteur accélération (m·s⁻²) · aₓ = dvₓ/dt, aᵧ = dvᵧ/dt',
+        vars: '$\\vec{a}$ : vecteur accélération (m·s⁻²) · $a_x=dv_x/dt$, $a_y=dv_y/dt$',
       },
       {
         label: 'Norme vitesse',
         tex: 'v=\\|\\vec{v}\\|=\\sqrt{v_x^2+v_y^2}',
-        vars: 'v : vitesse scalaire (m·s⁻¹) · vₓ, vᵧ : composantes sur x et y',
+        vars: '$v$ : vitesse scalaire (m·s⁻¹) · $v_x, v_y$ : composantes sur $x$ et $y$',
       },
     ],
   },
@@ -862,17 +862,17 @@ const FICHE_DATA = [
       {
         label: '1ʳᵉ loi — Inertie',
         tex: '\\sum\\vec{F}_{\\text{ext}}=\\vec{0}\\iff\\vec{v}_G=\\overrightarrow{\\text{cte}}',
-        vars: 'ΣF⃗_ext : somme des forces extérieures · v⃗_G : vitesse du centre d\'inertie G — constante si nulle',
+        vars: '$\\sum\\vec{F}_{\\text{ext}}$ : somme des forces extérieures · $\\vec{v}_G$ : vitesse du centre d\'inertie — constante (en direction et norme) si la somme est nulle',
       },
       {
         label: '2ᵉ loi — PFD',
         tex: '\\sum\\vec{F}_{\\text{ext}}=m\\,\\vec{a}_G',
-        vars: 'm : masse du système (kg) · a⃗_G : accélération du centre d\'inertie (m·s⁻²) · F en newtons (N)',
+        vars: '$m$ : masse du système (kg) · $\\vec{a}_G$ : accélération du centre d\'inertie (m·s⁻²) · forces $\\vec{F}$ en newtons (N)',
       },
       {
         label: '3ᵉ loi — Réaction',
         tex: '\\vec{F}_{A/B}=-\\vec{F}_{B/A}\\quad(A\\neq B)',
-        vars: 'F⃗_{A/B} : force exercée par A sur B · F⃗_{B/A} : force exercée par B sur A — même droite, sens opposés, corps différents',
+        vars: '$\\vec{F}_{A/B}$ : force de A sur B · $\\vec{F}_{B/A}$ : force de B sur A — même droite, sens opposés, **corps différents**',
       },
     ],
   },
@@ -882,22 +882,22 @@ const FICHE_DATA = [
       {
         label: 'Équations horaires',
         tex: 'x=(v_0\\cos\\alpha)\\,t\\;,\\quad y=(v_0\\sin\\alpha)\\,t-\\tfrac{1}{2}g\\,t^2',
-        vars: 'v₀ : vitesse initiale (m·s⁻¹) · α : angle avec l\'horizontale · g = 9,81 m·s⁻² · t : temps (s)',
+        vars: '$v_0$ : vitesse initiale (m·s⁻¹) · $\\alpha$ : angle avec l\'horizontale · $g=9{,}81\\;\\text{m·s}^{-2}$ · $t$ : temps (s)',
       },
       {
         label: 'Trajectoire y(x)',
         tex: 'y=-\\dfrac{g}{2v_0^2\\cos^2\\!\\alpha}\\,x^2+(\\tan\\alpha)\\,x',
-        vars: 'Parabole obtenue en éliminant t par t = x/(v₀cosα) · coefficients dépendent de v₀ et α',
+        vars: 'Parabole obtenue en éliminant $t$ via $t=x/(v_0\\cos\\alpha)$ · coefficients dépendent de $v_0$ et $\\alpha$',
       },
       {
         label: 'Flèche H',
         tex: 'H=\\dfrac{v_0^2\\sin^2\\!\\alpha}{2g}',
-        vars: 'H : hauteur maximale atteinte au sommet (m) — quand vᵧ = 0 · date du sommet : t_s = v₀sinα / g',
+        vars: '$H$ : hauteur maximale au sommet (m) — atteinte quand $v_y=0$ · date du sommet : $t_s = v_0\\sin\\alpha/g$',
       },
       {
         label: 'Portée D',
         tex: 'D=\\dfrac{v_0^2\\sin(2\\alpha)}{g}\\quad\\bigl(D_{\\max}\\text{ à }45°\\bigr)',
-        vars: 'D : distance horizontale jusqu\'au retour au sol (m) · maximale pour α = 45° car sin(90°) = 1',
+        vars: '$D$ : distance horizontale jusqu\'au retour au sol · maximale pour $\\alpha=45°$ car $\\sin 90°=1$',
       },
     ],
   },
@@ -907,22 +907,22 @@ const FICHE_DATA = [
       {
         label: 'Champ électrique',
         tex: 'E=\\dfrac{U}{d}',
-        vars: 'E : champ électrique (V·m⁻¹) · U : tension entre les plaques (V) · d : distance entre plaques (m)',
+        vars: '$E$ : champ électrique (V·m⁻¹) · $U$ : tension entre les plaques (V) · $d$ : distance entre plaques (m)',
       },
       {
         label: 'Force électrique',
         tex: '\\vec{F}=q\\,\\vec{E}',
-        vars: 'q : charge de la particule (C) · F⃗ parallèle à E⃗ si q > 0 · opposée à E⃗ si q < 0 (électron)',
+        vars: '$q$ : charge de la particule (C) · $\\vec{F}$ parallèle à $\\vec{E}$ si $q>0$ · opposée à $\\vec{E}$ si $q<0$ (électron)',
       },
       {
         label: 'Accélération',
         tex: 'a=\\dfrac{qE}{m}',
-        vars: 'a : accélération perpendiculaire aux plaques (m·s⁻²) · m : masse de la particule (kg)',
+        vars: '$a$ : accélération perpendiculaire aux plaques (m·s⁻²) · $m$ : masse de la particule (kg)',
       },
       {
         label: 'Trajectoire y(x)',
         tex: 'y=\\dfrac{qE}{2m\\,v_0^2}\\,x^2',
-        vars: 'Parabole (analogue au projectile) · v₀ : vitesse d\'entrée horizontale · x : distance parcourue horizontalement',
+        vars: 'Parabole (analogue au projectile) · $v_0$ : vitesse d\'entrée horizontale · $x$ : distance parcourue horizontalement',
       },
     ],
   },
@@ -951,7 +951,9 @@ function FicheTab() {
                 <div className="flex-1 px-3 py-1 overflow-x-auto">
                   <BlockMath tex={row.tex} className="!py-0" />
                   {'vars' in row && row.vars && (
-                    <p className="text-[10px] text-amber-200/40 leading-snug mt-0.5 pb-1 whitespace-normal">{row.vars}</p>
+                    <p className="text-[10px] text-amber-200/40 leading-snug mt-0.5 pb-1 whitespace-normal">
+                      <MixedText text={row.vars} />
+                    </p>
                   )}
                 </div>
               </div>
