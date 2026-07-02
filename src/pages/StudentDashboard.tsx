@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, WifiOff, Bell, BellOff, Menu, X, LayoutDashboard, BookOpen, LogOut, Crown, Trophy, Timer, User } from 'lucide-react';
+import { Flame, WifiOff, Bell, BellOff, Menu, X, LayoutDashboard, BookOpen, LogOut, Crown, Trophy, Timer, User, Layers, ChevronDown, ChevronRight } from 'lucide-react';
 import { ResourcesTab } from '@/components/Resources/ResourcesTab';
 import { DeepworkWidget } from '@/components/Deepwork/DeepworkWidget';
 import { DeepworkStats } from '@/components/Deepwork/DeepworkStats';
@@ -35,6 +35,8 @@ export default function StudentDashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'ressources'>('dashboard');
+  const [ressourcesSub, setRessourcesSub] = useState<'methodes' | 'modules'>('modules');
+  const [ressourcesOpen, setRessourcesOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; xpGained: number } | null>(null);
   // XP leaderboard: [global, weekly, daily]
@@ -421,26 +423,81 @@ export default function StudentDashboard() {
 
               {/* Nav items */}
               <nav className="flex-1 p-3 space-y-1">
-                {([
-                  { id: 'dashboard',  label: 'Dashboard',   icon: LayoutDashboard },
-                  { id: 'ressources', label: 'Ressources',  icon: BookOpen },
-                ] as const).map(({ id, label, icon: Icon }) => (
+                {/* Dashboard */}
+                <button
+                  onClick={() => { setActiveTab('dashboard'); setRessourcesOpen(false); setSidebarOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                    ${activeTab === 'dashboard'
+                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/25'
+                      : 'text-muted-foreground hover:bg-secondary hover:text-foreground border border-transparent'
+                    }`}
+                >
+                  <LayoutDashboard size={16} />
+                  Dashboard
+                  {activeTab === 'dashboard' && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-amber-500" />}
+                </button>
+
+                {/* Ressources (accordéon) */}
+                <div>
                   <button
-                    key={id}
-                    onClick={() => { setActiveTab(id); setSidebarOpen(false); }}
+                    onClick={() => {
+                      if (activeTab !== 'ressources') {
+                        setActiveTab('ressources');
+                        setRessourcesOpen(true);
+                      } else {
+                        setRessourcesOpen(o => !o);
+                      }
+                    }}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      ${activeTab === id
+                      ${activeTab === 'ressources'
                         ? 'bg-amber-500/15 text-amber-300 border border-amber-500/25'
                         : 'text-muted-foreground hover:bg-secondary hover:text-foreground border border-transparent'
                       }`}
                   >
-                    <Icon size={16} />
-                    {label}
-                    {activeTab === id && (
-                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    )}
+                    <BookOpen size={16} />
+                    <span className="flex-1 text-left">Ressources</span>
+                    {ressourcesOpen
+                      ? <ChevronDown size={13} className="opacity-60" />
+                      : <ChevronRight size={13} className="opacity-60" />
+                    }
                   </button>
-                ))}
+
+                  {/* Sous-menu */}
+                  <AnimatePresence>
+                    {ressourcesOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.18 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-0.5 ml-3 pl-3 border-l border-white/10 space-y-0.5">
+                          {([
+                            { id: 'modules'  as const, label: 'Modules',  Icon: Layers   },
+                            { id: 'methodes' as const, label: 'Méthodes', Icon: BookOpen  },
+                          ]).map(({ id, label, Icon }) => (
+                            <button
+                              key={id}
+                              onClick={() => { setRessourcesSub(id); setSidebarOpen(false); }}
+                              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all
+                                ${ressourcesSub === id && activeTab === 'ressources'
+                                  ? 'text-amber-300 bg-amber-500/10'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                                }`}
+                            >
+                              <Icon size={13} />
+                              {label}
+                              {ressourcesSub === id && activeTab === 'ressources' && (
+                                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-amber-500" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </nav>
 
               {/* Footer */}
@@ -460,7 +517,7 @@ export default function StudentDashboard() {
       <main className="p-4 md:p-6 max-w-7xl mx-auto">
 
         {/* ── Ressources tab ── */}
-        {activeTab === 'ressources' && <ResourcesTab onXpGain={addXp} />}
+        {activeTab === 'ressources' && <ResourcesTab onXpGain={addXp} section={ressourcesSub} />}
 
         {/* ── Dashboard tab ── */}
         {activeTab === 'dashboard' && <>

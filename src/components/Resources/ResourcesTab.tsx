@@ -443,12 +443,8 @@ function PromptsTab({ groups }: { groups: PromptGroup[] }) {
 }
 
 // ── Root ───────────────────────────────────────────────────────────────────
-interface ResourcesTabProps {
-  onXpGain?: (amount: number) => void;
-}
 
-export function ResourcesTab({ onXpGain }: ResourcesTabProps) {
-  const [section, setSection] = useState<'methodes' | 'modules'>('methodes');
+export function ResourcesTab({ onXpGain, section }: ResourcesTabProps) {
   const [tab, setTab] = useState<TabId>('general');
 
   return (
@@ -459,39 +455,6 @@ export function ResourcesTab({ onXpGain }: ResourcesTabProps) {
       `}</style>
 
       <div className="space-y-5 max-w-4xl mx-auto">
-
-        {/* ── Section toggle Méthodes / Modules ── */}
-        <div
-          className="flex gap-0.5 p-1 rounded-xl border w-fit"
-          style={{ background: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }}
-        >
-          {([
-            { id: 'methodes' as const, label: 'Méthodes', Icon: BookOpen },
-            { id: 'modules'  as const, label: 'Modules',  Icon: Layers   },
-          ] as const).map(s => {
-            const active = section === s.id;
-            return (
-              <button
-                key={s.id}
-                onClick={() => setSection(s.id)}
-                className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-black tracking-wide transition-all duration-150 whitespace-nowrap rounded-lg"
-                style={
-                  active
-                    ? {
-                        background: 'linear-gradient(135deg, hsl(43 90% 40%), hsl(50 100% 60%))',
-                        color: 'hsl(222 22% 6%)',
-                        clipPath: 'polygon(6px 0%,calc(100% - 6px) 0%,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0% calc(100% - 6px),0% 6px)',
-                        boxShadow: '0 0 14px hsl(43 90% 50% / 0.45)',
-                      }
-                    : { background: 'transparent', color: 'hsl(var(--muted-foreground))' }
-                }
-              >
-                <s.Icon size={11} />
-                {s.label}
-              </button>
-            );
-          })}
-        </div>
 
         {/* ── Modules section ── */}
         {section === 'modules' && <ModulesTab onXpGain={onXpGain} />}
