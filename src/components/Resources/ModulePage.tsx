@@ -892,18 +892,31 @@ function FicheTab() {
 
       <div className={`rounded-xl overflow-hidden border ${A.border} ${A.bg}`}>
         <div className={`px-4 py-2 ${A.head} border-b ${A.border}`}>
-          <span className={`text-[11px] font-black ${A.headTxt} uppercase tracking-wider`}>Constantes</span>
+          <span className={`text-[11px] font-black ${A.headTxt} uppercase tracking-wider`}>Constantes utiles</span>
         </div>
         {[
-          { sym: 'g',   tex: '9{,}81\\;\\text{m\\,s}^{-2}' },
-          { sym: 'e',   tex: '1{,}6\\times10^{-19}\\;\\text{C}' },
-          { sym: 'm_e', tex: '9{,}1\\times10^{-31}\\;\\text{kg}' },
+          {
+            label: 'Pesanteur terrestre',
+            sym: 'g',
+            tex: 'g = 9{,}81\\;\\text{m}\\cdot\\text{s}^{-2}',
+          },
+          {
+            label: 'Charge élémentaire',
+            sym: 'e',
+            tex: 'e = 1{,}6\\times10^{-19}\\;\\text{C}',
+          },
+          {
+            label: "Masse de l'électron",
+            sym: 'm_e',
+            tex: 'm_e = 9{,}1\\times10^{-31}\\;\\text{kg}',
+          },
         ].map(c => (
-          <div key={c.sym} className="flex items-center min-h-[2.5rem] border-t border-amber-900/30">
-            <div className="w-[95px] shrink-0 px-3 py-1 self-stretch flex items-center border-r border-amber-900/30">
-              <span className="text-[11px] font-mono text-amber-400/60">{c.sym} =</span>
+          <div key={c.sym} className="flex items-start border-t border-amber-900/30 py-2 px-3 gap-3">
+            <div className="shrink-0 w-[110px]">
+              <p className="text-[11px] font-semibold text-white/70 leading-tight">{c.label}</p>
+              <p className="text-[10px] text-amber-400/50 font-mono mt-0.5">{c.sym}</p>
             </div>
-            <div className="flex-1 px-3 py-1 overflow-x-auto">
+            <div className="flex-1 overflow-x-auto">
               <BlockMath tex={c.tex} className="!py-0" />
             </div>
           </div>
