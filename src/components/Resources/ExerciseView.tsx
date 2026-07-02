@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, Clock, Zap, BookOpen } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Clock, Zap, BookOpen, Lock, Lightbulb } from 'lucide-react';
 import { ModuleLevel, DIFF_LABEL } from '@/lib/modules-data';
-import { ExerciseContent } from '@/lib/newton-content';
+import { ExerciseContent, Correction } from '@/lib/newton-content';
 import { MixedText, BlockMath } from './Math';
 
 interface ExerciseViewProps {
   level: ModuleLevel;
   content: ExerciseContent | null;
+  correction?: Correction | null;
+  correctionUnlocked?: boolean;
+  nextLevelTitle?: string;
   onComplete: () => void;
   onBack: () => void;
 }
@@ -20,7 +23,7 @@ const DIFF_COLOR: Record<number, string> = {
   4: '0 70% 60%',
 };
 
-export function ExerciseView({ level, content, onComplete, onBack }: ExerciseViewProps) {
+export function ExerciseView({ level, content, correction, correctionUnlocked, nextLevelTitle, onComplete, onBack }: ExerciseViewProps) {
   const [done, setDone] = useState(false);
   const color = DIFF_COLOR[level.difficulty] ?? '205 85% 62%';
 
@@ -117,6 +120,58 @@ export function ExerciseView({ level, content, onComplete, onBack }: ExerciseVie
       ) : (
         <div className="flex-1 flex items-center justify-center">
           <p className="text-white/30 text-sm">Contenu non disponible.</p>
+        </div>
+      )}
+
+      {/* ── Correction ── */}
+      {correction && (
+        <div className="mt-4">
+          {correctionUnlocked ? (
+            <div className="rounded-2xl overflow-hidden border border-emerald-700/30 bg-emerald-950/20">
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-emerald-900/25 border-b border-emerald-700/30">
+                <Lightbulb size={14} className="text-emerald-400" />
+                <span className="text-xs font-bold tracking-wide text-emerald-400">CORRECTION</span>
+              </div>
+              <div className="px-4 py-4 space-y-3">
+                {correction.steps.map((step, i) => (
+                  <div key={i} className="flex gap-2.5">
+                    {step.n && (
+                      <span className="shrink-0 w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center mt-0.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                        {step.n}
+                      </span>
+                    )}
+                    <div className={`flex-1 ${!step.n ? 'pl-0' : ''}`}>
+                      {step.text && (
+                        <p className="text-sm text-white/80 leading-relaxed">
+                          <MixedText text={step.text} />
+                        </p>
+                      )}
+                      {step.tex && (
+                        <div className="mt-1 overflow-x-auto">
+                          <BlockMath tex={step.tex} className="!py-0.5" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                <div className="mt-3 pt-3 border-t border-emerald-700/25 rounded-xl bg-emerald-950/30 px-3 py-2">
+                  <p className="text-[11px] font-bold text-emerald-400/70 uppercase tracking-wider mb-1">Résultat</p>
+                  <p className="text-sm font-semibold text-emerald-200/90 leading-relaxed">
+                    <MixedText text={correction.result} />
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-white/8 bg-white/[0.03]">
+              <Lock size={14} className="text-white/25 shrink-0" />
+              <p className="text-sm text-white/30">
+                {nextLevelTitle
+                  ? <>Termine <span className="text-white/50 font-medium">«&nbsp;{nextLevelTitle}&nbsp;»</span> pour débloquer la correction.</>
+                  : 'Termine l\'exercice suivant pour débloquer la correction.'}
+              </p>
+            </div>
+          )}
         </div>
       )}
 

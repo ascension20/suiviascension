@@ -5,7 +5,7 @@ import {
   CheckCircle2, Lock, Play, ChevronDown, ChevronRight,
 } from 'lucide-react';
 import { PhysicsModule, ModuleLevel, TIER_META, DIFF_LABEL } from '@/lib/modules-data';
-import { NEWTON_QCM, NEWTON_EXERCISES } from '@/lib/newton-content';
+import { NEWTON_QCM, NEWTON_EXERCISES, NEWTON_CORRECTIONS } from '@/lib/newton-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -41,8 +41,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
+    const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
+    const correctionUnlocked = nextLevel
+      ? completedIds.has(nextLevel.id)
+      : completedIds.has(activeLevel.id);
     return <ExerciseView level={activeLevel}
       content={NEWTON_EXERCISES.find(e => e.id === activeLevel.id) ?? null}
+      correction={NEWTON_CORRECTIONS[activeLevel.id] ?? null}
+      correctionUnlocked={correctionUnlocked}
+      nextLevelTitle={nextLevel?.title}
       onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
       onBack={() => setActiveLevel(null)} />;
   }

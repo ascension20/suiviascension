@@ -129,6 +129,191 @@ export const NEWTON_QCM: QcmQuestion[] = [
   },
 ];
 
+// ── Corrections ──────────────────────────────────────────────────────────────
+export interface CorrectionStep {
+  n?: string;      // "1", "2", "A.1" — omit for remark/non-numbered lines
+  text: string;    // MixedText: $...$ for inline LaTeX, **...** for bold
+  tex?: string;    // optional display-mode block formula
+}
+
+export interface Correction {
+  steps: CorrectionStep[];
+  result: string;  // RÉSULTAT line — MixedText
+}
+
+export const NEWTON_CORRECTIONS: Record<string, Correction> = {
+  'newton-1': {
+    steps: [
+      { n: '1', text: 'On dérive chaque coordonnée de $\\overrightarrow{OM}(t) = 2t\\,\\vec{i} + (3t^2 - t)\\,\\vec{j}$ : $v_x = 2$, $v_y = 6t - 1$, soit $\\vec{v}(t) = 2\\,\\vec{i} + (6t-1)\\,\\vec{j}$.' },
+      { n: '2', text: 'On dérive à nouveau : $a_x = 0$, $a_y = 6$, soit $\\vec{a}(t) = 6\\,\\vec{j}$. L\'accélération est **constante et non nulle** : le mouvement est uniformément accéléré.' },
+    ],
+    result: '$\\vec{v} = 2\\,\\vec{i} + (6t-1)\\,\\vec{j}$ ; $\\vec{a} = 6\\,\\vec{j}$ (constante) → **mouvement uniformément accéléré**.',
+  },
+  'newton-2': {
+    steps: [
+      { n: '1', text: '$\\vec{a} = \\dfrac{d\\vec{v}}{dt} = 0\\,\\vec{i} - 10\\,\\vec{j}$ : accélération **constante** → mouvement uniformément accéléré.' },
+      { n: '2', text: 'On intègre chaque composante, les constantes étant fixées par $\\overrightarrow{OM}_0 = (0\\,;\\,0)$ :', tex: 'x = \\int 2\\,dt = 2t \\qquad y = \\int (6-10t)\\,dt = 6t - 5t^2' },
+    ],
+    result: '$\\vec{a} = -10\\,\\vec{j}$ ; $x(t) = 2t$, $y(t) = 6t - 5t^2$.',
+  },
+  'newton-3': {
+    steps: [
+      { text: '**Système :** le solide. Contact **sans frottement** → deux forces extérieures :' },
+      { n: '1', text: 'le **poids** $\\vec{P} = m\\vec{g}$, vertical, dirigé vers le bas, appliqué en $G$ ;' },
+      { n: '2', text: 'la **réaction normale** $\\vec{N}$ du plan, perpendiculaire au plan (aucune composante tangentielle).' },
+      { text: '**Remarque.** Ces deux forces ne s\'équilibrent pas le long de la pente : un solide réellement sans frottement glisserait ($a = g\\sin\\beta$).' },
+    ],
+    result: '2 forces : le **poids** (vertical) et la **réaction normale** (⊥ au plan).',
+  },
+  'newton-4': {
+    steps: [
+      { n: '1', text: 'Forces : le poids $\\vec{P} = m\\vec{g}$ (vers le bas) et le frottement $\\vec{f}$ (vers le haut). Deuxième loi : $\\vec{P} + \\vec{f} = m\\vec{a}$.' },
+      { n: '2', text: 'Sur un axe vertical orienté vers le bas : $mg - f = ma$, donc :', tex: 'a = \\frac{mg - f}{m} = g - \\frac{f}{m} = 9{,}81 - \\frac{0{,}15}{0{,}050} = 9{,}81 - 3{,}0' },
+    ],
+    result: '$a = g - \\dfrac{f}{m} = 6{,}8\\;\\text{m·s}^{-2}$ **(vers le bas)**.',
+  },
+  'newton-5': {
+    steps: [
+      { n: '1', text: '$\\vec{v} = \\int \\vec{a}\\,dt$ avec $\\vec{v}_0 = (5\\,;\\,0)$ : $v_x = 5$, $v_y = -10t$.' },
+      { n: '2', text: '$\\overrightarrow{OM} = \\int \\vec{v}\\,dt$ avec $\\overrightarrow{OM}_0 = (0\\,;\\,20)$ : $x = 5t$, $y = -5t^2 + 20$.' },
+    ],
+    result: '$\\vec{v} = (5\\,;\\,-10t)$ ; $x = 5t$, $y = 20 - 5t^2$.',
+  },
+  'newton-6': {
+    steps: [
+      { n: '1', text: 'Le palet a un mouvement rectiligne uniforme dans un référentiel galiléen. D\'après le **principe d\'inertie**, la somme des forces est **nulle** : le poids est exactement compensé par la réaction de la glace.' },
+      { n: '2', text: 'Le livre est immobile : deux forces, le poids $\\vec{P}$ (bas) et la réaction normale $\\vec{N}$ (haut). L\'immobilité impose $\\vec{P} + \\vec{N} = \\vec{0}$, donc $N = P = mg$.' },
+    ],
+    result: '$\\sum\\vec{F} = \\vec{0}$ dans les deux cas ; pour le livre, $N = P = mg$.',
+  },
+  'newton-7': {
+    steps: [
+      { n: '1', text: 'Si A exerce $\\vec{F}_{A/B}$ sur B, alors B exerce $\\vec{F}_{B/A} = -\\vec{F}_{A/B}$ sur A : même droite d\'action, même norme, sens opposé.' },
+      { n: '2', text: '**Non.** Le poids (Terre → livre) et la réaction de la table (table → livre) s\'appliquent tous deux **au même corps**. Une paire action–réaction relie deux corps *différents* : ces deux forces se compensent par la 1ʳᵉ loi, pas par la 3ᵉ.' },
+      { n: '3', text: 'Partenaire du poids (Terre → livre) : force **livre → Terre**. Partenaire de (livre → table) : force **table → livre** (la réaction normale).' },
+    ],
+    result: 'Poids & réaction ne forment pas une paire (même corps). Vraies paires : **Terre ↔ livre** et **livre ↔ table**.',
+  },
+  'newton-8': {
+    steps: [
+      { n: '1', tex: 'E = \\frac{U}{d} = \\frac{1000}{0{,}020} = 5{,}0 \\times 10^4\\;\\text{V·m}^{-1}', text: '' },
+      { n: '2', tex: 'F = |q|\\,E = e\\,E = 1{,}6 \\times 10^{-19} \\times 5{,}0 \\times 10^4 = 8{,}0 \\times 10^{-15}\\;\\text{N}', text: '' },
+    ],
+    result: '$E = 5{,}0 \\times 10^4\\;\\text{V·m}^{-1}$ ; $F = 8{,}0 \\times 10^{-15}\\;\\text{N}$.',
+  },
+  'newton-9': {
+    steps: [
+      { n: '1', text: 'Poids négligé : $\\vec{F} = q\\vec{E} = m\\vec{a}$, donc :', tex: 'a = \\frac{eE}{m} = \\frac{1{,}6 \\times 10^{-19} \\times 1{,}0 \\times 10^3}{9{,}1 \\times 10^{-31}} = 1{,}8 \\times 10^{14}\\;\\text{m·s}^{-2}' },
+      { n: '2', text: 'L\'électron a une charge $q < 0$ : $\\vec{a}$ est donc de **sens opposé** à $\\vec{E}$.' },
+    ],
+    result: '$a = 1{,}8 \\times 10^{14}\\;\\text{m·s}^{-2}$, **opposée à** $\\vec{E}$.',
+  },
+  'newton-10': {
+    steps: [
+      { n: '1', text: 'Seul le poids agit → $\\vec{a} = \\vec{g}$. Axe vers le bas, origine au lâcher, $v_0 = 0$ : $v_y = gt$ puis $y = \\tfrac{1}{2}gt^2$.' },
+      { n: '2', tex: 't = \\sqrt{\\frac{2h}{g}} = \\sqrt{\\frac{40}{9{,}81}} = 2{,}02\\;\\text{s}', text: 'Impact au sol ($y = h$) :' },
+      { n: '3', text: '$v = gt = 9{,}81 \\times 2{,}02 = 19{,}8\\;\\text{m·s}^{-1}$.' },
+    ],
+    result: '$t = 2{,}0\\;\\text{s}$ ; $v \\approx 20\\;\\text{m·s}^{-1}$.',
+  },
+  'newton-11': {
+    steps: [
+      { n: '1', text: 'Forces : poids $\\vec{P} = m\\vec{g}$ et réaction normale $\\vec{N}$ (⊥ plan). Deuxième loi : $\\vec{P} + \\vec{N} = m\\vec{a}$.' },
+      { n: '2', text: 'Sur un axe parallèle à la pente (vers le bas), $\\vec{N}$ n\'a pas de composante : $mg\\sin\\beta = ma$, d\'où $a = g\\sin\\beta = 9{,}81 \\times \\sin 20° = 3{,}36\\;\\text{m·s}^{-2}$ (indépendant de $m$).' },
+      { n: '3', text: 'Départ du repos : $v = at = 3{,}36\\,t$ et $x = \\tfrac{1}{2}at^2 = 1{,}68\\,t^2$.' },
+    ],
+    result: '$a = g\\sin\\beta = 3{,}4\\;\\text{m·s}^{-2}$ ; $v = 3{,}36\\,t$ ; $x = 1{,}68\\,t^2$.',
+  },
+  'newton-12': {
+    steps: [
+      { n: '1', text: '$\\vec{a} = \\vec{g}$ → $a_x = 0$, $a_y = -g$. Avec $v_0\\cos 40° = 11{,}5$ et $v_0\\sin 40° = 9{,}64$ : $x = 11{,}5\\,t$ et $y = -4{,}905\\,t^2 + 9{,}64\\,t$.' },
+      { n: '2', text: 'En éliminant $t$ :', tex: 'y = -\\frac{g}{2v_0^2\\cos^2\\!\\alpha}\\,x^2 + \\tan\\alpha\\,x = -0{,}0372\\,x^2 + 0{,}839\\,x' },
+      { n: '3', tex: 'H = \\frac{v_0^2\\sin^2\\!\\alpha}{2g} = 4{,}74\\;\\text{m} \\qquad D = \\frac{v_0^2\\sin 2\\alpha}{g} = 22{,}6\\;\\text{m}', text: '' },
+      { n: '4', text: 'À $x = 18\\;\\text{m}$ : $y = -0{,}0372 \\times 324 + 0{,}839 \\times 18 = 3{,}07\\;\\text{m} > 3\\;\\text{m}$ → le ballon **passe** (de ~7 cm).' },
+    ],
+    result: '$H = 4{,}7\\;\\text{m}$ ; $D = 22{,}6\\;\\text{m}$ ; **passe le mur** ($y(18) = 3{,}07\\;\\text{m}$).',
+  },
+  'newton-13': {
+    steps: [
+      { n: '1', text: 'Origine au lancement, axe $y$ vers le haut, $\\vec{a} = (0\\,;\\,-g)$ : $x = v_0 t = 8t$ et $y = -4{,}905\\,t^2$ (car $v_{0y} = 0$).' },
+      { n: '2', tex: 't = \\sqrt{\\frac{2h}{g}} = \\sqrt{\\frac{40}{9{,}81}} = 2{,}02\\;\\text{s}', text: 'Sol ($y = -h$) :' },
+      { n: '3', text: '$x = 8 \\times 2{,}02 = 16{,}2\\;\\text{m}$.' },
+      { n: '4', text: '$v_x = 8$, $v_y = -gt = -19{,}8$ → $v = \\sqrt{8^2 + 19{,}8^2} = 21{,}4\\;\\text{m·s}^{-1}$.' },
+    ],
+    result: '$t = 2{,}0\\;\\text{s}$ ; **portée** $16{,}2\\;\\text{m}$ ; $v_{\\text{impact}} = 21{,}4\\;\\text{m·s}^{-1}$.',
+  },
+  'newton-14': {
+    steps: [
+      { n: '1', tex: 'a = \\frac{eE}{m} = \\frac{1{,}6 \\times 10^{-19} \\times 1{,}0 \\times 10^4}{9{,}1 \\times 10^{-31}} = 1{,}76 \\times 10^{15}\\;\\text{m·s}^{-2}', text: '' },
+      { n: '2', text: '$t_1 = \\dfrac{L}{v_0} = \\dfrac{0{,}04}{2{,}0 \\times 10^7} = 2{,}0 \\times 10^{-9}\\;\\text{s}$ ; $v_y = at_1 = 3{,}5 \\times 10^6\\;\\text{m·s}^{-1}$.' },
+      { n: '3', text: '$v = \\sqrt{v_0^2 + v_y^2} = 2{,}03 \\times 10^7\\;\\text{m·s}^{-1}$ ; $\\tan\\theta = \\dfrac{v_y}{v_0} = 0{,}176 \\Rightarrow \\theta \\approx 10°$.' },
+    ],
+    result: '$a = 1{,}8 \\times 10^{15}\\;\\text{m·s}^{-2}$ ; $v_y = 3{,}5 \\times 10^6$ ; $v = 2{,}0 \\times 10^7\\;\\text{m·s}^{-1}$ ; $\\theta \\approx 10°$.',
+  },
+  'newton-15': {
+    steps: [
+      { n: '1', tex: 'E = \\frac{U}{d} = \\frac{200}{0{,}02} = 1{,}0 \\times 10^4\\;\\text{V·m}^{-1} \\qquad a = \\frac{eE}{m} = 1{,}76 \\times 10^{15}\\;\\text{m·s}^{-2}', text: '' },
+      { n: '2', text: '$x = v_0 t$ et $y = \\tfrac{1}{2}at^2$ → en éliminant $t$ :', tex: 'y = \\frac{a}{2v_0^2}\\,x^2 = 2{,}20\\,x^2 \\quad (\\text{parabole},\\;x\\text{ en m})' },
+      { n: '3', text: 'Sortie $x = L = 0{,}05\\;\\text{m}$ : $y = 2{,}20 \\times (0{,}05)^2 = 5{,}5 \\times 10^{-3}\\;\\text{m} = 5{,}5\\;\\text{mm}$.' },
+      { n: '4', text: 'La déviation possible avant de toucher une plaque est $\\dfrac{d}{2} = 1{,}0\\;\\text{cm} = 10\\;\\text{mm}$. Comme $5{,}5\\;\\text{mm} < 10\\;\\text{mm}$, l\'électron **sort sans toucher** les plaques.' },
+    ],
+    result: 'Déviation $y = 5{,}5\\;\\text{mm} < \\dfrac{d}{2} = 10\\;\\text{mm}$ → **ne touche pas**.',
+  },
+  'newton-16': {
+    steps: [
+      { n: '1', text: 'Origine au lancement, $v_0\\cos 52° = 4{,}49$, $v_0\\sin 52° = 5{,}75$ : $x = 4{,}49\\,t$ et $y = -4{,}905\\,t^2 + 5{,}75\\,t$.' },
+      { n: '2', tex: 'y = -\\frac{g}{2v_0^2\\cos^2\\!\\alpha}\\,x^2 + \\tan\\alpha\\,x = -0{,}243\\,x^2 + 1{,}280\\,x', text: 'Trajectoire :' },
+      { n: '3', text: 'Le panier est $3{,}05 - 2{,}00 = 1{,}05\\;\\text{m}$ au-dessus du lancer, à $x = 4{,}20\\;\\text{m}$. $y(4{,}20) = -0{,}243 \\times 17{,}64 + 1{,}280 \\times 4{,}20 = 1{,}09\\;\\text{m}$. Écart à la cible : 4 cm ≤ 8 cm → **panier réussi**.' },
+      { n: '4', text: 'À $x = 4{,}20\\;\\text{m}$ ($t = 0{,}94\\;\\text{s}$) : $v_y = 5{,}75 - 9{,}81 \\times 0{,}94 = -3{,}4\\;\\text{m·s}^{-1} < 0$ → le ballon **descend** en atteignant le panier.' },
+    ],
+    result: '$y(4{,}20) = 1{,}09\\;\\text{m}$ (cible 1,05 m, écart 4 cm) → **panier** ; ballon **descendant** ($v_y < 0$).',
+  },
+  'newton-17': {
+    steps: [
+      { n: '1', text: '$v_0\\cos 22° = 8{,}81$, $v_0\\sin 22° = 3{,}56$ : $x = 8{,}81\\,t$, $y = -4{,}905\\,t^2 + 3{,}56\\,t$, d\'où $y = -0{,}0632\\,x^2 + 0{,}404\\,x$.' },
+      { n: '2', tex: 'H = \\frac{v_0^2\\sin^2\\!\\alpha}{2g} = 0{,}65\\;\\text{m}', text: '' },
+      { n: '3', tex: 'D = \\frac{v_0^2\\sin 2\\alpha}{g} = 6{,}39\\;\\text{m}', text: '' },
+      { n: '4', text: 'À $45°$ : $D = \\dfrac{v_0^2}{g} = 9{,}20\\;\\text{m} > 7\\;\\text{m}$ → oui d\'après le modèle. Mais c\'est **irréaliste** : un sauteur ne peut pas décoller à 45° en conservant $v_0$ (contrainte biomécanique ; les sauteurs décollent vers 20°).' },
+    ],
+    result: '$H = 0{,}65\\;\\text{m}$ ; $D = 6{,}4\\;\\text{m}$ ; à 45° $D = 9{,}2\\;\\text{m}$ (modèle non réaliste).',
+  },
+  'newton-18': {
+    steps: [
+      { n: 'A.1', tex: 'E = \\frac{U}{d} = \\frac{150}{0{,}015} = 1{,}0 \\times 10^4\\;\\text{V·m}^{-1} \\qquad a = \\frac{eE}{m} = 1{,}76 \\times 10^{15}\\;\\text{m·s}^{-2}', text: '' },
+      { n: 'A.2', text: '$t_1 = \\dfrac{L}{v_0} = 1{,}33 \\times 10^{-9}\\;\\text{s}$ ; $y_1 = \\tfrac{1}{2}at_1^2 = 1{,}56 \\times 10^{-3}\\;\\text{m} = 1{,}56\\;\\text{mm}$.' },
+      { n: 'A.3', text: '$v_y = at_1 = 2{,}34 \\times 10^6\\;\\text{m·s}^{-1}$.' },
+      { n: 'B.4', text: 'Après les plaques, mouvement rectiligne uniforme : $t_2 = \\dfrac{D}{v_0} = 6{,}0 \\times 10^{-9}\\;\\text{s}$ ; $y_2 = v_y t_2 = 14{,}1\\;\\text{mm}$.' },
+      { n: 'B.5', tex: 'Y = y_1 + y_2 = 15{,}6\\;\\text{mm} \\qquad \\text{On retrouve }Y = \\frac{eEL}{mv_0^2}\\!\\left(D + \\frac{L}{2}\\right) = 15{,}6\\;\\text{mm}', text: '' },
+    ],
+    result: '$y_1 = 1{,}6\\;\\text{mm}$ ; **déviation totale** $Y \\approx 15{,}6\\;\\text{mm}$.',
+  },
+  'newton-19': {
+    steps: [
+      { n: '1', tex: 'E = \\frac{U}{d} = \\frac{250}{0{,}04} = 6250\\;\\text{V·m}^{-1} \\qquad a = \\frac{eE}{m} = 1{,}10 \\times 10^{15}\\;\\text{m·s}^{-2}', text: '' },
+      { n: '2', text: 'Départ du repos : $v(t) = at$ et $x(t) = \\tfrac{1}{2}at^2$.' },
+      { n: '3', tex: 't = \\sqrt{\\frac{2d}{a}} = 8{,}5 \\times 10^{-9}\\;\\text{s} \\qquad v_s = at = 9{,}4 \\times 10^6\\;\\text{m·s}^{-1}', text: 'Sortie $x = d = 0{,}04\\;\\text{m}$ :' },
+      { n: '4', tex: '\\tfrac{1}{2}mv_s^2 = eU \\implies v_s = \\sqrt{\\frac{2eU}{m}} = 9{,}38 \\times 10^6\\;\\text{m·s}^{-1}', text: 'Bilan d\'énergie — **identique** (les deux méthodes concordent) :' },
+    ],
+    result: '$v_s = 9{,}4 \\times 10^6\\;\\text{m·s}^{-1}$ (confirmé par $\\tfrac{1}{2}mv_s^2 = eU$).',
+  },
+  'newton-20': {
+    steps: [
+      { n: '1', text: '$D(\\alpha) = \\dfrac{v_0^2\\sin 2\\alpha}{g} = 40{,}8\\sin 2\\alpha$. Maximale quand $\\sin 2\\alpha = 1$, soit $\\alpha = 45°$ :', tex: 'D_{\\max} = \\frac{v_0^2}{g} = 40{,}8\\;\\text{m}' },
+      { n: '2', text: 'Cible à $d = 30\\;\\text{m}$ : $\\sin 2\\alpha = \\dfrac{gd}{v_0^2} = 0{,}736$ → $2\\alpha = 47{,}4°$ ou $132{,}6°$, d\'où $\\alpha = 23{,}7°$ (tir tendu) ou $\\alpha = 66{,}3°$ (tir en cloche). Les deux angles sont complémentaires ($23{,}7 + 66{,}3 = 90$).' },
+      { n: '3', text: 'Cible à $45\\;\\text{m} > D_{\\max}$ : $\\sin 2\\alpha > 1$ impossible → **hors de portée**.' },
+    ],
+    result: '$D_{\\max} = 40{,}8\\;\\text{m}$ à 45° ; pour 30 m : $\\alpha = 23{,}7°$ ou $66{,}3°$ ; 45 m **hors de portée**.',
+  },
+  'newton-21': {
+    steps: [
+      { n: '1', text: 'Depuis le sol, $D = \\dfrac{v_0^2\\sin 2\\alpha}{g}$ est maximale quand $\\sin 2\\alpha = 1$, soit $\\alpha = 45°$.' },
+      { n: '2', text: 'Avec $y(t) = (v_0\\sin\\alpha)t - \\tfrac{1}{2}gt^2$, l\'impact au sol ($y = -h$) donne :', tex: 't = \\frac{v_0\\sin\\alpha + \\sqrt{v_0^2\\sin^2\\!\\alpha + 2gh}}{g} \\qquad D = (v_0\\cos\\alpha)\\,t' },
+      { n: '3', text: '$\\alpha = 45°$ : $t = 2{,}07\\;\\text{s}$, $D = 19{,}04\\;\\text{m}$. $\\alpha = 42°$ : $t = 1{,}98\\;\\text{s}$, $D = 19{,}12\\;\\text{m}$. Comme $19{,}12 > 19{,}04$, l\'angle optimal est **inférieur à 45°** dès que $h > 0$ : partir de plus haut donne un temps de vol supplémentaire, qu\'on exploite mieux avec un tir un peu plus tendu.' },
+    ],
+    result: 'Depuis le sol : 45°. Avec $h = 2\\;\\text{m}$ : $D(42°) > D(45°)$ → angle optimal **< 45°**.',
+  },
+};
+
 // ── Exercices ─────────────────────────────────────────────────────────────────
 export interface ExercisePart {
   label?: string;
