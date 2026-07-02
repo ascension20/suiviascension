@@ -1005,7 +1005,7 @@ function CourseTab() {
         </ul>
         <div className="px-4 py-2 border-t border-amber-700/20">
           <p className="text-[11px] text-white/35 text-center">
-            Conventions : repère $(O,\,\vec{i},\,\vec{j})$, $g = 9{,}81\,\text{m\,s}^{-2}$, frottements négligés sauf mention contraire.
+            {"Conventions : repère $(O,\\,\\vec{i},\\,\\vec{j})$, $g = 9{,}81\\,\\text{m\\,s}^{-2}$, frottements négligés sauf mention contraire."}
           </p>
         </div>
       </div>
