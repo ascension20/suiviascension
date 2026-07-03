@@ -589,85 +589,85 @@ function Block({ b }: { b: BlockType }) {
         </div>
       );
 
-    /* ── Propriété ───────────────────────────────────────────────────────── */
+    /* ── Propriété ── bleu ───────────────────────────────────────────────── */
     case 'propriete':
       return (
-        <div className={`rounded-lg border-l-[3px] border-amber-500 border ${A.border} ${A.bg} px-3 py-2.5`}>
-          <div className={`mb-1`}>
-            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>PROPRIÉTÉ</span>
+        <div className="rounded-lg border-l-[3px] border-blue-500 border border-blue-700/35 bg-blue-950/20 px-3 py-2.5">
+          <div className="mb-1">
+            <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">PROPRIÉTÉ</span>
           </div>
-          <p className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={b.text} /></p>
+          <p className="text-[13px] text-blue-100/85 leading-relaxed"><MixedText text={b.text} /></p>
         </div>
       );
 
-    /* ── Idée clé 💡 ─────────────────────────────────────────────────────── */
+    /* ── Idée clé 💡 ── violet ───────────────────────────────────────────── */
     case 'idee_cle':
       return (
-        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
-          <div className={`flex items-center gap-1.5 px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+        <div className="rounded-lg border border-violet-700/35 bg-violet-950/20 overflow-hidden">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600/20 border-b border-violet-700/35">
             <span>💡</span>
-            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>IDÉE CLÉ</span>
+            <span className="text-[9px] font-black text-violet-400 uppercase tracking-widest">IDÉE CLÉ</span>
           </div>
-          <p className={`px-3 py-2.5 text-[13px] ${A.bodyTxt} leading-relaxed`}>
+          <p className="px-3 py-2.5 text-[13px] text-violet-100/85 leading-relaxed">
             <MixedText text={b.text} />
           </p>
         </div>
       );
 
-    /* ── L'idée à comprendre 💡 ──────────────────────────────────────────── */
+    /* ── L'idée à comprendre 💡 ── violet ───────────────────────────────── */
     case 'idee_comprendre':
       return (
-        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
-          <div className={`flex items-center gap-1.5 px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+        <div className="rounded-lg border border-violet-700/35 bg-violet-950/20 overflow-hidden">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600/20 border-b border-violet-700/35">
             <span>💡</span>
-            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>L'IDÉE À COMPRENDRE</span>
+            <span className="text-[9px] font-black text-violet-400 uppercase tracking-widest">L'IDÉE À COMPRENDRE</span>
           </div>
           <ul className="px-3 py-2.5 space-y-1.5">
             {b.items.map((item, i) => (
               <li key={i} className="flex gap-2 items-start">
-                <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${A.dot} mt-[6px]`}/>
-                <span className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={item} /></span>
+                <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-violet-500 mt-[6px]"/>
+                <span className="text-[13px] text-violet-100/85 leading-relaxed"><MixedText text={item} /></span>
               </li>
             ))}
           </ul>
         </div>
       );
 
-    /* ── Méthode (étapes numérotées) ─────────────────────────────────────── */
+    /* ── Méthode (étapes numérotées) ── vert ─────────────────────────────── */
     case 'methode':
       return (
-        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
-          <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
-            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>
+        <div className="rounded-lg border border-emerald-700/35 bg-emerald-950/20 overflow-hidden">
+          <div className="px-3 py-1.5 bg-emerald-600/20 border-b border-emerald-700/35">
+            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">
               MÉTHODE{b.title ? ` — ${b.title}` : ''}
             </span>
           </div>
-          <ol className="divide-y divide-amber-700/15">
+          <ol className="divide-y divide-emerald-700/15">
             {b.steps.map((step, i) => (
               <li key={i} className="flex gap-3 items-start px-3 py-2.5">
-                <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500 text-[11px] font-black text-black flex items-center justify-center mt-0.5">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-emerald-500 text-[11px] font-black text-black flex items-center justify-center mt-0.5">
                   {i + 1}
                 </span>
-                <span className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={step} /></span>
+                <span className="text-[13px] text-emerald-100/85 leading-relaxed"><MixedText text={step} /></span>
               </li>
             ))}
           </ol>
         </div>
       );
 
-    /* ── Exemple express ─────────────────────────────────────────────────── */
+    /* ── Exemple express ── cyan ──────────────────────────────────────────── */
     case 'exemple':
       return (
-        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
-          <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
-            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>
-              EXEMPLE EXPRESS{b.title ? ` — ${b.title}` : ''}
+        <div className="rounded-lg border border-cyan-700/35 bg-cyan-950/20 overflow-hidden">
+          <div className="px-3 py-1.5 bg-cyan-600/20 border-b border-cyan-700/35">
+            <span className="text-[9px] font-black text-cyan-400 uppercase tracking-widest">
+              EXEMPLE{b.title ? ` — ${b.title}` : ''}
             </span>
           </div>
           <div className="px-3 py-2.5 space-y-1">
             {b.lines.map((line, i) =>
               line === '' ? <div key={i} className="h-1" /> : (
-                <p key={i} className={`text-[13px] ${A.bodyTxt} leading-relaxed`}>
+                <p key={i} className="text-[13px] text-cyan-100/85 leading-relaxed">
                   <MixedText text={line} />
                 </p>
               )
@@ -676,19 +676,19 @@ function Block({ b }: { b: BlockType }) {
         </div>
       );
 
-    /* ── Application de la méthode ①②③④⑤ ───────────────────────────────── */
+    /* ── Application de la méthode ── vert ───────────────────────────────── */
     case 'application':
       return (
-        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
-          <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
-            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>{b.title}</span>
+        <div className="rounded-lg border border-emerald-700/35 bg-emerald-950/20 overflow-hidden">
+          <div className="px-3 py-1.5 bg-emerald-600/20 border-b border-emerald-700/35">
+            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{b.title}</span>
           </div>
-          <div className="divide-y divide-amber-700/15">
+          <div className="divide-y divide-emerald-700/15">
             {b.steps.map((step, i) => (
               <div key={i} className="px-3 py-2.5 space-y-1.5">
-                <p className={`text-[13px] ${A.bodyTxt} leading-relaxed`}>
-                  <span className="font-bold text-amber-300 mr-1">{step.n}</span>
-                  <strong className={A.headTxt}>{step.bold}</strong>
+                <p className="text-[13px] text-emerald-100/85 leading-relaxed">
+                  <span className="font-bold text-emerald-300 mr-1">{step.n}</span>
+                  <strong className="text-emerald-300">{step.bold}</strong>
                   {step.rest && <> <MixedText text={step.rest} /></>}
                 </p>
                 {step.formulas?.map((tex, j) => (
@@ -702,13 +702,13 @@ function Block({ b }: { b: BlockType }) {
         </div>
       );
 
-    /* ── Piège fréquent ──────────────────────────────────────────────────── */
+    /* ── Piège fréquent ── rouge ──────────────────────────────────────────── */
     case 'piege':
       return (
         <div className="rounded-lg border border-red-800/40 bg-red-950/15 overflow-hidden">
           <div className="px-3 py-1.5 bg-red-800/20 border-b border-red-800/35">
             <span className="text-[9px] font-black text-red-400 uppercase tracking-widest">
-              {b.badge ?? 'PIÈGE FRÉQUENT'}
+              {b.badge ?? '⚠ PIÈGE FRÉQUENT'}
             </span>
           </div>
           <p className="px-3 py-2.5 text-[13px] text-red-100/80 leading-relaxed">
@@ -717,15 +717,15 @@ function Block({ b }: { b: BlockType }) {
         </div>
       );
 
-    /* ── Le bon réflexe ──────────────────────────────────────────────────── */
+    /* ── Le bon réflexe ── vert clair ────────────────────────────────────── */
     case 'reflex':
       return (
-        <div className={`rounded-lg border ${A.border} ${A.bg} overflow-hidden`}>
-          <div className={`flex items-center gap-1.5 px-3 py-1.5 ${A.head} border-b ${A.border}`}>
+        <div className="rounded-lg border border-green-700/35 bg-green-950/20 overflow-hidden">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600/20 border-b border-green-700/35">
             <span>🎯</span>
-            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>LE BON RÉFLEXE</span>
+            <span className="text-[9px] font-black text-green-400 uppercase tracking-widest">LE BON RÉFLEXE</span>
           </div>
-          <p className={`px-3 py-2.5 text-[13px] ${A.bodyTxt} leading-relaxed`}>
+          <p className="px-3 py-2.5 text-[13px] text-green-100/85 leading-relaxed">
             <MixedText text={b.text} />
           </p>
         </div>
