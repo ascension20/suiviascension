@@ -472,7 +472,7 @@ const COURS: Section[] = [
    RENDU DES BLOCS
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/** Toutes les boxes ambrées partagent cette palette */
+/** Palette amber (Physique) */
 const A = {
   bg:       'bg-amber-950/20',
   border:   'border-amber-700/35',
@@ -481,9 +481,24 @@ const A = {
   bodyTxt:  'text-amber-100/85',
   label:    'text-amber-400',
   dot:      'bg-amber-500',
+  badge:    'bg-amber-500',
 };
 
-function Block({ b }: { b: BlockType }) {
+/** Palette violette (Maths) */
+const V = {
+  bg:       'bg-violet-950/20',
+  border:   'border-violet-700/35',
+  head:     'bg-violet-600/20',
+  headTxt:  'text-violet-300',
+  bodyTxt:  'text-violet-100/85',
+  label:    'text-violet-400',
+  dot:      'bg-violet-500',
+  badge:    'bg-violet-500',
+};
+
+type Palette = typeof A;
+
+function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
   switch (b.type) {
 
     /* ── Paragraphe ──────────────────────────────────────────────────────── */
@@ -498,9 +513,9 @@ function Block({ b }: { b: BlockType }) {
     case 'subsection':
       return (
         <div className="flex items-center gap-2 mt-1 mb-0.5">
-          <span className="text-amber-500 font-bold text-sm">▸</span>
+          <span className={`${pal.label} font-bold text-sm`}>▸</span>
           <h4 className="text-[14px] font-bold text-white">
-            <span className="text-amber-400 mr-1">{b.num}</span>{b.title}
+            <span className={`${pal.label} mr-1`}>{b.num}</span>{b.title}
           </h4>
         </div>
       );
@@ -508,9 +523,9 @@ function Block({ b }: { b: BlockType }) {
     /* ── Formule unique ───────────────────────────────────────────────────── */
     case 'formula':
       return (
-        <div className={`relative rounded-lg ${A.bg} border ${A.border} py-3 px-4 text-center overflow-x-auto`}>
+        <div className={`relative rounded-lg ${pal.bg} border ${pal.border} py-3 px-4 text-center overflow-x-auto`}>
           {b.label && (
-            <span className={`absolute top-1.5 left-3 text-[9px] font-black ${A.label} uppercase tracking-widest`}>
+            <span className={`absolute top-1.5 left-3 text-[9px] font-black ${pal.label} uppercase tracking-widest`}>
               {b.label}
             </span>
           )}
@@ -521,17 +536,17 @@ function Block({ b }: { b: BlockType }) {
     /* ── Bloc de plusieurs formules ───────────────────────────────────────── */
     case 'formules':
       return (
-        <div className={`rounded-lg ${A.bg} border ${A.border} overflow-hidden`}>
+        <div className={`rounded-lg ${pal.bg} border ${pal.border} overflow-hidden`}>
           {b.label && (
-            <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
-              <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>{b.label}</span>
+            <div className={`px-3 py-1.5 ${pal.head} border-b ${pal.border}`}>
+              <span className={`text-[9px] font-black ${pal.label} uppercase tracking-widest`}>{b.label}</span>
             </div>
           )}
           <div className="px-4 py-2 space-y-2">
             {b.rows.map((r, i) => (
               <div key={i}>
                 {r.desc && (
-                  <p className={`text-[12px] ${A.bodyTxt} mb-0.5`}><MixedText text={r.desc} /></p>
+                  <p className={`text-[12px] ${pal.bodyTxt} mb-0.5`}><MixedText text={r.desc} /></p>
                 )}
                 <div className="overflow-x-auto"><BlockMath tex={r.tex} /></div>
               </div>
@@ -543,23 +558,23 @@ function Block({ b }: { b: BlockType }) {
     /* ── Vocabulaire ─────────────────────────────────────────────────────── */
     case 'vocabulaire':
       return (
-        <div className={`rounded-lg ${A.bg} border ${A.border} overflow-hidden`}>
-          <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
-            <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>
+        <div className={`rounded-lg ${pal.bg} border ${pal.border} overflow-hidden`}>
+          <div className={`px-3 py-1.5 ${pal.head} border-b ${pal.border}`}>
+            <span className={`text-[9px] font-black ${pal.label} uppercase tracking-widest`}>
               VOCABULAIRE — {b.title}
             </span>
           </div>
           <div className="px-3 py-2.5">
             {b.intro && (
-              <p className={`text-[13px] ${A.bodyTxt} mb-2 leading-relaxed`}>
+              <p className={`text-[13px] ${pal.bodyTxt} mb-2 leading-relaxed`}>
                 <MixedText text={b.intro} />
               </p>
             )}
             <ul className="space-y-1.5">
               {b.items.map((item, i) => (
                 <li key={i} className="flex gap-2 items-start">
-                  <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${A.dot} mt-[6px]`}/>
-                  <span className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={item} /></span>
+                  <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${pal.dot} mt-[6px]`}/>
+                  <span className={`text-[13px] ${pal.bodyTxt} leading-relaxed`}><MixedText text={item} /></span>
                 </li>
               ))}
             </ul>
@@ -570,15 +585,15 @@ function Block({ b }: { b: BlockType }) {
     /* ── Définition ──────────────────────────────────────────────────────── */
     case 'definition':
       return (
-        <div className={`rounded-lg border-l-[3px] border-amber-500 border ${A.border} ${A.bg} overflow-hidden`}>
+        <div className={`rounded-lg border-l-[3px] ${pal.dot.replace('bg-', 'border-')} border ${pal.border} ${pal.bg} overflow-hidden`}>
           {b.badge && (
-            <div className={`px-3 py-1.5 ${A.head} border-b ${A.border}`}>
-              <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>{b.badge}</span>
+            <div className={`px-3 py-1.5 ${pal.head} border-b ${pal.border}`}>
+              <span className={`text-[9px] font-black ${pal.label} uppercase tracking-widest`}>{b.badge}</span>
             </div>
           )}
           <div className="px-3 py-2.5 space-y-2">
             {b.content.split('\n\n').map((para, i) => (
-              <p key={i} className={`text-[13px] ${A.bodyTxt} leading-relaxed`}>
+              <p key={i} className={`text-[13px] ${pal.bodyTxt} leading-relaxed`}>
                 <MixedText text={para} />
               </p>
             ))}
@@ -1038,6 +1053,7 @@ const OBJECTIFS = [
 
 function CourseTab({ module }: { module: PhysicsModule }) {
   const isMaths = module.subject === 'Maths';
+  const pal = isMaths ? V : A;
   const sections = isMaths ? SUITES_COURS : COURS;
   const objectifs = isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
@@ -1050,17 +1066,17 @@ function CourseTab({ module }: { module: PhysicsModule }) {
       exit={{ opacity: 0, y: -6 }} className="space-y-2 pb-6">
 
       {/* Objectifs */}
-      <div className={`rounded-xl border ${A.border} ${A.bg} overflow-hidden`}>
-        <div className={`px-4 py-2 ${A.head} border-b ${A.border}`}>
-          <span className={`text-[9px] font-black ${A.label} uppercase tracking-widest`}>
+      <div className={`rounded-xl border ${pal.border} ${pal.bg} overflow-hidden`}>
+        <div className={`px-4 py-2 ${pal.head} border-b ${pal.border}`}>
+          <span className={`text-[9px] font-black ${pal.label} uppercase tracking-widest`}>
             OBJECTIFS DU CHAPITRE
           </span>
         </div>
         <ul className="px-4 py-3 space-y-1.5">
           {objectifs.map((o, i) => (
             <li key={i} className="flex gap-2 items-start">
-              <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${A.dot} mt-[6px]`}/>
-              <span className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={o} /></span>
+              <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${pal.dot} mt-[6px]`}/>
+              <span className={`text-[13px] ${pal.bodyTxt} leading-relaxed`}><MixedText text={o} /></span>
             </li>
           ))}
         </ul>
@@ -1078,7 +1094,7 @@ function CourseTab({ module }: { module: PhysicsModule }) {
         <div key={sec.id} className="rounded-xl overflow-hidden border border-white/10 bg-white/[0.02]">
           <button onClick={() => toggle(sec.id)}
             className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white/5 transition-colors">
-            <span className="shrink-0 w-8 h-8 rounded-lg bg-amber-500 text-black text-[13px] font-black flex items-center justify-center">
+            <span className={`shrink-0 w-8 h-8 rounded-lg ${pal.badge} text-black text-[13px] font-black flex items-center justify-center`}>
               {sec.num}
             </span>
             <span className="flex-1 font-bold text-white text-[14.5px]">{sec.title}</span>
@@ -1089,7 +1105,7 @@ function CourseTab({ module }: { module: PhysicsModule }) {
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }} className="overflow-hidden">
                 <div className="px-4 pb-5 pt-1 space-y-3 border-t border-white/8">
-                  {sec.blocks.map((b, i) => <Block key={i} b={b} />)}
+                  {sec.blocks.map((b, i) => <Block key={i} b={b} pal={pal} />)}
                 </div>
               </motion.div>
             )}
