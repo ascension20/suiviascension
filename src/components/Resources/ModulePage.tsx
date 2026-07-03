@@ -901,24 +901,34 @@ const SUITES_FICHE_DATA = [
     title: '3  Formes indéterminées',
     rows: [
       {
+        label: 'FI',
+        tex: '\\textit{Exemple}\\longrightarrow\\textit{Résultat}',
+        vars: '**Méthode**',
+      },
+      {
         label: '∞ − ∞\npolynômes',
-        tex: '\\underbrace{n^2-2n+5}_{\\infty\\,-\\,\\infty} = n^2\\underbrace{\\left(1-\\tfrac{2}{n}+\\tfrac{5}{n^2}\\right)}_{\\to\\,1} \\longrightarrow \\boxed{+\\infty}',
-        vars: '**Méthode :** factoriser par le **terme dominant** ($n^2$ ici). Les autres termes $\\to 0$, il reste $n^2\\to+\\infty$.',
+        tex: 'n^2-2n+5 = n^2\\!\\left(1-\\tfrac{2}{n}+\\tfrac{5}{n^2}\\right) \\longrightarrow +\\infty',
+        vars: '**Factoriser par le terme de plus haut degré** ($n^2$ ici) — les autres termes $\\to 0$.',
       },
       {
         label: '∞ − ∞\nracines',
-        tex: '\\underbrace{\\sqrt{n^2+n}-n}_{\\infty\\,-\\,\\infty} = \\frac{n}{\\sqrt{n^2+n}+n} = \\frac{1}{\\sqrt{1+\\frac{1}{n}}+1} \\longrightarrow \\boxed{\\dfrac{1}{2}}',
-        vars: '**Méthode :** multiplier par la **quantité conjuguée** $\\dfrac{\\sqrt{n^2+n}+n}{\\sqrt{n^2+n}+n}$. On obtient $\\dfrac{n^2+n-n^2}{\\sqrt{n^2+n}+n}=\\dfrac{n}{\\sqrt{n^2+n}+n}$.',
+        tex: '\\sqrt{n^2+n}-n = \\dfrac{n}{\\sqrt{n^2+n}+n} \\longrightarrow \\dfrac{1}{2}',
+        vars: '**Quantité conjuguée :** multiplier par $\\dfrac{\\sqrt{n^2+n}+n}{\\sqrt{n^2+n}+n}$.',
       },
       {
         label: '∞ / ∞',
-        tex: '\\underbrace{\\dfrac{3n+1}{n^2+2n-8}}_{\\infty/\\infty} = \\dfrac{1}{n}\\cdot\\dfrac{3+\\frac{1}{n}}{1+\\frac{2}{n}-\\frac{8}{n^2}} \\longrightarrow \\boxed{0}',
-        vars: '**Méthode :** factoriser par $n$ au numérateur et $n^2$ au dénominateur. Le degré du dénominateur l\'emporte → limite $0$.',
+        tex: '\\dfrac{3n+1}{n^2+2n-8} = \\dfrac{1}{n}\\cdot\\dfrac{3+\\frac{1}{n}}{1+\\frac{2}{n}-\\frac{8}{n^2}} \\longrightarrow 0',
+        vars: '**Factoriser** num. par $n$ et dénom. par $n^2$ (termes dominants), puis simplifier.',
       },
       {
         label: '0 × ∞',
-        tex: '\\underbrace{n^2\\cdot e^{-n}}_{0\\,\\times\\,\\infty} = \\dfrac{n^2}{e^n} \\longrightarrow \\boxed{0}',
-        vars: '**Méthode :** réécrire en fraction $\\dfrac{\\infty}{\\infty}$ puis appliquer les **croissances comparées** : $n^\\alpha\\ll e^n$ pour tout $\\alpha>0$.',
+        tex: 'n^2 \\cdot e^{-n} = \\dfrac{n^2}{e^n} \\longrightarrow 0',
+        vars: '**Réécrire en fraction** $\\frac{\\infty}{\\infty}$, puis **croissances comparées** : $n^\\alpha \\ll e^n$.',
+      },
+      {
+        label: '0 / 0',
+        tex: '\\dfrac{n^2-1}{n-1} = \\dfrac{(n-1)(n+1)}{n-1} = n+1 \\longrightarrow +\\infty',
+        vars: '**Factoriser** pour **simplifier** le facteur qui s\'annule au numérateur et au dénominateur.',
       },
     ],
   },
