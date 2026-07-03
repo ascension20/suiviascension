@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { PhysicsModule, ModuleLevel, TIER_META, DIFF_LABEL } from '@/lib/modules-data';
 import { NEWTON_QCM, NEWTON_EXERCISES, NEWTON_CORRECTIONS } from '@/lib/newton-content';
+import { SUITES_QCM, SUITES_EXERCISES, SUITES_CORRECTIONS } from '@/lib/suites-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -36,18 +37,22 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
   const pct = totalXp > 0 ? Math.round((earnedXp / totalXp) * 100) : 0;
 
   if (activeLevel) {
-    if (activeLevel.id === 'newton-qcm') {
-      return <QcmView questions={NEWTON_QCM} xpReward={activeLevel.xpReward}
+    const isMaths = module.subject === 'Maths';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm') {
+      const questions = isMaths ? SUITES_QCM : NEWTON_QCM;
+      return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
+    const exercises = isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
       : completedIds.has(activeLevel.id);
     return <ExerciseView level={activeLevel}
-      content={NEWTON_EXERCISES.find(e => e.id === activeLevel.id) ?? null}
-      correction={NEWTON_CORRECTIONS[activeLevel.id] ?? null}
+      content={exercises.find(e => e.id === activeLevel.id) ?? null}
+      correction={corrections[activeLevel.id] ?? null}
       correctionUnlocked={correctionUnlocked}
       nextLevelTitle={nextLevel?.title}
       onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
@@ -100,8 +105,8 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
       </div>
 
       <AnimatePresence mode="wait">
-        {tab === 'cours'     && <CourseTab     key="cours" />}
-        {tab === 'fiche'     && <FicheTab      key="fiche" />}
+        {tab === 'cours'     && <CourseTab     key="cours" module={module} />}
+        {tab === 'fiche'     && <FicheTab      key="fiche" module={module} />}
         {tab === 'exercices' && (
           <ExercicesTab key="exercices" module={module}
             getStatus={getStatus} onOpen={setActiveLevel} />
@@ -760,7 +765,176 @@ function Block({ b }: { b: BlockType }) {
    ONGLET COURS
    ═══════════════════════════════════════════════════════════════════════════ */
 
-// Objectifs du chapitre — page de couverture
+// ── Contenu Suites & Récurrence ───────────────────────────────────────────────
+const SUITES_OBJECTIFS = [
+  'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
+  'Utiliser la définition de la **convergence** et le **théorème des gendarmes**.',
+  'Appliquer le **théorème de la limite monotone** (suite monotone bornée → converge).',
+  'Lever les **formes indéterminées** et exploiter les **croissances comparées**.',
+  'Étudier une **suite récurrente** $u_{n+1}=f(u_n)$ (stabilité · monotonie · point fixe).',
+];
+
+const SUITES_COURS: Section[] = [
+  {
+    id: 'recurrence',
+    num: '1',
+    title: 'La récurrence',
+    blocks: [
+      { type: 'para', text: 'Le raisonnement par récurrence permet de démontrer une propriété $P(n)$ vraie pour tout entier $n\\geq n_0$. On procède toujours en trois étapes.' },
+      { type: 'subsection', num: '1.1', title: 'Récurrence simple' },
+      { type: 'methode', title: 'Les 3 étapes incontournables', steps: [
+        '**Initialisation :** vérifier $P(n_0)$ (souvent $n_0=0$ ou $n_0=1$).',
+        '**Hérédité :** supposer $P(n)$ vraie pour un certain $n\\geq n_0$ (hypothèse de récurrence) et en déduire $P(n+1)$.',
+        '**Conclusion :** « Par le principe de récurrence, $P(n)$ est vraie pour tout $n\\geq n_0$. »',
+      ]},
+      { type: 'idee_cle', text: 'Analogie des **dominos** : si le premier tombe (initialisation) et que chaque domino fait tomber le suivant (hérédité), alors tous tombent.' },
+      { type: 'exemple', title: 'Exemple : $4^n-1$ est multiple de $3$', lines: [
+        '**Init.** $4^0-1=0=3\\times 0$ ✓',
+        '**Hér.** Supposons $4^n-1=3k$. Alors $4^{n+1}-1=4\\cdot 4^n-1=4(3k+1)-1=12k+3=3(4k+1)$ ✓',
+        '**Concl.** Par récurrence, $3\\mid 4^n-1$ pour tout $n\\in\\mathbb{N}$.',
+      ]},
+      { type: 'piege', text: 'Ne jamais oublier de vérifier l\'**initialisation** : sans elle, la récurrence ne prouve rien (on pourrait « démontrer » que tous les chevaux ont la même couleur !).' },
+      { type: 'subsection', num: '1.2', title: 'Récurrence double' },
+      { type: 'propriete', text: 'Pour démontrer $P(n)$ pour tout $n\\geq n_0$, il suffit parfois de :\n① Initialiser $P(n_0)$ **et** $P(n_0+1)$.\n② Montrer que $P(n)$ **et** $P(n+1)$ impliquent $P(n+2)$.' },
+      { type: 'idee_cle', text: 'Utiliser la récurrence **double** quand la relation fait intervenir **deux rangs consécutifs** : $u_{n+2}=f(u_{n+1},u_n)$ ou $P(n+2)$ dépend de $P(n)$ et $P(n+1)$.' },
+      { type: 'subsection', num: '1.3', title: 'Récurrence forte' },
+      { type: 'propriete', text: 'On suppose $P(n_0),P(n_0+1),\\ldots,P(n)$ **tous vrais** pour conclure $P(n+1)$. L\'hypothèse porte sur tous les rangs jusqu\'à $n$, pas seulement $n$.' },
+    ],
+  },
+  {
+    id: 'limites',
+    num: '2',
+    title: 'Limites de suites',
+    blocks: [
+      { type: 'subsection', num: '2.1', title: 'Suites convergentes' },
+      { type: 'definition', badge: 'Déf.', title: 'Convergence', content: 'On dit que $(u_n)$ converge vers $\\ell\\in\\mathbb{R}$ si pour tout $\\varepsilon>0$, il existe $N\\in\\mathbb{N}$ tel que pour tout $n\\geq N$, $|u_n-\\ell|\\leq\\varepsilon$.', formulas: ['u_n \\to \\ell \\iff \\forall\\varepsilon>0,\\,\\exists N,\\,\\forall n\\geq N,\\;|u_n-\\ell|\\leq\\varepsilon'] },
+      { type: 'idee_cle', text: '**Intuition du tube :** tous les termes à partir du rang $N$ restent dans le « tube » $[\\ell-\\varepsilon,\\,\\ell+\\varepsilon]$, aussi étroit soit-il.' },
+      { type: 'propriete', text: 'Si $(u_n)$ converge, sa limite est **unique**. De plus, toute suite convergente est **bornée**.' },
+      { type: 'propriete', text: '**Théorème des gendarmes.** Si $a_n\\leq u_n\\leq b_n$ pour tout $n$ et si $a_n\\to\\ell$ et $b_n\\to\\ell$, alors $u_n\\to\\ell$.' },
+      { type: 'idee_cle', text: '**Gendarmes vs comparaison.** Pour $u_n\\to\\ell$ : il faut **deux** suites encadrantes. Pour $u_n\\to+\\infty$ : une seule **minorante** divergeant vers $+\\infty$ suffit.' },
+      { type: 'propriete', text: '**Limite monotone.** Toute suite **croissante et majorée** converge. Toute suite **décroissante et minorée** converge. (La limite est la borne supérieure/inférieure de l\'ensemble des valeurs.)' },
+      { type: 'piege', text: 'Le théorème de la limite monotone garantit **l\'existence** de la limite, mais ne la donne pas. Il faut ensuite résoudre $\\ell=f(\\ell)$ pour la trouver — **après avoir prouvé la convergence**.' },
+      { type: 'subsection', num: '2.2', title: 'Suites divergentes' },
+      { type: 'definition', badge: 'Déf.', title: 'Divergence', content: '$(u_n)$ diverge vers $+\\infty$ si pour tout $A>0$, il existe $N$ tel que pour tout $n\\geq N$, $u_n>A$.\nSi aucune limite (finie ou infinie) n\'existe, la suite **diverge sans avoir de limite**.' },
+      { type: 'exemple', title: 'Exemples canoniques', lines: [
+        '$u_n=\\sqrt{n}\\to+\\infty$ (prendre $N=\\lfloor A^2\\rfloor+1$).',
+        '$u_n=(-1)^n$ : bornée mais divergente (oscille entre $-1$ et $1$).',
+      ]},
+      { type: 'subsection', num: '2.3', title: 'Opérations sur les limites' },
+      { type: 'propriete', text: 'Si $u_n\\to\\ell$ et $v_n\\to m$, alors $u_n+v_n\\to\\ell+m$, $u_n\\cdot v_n\\to\\ell\\cdot m$ et $u_n/v_n\\to\\ell/m$ si $m\\neq 0$.\n⚠ Formes indéterminées (FI) : $\\infty-\\infty$, $\\frac{\\infty}{\\infty}$, $0\\times\\infty$, $\\frac{0}{0}$.' },
+      { type: 'methode', title: 'Lever une FI — terme dominant', steps: [
+        'FI $\\frac{\\infty}{\\infty}$ : factoriser par le **terme de plus haut degré** au numérateur et au dénominateur.',
+        'FI $\\infty-\\infty$ : factoriser par le terme de plus haut degré ou utiliser la **quantité conjuguée**.',
+        'FI $0\\times\\infty$ : écrire $u_n\\cdot v_n=\\frac{u_n}{1/v_n}$ ou $\\frac{v_n}{1/u_n}$ pour se ramener à $\\frac{0}{0}$ ou $\\frac{\\infty}{\\infty}$.',
+      ]},
+      { type: 'formules', label: 'Croissances comparées (à retenir)', rows: [
+        { desc: 'logarithme ≪ puissance', tex: '\\lim_{n\\to+\\infty}\\frac{\\ln n}{n^\\alpha}=0\\quad(\\alpha>0)' },
+        { desc: 'puissance ≪ exponentielle', tex: '\\lim_{n\\to+\\infty}\\frac{n^\\alpha}{e^n}=0\\quad(\\alpha>0)' },
+      ]},
+      { type: 'methode', title: 'Quantité conjuguée', steps: [
+        'Si l\'expression contient $\\sqrt{A}-\\sqrt{B}$, multiplier et diviser par $\\sqrt{A}+\\sqrt{B}$.',
+        'On obtient $\\frac{A-B}{\\sqrt{A}+\\sqrt{B}}$, qui lève la FI $\\infty-\\infty$.',
+      ]},
+      { type: 'exemple', title: 'Exemple', lines: [
+        '$\\sqrt{n^2+n}-n=\\frac{(n^2+n)-n^2}{\\sqrt{n^2+n}+n}=\\frac{n}{n\\left(\\sqrt{1+1/n}+1\\right)}=\\frac{1}{\\sqrt{1+1/n}+1}\\to\\frac{1}{2}$.',
+      ]},
+      { type: 'subsection', num: '2.4', title: 'Suites récurrentes $u_{n+1}=f(u_n)$' },
+      { type: 'methode', title: 'Méthode en 4 étapes', steps: [
+        '**Stabilité :** montrer par récurrence que la suite reste dans un intervalle $I$ (ex. $0\\leq u_n\\leq M$).',
+        '**Monotonie :** étudier le signe de $u_{n+1}-u_n=f(u_n)-u_n$ sur $I$.',
+        '**Convergence :** déduire que la suite est monotone et bornée → elle converge.',
+        '**Limite :** la limite $\\ell$ est un **point fixe** : $\\ell=f(\\ell)$. Résoudre et choisir la valeur cohérente avec l\'intervalle $I$.',
+      ]},
+      { type: 'piege', text: 'On ne résout $\\ell=f(\\ell)$ qu\'**après** avoir prouvé la convergence. Sans cela, on ne sait pas si la limite existe.' },
+      { type: 'lien_ex', text: '→ Exercices 8, 16, 17, 18, 19' },
+    ],
+  },
+];
+
+const SUITES_FICHE_DATA = [
+  {
+    title: '1  Récurrence',
+    rows: [
+      {
+        label: 'Simple',
+        tex: 'P(n_0)\\text{ vraie} + [P(n)\\Rightarrow P(n+1)] \\Rightarrow P(n)\\text{ vraie }\\forall n\\geq n_0',
+        vars: '3 étapes : **Initialisation** · **Hérédité** · **Conclusion**',
+      },
+      {
+        label: 'Double',
+        tex: 'P(n_0)\\,\\&\\,P(n_0{+}1)\\text{ vraies} + [P(n)\\,\\&\\,P(n+1)\\Rightarrow P(n+2)]',
+        vars: 'Utile quand $u_{n+2}=f(u_{n+1},u_n)$',
+      },
+      {
+        label: 'Forte',
+        tex: 'P(n_0),\\ldots,P(n)\\text{ toutes vraies}\\Rightarrow P(n+1)',
+        vars: 'L\'hypothèse porte sur tous les rangs jusqu\'à $n$',
+      },
+    ],
+  },
+  {
+    title: '2  Convergence',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'u_n\\to\\ell\\iff\\forall\\varepsilon>0,\\,\\exists N,\\,\\forall n\\geq N,\\;|u_n-\\ell|\\leq\\varepsilon',
+        vars: 'Intuition : tous les $u_n$ finissent dans le tube $[\\ell-\\varepsilon,\\ell+\\varepsilon]$',
+      },
+      {
+        label: 'Gendarmes',
+        tex: 'a_n\\leq u_n\\leq b_n\\text{ et }a_n,b_n\\to\\ell\\implies u_n\\to\\ell',
+        vars: 'Il faut **deux** suites encadrantes de même limite',
+      },
+      {
+        label: 'Comparaison',
+        tex: 'u_n\\geq v_n\\text{ et }v_n\\to+\\infty\\implies u_n\\to+\\infty',
+        vars: 'Une seule **minorante** divergente suffit pour $+\\infty$',
+      },
+      {
+        label: 'Limite monotone',
+        tex: '(u_n)\\text{ croissante et majorée }\\implies (u_n)\\text{ converge}',
+        vars: 'Idem : décroissante et minorée → converge',
+      },
+    ],
+  },
+  {
+    title: '3  Opérations & FI',
+    rows: [
+      {
+        label: 'Terme dominant',
+        tex: '\\frac{a n^p + \\cdots}{b n^q + \\cdots}\\sim\\frac{a}{b}\\,n^{p-q}',
+        vars: 'Factoriser par $n^p$ au numérateur et $n^q$ au dénominateur',
+      },
+      {
+        label: 'Conj.',
+        tex: '\\sqrt{A}-\\sqrt{B}=\\frac{A-B}{\\sqrt{A}+\\sqrt{B}}',
+        vars: 'Lève la FI $\\infty-\\infty$ avec des racines carrées',
+      },
+      {
+        label: 'Croiss. comp.',
+        tex: '\\frac{\\ln n}{n^\\alpha}\\to 0\\quad\\frac{n^\\alpha}{e^n}\\to 0\\quad(\\alpha>0)',
+        vars: '$\\ln n\\ll n^\\alpha\\ll e^n$ quand $n\\to+\\infty$',
+      },
+    ],
+  },
+  {
+    title: '4  Suite récurrente $u_{n+1}=f(u_n)$',
+    rows: [
+      {
+        label: 'Point fixe',
+        tex: 'u_n\\to\\ell\\implies\\ell=f(\\ell)',
+        vars: 'Résoudre $\\ell=f(\\ell)$ **après** avoir prouvé la convergence',
+      },
+      {
+        label: 'Méthode',
+        tex: '\\text{Stabilité}\\to\\text{Monotonie}\\to\\text{Convergence}\\to\\ell=f(\\ell)',
+        vars: '4 étapes dans cet ordre',
+      },
+    ],
+  },
+];
+
+// Objectifs du chapitre — page de couverture (Newton)
 const OBJECTIFS = [
   'Décrire un mouvement à l\'aide des vecteurs **position**, **vitesse** et **accélération**.',
   'Énoncer et exploiter les **trois lois de Newton**.',
@@ -769,8 +943,12 @@ const OBJECTIFS = [
   'Étudier le mouvement d\'une **particule chargée** dans un champ électrique uniforme.',
 ];
 
-function CourseTab() {
-  const [open, setOpen] = useState<Set<string>>(new Set(['cinematique']));
+function CourseTab({ module }: { module: PhysicsModule }) {
+  const isMaths = module.subject === 'Maths';
+  const sections = isMaths ? SUITES_COURS : COURS;
+  const objectifs = isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const firstId = sections[0]?.id ?? '';
+  const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
     setOpen(p => { const s = new Set(p); s.has(id) ? s.delete(id) : s.add(id); return s; });
 
@@ -786,22 +964,24 @@ function CourseTab() {
           </span>
         </div>
         <ul className="px-4 py-3 space-y-1.5">
-          {OBJECTIFS.map((o, i) => (
+          {objectifs.map((o, i) => (
             <li key={i} className="flex gap-2 items-start">
               <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${A.dot} mt-[6px]`}/>
               <span className={`text-[13px] ${A.bodyTxt} leading-relaxed`}><MixedText text={o} /></span>
             </li>
           ))}
         </ul>
-        <div className="px-4 py-2 border-t border-amber-700/20">
-          <p className="text-[11px] text-white/35 text-center">
-            Conventions : repère <InlineMath tex="(O,\vec{i},\vec{j})" />, <InlineMath tex="g=9{,}81\,\text{m\,s}^{-2}" />, frottements négligés sauf mention contraire.
-          </p>
-        </div>
+        {!isMaths && (
+          <div className="px-4 py-2 border-t border-amber-700/20">
+            <p className="text-[11px] text-white/35 text-center">
+              Conventions : repère <InlineMath tex="(O,\vec{i},\vec{j})" />, <InlineMath tex="g=9{,}81\,\text{m\,s}^{-2}" />, frottements négligés sauf mention contraire.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Sections */}
-      {COURS.map(sec => (
+      {sections.map(sec => (
         <div key={sec.id} className="rounded-xl overflow-hidden border border-white/10 bg-white/[0.02]">
           <button onClick={() => toggle(sec.id)}
             className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white/5 transition-colors">
@@ -928,16 +1108,19 @@ const FICHE_DATA = [
   },
 ];
 
-function FicheTab() {
+function FicheTab({ module }: { module: PhysicsModule }) {
+  const isMaths = module.subject === 'Maths';
+  const ficheData = isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }} className="pb-6 space-y-3">
       <div className="text-center pt-1 pb-1">
-        <p className="text-white font-black text-base">Newton & Champ uniforme</p>
+        <p className="text-white font-black text-base">{ficheTitle}</p>
         <p className="text-[11px] text-white/35 uppercase tracking-widest mt-0.5">Fiche de révision · Terminale</p>
       </div>
 
-      {FICHE_DATA.map(sec => (
+      {ficheData.map(sec => (
         <div key={sec.title} className={`rounded-xl overflow-hidden border ${A.border} ${A.bg}`}>
           <div className={`px-4 py-2 ${A.head} border-b ${A.border}`}>
             <span className={`text-[11px] font-black ${A.headTxt} uppercase tracking-wider`}>{sec.title}</span>
@@ -962,7 +1145,7 @@ function FicheTab() {
         </div>
       ))}
 
-      <div className={`rounded-xl overflow-hidden border ${A.border} ${A.bg}`}>
+      {!isMaths && <div className={`rounded-xl overflow-hidden border ${A.border} ${A.bg}`}>
         <div className={`px-4 py-2 ${A.head} border-b ${A.border}`}>
           <span className={`text-[11px] font-black ${A.headTxt} uppercase tracking-wider`}>Constantes utiles</span>
         </div>
@@ -993,7 +1176,7 @@ function FicheTab() {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
     </motion.div>
   );
 }

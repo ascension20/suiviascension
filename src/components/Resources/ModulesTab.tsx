@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, Clock, Zap, ChevronRight } from 'lucide-react';
+import { Clock, Zap, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { ALL_MODULES, type PhysicsModule, type ModuleLevel } from '@/lib/modules-data';
@@ -108,16 +108,6 @@ export function ModulesTab({ onXpGain }: Props) {
           />
         ))}
 
-        {/* Coming soon : maths */}
-        <div className="opacity-40 bg-white/3 border border-white/10 rounded-xl p-4 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
-            <Layers size={22} className="text-purple-400" />
-          </div>
-          <div>
-            <p className="font-semibold text-white">Modules Maths</p>
-            <p className="text-sm text-white/50">Bientôt disponibles</p>
-          </div>
-        </div>
       </motion.div>
     </AnimatePresence>
   );
