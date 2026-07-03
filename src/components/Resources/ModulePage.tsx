@@ -898,27 +898,32 @@ const SUITES_FICHE_DATA = [
     ],
   },
   {
-    title: '3  Formes indéterminées',
+    title: '3  Formes indéterminées — tableau',
     rows: [
       {
-        label: '$\\infty-\\infty$',
-        tex: 'a_n^2-b_n^2=(a_n-b_n)(a_n+b_n)',
-        vars: 'Factoriser par le terme dominant, ou utiliser la **quantité conjuguée** si racines carrées',
+        label: 'Forme FI',
+        tex: '\\text{Cas typique}',
+        vars: '**Méthode**',
       },
       {
-        label: '$\\tfrac{\\infty}{\\infty}$',
-        tex: '\\frac{a\\,n^p+\\cdots}{b\\,n^q+\\cdots}=\\frac{n^p(a+\\cdots/n^p)}{n^q(b+\\cdots/n^q)}\\to\\frac{a}{b}\\,n^{p-q}',
-        vars: 'Factoriser par $n^p$ en haut et $n^q$ en bas — le résultat dépend du signe de $p-q$',
+        label: '$\\infty-\\infty$\npolynômes',
+        tex: 'n^2-2n+5\\quad(\\to\\,?)',
+        vars: 'Factoriser par le **terme de plus haut degré** : $n^2\\!\\left(1-\\tfrac{2}{n}+\\tfrac{5}{n^2}\\right)\\to+\\infty$',
+      },
+      {
+        label: '$\\infty-\\infty$\nracines',
+        tex: '\\sqrt{n^2+n}-n\\quad(\\to\\,?)',
+        vars: '**Quantité conjuguée** : multiplier par $\\dfrac{\\sqrt{n^2+n}+n}{\\sqrt{n^2+n}+n}$ → $\\dfrac{n}{\\sqrt{n^2+n}+n}\\to\\dfrac{1}{2}$',
+      },
+      {
+        label: '$\\dfrac{\\infty}{\\infty}$',
+        tex: '\\frac{3n+1}{n^2+2n-8}\\quad(\\to\\,?)',
+        vars: 'Factoriser par $n$ en haut, $n^2$ en bas : $\\dfrac{1}{n}\\cdot\\dfrac{3+1/n}{1+2/n-8/n^2}\\to 0$',
       },
       {
         label: '$0\\times\\infty$',
-        tex: 'u_n\\cdot v_n=\\frac{u_n}{1/v_n}\\;\\left(\\frac{0}{0}\\right)\\quad\\text{ou}\\quad\\frac{v_n}{1/u_n}\\;\\left(\\frac{\\infty}{\\infty}\\right)',
-        vars: 'Réécrire comme fraction pour se ramener à $0/0$ ou $\\infty/\\infty$',
-      },
-      {
-        label: 'Conj.',
-        tex: '\\sqrt{A}-\\sqrt{B}=\\frac{A-B}{\\sqrt{A}+\\sqrt{B}}',
-        vars: 'Multiplie/divise par $\\sqrt{A}+\\sqrt{B}$ — lève la FI $\\infty-\\infty$ avec des racines',
+        tex: 'n^2\\cdot e^{-n}\\quad(\\to\\,?)',
+        vars: 'Réécrire en fraction : $\\dfrac{n^2}{e^n}\\to 0$ (croissances comparées)',
       },
     ],
   },
