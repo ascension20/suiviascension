@@ -898,21 +898,41 @@ const SUITES_FICHE_DATA = [
     ],
   },
   {
-    title: '3  Opérations & FI',
+    title: '3  Formes indéterminées',
     rows: [
       {
-        label: 'Terme dominant',
-        tex: '\\frac{a n^p + \\cdots}{b n^q + \\cdots}\\sim\\frac{a}{b}\\,n^{p-q}',
-        vars: 'Factoriser par $n^p$ au numérateur et $n^q$ au dénominateur',
+        label: '$\\infty-\\infty$',
+        tex: 'a_n^2-b_n^2=(a_n-b_n)(a_n+b_n)',
+        vars: 'Factoriser par le terme dominant, ou utiliser la **quantité conjuguée** si racines carrées',
+      },
+      {
+        label: '$\\tfrac{\\infty}{\\infty}$',
+        tex: '\\frac{a\\,n^p+\\cdots}{b\\,n^q+\\cdots}=\\frac{n^p(a+\\cdots/n^p)}{n^q(b+\\cdots/n^q)}\\to\\frac{a}{b}\\,n^{p-q}',
+        vars: 'Factoriser par $n^p$ en haut et $n^q$ en bas — le résultat dépend du signe de $p-q$',
+      },
+      {
+        label: '$0\\times\\infty$',
+        tex: 'u_n\\cdot v_n=\\frac{u_n}{1/v_n}\\;\\left(\\frac{0}{0}\\right)\\quad\\text{ou}\\quad\\frac{v_n}{1/u_n}\\;\\left(\\frac{\\infty}{\\infty}\\right)',
+        vars: 'Réécrire comme fraction pour se ramener à $0/0$ ou $\\infty/\\infty$',
       },
       {
         label: 'Conj.',
         tex: '\\sqrt{A}-\\sqrt{B}=\\frac{A-B}{\\sqrt{A}+\\sqrt{B}}',
-        vars: 'Lève la FI $\\infty-\\infty$ avec des racines carrées',
+        vars: 'Multiplie/divise par $\\sqrt{A}+\\sqrt{B}$ — lève la FI $\\infty-\\infty$ avec des racines',
+      },
+    ],
+  },
+  {
+    title: '4  Opérations & croissances',
+    rows: [
+      {
+        label: 'Terme dom.',
+        tex: '\\frac{a n^p + \\cdots}{b n^q + \\cdots}\\sim\\frac{a}{b}\\,n^{p-q}',
+        vars: 'Factoriser par le terme de plus haut degré au numérateur et au dénominateur',
       },
       {
         label: 'Croiss. comp.',
-        tex: '\\frac{\\ln n}{n^\\alpha}\\to 0\\quad\\frac{n^\\alpha}{e^n}\\to 0\\quad(\\alpha>0)',
+        tex: '\\frac{\\ln n}{n^\\alpha}\\to 0\\qquad\\frac{n^\\alpha}{e^n}\\to 0\\quad(\\alpha>0)',
         vars: '$\\ln n\\ll n^\\alpha\\ll e^n$ quand $n\\to+\\infty$',
       },
     ],
