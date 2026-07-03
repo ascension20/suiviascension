@@ -486,13 +486,13 @@ const A = {
 
 /** Palette violette (Maths) */
 const V = {
-  bg:       'bg-violet-950/20',
-  border:   'border-violet-700/35',
-  head:     'bg-violet-600/20',
-  headTxt:  'text-violet-300',
-  bodyTxt:  'text-violet-100/85',
-  label:    'text-violet-400',
-  dot:      'bg-violet-500',
+  bg:       'bg-violet-900/25',
+  border:   'border-violet-500/45',
+  head:     'bg-violet-700/35',
+  headTxt:  'text-violet-200',
+  bodyTxt:  'text-white/90',
+  label:    'text-violet-300',
+  dot:      'bg-violet-400',
   badge:    'bg-violet-500',
 };
 
@@ -512,10 +512,10 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
     /* ── Sous-section ▸ X.X ──────────────────────────────────────────────── */
     case 'subsection':
       return (
-        <div className="flex items-center gap-2 mt-1 mb-0.5">
-          <span className={`${pal.label} font-bold text-sm`}>▸</span>
-          <h4 className="text-[14px] font-bold text-white">
-            <span className={`${pal.label} mr-1`}>{b.num}</span>{b.title}
+        <div className="flex items-center gap-2.5 mt-5 mb-1 pb-2 border-b border-white/10">
+          <span className={`${pal.label} font-black text-base leading-none`}>▸</span>
+          <h4 className="text-[15px] font-bold text-white tracking-tight">
+            <span className={`${pal.label} mr-1.5 font-black`}>{b.num}</span>{b.title}
           </h4>
         </div>
       );
@@ -607,23 +607,23 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
     /* ── Propriété ── bleu ───────────────────────────────────────────────── */
     case 'propriete':
       return (
-        <div className="rounded-lg border-l-[3px] border-blue-500 border border-blue-700/35 bg-blue-950/20 px-3 py-2.5">
-          <div className="mb-1">
-            <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">PROPRIÉTÉ</span>
+        <div className="rounded-lg border-l-[3px] border-blue-400 border border-blue-600/45 bg-blue-950/30 px-3 py-3">
+          <div className="mb-1.5">
+            <span className="text-[9px] font-black text-blue-300 uppercase tracking-widest">PROPRIÉTÉ</span>
           </div>
-          <p className="text-[13px] text-blue-100/85 leading-relaxed"><MixedText text={b.text} /></p>
+          <p className="text-[13px] text-white/90 leading-relaxed"><MixedText text={b.text} /></p>
         </div>
       );
 
     /* ── Idée clé 💡 ── violet ───────────────────────────────────────────── */
     case 'idee_cle':
       return (
-        <div className="rounded-lg border border-violet-700/35 bg-violet-950/20 overflow-hidden">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600/20 border-b border-violet-700/35">
+        <div className="rounded-lg border border-violet-500/45 bg-violet-900/25 overflow-hidden">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-700/35 border-b border-violet-500/35">
             <span>💡</span>
-            <span className="text-[9px] font-black text-violet-400 uppercase tracking-widest">IDÉE CLÉ</span>
+            <span className="text-[9px] font-black text-violet-200 uppercase tracking-widest">IDÉE CLÉ</span>
           </div>
-          <p className="px-3 py-2.5 text-[13px] text-violet-100/85 leading-relaxed">
+          <p className="px-3 py-3 text-[13px] text-white/90 leading-relaxed">
             <MixedText text={b.text} />
           </p>
         </div>
@@ -632,16 +632,16 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
     /* ── L'idée à comprendre 💡 ── violet ───────────────────────────────── */
     case 'idee_comprendre':
       return (
-        <div className="rounded-lg border border-violet-700/35 bg-violet-950/20 overflow-hidden">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600/20 border-b border-violet-700/35">
+        <div className="rounded-lg border border-violet-500/45 bg-violet-900/25 overflow-hidden">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-700/35 border-b border-violet-500/35">
             <span>💡</span>
-            <span className="text-[9px] font-black text-violet-400 uppercase tracking-widest">L'IDÉE À COMPRENDRE</span>
+            <span className="text-[9px] font-black text-violet-200 uppercase tracking-widest">L'IDÉE À COMPRENDRE</span>
           </div>
-          <ul className="px-3 py-2.5 space-y-1.5">
+          <ul className="px-3 py-3 space-y-2">
             {b.items.map((item, i) => (
               <li key={i} className="flex gap-2 items-start">
-                <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-violet-500 mt-[6px]"/>
-                <span className="text-[13px] text-violet-100/85 leading-relaxed"><MixedText text={item} /></span>
+                <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-violet-400 mt-[6px]"/>
+                <span className="text-[13px] text-white/90 leading-relaxed"><MixedText text={item} /></span>
               </li>
             ))}
           </ul>
@@ -651,19 +651,19 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
     /* ── Méthode (étapes numérotées) ── vert ─────────────────────────────── */
     case 'methode':
       return (
-        <div className="rounded-lg border border-emerald-700/35 bg-emerald-950/20 overflow-hidden">
-          <div className="px-3 py-1.5 bg-emerald-600/20 border-b border-emerald-700/35">
-            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">
+        <div className="rounded-lg border border-emerald-600/45 bg-emerald-950/30 overflow-hidden">
+          <div className="px-3 py-1.5 bg-emerald-700/35 border-b border-emerald-600/35">
+            <span className="text-[9px] font-black text-emerald-300 uppercase tracking-widest">
               MÉTHODE{b.title ? ` — ${b.title}` : ''}
             </span>
           </div>
-          <ol className="divide-y divide-emerald-700/15">
+          <ol className="divide-y divide-emerald-700/20">
             {b.steps.map((step, i) => (
-              <li key={i} className="flex gap-3 items-start px-3 py-2.5">
+              <li key={i} className="flex gap-3 items-start px-3 py-3">
                 <span className="shrink-0 w-6 h-6 rounded-full bg-emerald-500 text-[11px] font-black text-black flex items-center justify-center mt-0.5">
                   {i + 1}
                 </span>
-                <span className="text-[13px] text-emerald-100/85 leading-relaxed"><MixedText text={step} /></span>
+                <span className="text-[13px] text-white/90 leading-relaxed"><MixedText text={step} /></span>
               </li>
             ))}
           </ol>
@@ -673,16 +673,16 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
     /* ── Exemple express ── cyan ──────────────────────────────────────────── */
     case 'exemple':
       return (
-        <div className="rounded-lg border border-cyan-700/35 bg-cyan-950/20 overflow-hidden">
-          <div className="px-3 py-1.5 bg-cyan-600/20 border-b border-cyan-700/35">
-            <span className="text-[9px] font-black text-cyan-400 uppercase tracking-widest">
+        <div className="rounded-lg border border-cyan-600/45 bg-cyan-950/30 overflow-hidden">
+          <div className="px-3 py-1.5 bg-cyan-700/35 border-b border-cyan-600/35">
+            <span className="text-[9px] font-black text-cyan-300 uppercase tracking-widest">
               EXEMPLE{b.title ? ` — ${b.title}` : ''}
             </span>
           </div>
-          <div className="px-3 py-2.5 space-y-1">
+          <div className="px-3 py-3 space-y-1.5">
             {b.lines.map((line, i) =>
               line === '' ? <div key={i} className="h-1" /> : (
-                <p key={i} className="text-[13px] text-cyan-100/85 leading-relaxed">
+                <p key={i} className="text-[13px] text-white/90 leading-relaxed">
                   <MixedText text={line} />
                 </p>
               )
@@ -694,14 +694,14 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
     /* ── Application de la méthode ── vert ───────────────────────────────── */
     case 'application':
       return (
-        <div className="rounded-lg border border-emerald-700/35 bg-emerald-950/20 overflow-hidden">
-          <div className="px-3 py-1.5 bg-emerald-600/20 border-b border-emerald-700/35">
-            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{b.title}</span>
+        <div className="rounded-lg border border-emerald-600/45 bg-emerald-950/30 overflow-hidden">
+          <div className="px-3 py-1.5 bg-emerald-700/35 border-b border-emerald-600/35">
+            <span className="text-[9px] font-black text-emerald-300 uppercase tracking-widest">{b.title}</span>
           </div>
-          <div className="divide-y divide-emerald-700/15">
+          <div className="divide-y divide-emerald-700/20">
             {b.steps.map((step, i) => (
-              <div key={i} className="px-3 py-2.5 space-y-1.5">
-                <p className="text-[13px] text-emerald-100/85 leading-relaxed">
+              <div key={i} className="px-3 py-3 space-y-1.5">
+                <p className="text-[13px] text-white/90 leading-relaxed">
                   <span className="font-bold text-emerald-300 mr-1">{step.n}</span>
                   <strong className="text-emerald-300">{step.bold}</strong>
                   {step.rest && <> <MixedText text={step.rest} /></>}
@@ -720,13 +720,13 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
     /* ── Piège fréquent ── rouge ──────────────────────────────────────────── */
     case 'piege':
       return (
-        <div className="rounded-lg border border-red-800/40 bg-red-950/15 overflow-hidden">
-          <div className="px-3 py-1.5 bg-red-800/20 border-b border-red-800/35">
-            <span className="text-[9px] font-black text-red-400 uppercase tracking-widest">
+        <div className="rounded-lg border-l-[3px] border-l-red-500 border border-red-700/45 bg-red-950/30 overflow-hidden">
+          <div className="px-3 py-1.5 bg-red-800/30 border-b border-red-700/35">
+            <span className="text-[9px] font-black text-red-300 uppercase tracking-widest">
               {b.badge ?? '⚠ PIÈGE FRÉQUENT'}
             </span>
           </div>
-          <p className="px-3 py-2.5 text-[13px] text-red-100/80 leading-relaxed">
+          <p className="px-3 py-3 text-[13px] text-white/90 leading-relaxed">
             <MixedText text={b.text} />
           </p>
         </div>
@@ -735,12 +735,12 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
     /* ── Le bon réflexe ── vert clair ────────────────────────────────────── */
     case 'reflex':
       return (
-        <div className="rounded-lg border border-green-700/35 bg-green-950/20 overflow-hidden">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600/20 border-b border-green-700/35">
-            <span>🎯</span>
-            <span className="text-[9px] font-black text-green-400 uppercase tracking-widest">LE BON RÉFLEXE</span>
+        <div className="rounded-lg border-l-[4px] border-l-green-500 border border-green-600/45 bg-green-900/30 overflow-hidden">
+          <div className="flex items-center gap-2 px-3 py-2 bg-green-800/30 border-b border-green-600/30">
+            <span className="text-base">🎯</span>
+            <span className="text-[10px] font-black text-green-300 uppercase tracking-widest">RÉFLEXE — À RETENIR</span>
           </div>
-          <p className="px-3 py-2.5 text-[13px] text-green-100/85 leading-relaxed">
+          <p className="px-4 py-3 text-[13.5px] text-white/95 leading-relaxed font-medium">
             <MixedText text={b.text} />
           </p>
         </div>
@@ -882,8 +882,13 @@ const SUITES_COURS: Section[] = [
       { type: 'exemple', title: 'Exemple', lines: [
         '$\\sqrt{n+1}-\\sqrt{n}=\\dfrac{(n+1)-n}{\\sqrt{n+1}+\\sqrt{n}}=\\dfrac{1}{\\sqrt{n+1}+\\sqrt{n}}\\to 0$.',
       ]},
-      { type: 'propriete', text: '**Taux d\'accroissement (Prop. 2.1.10).** Si $f$ est dérivable en $a$, alors $\\displaystyle\\lim_{h\\to 0}\\frac{f(a+h)-f(a)}{h}=f\'(a)$. En posant $h=1/n$ on reconnaît ce taux quand $n\\to+\\infty$. À retenir : $\\dfrac{e^x-1}{x}\\to 1$, $\\dfrac{\\ln(1+x)}{x}\\to 1$, $\\dfrac{\\sin x}{x}\\to 1$ en $0$.' },
-      { type: 'reflex', text: '**Réflexe FI — que faire ?**  Polynômes / rationnelles → factoriser par le monôme dominant.  Exponentielle ou $\\ln$ face à une puissance → croissances comparées.  Racines en $\\infty-\\infty$ → quantité conjuguée.  Quotient $0/0$ en un point → taux d\'accroissement.' },
+      { type: 'propriete', text: '**Taux d\'accroissement (Prop. 2.1.10).** Si $f$ est dérivable en $a$, alors $\\displaystyle\\lim_{h\\to 0}\\frac{f(a+h)-f(a)}{h}=f\'(a)$. En posant $h=1/n\\to 0$, on peut calculer des limites en reconnaissant ce taux d\'accroissement.' },
+      { type: 'formules', label: 'Taux d\'accroissement usuels — à retenir', rows: [
+        { desc: 'Exponentielle', tex: '\\frac{e^x-1}{x}\\xrightarrow[x\\to 0]{}1' },
+        { desc: 'Logarithme', tex: '\\frac{\\ln(1+x)}{x}\\xrightarrow[x\\to 0]{}1' },
+        { desc: 'Sinus', tex: '\\frac{\\sin x}{x}\\xrightarrow[x\\to 0]{}1' },
+      ]},
+      { type: 'reflex', text: '**FI polynômes / rationnelles** → factoriser par le monôme dominant.\n**FI avec exponentielle ou $\\ln$** → croissances comparées ($n^\\alpha\\ll e^n$, $\\ln n\\ll n^\\alpha$).\n**FI $\\infty-\\infty$ avec racines** → quantité conjuguée.\n**FI $0/0$ en un point** → taux d\'accroissement.' },
 
       { type: 'subsection', num: '2.4', title: 'Suites récurrentes $u_{n+1}=f(u_n)$' },
       { type: 'propriete', text: '**Point fixe.** Soit $f$ continue telle que $u_{n+1}=f(u_n)$. Si $(u_n)$ converge vers $\\ell$, alors $\\ell$ vérifie $f(\\ell)=\\ell$ : la limite est un **point fixe** de $f$.' },
@@ -1104,7 +1109,7 @@ function CourseTab({ module }: { module: PhysicsModule }) {
             {open.has(sec.id) && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }} className="overflow-hidden">
-                <div className="px-4 pb-5 pt-1 space-y-3 border-t border-white/8">
+                <div className="px-4 pb-6 pt-2 space-y-4 border-t border-white/8">
                   {sec.blocks.map((b, i) => <Block key={i} b={b} pal={pal} />)}
                 </div>
               </motion.div>
