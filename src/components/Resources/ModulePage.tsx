@@ -780,72 +780,105 @@ const SUITES_COURS: Section[] = [
     num: '1',
     title: 'La récurrence',
     blocks: [
-      { type: 'para', text: 'Le raisonnement par récurrence permet de démontrer une propriété $P(n)$ vraie pour tout entier $n\\geq n_0$. On procède toujours en trois étapes.' },
+      { type: 'para', text: 'La récurrence est un raisonnement qui permet de démontrer qu\'une propriété est vraie pour tous les entiers, en la vérifiant à un premier rang puis en montrant qu\'elle se transmet d\'un rang au suivant. Au bac, la difficulté n\'est pas l\'idée mais la rédaction : les trois étapes doivent apparaître clairement.' },
+
       { type: 'subsection', num: '1.1', title: 'Récurrence simple' },
-      { type: 'methode', title: 'Les 3 étapes incontournables', steps: [
-        '**Initialisation :** vérifier $P(n_0)$ (souvent $n_0=0$ ou $n_0=1$).',
-        '**Hérédité :** supposer $P(n)$ vraie pour un certain $n\\geq n_0$ (hypothèse de récurrence) et en déduire $P(n+1)$.',
-        '**Conclusion :** « Par le principe de récurrence, $P(n)$ est vraie pour tout $n\\geq n_0$. »',
+      { type: 'propriete', text: '**Propriété 1.1.1.** Soit une proposition $P$ définie sur $\\mathbb{N}$. Si $P(n_0)$ est vraie et si, pour tout $n\\geq n_0$, $P(n)\\Rightarrow P(n+1)$, alors $P$ est vraie pour tout $n\\geq n_0$.' },
+      { type: 'idee_cle', text: '**Intuition — Les dominos.** Imagine une file infinie de dominos. **Initialisation :** on fait tomber le premier. **Hérédité :** chaque domino qui tombe fait tomber le suivant. Alors tous tombent. Les deux ingrédients sont indispensables : sans le premier poussé, rien ne bouge ; sans la transmission, la chute s\'arrête au premier.' },
+      { type: 'methode', title: 'Rédiger une récurrence — les 3 étapes', steps: [
+        '**Initialisation.** Montrer que $P(n_0)$ est vraie (calculer les deux membres au rang initial et vérifier l\'égalité ou l\'inégalité).',
+        '**Hérédité.** Fixer $n\\geq n_0$, supposer $P(n)$ vraie (c\'est l\'**hypothèse de récurrence**, HR) et démontrer $P(n+1)$ en s\'appuyant sur HR.',
+        '**Conclusion.** « Par le principe de récurrence, $P(n)$ est vraie pour tout $n\\geq n_0$. »',
       ]},
-      { type: 'idee_cle', text: 'Analogie des **dominos** : si le premier tombe (initialisation) et que chaque domino fait tomber le suivant (hérédité), alors tous tombent.' },
-      { type: 'exemple', title: 'Exemple : $4^n-1$ est multiple de $3$', lines: [
-        '**Init.** $4^0-1=0=3\\times 0$ ✓',
-        '**Hér.** Supposons $4^n-1=3k$. Alors $4^{n+1}-1=4\\cdot 4^n-1=4(3k+1)-1=12k+3=3(4k+1)$ ✓',
-        '**Concl.** Par récurrence, $3\\mid 4^n-1$ pour tout $n\\in\\mathbb{N}$.',
+      { type: 'piege', text: 'Si la propriété n\'est vraie qu\'à partir d\'un certain rang $n_0$, on initialise simplement à $n_0$ (pas forcément à $0$). Le raisonnement reste identique.' },
+      { type: 'exemple', title: 'Exemple rédigé : $4^n - 1$ est divisible par $3$', lines: [
+        '**Init.** Au rang $n_0=0$ : $4^0-1=0=3\\times 0$. Donc $P(0)$ est vraie.',
+        '**Hér.** Soit $n\\geq 0$, supposons $P(n)$ vraie, i.e. $3\\mid 4^n-1$, donc $4^n-1=3k$ pour un certain $k\\in\\mathbb{Z}$. Alors $4^{n+1}-1=4\\cdot 4^n-1=4(3k+1)-1=12k+3=3(4k+1)$. Donc $3\\mid 4^{n+1}-1$ : $P(n+1)$ est vraie.',
+        '**Concl.** Par le principe de récurrence, $3\\mid 4^n-1$ pour tout $n\\in\\mathbb{N}$.',
       ]},
-      { type: 'piege', text: 'Ne jamais oublier de vérifier l\'**initialisation** : sans elle, la récurrence ne prouve rien (on pourrait « démontrer » que tous les chevaux ont la même couleur !).' },
+
       { type: 'subsection', num: '1.2', title: 'Récurrence double' },
-      { type: 'propriete', text: 'Pour démontrer $P(n)$ pour tout $n\\geq n_0$, il suffit parfois de :\n① Initialiser $P(n_0)$ **et** $P(n_0+1)$.\n② Montrer que $P(n)$ **et** $P(n+1)$ impliquent $P(n+2)$.' },
-      { type: 'idee_cle', text: 'Utiliser la récurrence **double** quand la relation fait intervenir **deux rangs consécutifs** : $u_{n+2}=f(u_{n+1},u_n)$ ou $P(n+2)$ dépend de $P(n)$ et $P(n+1)$.' },
+      { type: 'propriete', text: '**Propriété 1.2.1.** Soit $P$ une proposition sur $\\mathbb{N}$. Si $P(n_0)$ et $P(n_0+1)$ sont vraies, et si pour tout $n\\geq n_0$, $[P(n)$ et $P(n+1)]\\Rightarrow P(n+2)$, alors $P$ est vraie pour tout $n\\geq n_0$.' },
+      { type: 'idee_cle', text: '**Quand l\'utiliser ?** Dès que le rang $n+2$ dépend des deux rangs précédents $n$ et $n+1$ — typiquement une suite du type $u_{n+2}=f(u_{n+1},u_n)$.' },
+      { type: 'exemple', title: 'Exemple', lines: [
+        'Suite définie par $u_0=a$, $u_1=b$, $u_{n+2}=u_{n+1}+u_n$. Montrons $u_n\\geq 0$ si $a,b\\geq 0$.',
+        '**Init.** $u_0=a\\geq 0$ et $u_1=b\\geq 0$ : vrais.',
+        '**Hér.** Si $u_n\\geq 0$ et $u_{n+1}\\geq 0$, alors $u_{n+2}=u_{n+1}+u_n\\geq 0$ (somme de deux positifs). Donc $P(n+2)$ vraie.',
+        '**Concl.** Par récurrence double, $u_n\\geq 0$ pour tout $n\\in\\mathbb{N}$.',
+      ]},
+
       { type: 'subsection', num: '1.3', title: 'Récurrence forte' },
-      { type: 'propriete', text: 'On suppose $P(n_0),P(n_0+1),\\ldots,P(n)$ **tous vrais** pour conclure $P(n+1)$. L\'hypothèse porte sur tous les rangs jusqu\'à $n$, pas seulement $n$.' },
+      { type: 'propriete', text: '**Propriété 1.3.1.** Soit $P$ une proposition sur $\\mathbb{N}$. Si $P(n_0)$ est vraie et si, pour tout $n\\geq n_0$, $[P(n_0)$ et $\\cdots$ et $P(n)]\\Rightarrow P(n+1)$, alors $P$ est vraie pour tout $n\\geq n_0$.' },
+      { type: 'idee_cle', text: '**Différence avec la simple.** En récurrence forte, l\'hérédité peut s\'appuyer sur **tous les rangs précédents** $n_0,\\ldots,n$, pas seulement le dernier. Utile quand $u_{n+1}$ dépend d\'une somme $u_0+u_1+\\cdots+u_n$.' },
     ],
   },
   {
     id: 'limites',
     num: '2',
-    title: 'Limites de suites',
+    title: 'Les suites & leurs limites',
     blocks: [
+      { type: 'para', text: 'On étudie le comportement d\'une suite $(u_n)$ quand $n$ devient très grand : va-t-elle se stabiliser autour d\'une valeur (convergence), filer vers l\'infini, ou osciller ? La quantité $|u_n-\\ell|$ mesure la distance entre $u_n$ et $\\ell$ : c\'est l\'outil clé de toutes les définitions qui suivent.' },
+
       { type: 'subsection', num: '2.1', title: 'Suites convergentes' },
-      { type: 'definition', badge: 'Déf.', title: 'Convergence', content: 'On dit que $(u_n)$ converge vers $\\ell\\in\\mathbb{R}$ si pour tout $\\varepsilon>0$, il existe $N\\in\\mathbb{N}$ tel que pour tout $n\\geq N$, $|u_n-\\ell|\\leq\\varepsilon$.', formulas: ['u_n \\to \\ell \\iff \\forall\\varepsilon>0,\\,\\exists N,\\,\\forall n\\geq N,\\;|u_n-\\ell|\\leq\\varepsilon'] },
-      { type: 'idee_cle', text: '**Intuition du tube :** tous les termes à partir du rang $N$ restent dans le « tube » $[\\ell-\\varepsilon,\\,\\ell+\\varepsilon]$, aussi étroit soit-il.' },
-      { type: 'propriete', text: 'Si $(u_n)$ converge, sa limite est **unique**. De plus, toute suite convergente est **bornée**.' },
-      { type: 'propriete', text: '**Théorème des gendarmes.** Si $a_n\\leq u_n\\leq b_n$ pour tout $n$ et si $a_n\\to\\ell$ et $b_n\\to\\ell$, alors $u_n\\to\\ell$.' },
-      { type: 'idee_cle', text: '**Gendarmes vs comparaison.** Pour $u_n\\to\\ell$ : il faut **deux** suites encadrantes. Pour $u_n\\to+\\infty$ : une seule **minorante** divergeant vers $+\\infty$ suffit.' },
-      { type: 'propriete', text: '**Limite monotone.** Toute suite **croissante et majorée** converge. Toute suite **décroissante et minorée** converge. (La limite est la borne supérieure/inférieure de l\'ensemble des valeurs.)' },
-      { type: 'piege', text: 'Le théorème de la limite monotone garantit **l\'existence** de la limite, mais ne la donne pas. Il faut ensuite résoudre $\\ell=f(\\ell)$ pour la trouver — **après avoir prouvé la convergence**.' },
+      { type: 'definition', badge: 'Déf. 2.1.1', title: 'Limite finie — convergence', content: '$(u_n)$ converge vers un réel $\\ell$ si et seulement si, pour tout $\\varepsilon>0$, il existe un rang $N$ tel que pour tout $n\\geq N$, $|u_n-\\ell|<\\varepsilon$.', formulas: ['\\lim_{n\\to+\\infty} u_n = \\ell'] },
+      { type: 'idee_cle', text: '**Intuition — Le tube.** Fixe une largeur $\\varepsilon$ aussi petite que tu veux autour de $\\ell$. La suite converge si, à partir d\'un certain rang $N$, tous les termes restent piégés dans le tube $]\\ell-\\varepsilon,\\ell+\\varepsilon[$. Avant $N$, la suite peut faire n\'importe quoi ; c\'est le comportement **final** qui compte.' },
+      { type: 'propriete', text: '**Unicité (Prop. 2.1.1).** Si $(u_n)$ converge, alors sa limite est **unique**.' },
+      { type: 'propriete', text: '**Passage à la limite dans une inégalité (Prop. 2.1.2).** Si $u_n\\leq v_n$ pour tout $n$ et si $\\lim u_n=\\ell$, $\\lim v_n=m$, alors $\\ell\\leq m$.' },
+      { type: 'piege', text: 'Une **inégalité stricte** $u_n < v_n$ devient **large** à la limite : on obtient $\\ell\\leq m$, et pas $\\ell<m$ en général.' },
+      { type: 'propriete', text: '**Théorème des gendarmes (Th. 2.1.1).** Si $v_n\\leq u_n\\leq w_n$ à partir d\'un certain rang et $\\lim v_n=\\lim w_n=\\ell$, alors $\\lim u_n=\\ell$.' },
+      { type: 'idee_cle', text: '**Intuition.** $(u_n)$ est un fuyard encadré par deux gendarmes $(v_n)$ et $(w_n)$. S\'ils convergent tous deux vers le même point $\\ell$, le fuyard, coincé entre eux, n\'a d\'autre choix que d\'y aller aussi.' },
+      { type: 'vocabulaire', title: 'Suites majorées, minorées, bornées', items: [
+        '$M$ est un **majorant** de $(u_n)$ si $u_n\\leq M$ pour tout $n$.',
+        '$m$ est un **minorant** si $u_n\\geq m$ pour tout $n$.',
+        'La suite est **bornée** si elle est à la fois majorée et minorée.',
+      ]},
+      { type: 'propriete', text: '**Convergente $\\Rightarrow$ bornée (Prop. 2.1.3).** Toute suite convergente est bornée. La réciproque est fausse : $((-1)^n)$ est bornée mais diverge.' },
+      { type: 'propriete', text: '**Théorème de la limite monotone — convergence (Th. 2.1.2).** Toute suite **croissante et majorée** converge. Toute suite **décroissante et minorée** converge.' },
+      { type: 'piege', text: 'Le théorème garantit la **convergence** mais ne donne pas la valeur de la limite : « croissante et majorée par $M$ » ne signifie **pas** « converge vers $M$ ».' },
+
       { type: 'subsection', num: '2.2', title: 'Suites divergentes' },
-      { type: 'definition', badge: 'Déf.', title: 'Divergence', content: '$(u_n)$ diverge vers $+\\infty$ si pour tout $A>0$, il existe $N$ tel que pour tout $n\\geq N$, $u_n>A$.\nSi aucune limite (finie ou infinie) n\'existe, la suite **diverge sans avoir de limite**.' },
-      { type: 'exemple', title: 'Exemples canoniques', lines: [
-        '$u_n=\\sqrt{n}\\to+\\infty$ (prendre $N=\\lfloor A^2\\rfloor+1$).',
-        '$u_n=(-1)^n$ : bornée mais divergente (oscille entre $-1$ et $1$).',
+      { type: 'definition', badge: 'Déf. 2.1.6', title: 'Divergence', content: '$(u_n)$ diverge si elle ne converge vers aucun réel. Trois cas possibles :', formulas: [
+        '\\text{vers }+\\infty\\;:\\;\\forall A>0,\\,\\exists N,\\,\\forall n\\geq N,\\;u_n\\geq A',
+        '\\text{vers }-\\infty\\;:\\;\\forall A<0,\\,\\exists N,\\,\\forall n\\geq N,\\;u_n\\leq A',
+        '\\text{sans limite}\\;:\\;\\text{oscille (ex. }(-1)^n\\text{)}',
       ]},
+      { type: 'propriete', text: '**Limite monotone — divergence (Th. 2.1.3).** Si $(u_n)$ est croissante et **non majorée**, alors $\\lim u_n=+\\infty$. Si elle est décroissante et non minorée, $\\lim u_n=-\\infty$.' },
+      { type: 'propriete', text: '**Comparaison (Th. 2.1.4).** Si $u_n\\leq v_n$ pour tout $n$ et $\\lim u_n=+\\infty$, alors $\\lim v_n=+\\infty$. Si $u_n\\geq v_n$ et $\\lim u_n=-\\infty$, alors $\\lim v_n=-\\infty$.' },
+      { type: 'idee_cle', text: '**Gendarmes vs comparaison.** Pour une **limite finie** $\\ell$ : il faut deux gendarmes (un encadrement). Pour $+\\infty$ ou $-\\infty$ : un seul suffit — il pousse la suite par en dessous (vers $+\\infty$) ou par au-dessus (vers $-\\infty$).' },
+
       { type: 'subsection', num: '2.3', title: 'Opérations sur les limites' },
-      { type: 'propriete', text: 'Si $u_n\\to\\ell$ et $v_n\\to m$, alors $u_n+v_n\\to\\ell+m$, $u_n\\cdot v_n\\to\\ell\\cdot m$ et $u_n/v_n\\to\\ell/m$ si $m\\neq 0$.\n⚠ Formes indéterminées (FI) : $\\infty-\\infty$, $\\frac{\\infty}{\\infty}$, $0\\times\\infty$, $\\frac{0}{0}$.' },
-      { type: 'methode', title: 'Lever une FI — terme dominant', steps: [
-        'FI $\\frac{\\infty}{\\infty}$ : factoriser par le **terme de plus haut degré** au numérateur et au dénominateur.',
-        'FI $\\infty-\\infty$ : factoriser par le terme de plus haut degré ou utiliser la **quantité conjuguée**.',
-        'FI $0\\times\\infty$ : écrire $u_n\\cdot v_n=\\frac{u_n}{1/v_n}$ ou $\\frac{v_n}{1/u_n}$ pour se ramener à $\\frac{0}{0}$ ou $\\frac{\\infty}{\\infty}$.',
+      { type: 'propriete', text: '**Limites finies (Prop. 2.1.6).** Si $\\lim u_n=\\ell$ et $\\lim v_n=m$ (deux réels finis) : $\\lim(u_n+v_n)=\\ell+m$, $\\lim(u_n\\cdot v_n)=\\ell\\cdot m$, $\\lim(u_n/v_n)=\\ell/m$ si $m\\neq 0$.' },
+      { type: 'propriete', text: '**Limites infinies (Prop. 2.1.7).** $(+\\infty)+(+\\infty)=+\\infty$ ; $\\ell\\cdot(+\\infty)=+\\infty$ si $\\ell>0$, $-\\infty$ si $\\ell<0$ ; $(+\\infty)\\cdot(+\\infty)=+\\infty$ ; $1/(+\\infty)=0$.' },
+      { type: 'definition', badge: 'Déf. 2.1.7', title: 'Formes indéterminées (FI)', content: 'Une FI est une expression dont on ne peut pas déterminer la valeur directement par les règles opératoires. Les quatre formes à connaître :', formulas: [
+        '\\infty-\\infty \\qquad 0\\times\\infty \\qquad \\dfrac{\\infty}{\\infty} \\qquad \\dfrac{0}{0}',
       ]},
-      { type: 'formules', label: 'Croissances comparées (à retenir)', rows: [
-        { desc: 'logarithme ≪ puissance', tex: '\\lim_{n\\to+\\infty}\\frac{\\ln n}{n^\\alpha}=0\\quad(\\alpha>0)' },
-        { desc: 'puissance ≪ exponentielle', tex: '\\lim_{n\\to+\\infty}\\frac{n^\\alpha}{e^n}=0\\quad(\\alpha>0)' },
+      { type: 'para', text: 'Face à une FI, il faut **lever l\'indétermination** par une transformation adaptée avant de conclure.' },
+      { type: 'methode', title: 'Méthode du terme dominant', steps: [
+        'Dans une somme, la limite est imposée par le terme qui « l\'emporte » en croissance : c\'est le **terme dominant**.',
+        'On factorise tout par ce terme dominant — les autres termes tendent vers $0$.',
+        '**Ordre des croissances comparées** : $\\ln n\\ll n^\\alpha\\,(\\alpha>0)\\ll a^n\\,(a>1)\\ll n!\\ll n^n$.',
       ]},
-      { type: 'methode', title: 'Quantité conjuguée', steps: [
-        'Si l\'expression contient $\\sqrt{A}-\\sqrt{B}$, multiplier et diviser par $\\sqrt{A}+\\sqrt{B}$.',
-        'On obtient $\\frac{A-B}{\\sqrt{A}+\\sqrt{B}}$, qui lève la FI $\\infty-\\infty$.',
+      { type: 'exemple', title: 'Exemples — lever une FI', lines: [
+        '$\\dfrac{3n^2+n}{n^2-1}=\\dfrac{n^2(3+1/n)}{n^2(1-1/n^2)}\\to\\dfrac{3}{1}=3$.',
+        '$\\sqrt{n^2+n}-n=\\dfrac{n}{\\sqrt{n^2+n}+n}=\\dfrac{1}{\\sqrt{1+1/n}+1}\\to\\dfrac{1}{2}$.',
+        '$n^2\\cdot e^{-n}=\\dfrac{n^2}{e^n}\\to 0$ (croissances comparées : $n^\\alpha\\ll e^n$).',
       ]},
+      { type: 'propriete', text: '**Quantité conjuguée (Prop. 2.1.9).** Pour lever une FI $\\infty-\\infty$ avec des racines, on multiplie et divise par la quantité conjuguée : $(\\sqrt{a}-\\sqrt{b})(\\sqrt{a}+\\sqrt{b})=a-b$.' },
       { type: 'exemple', title: 'Exemple', lines: [
-        '$\\sqrt{n^2+n}-n=\\frac{(n^2+n)-n^2}{\\sqrt{n^2+n}+n}=\\frac{n}{n\\left(\\sqrt{1+1/n}+1\\right)}=\\frac{1}{\\sqrt{1+1/n}+1}\\to\\frac{1}{2}$.',
+        '$\\sqrt{n+1}-\\sqrt{n}=\\dfrac{(n+1)-n}{\\sqrt{n+1}+\\sqrt{n}}=\\dfrac{1}{\\sqrt{n+1}+\\sqrt{n}}\\to 0$.',
       ]},
+      { type: 'propriete', text: '**Taux d\'accroissement (Prop. 2.1.10).** Si $f$ est dérivable en $a$, alors $\\displaystyle\\lim_{h\\to 0}\\frac{f(a+h)-f(a)}{h}=f\'(a)$. En posant $h=1/n$ on reconnaît ce taux quand $n\\to+\\infty$. À retenir : $\\dfrac{e^x-1}{x}\\to 1$, $\\dfrac{\\ln(1+x)}{x}\\to 1$, $\\dfrac{\\sin x}{x}\\to 1$ en $0$.' },
+      { type: 'reflex', text: '**Réflexe FI — que faire ?**  Polynômes / rationnelles → factoriser par le monôme dominant.  Exponentielle ou $\\ln$ face à une puissance → croissances comparées.  Racines en $\\infty-\\infty$ → quantité conjuguée.  Quotient $0/0$ en un point → taux d\'accroissement.' },
+
       { type: 'subsection', num: '2.4', title: 'Suites récurrentes $u_{n+1}=f(u_n)$' },
-      { type: 'methode', title: 'Méthode en 4 étapes', steps: [
-        '**Stabilité :** montrer par récurrence que la suite reste dans un intervalle $I$ (ex. $0\\leq u_n\\leq M$).',
-        '**Monotonie :** étudier le signe de $u_{n+1}-u_n=f(u_n)-u_n$ sur $I$.',
-        '**Convergence :** déduire que la suite est monotone et bornée → elle converge.',
-        '**Limite :** la limite $\\ell$ est un **point fixe** : $\\ell=f(\\ell)$. Résoudre et choisir la valeur cohérente avec l\'intervalle $I$.',
+      { type: 'propriete', text: '**Point fixe.** Soit $f$ continue telle que $u_{n+1}=f(u_n)$. Si $(u_n)$ converge vers $\\ell$, alors $\\ell$ vérifie $f(\\ell)=\\ell$ : la limite est un **point fixe** de $f$.' },
+      { type: 'methode', title: 'Étudier une suite récurrente — 4 étapes', steps: [
+        '**Stabilité.** Montrer par récurrence que $u_n$ reste dans un intervalle $I$ (encadrement).',
+        '**Monotonie.** Étudier le signe de $u_{n+1}-u_n=f(u_n)-u_n$ (souvent par récurrence ou via $f\'$).',
+        '**Convergence.** Croissante majorée (ou décroissante minorée) $\\Rightarrow$ converge (théorème de la limite monotone).',
+        '**Valeur de la limite.** Résoudre $f(\\ell)=\\ell$ et choisir la solution compatible avec $I$.',
       ]},
-      { type: 'piege', text: 'On ne résout $\\ell=f(\\ell)$ qu\'**après** avoir prouvé la convergence. Sans cela, on ne sait pas si la limite existe.' },
+      { type: 'piege', text: 'L\'équation $f(\\ell)=\\ell$ ne se résout qu\'**après** avoir prouvé que la suite converge. Sans convergence établie, écrire « la limite vérifie $f(\\ell)=\\ell$ » n\'a aucune valeur.' },
       { type: 'lien_ex', text: '→ Exercices 8, 16, 17, 18, 19' },
     ],
   },
@@ -857,18 +890,18 @@ const SUITES_FICHE_DATA = [
     rows: [
       {
         label: 'Simple',
-        tex: 'P(n_0)\\text{ vraie} + [P(n)\\Rightarrow P(n+1)] \\Rightarrow P(n)\\text{ vraie }\\forall n\\geq n_0',
-        vars: '3 étapes : **Initialisation** · **Hérédité** · **Conclusion**',
+        tex: 'P(n_0)\\text{ vraie}\\;+\\;\\forall n,\\,[P(n)\\Rightarrow P(n+1)]\\;\\Rightarrow\\;P\\text{ vraie }\\forall n\\geq n_0',
+        vars: '3 étapes : **Init.** · **Hérédité** · **Conclusion**',
       },
       {
         label: 'Double',
-        tex: 'P(n_0)\\,\\&\\,P(n_0{+}1)\\text{ vraies} + [P(n)\\,\\&\\,P(n+1)\\Rightarrow P(n+2)]',
+        tex: 'P(n_0),P(n_0{+}1)\\text{ vraies}\\;+\\;[P(n)\\,\\&\\,P(n+1)\\Rightarrow P(n+2)]',
         vars: 'Utile quand $u_{n+2}=f(u_{n+1},u_n)$',
       },
       {
         label: 'Forte',
-        tex: 'P(n_0),\\ldots,P(n)\\text{ toutes vraies}\\Rightarrow P(n+1)',
-        vars: 'L\'hypothèse porte sur tous les rangs jusqu\'à $n$',
+        tex: 'P(n_0),\\ldots,P(n)\\text{ tous vrais}\\;\\Rightarrow\\;P(n+1)',
+        vars: 'L\'hypothèse porte sur **tous** les rangs jusqu\'à $n$',
       },
     ],
   },
@@ -877,88 +910,118 @@ const SUITES_FICHE_DATA = [
     rows: [
       {
         label: 'Définition',
-        tex: 'u_n\\to\\ell\\iff\\forall\\varepsilon>0,\\,\\exists N,\\,\\forall n\\geq N,\\;|u_n-\\ell|\\leq\\varepsilon',
-        vars: 'Intuition : tous les $u_n$ finissent dans le tube $[\\ell-\\varepsilon,\\ell+\\varepsilon]$',
+        tex: 'u_n\\to\\ell\\iff\\forall\\varepsilon>0,\\,\\exists N,\\,\\forall n\\geq N,\\;|u_n-\\ell|<\\varepsilon',
+        vars: 'Limite **unique**. Toute suite convergente est **bornée**.',
       },
       {
+        label: 'Inégalité',
+        tex: 'u_n\\leq v_n\\text{ et les deux convergent}\\implies\\ell\\leq m\\quad(\\text{stricte}\\to\\text{large})',
+        vars: 'Si $u_n<v_n$ on obtient quand même $\\ell\\leq m$ (pas $\\ell<m$)',
+      },
+    ],
+  },
+  {
+    title: '3  Gendarmes & comparaison',
+    rows: [
+      {
         label: 'Gendarmes',
-        tex: 'a_n\\leq u_n\\leq b_n\\text{ et }a_n,b_n\\to\\ell\\implies u_n\\to\\ell',
-        vars: 'Il faut **deux** suites encadrantes de même limite',
+        tex: 'u_n\\leq v_n\\leq w_n\\text{ et }\\lim u_n=\\lim w_n=\\ell\\implies\\lim v_n=\\ell',
+        vars: 'Deux suites encadrantes de **même** limite finie',
       },
       {
         label: 'Comparaison',
-        tex: 'u_n\\geq v_n\\text{ et }v_n\\to+\\infty\\implies u_n\\to+\\infty',
+        tex: 'u_n\\leq v_n\\text{ et }\\lim u_n=+\\infty\\implies\\lim v_n=+\\infty',
         vars: 'Une seule **minorante** divergente suffit pour $+\\infty$',
       },
+    ],
+  },
+  {
+    title: '4  Limite monotone',
+    rows: [
       {
-        label: 'Limite monotone',
-        tex: '(u_n)\\text{ croissante et majorée }\\implies (u_n)\\text{ converge}',
-        vars: 'Idem : décroissante et minorée → converge',
+        label: 'Convergence',
+        tex: '(u_n)\\text{ croissante et majorée}\\implies (u_n)\\text{ converge}',
+        vars: 'Idem décroissante et minorée. **Ne donne pas** la valeur de la limite.',
+      },
+      {
+        label: 'Divergence',
+        tex: '(u_n)\\text{ croissante non majorée}\\implies u_n\\to+\\infty',
+        vars: 'Idem décroissante non minorée $\\to-\\infty$',
       },
     ],
   },
   {
-    title: '3  Formes indéterminées',
+    title: '5  Opérations sur les limites',
     rows: [
       {
-        label: 'FI',
-        tex: '\\textit{Exemple}\\longrightarrow\\textit{Résultat}',
-        vars: '**Méthode**',
+        label: 'Finies',
+        tex: '\\lim(u_n\\pm v_n)=\\ell\\pm m\\;,\\quad\\lim(u_n v_n)=\\ell m\\;,\\quad\\lim\\tfrac{u_n}{v_n}=\\tfrac{\\ell}{m}\\;(m\\neq 0)',
+        vars: 'FI : $\\infty-\\infty$, $0\\times\\infty$, $\\infty/\\infty$, $0/0$ → lever l\'indétermination',
       },
       {
-        label: '∞ − ∞\npolynômes',
-        tex: 'n^2-2n+5 = n^2\\!\\left(1-\\tfrac{2}{n}+\\tfrac{5}{n^2}\\right) \\longrightarrow +\\infty',
-        vars: '**Factoriser par le terme de plus haut degré** ($n^2$ ici) — les autres termes $\\to 0$.',
-      },
-      {
-        label: '∞ − ∞\nracines',
-        tex: '\\sqrt{n^2+n}-n = \\dfrac{n}{\\sqrt{n^2+n}+n} \\longrightarrow \\dfrac{1}{2}',
-        vars: '**Quantité conjuguée :** multiplier par $\\dfrac{\\sqrt{n^2+n}+n}{\\sqrt{n^2+n}+n}$.',
-      },
-      {
-        label: '∞ / ∞',
-        tex: '\\dfrac{3n+1}{n^2+2n-8} = \\dfrac{1}{n}\\cdot\\dfrac{3+\\frac{1}{n}}{1+\\frac{2}{n}-\\frac{8}{n^2}} \\longrightarrow 0',
-        vars: '**Factoriser** num. par $n$ et dénom. par $n^2$ (termes dominants), puis simplifier.',
-      },
-      {
-        label: '0 × ∞',
-        tex: 'n^2 \\cdot e^{-n} = \\dfrac{n^2}{e^n} \\longrightarrow 0',
-        vars: '**Réécrire en fraction** $\\frac{\\infty}{\\infty}$, puis **croissances comparées** : $n^\\alpha \\ll e^n$.',
-      },
-      {
-        label: '0 / 0',
-        tex: '\\dfrac{n^2-1}{n-1} = \\dfrac{(n-1)(n+1)}{n-1} = n+1 \\longrightarrow +\\infty',
-        vars: '**Factoriser** pour **simplifier** le facteur qui s\'annule au numérateur et au dénominateur.',
+        label: 'Infinies',
+        tex: '(+\\infty)+(+\\infty)=+\\infty\\;,\\quad\\ell\\cdot(+\\infty)=\\text{signe}(\\ell)\\times\\infty\\;,\\quad\\tfrac{1}{+\\infty}=0',
+        vars: 'Le signe de $\\ell$ détermine le sens de l\'infini produit',
       },
     ],
   },
   {
-    title: '4  Opérations & croissances',
+    title: '6  Croissances comparées',
     rows: [
       {
-        label: 'Terme dom.',
-        tex: '\\frac{a n^p + \\cdots}{b n^q + \\cdots}\\sim\\frac{a}{b}\\,n^{p-q}',
-        vars: 'Factoriser par le terme de plus haut degré au numérateur et au dénominateur',
+        label: 'Ordre',
+        tex: '\\ln n\\ll n^\\alpha\\ll a^n\\ll n!\\ll n^n\\quad(\\alpha>0,\\;a>1)',
+        vars: 'Le **terme dominant** impose la limite — factoriser par lui',
       },
       {
-        label: 'Croiss. comp.',
-        tex: '\\frac{\\ln n}{n^\\alpha}\\to 0\\qquad\\frac{n^\\alpha}{e^n}\\to 0\\quad(\\alpha>0)',
-        vars: '$\\ln n\\ll n^\\alpha\\ll e^n$ quand $n\\to+\\infty$',
+        label: 'Exemples',
+        tex: '\\frac{\\ln n}{n^\\alpha}\\to 0\\;,\\quad\\frac{n^\\alpha}{a^n}\\to 0\\;,\\quad n^2 e^{-n}\\to 0',
+        vars: '',
       },
     ],
   },
   {
-    title: '4  Suite récurrente $u_{n+1}=f(u_n)$',
+    title: '7  Quantité conjuguée',
     rows: [
       {
-        label: 'Point fixe',
-        tex: 'u_n\\to\\ell\\implies\\ell=f(\\ell)',
-        vars: 'Résoudre $\\ell=f(\\ell)$ **après** avoir prouvé la convergence',
+        label: 'Formule',
+        tex: '\\sqrt{a}-\\sqrt{b}=\\dfrac{a-b}{\\sqrt{a}+\\sqrt{b}}',
+        vars: 'Lève la FI $\\infty-\\infty$ avec des racines — multiplier par $\\frac{\\sqrt{a}+\\sqrt{b}}{\\sqrt{a}+\\sqrt{b}}$',
       },
+      {
+        label: 'Exemple',
+        tex: '\\sqrt{n+1}-\\sqrt{n}=\\dfrac{1}{\\sqrt{n+1}+\\sqrt{n}}\\to 0',
+        vars: '',
+      },
+    ],
+  },
+  {
+    title: '8  Taux d\'accroissement',
+    rows: [
+      {
+        label: 'Principe',
+        tex: '\\lim_{h\\to 0}\\frac{f(a+h)-f(a)}{h}=f\'(a)\\;\\text{ avec }h=\\tfrac{1}{n}\\to 0',
+        vars: 'Reconnaître la forme $\\frac{f(a+h)-f(a)}{h}$ pour calculer une limite',
+      },
+      {
+        label: 'À retenir',
+        tex: '\\frac{e^x-1}{x}\\to 1\\quad\\frac{\\ln(1+x)}{x}\\to 1\\quad\\frac{\\sin x}{x}\\to 1\\quad(x\\to 0)',
+        vars: '',
+      },
+    ],
+  },
+  {
+    title: '9  Suite $u_{n+1}=f(u_n)$',
+    rows: [
       {
         label: 'Méthode',
         tex: '\\text{Stabilité}\\to\\text{Monotonie}\\to\\text{Convergence}\\to\\ell=f(\\ell)',
         vars: '4 étapes dans cet ordre',
+      },
+      {
+        label: 'Point fixe',
+        tex: 'u_n\\to\\ell\\implies\\ell=f(\\ell)',
+        vars: '⚠ Résoudre $\\ell=f(\\ell)$ **seulement après** avoir prouvé la convergence',
       },
     ],
   },
