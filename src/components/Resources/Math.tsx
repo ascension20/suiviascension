@@ -16,26 +16,44 @@ export function BlockMath({ tex, className = '' }: { tex: string; className?: st
   );
 }
 
-// ── Texte mixte : parse $...$ (LaTeX) et **...** (gras) ──────────────────────
-export function MixedText({ text, className = '' }: { text: string; className?: string }) {
-  // Split on $...$ OR **...** tokens
-  const parts = text.split(/(\$[^$]+\$|\*\*[^*]+\*\*)/g);
-
-  const rendered: React.ReactNode[] = [];
-  let key = 0;
-
-  for (const part of parts) {
-    if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
-      rendered.push(<InlineMath key={key++} tex={part.slice(1, -1)} />);
-    } else if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
-      rendered.push(<strong key={key++} className="font-semibold text-white/95">{part.slice(2, -2)}</strong>);
+// ── Helpers internes ─────────────────────────────────────────────────────────
+// Parse $...$ à l'intérieur d'un segment (sans récursion sur **)
+function parseInlineMath(text: string, keyRef: { k: number }): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  const parts = text.split(/(\$[^$]+\$)/g);
+  for (const p of parts) {
+    if (p.startsWith('$') && p.endsWith('$') && p.length > 2) {
+      nodes.push(<InlineMath key={keyRef.k++} tex={p.slice(1, -1)} />);
     } else {
-      // Newlines → <br>
-      const lines = part.split('\n');
+      const lines = p.split('\n');
       lines.forEach((line, i) => {
-        rendered.push(<React.Fragment key={key++}>{line}</React.Fragment>);
-        if (i < lines.length - 1) rendered.push(<br key={key++} />);
+        nodes.push(<React.Fragment key={keyRef.k++}>{line}</React.Fragment>);
+        if (i < lines.length - 1) nodes.push(<br key={keyRef.k++} />);
       });
+    }
+  }
+  return nodes;
+}
+
+// ── Texte mixte : parse $...$ (LaTeX) et **...** (gras) ──────────────────────
+// Ordre : on split d'abord sur ** puis on re-parse le $...$ à l'intérieur du gras.
+export function MixedText({ text, className = '' }: { text: string; className?: string }) {
+  // On split sur **...** en premier pour isoler les blocs gras,
+  // puis chaque segment (gras ou non) est re-parsé pour le LaTeX inline.
+  const boldParts = text.split(/(\*\*[^*]+\*\*)/g);
+  const keyRef = { k: 0 };
+  const rendered: React.ReactNode[] = [];
+
+  for (const part of boldParts) {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      // Contenu gras : on y parse aussi le $...$ éventuel
+      const inner = parseInlineMath(part.slice(2, -2), keyRef);
+      rendered.push(
+        <strong key={keyRef.k++} className="font-semibold text-white/95">{inner}</strong>
+      );
+    } else {
+      // Texte normal : parse $...$
+      rendered.push(...parseInlineMath(part, keyRef));
     }
   }
 
