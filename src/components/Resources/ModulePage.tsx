@@ -931,12 +931,12 @@ const SUITES_FICHE_DATA = [
       {
         label: 'Définition',
         tex: 'u_n\\to\\ell\\iff\\forall\\varepsilon>0,\\,\\exists N,\\,\\forall n\\geq N,\\;|u_n-\\ell|<\\varepsilon',
-        vars: 'Limite **unique**. Toute suite convergente est **bornée**.',
+        vars: '$\\ell\\in\\mathbb{R}$ : valeur limite (réelle finie) · $\\varepsilon$ : tolérance arbitrairement petite · $N$ : rang à partir duquel $u_n$ reste à distance $<\\varepsilon$ de $\\ell$ · Limite **unique**. Toute suite convergente est **bornée**.',
       },
       {
         label: 'Inégalité',
         tex: 'u_n\\leq v_n\\text{ et les deux convergent}\\implies\\ell\\leq m\\quad(\\text{stricte}\\to\\text{large})',
-        vars: 'Si $u_n<v_n$ on obtient quand même $\\ell\\leq m$ (pas $\\ell<m$)',
+        vars: '$\\ell=\\lim u_n$, $m=\\lim v_n$ · Si $u_n<v_n$ on obtient quand même $\\ell\\leq m$ (pas $\\ell<m$) — l\'inégalité **stricte ne passe pas** à la limite',
       },
     ],
   },
@@ -946,12 +946,12 @@ const SUITES_FICHE_DATA = [
       {
         label: 'Gendarmes',
         tex: 'u_n\\leq v_n\\leq w_n\\text{ et }\\lim u_n=\\lim w_n=\\ell\\implies\\lim v_n=\\ell',
-        vars: 'Deux suites encadrantes de **même** limite finie',
+        vars: '$\\ell\\in\\mathbb{R}$ : limite **commune** des deux suites encadrantes · $(u_n)$ et $(w_n)$ : suites « gendarmes » encadrant $(v_n)$',
       },
       {
         label: 'Comparaison',
         tex: 'u_n\\leq v_n\\text{ et }\\lim u_n=+\\infty\\implies\\lim v_n=+\\infty',
-        vars: 'Une seule **minorante** divergente suffit pour $+\\infty$',
+        vars: '$(u_n)$ : **minorante** divergente vers $+\\infty$ · Une seule minorante suffit — pas besoin d\'encadrement',
       },
     ],
   },
@@ -961,12 +961,12 @@ const SUITES_FICHE_DATA = [
       {
         label: 'Convergence',
         tex: '(u_n)\\text{ croissante et majorée}\\implies (u_n)\\text{ converge}',
-        vars: 'Idem décroissante et minorée. **Ne donne pas** la valeur de la limite.',
+        vars: 'Majorée : $\\exists M,\\,\\forall n,\\,u_n\\leq M$ · Idem décroissante et minorée · **Ne donne pas** la valeur de $\\ell$ — il faut la calculer séparément',
       },
       {
         label: 'Divergence',
         tex: '(u_n)\\text{ croissante non majorée}\\implies u_n\\to+\\infty',
-        vars: 'Idem décroissante non minorée $\\to-\\infty$',
+        vars: 'Non majorée : $\\forall M,\\,\\exists n,\\,u_n>M$ · Idem décroissante non minorée $\\to-\\infty$',
       },
     ],
   },
@@ -976,12 +976,12 @@ const SUITES_FICHE_DATA = [
       {
         label: 'Finies',
         tex: '\\lim(u_n\\pm v_n)=\\ell\\pm m\\;,\\quad\\lim(u_n v_n)=\\ell m\\;,\\quad\\lim\\tfrac{u_n}{v_n}=\\tfrac{\\ell}{m}\\;(m\\neq 0)',
-        vars: 'FI : $\\infty-\\infty$, $0\\times\\infty$, $\\infty/\\infty$, $0/0$ → lever l\'indétermination',
+        vars: '$\\ell=\\lim u_n\\in\\mathbb{R}$, $m=\\lim v_n\\in\\mathbb{R}$ · **FI** (formes indéterminées) : $\\infty-\\infty$, $0\\times\\infty$, $\\infty/\\infty$, $0/0$ → lever avant d\'appliquer',
       },
       {
         label: 'Infinies',
         tex: '(+\\infty)+(+\\infty)=+\\infty\\;,\\quad\\ell\\cdot(+\\infty)=\\text{signe}(\\ell)\\times\\infty\\;,\\quad\\tfrac{1}{+\\infty}=0',
-        vars: 'Le signe de $\\ell$ détermine le sens de l\'infini produit',
+        vars: '$\\ell\\in\\mathbb{R}^*$ : **réel non nul** · son signe détermine le sens de l\'infini produit · $\\ell=0$ est une FI ($0\\times\\infty$)',
       },
     ],
   },
@@ -991,12 +991,12 @@ const SUITES_FICHE_DATA = [
       {
         label: 'Ordre',
         tex: '\\ln n\\ll n^\\alpha\\ll a^n\\ll n!\\ll n^n\\quad(\\alpha>0,\\;a>1)',
-        vars: 'Le **terme dominant** impose la limite — factoriser par lui',
+        vars: '$\\alpha>0$ : exposant (puissance) · $a>1$ : base de l\'exponentielle · $\\ll$ : «\\, croît beaucoup plus lentement que \\,» · Le **terme dominant** impose la limite — factoriser par lui',
       },
       {
         label: 'Exemples',
         tex: '\\frac{\\ln n}{n^\\alpha}\\to 0\\;,\\quad\\frac{n^\\alpha}{a^n}\\to 0\\;,\\quad n^2 e^{-n}\\to 0',
-        vars: '',
+        vars: 'Les puissances l\'emportent sur $\\ln$, l\'exponentielle l\'emporte sur les puissances',
       },
     ],
   },
@@ -1006,12 +1006,12 @@ const SUITES_FICHE_DATA = [
       {
         label: 'Formule',
         tex: '\\sqrt{a}-\\sqrt{b}=\\dfrac{a-b}{\\sqrt{a}+\\sqrt{b}}',
-        vars: 'Lève la FI $\\infty-\\infty$ avec des racines — multiplier par $\\frac{\\sqrt{a}+\\sqrt{b}}{\\sqrt{a}+\\sqrt{b}}$',
+        vars: '$a,b\\geq 0$ : expressions sous les radicaux · $\\sqrt{a}+\\sqrt{b}$ : **quantité conjuguée** (toujours $>0$) · Lève la FI $\\infty-\\infty$ — multiplier et diviser par le conjugué',
       },
       {
         label: 'Exemple',
         tex: '\\sqrt{n+1}-\\sqrt{n}=\\dfrac{1}{\\sqrt{n+1}+\\sqrt{n}}\\to 0',
-        vars: '',
+        vars: 'Ici $a=n+1$, $b=n$ · le dénominateur $\\to+\\infty$ donc le quotient $\\to 0$',
       },
     ],
   },
@@ -1021,12 +1021,12 @@ const SUITES_FICHE_DATA = [
       {
         label: 'Principe',
         tex: '\\lim_{h\\to 0}\\frac{f(a+h)-f(a)}{h}=f\'(a)\\;\\text{ avec }h=\\tfrac{1}{n}\\to 0',
-        vars: 'Reconnaître la forme $\\frac{f(a+h)-f(a)}{h}$ pour calculer une limite',
+        vars: '$a\\in\\mathbb{R}$ : point fixe · $h=1/n$ : pas qui $\\to 0$ quand $n\\to+\\infty$ · $f\'(a)$ : dérivée de $f$ en $a$ · Reconnaître la forme $\\frac{f(a+h)-f(a)}{h}$ pour calculer la limite',
       },
       {
         label: 'À retenir',
         tex: '\\frac{e^x-1}{x}\\to 1\\quad\\frac{\\ln(1+x)}{x}\\to 1\\quad\\frac{\\sin x}{x}\\to 1\\quad(x\\to 0)',
-        vars: '',
+        vars: 'Ces trois limites sont les taux d\'accroissement de $e^x$, $\\ln$, $\\sin$ en $0$ — elles valent $f\'(0)=1$',
       },
     ],
   },
@@ -1036,12 +1036,12 @@ const SUITES_FICHE_DATA = [
       {
         label: 'Méthode',
         tex: '\\text{Stabilité}\\to\\text{Monotonie}\\to\\text{Convergence}\\to\\ell=f(\\ell)',
-        vars: '4 étapes dans cet ordre',
+        vars: '$f$ : fonction définissant la relation de récurrence · $\\ell$ : point fixe, valeur limite · **4 étapes dans cet ordre** — ne pas résoudre $\\ell=f(\\ell)$ avant d\'avoir prouvé la convergence',
       },
       {
         label: 'Point fixe',
         tex: 'u_n\\to\\ell\\implies\\ell=f(\\ell)',
-        vars: '⚠ Résoudre $\\ell=f(\\ell)$ **seulement après** avoir prouvé la convergence',
+        vars: '$\\ell$ : **point fixe** de $f$, solution de $f(\\ell)=\\ell$ · ⚠ Résoudre $\\ell=f(\\ell)$ **seulement après** avoir prouvé la convergence',
       },
     ],
   },
