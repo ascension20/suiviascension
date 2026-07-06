@@ -792,6 +792,137 @@ const FONCTIONS_OBJECTIFS = [
   'Appliquer le **TVI** pour prouver l\'existence et l\'unicité d\'une solution.',
 ];
 
+// ── Figures SVG du cours Fonctions ───────────────────────────────────────────
+function FigAsymptotes() {
+  return (
+    <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-sm mx-auto">
+      <rect width="320" height="200" fill="#1e1b4b" rx="8"/>
+      {/* Axes */}
+      <line x1="30" y1="170" x2="300" y2="170" stroke="#6b7280" strokeWidth="1.2"/>
+      <line x1="30" y1="10" x2="30" y2="170" stroke="#6b7280" strokeWidth="1.2"/>
+      {/* Arrow heads */}
+      <polygon points="300,166 308,170 300,174" fill="#6b7280"/>
+      <polygon points="26,10 30,2 34,10" fill="#6b7280"/>
+      {/* Asymptote horizontale y=2 */}
+      <line x1="30" y1="70" x2="300" y2="70" stroke="#f59e0b" strokeWidth="1.2" strokeDasharray="6,4"/>
+      <text x="304" y="74" fill="#f59e0b" fontSize="11" fontFamily="serif" fontStyle="italic">y=2</text>
+      {/* Asymptote verticale x=1 */}
+      <line x1="160" y1="10" x2="160" y2="170" stroke="#f59e0b" strokeWidth="1.2" strokeDasharray="6,4"/>
+      <text x="163" y="183" fill="#f59e0b" fontSize="11" fontFamily="serif" fontStyle="italic">x=1</text>
+      {/* Courbe branche gauche : vient du haut-gauche, approche x=1 par la gauche */}
+      <path d="M 40,20 C 60,30 90,50 120,65 C 140,74 150,90 154,120 C 156,140 157,158 158,168"
+        fill="none" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+      {/* Courbe branche droite : vient du bas (juste après x=1), remonte vers y=2 */}
+      <path d="M 162,168 C 163,158 165,140 170,120 C 180,90 200,78 230,74 C 255,71 280,71 298,70"
+        fill="none" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+      {/* Labels axes */}
+      <text x="294" y="182" fill="#9ca3af" fontSize="10" fontFamily="serif" fontStyle="italic">x</text>
+      <text x="18" y="10" fill="#9ca3af" fontSize="10" fontFamily="serif" fontStyle="italic">y</text>
+      {/* Label courbe */}
+      <text x="52" y="38" fill="#818cf8" fontSize="11" fontFamily="serif" fontStyle="italic">𝒞f</text>
+    </svg>
+  );
+}
+
+function FigTangente() {
+  return (
+    <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-sm mx-auto">
+      <rect width="320" height="200" fill="#1e1b4b" rx="8"/>
+      {/* Axes */}
+      <line x1="30" y1="180" x2="310" y2="180" stroke="#6b7280" strokeWidth="1.2"/>
+      <line x1="30" y1="10" x2="30" y2="180" stroke="#6b7280" strokeWidth="1.2"/>
+      <polygon points="310,176 318,180 310,184" fill="#6b7280"/>
+      <polygon points="26,10 30,2 34,10" fill="#6b7280"/>
+      {/* Courbe type √x concave vers le haut */}
+      <path d="M 40,170 C 70,140 110,100 160,75 C 200,56 250,45 295,38"
+        fill="none" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+      {/* Point A */}
+      <circle cx="160" cy="75" r="4" fill="#f59e0b"/>
+      {/* Tangente dorée passant par A */}
+      <line x1="60" y1="128" x2="265" y2="28" stroke="#f59e0b" strokeWidth="1.8"/>
+      {/* Pointillé vertical de A vers l'axe */}
+      <line x1="160" y1="75" x2="160" y2="180" stroke="#9ca3af" strokeWidth="1" strokeDasharray="5,4"/>
+      {/* Labels */}
+      <text x="153" y="194" fill="#d1d5db" fontSize="11" fontFamily="serif" fontStyle="italic">a</text>
+      <text x="148" y="68" fill="#d1d5db" fontSize="11" fontFamily="serif">A</text>
+      <text x="200" y="48" fill="#f59e0b" fontSize="11" fontFamily="serif">pente f ′(a)</text>
+      <text x="282" y="38" fill="#818cf8" fontSize="11" fontFamily="serif" fontStyle="italic">𝒞f</text>
+      <text x="298" y="188" fill="#9ca3af" fontSize="10" fontFamily="serif" fontStyle="italic">x</text>
+      <text x="18" y="10" fill="#9ca3af" fontSize="10" fontFamily="serif" fontStyle="italic">y</text>
+    </svg>
+  );
+}
+
+function FigConvexite() {
+  return (
+    <svg viewBox="0 0 320 190" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-sm mx-auto">
+      <rect width="320" height="190" fill="#1e1b4b" rx="8"/>
+      {/* Séparateur */}
+      <line x1="160" y1="10" x2="160" y2="180" stroke="#374151" strokeWidth="1" strokeDasharray="4,4"/>
+      {/* ── Panneau gauche : convexe (U-shape) ── */}
+      <text x="55" y="22" fill="#9ca3af" fontSize="11" fontFamily="sans-serif" textAnchor="middle">convexe</text>
+      {/* Axes gauche */}
+      <line x1="15" y1="165" x2="145" y2="165" stroke="#6b7280" strokeWidth="1"/>
+      <line x1="15" y1="20" x2="15" y2="165" stroke="#6b7280" strokeWidth="1"/>
+      {/* Courbe U */}
+      <path d="M 25,130 C 45,160 80,165 110,145 C 125,135 135,115 140,95"
+        fill="none" stroke="#818cf8" strokeWidth="2.2"/>
+      {/* Corde (au-dessus de la courbe) */}
+      <line x1="25" y1="130" x2="140" y2="95" stroke="#f59e0b" strokeWidth="1.6" strokeDasharray="5,3"/>
+      {/* Label corde */}
+      <text x="55" y="108" fill="#f59e0b" fontSize="9.5" fontFamily="sans-serif">corde au-dessus</text>
+      {/* ── Panneau droit : concave (hill) ── */}
+      <text x="240" y="22" fill="#9ca3af" fontSize="11" fontFamily="sans-serif" textAnchor="middle">concave</text>
+      {/* Axes droite */}
+      <line x1="170" y1="165" x2="305" y2="165" stroke="#6b7280" strokeWidth="1"/>
+      <line x1="170" y1="20" x2="170" y2="165" stroke="#6b7280" strokeWidth="1"/>
+      {/* Courbe hill */}
+      <path d="M 180,140 C 195,100 220,55 250,45 C 275,38 290,70 300,120"
+        fill="none" stroke="#818cf8" strokeWidth="2.2"/>
+      {/* Corde (en-dessous) */}
+      <line x1="180" y1="140" x2="300" y2="120" stroke="#f59e0b" strokeWidth="1.6" strokeDasharray="5,3"/>
+      {/* Label corde */}
+      <text x="205" y="140" fill="#f59e0b" fontSize="9.5" fontFamily="sans-serif">corde en dessous</text>
+    </svg>
+  );
+}
+
+function FigTVI() {
+  return (
+    <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-sm mx-auto">
+      <rect width="320" height="200" fill="#1e1b4b" rx="8"/>
+      {/* Axes */}
+      <line x1="40" y1="175" x2="305" y2="175" stroke="#6b7280" strokeWidth="1.2"/>
+      <line x1="40" y1="10" x2="40" y2="175" stroke="#6b7280" strokeWidth="1.2"/>
+      <polygon points="305,171 313,175 305,179" fill="#6b7280"/>
+      <polygon points="36,10 40,2 44,10" fill="#6b7280"/>
+      {/* Courbe sigmoïde croissante */}
+      <path d="M 55,158 C 70,150 85,140 105,120 C 125,98 140,80 165,65 C 188,51 210,42 240,35 C 265,30 280,28 295,27"
+        fill="none" stroke="#818cf8" strokeWidth="2.2" strokeLinecap="round"/>
+      {/* Ligne horizontale k */}
+      <line x1="40" y1="90" x2="295" y2="90" stroke="#f59e0b" strokeWidth="1.2" strokeDasharray="6,4"/>
+      {/* Intersection avec courbe à c ≈ x=175 */}
+      <circle cx="175" cy="90" r="4" fill="#10b981"/>
+      {/* Pointillés verticaux de a, c, b */}
+      <line x1="55" y1="158" x2="55" y2="175" stroke="#9ca3af" strokeWidth="1" strokeDasharray="4,3"/>
+      <line x1="175" y1="90" x2="175" y2="175" stroke="#9ca3af" strokeWidth="1" strokeDasharray="4,3"/>
+      <line x1="295" y1="27" x2="295" y2="175" stroke="#9ca3af" strokeWidth="1" strokeDasharray="4,3"/>
+      {/* Pointillé horizontal de k vers axe y */}
+      <line x1="40" y1="90" x2="175" y2="90" stroke="#9ca3af" strokeWidth="1" strokeDasharray="4,3"/>
+      {/* Labels */}
+      <text x="34" y="94" fill="#f59e0b" fontSize="11" fontFamily="serif" fontStyle="italic" textAnchor="end">k</text>
+      <text x="50" y="189" fill="#d1d5db" fontSize="11" fontFamily="serif" fontStyle="italic">a</text>
+      <text x="170" y="189" fill="#10b981" fontSize="11" fontFamily="serif" fontStyle="italic">c</text>
+      <text x="290" y="189" fill="#d1d5db" fontSize="11" fontFamily="serif" fontStyle="italic">b</text>
+      <text x="286" y="22" fill="#818cf8" fontSize="11" fontFamily="serif" fontStyle="italic">𝒞f</text>
+      <text x="298" y="183" fill="#9ca3af" fontSize="10" fontFamily="serif" fontStyle="italic">x</text>
+      <text x="28" y="10" fill="#9ca3af" fontSize="10" fontFamily="serif" fontStyle="italic">y</text>
+      {/* f(c)=k label */}
+      <text x="178" y="85" fill="#10b981" fontSize="10" fontFamily="serif">f(c)=k</text>
+    </svg>
+  );
+}
+
 const FONCTIONS_COURS: Section[] = [
   {
     id: 'limites',
@@ -812,6 +943,7 @@ const FONCTIONS_COURS: Section[] = [
         type: 'propriete',
         text: 'Si $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\ell$ (réel fini), la droite $y=\\ell$ est une **asymptote horizontale** à la courbe $\\mathcal{C}_f$. Si $\\displaystyle\\lim_{x\\to a}f(x)=\\pm\\infty$, la droite $x=a$ est une **asymptote verticale**.',
       },
+      { type: 'figure', caption: 'Fig. 1.1 — Asymptote horizontale $y=2$ (en $+\\infty$) et asymptote verticale $x=1$ pour $f(x)=\\dfrac{2x+1}{x-1}$.', svg: FigAsymptotes },
       { type: 'subsection', num: '1.2', title: 'Théorème des gendarmes' },
       {
         type: 'propriete',
@@ -903,6 +1035,7 @@ const FONCTIONS_COURS: Section[] = [
         content: 'Le **nombre dérivé** de $f$ en $a$ est la limite du taux d\'accroissement : $f\'(a)=\\displaystyle\\lim_{h\\to 0}\\dfrac{f(a+h)-f(a)}{h}$. C\'est la pente de la **tangente** à $\\mathcal{C}_f$ au point d\'abscisse $a$, d\'équation :',
         formulas: ['y=f\'(a)(x-a)+f(a)'],
       },
+      { type: 'figure', caption: 'Fig. 3.1 — La tangente en $A(a,f(a))$ a pour pente $f\'(a)$.', svg: FigTangente },
       { type: 'subsection', num: '3.2', title: 'Règles de dérivation' },
       {
         type: 'formules',
@@ -959,6 +1092,7 @@ const FONCTIONS_COURS: Section[] = [
         type: 'idee_cle',
         text: 'Retenir l\'image : une **courbe convexe** ressemble à un bol ($\\smile$) — elle est creuse, et si tu poses une règle sur deux points, la règle passe au-dessus de la courbe. Une **courbe concave** est comme une colline ($\\frown$) — bombée vers le haut.',
       },
+      { type: 'figure', caption: 'Fig. 4.1 — À gauche : courbe **convexe** (corde au-dessus). À droite : courbe **concave** (corde en dessous).', svg: FigConvexite },
       { type: 'subsection', num: '4.1', title: 'Point d\'inflexion' },
       {
         type: 'definition',
@@ -1019,6 +1153,7 @@ const FONCTIONS_COURS: Section[] = [
         type: 'idee_cle',
         text: 'Le TVI dit : « si tu pars de $f(a)$ et tu arrives à $f(b)$ sans lever le crayon, tu passes **obligatoirement** par toute valeur intermédiaire. » Il garantit l\'**existence** d\'une solution, mais pas son **unicité**.',
       },
+      { type: 'figure', caption: 'Fig. 5.1 — Toute valeur $k$ comprise entre $f(a)$ et $f(b)$ est atteinte : il existe $c\\in[a,b]$ tel que $f(c)=k$.', svg: FigTVI },
       {
         type: 'definition',
         badge: 'COROLLAIRE — Unicité',
