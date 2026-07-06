@@ -515,7 +515,7 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
         <div className="flex items-center gap-2.5 mt-5 mb-1 pb-2 border-b border-white/10">
           <span className={`${pal.label} font-black text-base leading-none`}>▸</span>
           <h4 className="text-[15px] font-bold text-white tracking-tight">
-            <span className={`${pal.label} mr-1.5 font-black`}>{b.num}</span>{b.title}
+            <span className={`${pal.label} mr-1.5 font-black`}>{b.num}</span><MixedText text={b.title} />
           </h4>
         </div>
       );
