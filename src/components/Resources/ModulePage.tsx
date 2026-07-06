@@ -8,6 +8,7 @@ import { PhysicsModule, ModuleLevel, TIER_META, DIFF_LABEL } from '@/lib/modules
 import { NEWTON_QCM, NEWTON_EXERCISES, NEWTON_CORRECTIONS } from '@/lib/newton-content';
 import { SUITES_QCM, SUITES_EXERCISES, SUITES_CORRECTIONS } from '@/lib/suites-content';
 import { FONCTIONS_QCM, FONCTIONS_EXERCISES, FONCTIONS_CORRECTIONS } from '@/lib/fonctions-content';
+import { LOGARITHME_QCM, LOGARITHME_EXERCISES, LOGARITHME_CORRECTIONS } from '@/lib/logarithme-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -40,14 +41,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
   if (activeLevel) {
     const isMaths = module.subject === 'Maths';
     const isFonctions = module.id === 'maths-fonctions';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm') {
-      const questions = isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isLogarithme = module.id === 'maths-logarithme';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm') {
+      const questions = isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -1150,6 +1152,242 @@ const FONCTIONS_FICHE_DATA = [
   },
 ];
 
+// ── Contenu Logarithme ────────────────────────────────────────────────────────
+const LOGARITHME_OBJECTIFS = [
+  'Maîtriser la **définition** de $\\ln$ comme réciproque de $\\exp$ et les relations $e^{\\ln x}=x$, $\\ln(e^x)=x$.',
+  'Utiliser les **propriétés algébriques** : $\\ln(ab)=\\ln a+\\ln b$, $\\ln(a^n)=n\\ln a$, $\\ln(\\sqrt{a})=\\tfrac{1}{2}\\ln a$.',
+  'Calculer des **limites** en $0^+$ et $+\\infty$ grâce aux croissances comparées ($\\ln x\\ll x^\\alpha\\ll e^x$).',
+  'Dériver $\\ln u$ : appliquer $(\\ln u)\'=\\dfrac{u\'}{u}$ et dresser un **tableau de variations** complet.',
+  'Résoudre **équations et inéquations** avec $\\ln$ ou $\\exp$ en fixant les domaines au préalable.',
+  'Réaliser une **étude complète** de fonctions type bac mêlant $\\ln$, dérivation et TVI.',
+];
+
+const LOGARITHME_FICHE_DATA = [
+  {
+    title: '1  Définition & Relations fondamentales',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'x=e^y \\Longleftrightarrow y=\\ln x \\quad (x>0)',
+        vars: '$\\ln$ : réciproque de $\\exp$ sur $]0,+\\infty[$ · $e^{\\ln x}=x$ pour $x>0$ · $\\ln(e^x)=x$ pour tout $x\\in\\mathbb{R}$',
+      },
+      {
+        label: 'Valeurs clés',
+        tex: '\\ln 1=0 \\qquad \\ln e=1',
+        vars: '$\\ln$ est nulle en $1$ et vaut $1$ en $e\\approx 2{,}718$',
+      },
+      {
+        label: 'Signe',
+        tex: '\\ln a>0\\Leftrightarrow a>1 \\quad;\\quad \\ln a<0\\Leftrightarrow 0<a<1',
+        vars: 'Strictement croissante : $\\ln a<\\ln b\\Longleftrightarrow a<b$',
+      },
+    ],
+  },
+  {
+    title: '2  Propriétés algébriques',
+    rows: [
+      {
+        label: 'Produit',
+        tex: '\\ln(ab)=\\ln a+\\ln b',
+        vars: '$a,b>0$ · Le logarithme transforme les **produits** en sommes',
+      },
+      {
+        label: 'Quotient / inverse',
+        tex: '\\ln\\!\\left(\\dfrac{a}{b}\\right)=\\ln a-\\ln b \\quad;\\quad \\ln\\!\\left(\\dfrac{1}{b}\\right)=-\\ln b',
+        vars: 'Attention : $\\ln(a+b)\\neq\\ln a+\\ln b$ (piège classique)',
+      },
+      {
+        label: 'Puissance / racine',
+        tex: '\\ln(a^n)=n\\ln a \\quad;\\quad \\ln(\\sqrt{a})=\\tfrac{1}{2}\\ln a',
+        vars: '$n\\in\\mathbb{Z}$ (ou même $n\\in\\mathbb{Q}$) · Attention : $(\\ln a)^2\\neq 2\\ln a$',
+      },
+    ],
+  },
+  {
+    title: '3  Dérivée & Variations',
+    rows: [
+      {
+        label: 'Dérivée',
+        tex: '\\ln\'(x)=\\dfrac{1}{x} \\quad;\\quad (\\ln u)\'=\\dfrac{u\'}{u}',
+        vars: '$u$ strictement positive et dérivable sur $I$ · Exemple : $(\\ln(x^2+1))\'=\\dfrac{2x}{x^2+1}$',
+      },
+      {
+        label: 'Variations',
+        tex: '\\text{strictement croissante sur }]0,+\\infty[',
+        vars: '$\\ln\'(x)=1/x>0$ · Concave : $\\ln\'\'(x)=-1/x^2<0$',
+      },
+      {
+        label: 'Limites',
+        tex: '\\lim_{x\\to+\\infty}\\ln x=+\\infty \\quad;\\quad \\lim_{x\\to 0^+}\\ln x=-\\infty',
+        vars: 'Asymptote verticale $x=0$ à la courbe $\\mathcal{C}_{\\ln}$',
+      },
+    ],
+  },
+  {
+    title: '4  Croissances comparées',
+    rows: [
+      {
+        label: 'En $+\\infty$',
+        tex: '\\lim_{x\\to+\\infty}\\dfrac{\\ln x}{x^n}=0 \\quad (n\\in\\mathbb{N}^*)',
+        vars: 'Les puissances $x^n$ dominent $\\ln x$ · $\\ln x\\ll x^\\alpha\\ll e^x$ en $+\\infty$',
+      },
+      {
+        label: 'En $0^+$',
+        tex: '\\lim_{x\\to 0^+}x^n\\ln x=0 \\quad (n\\in\\mathbb{N}^*)',
+        vars: 'En particulier $x\\ln x\\to 0$ — les puissances de $x$ "écrasent" le $\\ln$',
+      },
+    ],
+  },
+  {
+    title: '5  Équations & Inéquations',
+    rows: [
+      {
+        label: 'Équations de référence',
+        tex: '\\ln x=a\\Leftrightarrow x=e^a \\quad;\\quad e^x=b\\Leftrightarrow x=\\ln b\\;(b>0)',
+        vars: '$\\ln A=\\ln B\\Longleftrightarrow A=B$ (sur $A,B>0$) · Stricte croissance conserve le sens',
+      },
+      {
+        label: 'Méthode',
+        tex: '\\text{Domaine}\\to\\text{Transformer}\\to\\text{Résoudre}\\to\\text{Vérifier}',
+        vars: 'Toujours poser le domaine d\'existence en premier ($u>0$ pour $\\ln u$)',
+      },
+    ],
+  },
+];
+
+const LOGARITHME_COURS: Section[] = [
+  {
+    id: 'definition',
+    num: '1',
+    title: 'Définition & premières propriétés',
+    blocks: [
+      {
+        type: 'para',
+        text: 'La fonction $\\exp$ est continue et strictement croissante de $\\mathbb{R}$ sur $]0,+\\infty[$. D\'après le corollaire du TVI, tout réel $x>0$ possède un unique antécédent par $\\exp$ : c\'est le **logarithme népérien** de $x$, noté $\\ln x$.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Logarithme népérien',
+        content: 'Le **logarithme népérien**, noté $\\ln$, est la fonction définie sur $]0,+\\infty[$ qui à $x>0$ associe l\'unique réel $y$ tel que $e^y=x$. C\'est la **fonction réciproque** de $\\exp$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Relations fondamentales** — Pour $x>0$ et $y\\in\\mathbb{R}$ : $x=e^y\\Longleftrightarrow y=\\ln x$. De plus : $e^{\\ln x}=x$ (pour $x>0$) et $\\ln(e^x)=x$ (pour tout $x$). Valeurs remarquables : $\\ln 1=0$ et $\\ln e=1$.',
+      },
+      {
+        type: 'figure',
+        caption: 'Fig. 1.1 — $\\ln$ est le symétrique de $\\exp$ par rapport à la droite $y=x$. Points remarquables : $(1,e)$ sur $\\mathcal{C}_{\\exp}$ et $(e,1)$ sur $\\mathcal{C}_{\\ln}$.',
+        src: '/modules/maths-logarithme/fig1-1.png',
+      },
+      {
+        type: 'propriete',
+        text: '$\\ln$ est **strictement croissante** sur $]0,+\\infty[$ (elle hérite de la stricte croissance de $\\exp$). Conséquences : $\\ln a=\\ln b\\Longleftrightarrow a=b$ ; $\\ln a<\\ln b\\Longleftrightarrow a<b$ ; $\\ln a>0\\Longleftrightarrow a>1$ ; $\\ln a<0\\Longleftrightarrow 0<a<1$.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1 à 3 : expressions, simplifications, démonstration algébrique' },
+    ],
+  },
+  {
+    id: 'algebre',
+    num: '2',
+    title: 'Propriétés algébriques',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Le logarithme **transforme les produits en sommes** : c\'est sa propriété reine, qui découle directement de $e^{a+b}=e^a e^b$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Règles de calcul** — Pour tous $a,b>0$ et $n\\in\\mathbb{Z}$ (ou même $n\\in\\mathbb{Q}$) : $\\ln(ab)=\\ln a+\\ln b$ ; $\\ln\\!\\left(\\dfrac{1}{b}\\right)=-\\ln b$ et $\\ln\\!\\left(\\dfrac{a}{b}\\right)=\\ln a-\\ln b$ ; $\\ln(a^n)=n\\ln a$ et $\\ln(\\sqrt{a})=\\dfrac{1}{2}\\ln a$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          '$\\ln 12=\\ln(4\\times 3)=\\ln 4+\\ln 3=2\\ln 2+\\ln 3$.',
+          '$\\ln\\dfrac{e^3}{5}=3-\\ln 5$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '$\\ln(a+b)\\neq\\ln a+\\ln b$ et $(\\ln a)^2\\neq\\ln(a^2)=2\\ln a$. Le logarithme n\'ouvre que les **produits, quotients et puissances**, jamais les sommes.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 4 à 6 : équations, inéquations, transformation' },
+    ],
+  },
+  {
+    id: 'etude',
+    num: '3',
+    title: 'Étude de la fonction ln',
+    blocks: [
+      {
+        type: 'para',
+        text: 'On dérive $\\ln$, on établit ses limites, puis les croissances comparées qui complètent la hiérarchie $\\ln x\\ll x^n\\ll e^x$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Dérivée** — $\\ln$ est dérivable (donc continue) sur $]0,+\\infty[$, et $\\ln\'(x)=\\dfrac{1}{x}$. Plus généralement, si $u$ est dérivable et strictement positive sur $I$ : $(\\ln u)\'=\\dfrac{u\'}{u}$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: ['Pour $f(x)=\\ln(x^2+1)$ : $u=x^2+1>0$, $u\'=2x$, donc $f\'(x)=\\dfrac{2x}{x^2+1}$.'],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Tableau de variations** — Comme $\\ln\'(x)=\\dfrac{1}{x}>0$ sur $]0,+\\infty[$, $\\ln$ est strictement **croissante**, de $-\\infty$ (en $0^+$) à $+\\infty$, en passant par $\\ln 1=0$. Elle est **concave** ($\\ln\'\'(x)=-\\dfrac{1}{x^2}<0$). L\'axe des ordonnées ($x=0$) est asymptote verticale.',
+      },
+      {
+        type: 'propriete',
+        text: '**Croissances comparées** — En $+\\infty$, $\\ln$ est négligeable devant les puissances de $x$ : pour tout $n\\in\\mathbb{N}^*$, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{\\ln x}{x^n}=0$. En $0^+$ : $\\displaystyle\\lim_{x\\to 0^+}x^n\\ln x=0$ (en particulier $x\\ln x\\to 0$).',
+      },
+      {
+        type: 'idee_cle',
+        text: '**La hiérarchie complète** en $+\\infty$ : $\\ln x\\ll x^\\alpha\\ll e^x$ ($\\alpha>0$). Le logarithme est le plus lent, l\'exponentielle le plus rapide. C\'est ce classement qui lève la plupart des formes indéterminées.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 7 à 12 : limites, croissances comparées, dérivées' },
+    ],
+  },
+  {
+    id: 'equations',
+    num: '4',
+    title: 'Équations & inéquations',
+    blocks: [
+      {
+        type: 'para',
+        text: '$\\ln$ et $\\exp$ sont réciproques et strictement croissantes : c\'est ce qui permet de résoudre équations et inéquations, à condition de bien fixer les **domaines** au départ.',
+      },
+      {
+        type: 'propriete',
+        text: '**Résolutions de référence** : $\\ln x=a\\Longleftrightarrow x=e^a$ ($x>0$) ; $e^x=b\\Longleftrightarrow x=\\ln b$ ($b>0$) ; $\\ln A=\\ln B\\Longleftrightarrow A=B$ ($A,B>0$). Par stricte croissance : $\\ln A<\\ln B\\Longleftrightarrow A<B$ et $e^A<e^B\\Longleftrightarrow A<B$.',
+      },
+      {
+        type: 'methode',
+        title: 'RÉSOUDRE UNE ÉQUATION / INÉQUATION AVEC ln',
+        steps: [
+          '**Domaine.** Écrire les conditions d\'existence : tout argument d\'un $\\ln$ doit être $>0$.',
+          '**Transformer.** Regrouper avec les propriétés algébriques pour obtenir $\\ln A=\\ln B$ (ou passer à l\'exponentielle).',
+          '**Résoudre.** Utiliser $\\ln A=\\ln B\\Longleftrightarrow A=B$, puis résoudre l\'équation obtenue.',
+          '**Vérifier.** Ne garder que les solutions compatibles avec le domaine de départ.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Résoudre $\\ln(3x-6)=\\ln(12+x)$.',
+          '**Domaine :** $3x-6>0$ et $12+x>0$, soit $x>2$.',
+          'L\'équation donne $3x-6=12+x \\Longleftrightarrow 2x=18 \\Longleftrightarrow x=9$. Comme $9>2$, la solution est $x=9$.',
+        ],
+      },
+      {
+        type: 'reflex',
+        text: '**Logarithme décimal.** $\\log x=\\dfrac{\\ln x}{\\ln 10}$ (hors programme, mais utile en sciences : pH, décibels, échelle de Richter).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 13 à 17 : études complètes de fonctions type bac' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -1429,9 +1667,10 @@ const OBJECTIFS = [
 function CourseTab({ module }: { module: PhysicsModule }) {
   const isMaths = module.subject === 'Maths';
   const isFonctions = module.id === 'maths-fonctions';
+  const isLogarithmeCours = module.id === 'maths-logarithme';
   const pal = isMaths ? V : A;
-  const sections = isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const sections = isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -1596,8 +1835,9 @@ const FICHE_DATA = [
 function FicheTab({ module }: { module: PhysicsModule }) {
   const isMaths = module.subject === 'Maths';
   const isFonctions = module.id === 'maths-fonctions';
-  const ficheData = isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isLogarithmeFiche = module.id === 'maths-logarithme';
+  const ficheData = isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
