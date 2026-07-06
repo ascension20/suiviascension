@@ -444,6 +444,7 @@ function PromptsTab({ groups }: { groups: PromptGroup[] }) {
 
 // ── Root ───────────────────────────────────────────────────────────────────
 
+interface ResourcesTabProps { onXpGain?: (xp: number) => void; section?: string; }
 export function ResourcesTab({ onXpGain, section }: ResourcesTabProps) {
   const [tab, setTab] = useState<TabId>('general');
 
