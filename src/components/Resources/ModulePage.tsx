@@ -1036,12 +1036,12 @@ const SUITES_FICHE_DATA = [
       {
         label: 'Méthode',
         tex: '\\text{Stabilité}\\to\\text{Monotonie}\\to\\text{Convergence}\\to\\ell=f(\\ell)',
-        vars: '$f$ : fonction définissant la relation de récurrence · $\\ell$ : point fixe, valeur limite · **4 étapes dans cet ordre** — ne pas résoudre $\\ell=f(\\ell)$ avant d\'avoir prouvé la convergence',
+        vars: '$f$ : fonction telle que $u_{n+1}=f(u_n)$ · $\\ell=\\displaystyle\\lim_{n\\to+\\infty}u_n$ : limite quand $n\\to+\\infty$ · **4 étapes dans cet ordre** — ne pas résoudre $\\ell=f(\\ell)$ avant d\'avoir prouvé la convergence',
       },
       {
         label: 'Point fixe',
-        tex: 'u_n\\to\\ell\\implies\\ell=f(\\ell)',
-        vars: '$\\ell$ : **point fixe** de $f$, solution de $f(\\ell)=\\ell$ · ⚠ Résoudre $\\ell=f(\\ell)$ **seulement après** avoir prouvé la convergence',
+        tex: 'u_n\\xrightarrow[n\\to+\\infty]{}\\ell\\implies\\ell=f(\\ell)',
+        vars: '$\\ell$ : **point fixe** de $f$ — valeur vers laquelle $(u_n)$ tend quand $n\\to+\\infty$ · Solution de $f(\\ell)=\\ell$ · ⚠ Résoudre **seulement après** avoir prouvé la convergence',
       },
     ],
   },
@@ -1226,6 +1226,11 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isMaths = module.subject === 'Maths';
   const ficheData = isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
   const ficheTitle = isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const pal = isMaths ? V : A;
+  const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
+  const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
+  const labelTxt = isMaths ? 'text-violet-300/70' : 'text-amber-400/60';
+  const varsTxt  = isMaths ? 'text-violet-200/45' : 'text-amber-200/40';
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }} className="pb-6 space-y-3">
@@ -1235,20 +1240,24 @@ function FicheTab({ module }: { module: PhysicsModule }) {
       </div>
 
       {ficheData.map(sec => (
-        <div key={sec.title} className={`rounded-xl overflow-hidden border ${A.border} ${A.bg}`}>
-          <div className={`px-4 py-2 ${A.head} border-b ${A.border}`}>
-            <span className={`text-[11px] font-black ${A.headTxt} uppercase tracking-wider`}>{sec.title}</span>
+        <div key={sec.title} className={`rounded-xl overflow-hidden border ${pal.border} ${pal.bg}`}>
+          <div className={`px-4 py-2 ${pal.head} border-b ${pal.border}`}>
+            <span className={`text-[11px] font-black ${pal.headTxt} uppercase tracking-wider`}>
+              <MixedText text={sec.title} />
+            </span>
           </div>
-          <div className="divide-y divide-amber-900/30">
+          <div className={`divide-y ${divider}`}>
             {sec.rows.map((row, i) => (
               <div key={i} className="flex min-h-[2.75rem]">
-                <div className="w-[95px] shrink-0 px-3 py-2 flex items-start pt-3 border-r border-amber-900/30">
-                  <span className="text-[11px] font-semibold text-amber-400/60 leading-tight">{row.label}</span>
+                <div className={`w-[95px] shrink-0 px-3 py-2 flex items-start pt-3 border-r ${borderR}`}>
+                  <span className={`text-[11px] font-semibold ${labelTxt} leading-tight`}>
+                    <MixedText text={row.label} />
+                  </span>
                 </div>
                 <div className="flex-1 px-3 py-1 overflow-x-auto">
                   <BlockMath tex={row.tex} className="!py-0" />
                   {'vars' in row && row.vars && (
-                    <p className="text-[10px] text-amber-200/40 leading-snug mt-0.5 pb-1 whitespace-normal">
+                    <p className={`text-[10px] ${varsTxt} leading-snug mt-0.5 pb-1 whitespace-normal`}>
                       <MixedText text={row.vars} />
                     </p>
                   )}
