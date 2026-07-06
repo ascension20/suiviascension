@@ -212,7 +212,7 @@ export const FONCTIONS_EXERCISES: ExerciseContent[] = [
   },
   {
     id: 'fonctions-9',
-    context: 'Dériver les fonctions composées suivantes en appliquant $(u(g(x)))'= g\'(x)\\cdot u\'(g(x))$.',
+    context: "Dériver les fonctions composées suivantes en appliquant $(u(g(x)))'= g'(x)\\cdot u'(g(x))$.",
     parts: [{
       questions: [
         { n: '1', text: '$f(x)=e^{-x^2}$ (poser $u=-x^2$).' },
