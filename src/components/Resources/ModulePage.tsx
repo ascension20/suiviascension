@@ -7,6 +7,7 @@ import {
 import { PhysicsModule, ModuleLevel, TIER_META, DIFF_LABEL } from '@/lib/modules-data';
 import { NEWTON_QCM, NEWTON_EXERCISES, NEWTON_CORRECTIONS } from '@/lib/newton-content';
 import { SUITES_QCM, SUITES_EXERCISES, SUITES_CORRECTIONS } from '@/lib/suites-content';
+import { FONCTIONS_QCM, FONCTIONS_EXERCISES, FONCTIONS_CORRECTIONS } from '@/lib/fonctions-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -38,14 +39,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
 
   if (activeLevel) {
     const isMaths = module.subject === 'Maths';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm') {
-      const questions = isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isFonctions = module.id === 'maths-fonctions';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm') {
+      const questions = isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -780,6 +782,367 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
    ONGLET COURS
    ═══════════════════════════════════════════════════════════════════════════ */
 
+// ── Contenu Les fonctions ─────────────────────────────────────────────────────
+const FONCTIONS_OBJECTIFS = [
+  'Calculer des **limites de fonctions** en levant les formes indéterminées ($\\infty/\\infty$, $\\infty-\\infty$).',
+  'Exploiter le **théorème des gendarmes** et les **croissances comparées** ($x^n \\ll e^x$).',
+  'Identifier les **asymptotes** horizontales et verticales d\'une courbe.',
+  'Dériver des fonctions composées et dresser un **tableau de variations** complet.',
+  'Étudier la **convexité** via $f\'\'$ et localiser les **points d\'inflexion**.',
+  'Appliquer le **TVI** pour prouver l\'existence et l\'unicité d\'une solution.',
+];
+
+const FONCTIONS_COURS: Section[] = [
+  {
+    id: 'limites',
+    num: '1',
+    title: 'Limites de fonctions',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Étudier une fonction, c\'est comprendre son comportement global : que se passe-t-il quand $x$ devient très grand, ou s\'approche d\'un point particulier ? C\'est précisément ce que décrivent les **limites**. Elles permettent aussi de lire la courbe à grande échelle — les **asymptotes** — et de lever les cas difficiles où la forme calculée est du type $\\dfrac{\\infty}{\\infty}$ ou $\\infty-\\infty$.',
+      },
+      { type: 'subsection', num: '1.1', title: 'Définition et intuition' },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Limite en $+\\infty$',
+        content: 'On dit que $f(x)\\to\\ell$ quand $x\\to+\\infty$ si les valeurs de $f(x)$ peuvent être rendues aussi proches de $\\ell$ que l\'on veut, en prenant $x$ suffisamment grand. Formellement : pour tout $\\varepsilon>0$, il existe $B>0$ tel que $x>B\\Rightarrow|f(x)-\\ell|\\leq\\varepsilon$.',
+      },
+      {
+        type: 'propriete',
+        text: 'Si $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\ell$ (réel fini), la droite $y=\\ell$ est une **asymptote horizontale** à la courbe $\\mathcal{C}_f$. Si $\\displaystyle\\lim_{x\\to a}f(x)=\\pm\\infty$, la droite $x=a$ est une **asymptote verticale**.',
+      },
+      { type: 'subsection', num: '1.2', title: 'Théorème des gendarmes' },
+      {
+        type: 'propriete',
+        text: 'Si $g(x)\\leq f(x)\\leq h(x)$ au voisinage de $+\\infty$ et si $\\displaystyle\\lim_{+\\infty}g=\\lim_{+\\infty}h=\\ell$, alors $\\displaystyle\\lim_{+\\infty}f=\\ell$. Idem si $g\\to+\\infty$ : si $f\\geq g$, alors $f\\to+\\infty$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Pour $g(x)=\\dfrac{\\cos x}{x}$ : $-\\dfrac{1}{x}\\leq g(x)\\leq\\dfrac{1}{x}$ (car $|\\cos x|\\leq 1$).',
+          'Les deux gendarmes tendent vers $0$ en $+\\infty$, donc $g(x)\\to 0$.',
+        ],
+      },
+      { type: 'subsection', num: '1.3', title: 'Formes indéterminées' },
+      {
+        type: 'para',
+        text: 'Lorsque le calcul direct donne $\\dfrac{\\infty}{\\infty}$ ou $\\infty-\\infty$, il faut transformer l\'expression avant de conclure.',
+      },
+      {
+        type: 'methode',
+        title: 'LEVER UNE FORME INDÉTERMINÉE',
+        steps: [
+          '**Forme $\\dfrac{\\infty}{\\infty}$** : factoriser numérateur et dénominateur par la plus grande puissance de $x$ qui apparaît.',
+          '**Forme $\\infty-\\infty$** (racines) : multiplier par la **quantité conjuguée** $\\sqrt{A}+\\sqrt{B}$ ou $\\sqrt{A}+B$.',
+          'Simplifier, puis évaluer la limite du résultat.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          '$\\sqrt{x^2+x}-x = \\dfrac{(\\sqrt{x^2+x}-x)(\\sqrt{x^2+x}+x)}{\\sqrt{x^2+x}+x}=\\dfrac{x^2+x-x^2}{\\sqrt{x^2+x}+x}=\\dfrac{x}{\\sqrt{x^2+x}+x}$.',
+          'En divisant par $x$ : $\\dfrac{1}{\\sqrt{1+\\frac{1}{x}}+1}\\to\\dfrac{1}{2}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 1 à 5 : définition, gendarmes, formes indéterminées, asymptotes' },
+    ],
+  },
+  {
+    id: 'exponentielle',
+    num: '2',
+    title: 'La fonction exponentielle',
+    blocks: [
+      {
+        type: 'para',
+        text: 'La fonction exponentielle est omniprésente en analyse : croissance des populations, radioactivité, intérêts composés… Sa particularité ? Elle est **égale à sa propre dérivée**, ce qui la rend unique et fondamentale.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Propriétés fondamentales',
+        content: 'La fonction $\\exp : x\\mapsto e^x$ est l\'unique fonction telle que $f\'=f$ et $f(0)=1$. Elle est définie, **strictement positive** et **strictement croissante** sur $\\mathbb{R}$.',
+        formulas: [
+          'e^{a+b}=e^a\\cdot e^b \\qquad;\\qquad e^{-a}=\\dfrac{1}{e^a} \\qquad;\\qquad (e^u)\'=u\'e^u',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '$\\displaystyle\\lim_{x\\to+\\infty}e^x=+\\infty$ et $\\displaystyle\\lim_{x\\to-\\infty}e^x=0$ : l\'axe des abscisses est une asymptote horizontale en $-\\infty$.',
+      },
+      { type: 'subsection', num: '2.1', title: 'Croissances comparées' },
+      {
+        type: 'idee_cle',
+        text: 'L\'exponentielle **gagne toujours** face à n\'importe quelle puissance : pour tout entier $n\\geq 0$, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{x^n}{e^x}=0$ et $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty$. Autrement dit, $x^n\\ll e^x$ en $+\\infty$. De même, $x^n e^{-x}\\to 0$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          '$\\dfrac{e^x}{x^2+1}\\to+\\infty$ (car $x^2\\ll e^x$).',
+          '$xe^x\\to 0$ en $-\\infty$ (poser $t=-x$ : $-te^{-t}\\to 0$).',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 6 et 7 : croissances comparées, limites avec eˣ' },
+    ],
+  },
+  {
+    id: 'derivation',
+    num: '3',
+    title: 'Dérivation',
+    blocks: [
+      {
+        type: 'para',
+        text: 'La dérivée mesure **la vitesse de variation** de $f$ en un point. En un point, c\'est la pente de la tangente. Globalement, son signe dicte les **variations** de $f$.',
+      },
+      { type: 'subsection', num: '3.1', title: 'Nombre dérivé et tangente' },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Le **nombre dérivé** de $f$ en $a$ est la limite du taux d\'accroissement : $f\'(a)=\\displaystyle\\lim_{h\\to 0}\\dfrac{f(a+h)-f(a)}{h}$. C\'est la pente de la **tangente** à $\\mathcal{C}_f$ au point d\'abscisse $a$, d\'équation :',
+        formulas: ['y=f\'(a)(x-a)+f(a)'],
+      },
+      { type: 'subsection', num: '3.2', title: 'Règles de dérivation' },
+      {
+        type: 'formules',
+        label: 'RÈGLES CLÉS',
+        rows: [
+          { desc: 'Produit :', tex: '(fg)\'=f\'g+fg\'' },
+          { desc: 'Quotient :', tex: '\\left(\\dfrac{f}{g}\\right)\'=\\dfrac{f\'g-fg\'}{g^2}' },
+          { desc: 'Composée :', tex: '\\bigl(f(g(x))\\bigr)\'=g\'(x)\\cdot f\'(g(x))' },
+        ],
+      },
+      {
+        type: 'formules',
+        label: 'COMPOSÉES USUELLES',
+        rows: [
+          { tex: '(e^u)\'=u\'e^u' },
+          { tex: '(\\ln u)\'=\\dfrac{u\'}{u}' },
+          { tex: '(\\sqrt{u})\'=\\dfrac{u\'}{2\\sqrt{u}}' },
+          { tex: '(u^n)\'=nu\'u^{n-1}' },
+        ],
+      },
+      { type: 'subsection', num: '3.3', title: 'Tableau de variations' },
+      {
+        type: 'propriete',
+        text: '$f\'(x)>0$ sur $I\\Rightarrow f$ **strictement croissante** sur $I$. $f\'(x)<0\\Rightarrow f$ **strictement décroissante**. $f\'$ s\'annule en changeant de signe : extremum local (maximum si $+\\to-$, minimum si $-\\to+$).',
+      },
+      {
+        type: 'methode',
+        title: 'DRESSER UN TABLEAU DE VARIATIONS',
+        steps: [
+          'Calculer $f\'(x)$ (factoriser pour le signe).',
+          'Étudier le signe de $f\'$ sur chaque intervalle (tableau de signes).',
+          'En déduire la monotonie de $f$ et les extrema locaux.',
+          'Ajouter les limites aux bornes pour compléter le tableau.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 8 à 11 : tangentes, dérivées composées, tableaux de variations' },
+    ],
+  },
+  {
+    id: 'convexite',
+    num: '4',
+    title: 'Convexité',
+    blocks: [
+      {
+        type: 'para',
+        text: 'La convexité décrit la **courbure** d\'une courbe : est-elle creuse ou bombée ? C\'est la dérivée seconde $f\'\'$ qui répond à cette question, et c\'est aussi elle qui permet de repérer les **points d\'inflexion**, là où la courbure change de sens.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITIONS',
+        content: '$f$ est **convexe** sur $I$ si $f\'\'\\geq 0$ sur $I$ : la courbe est **au-dessus de ses tangentes**. $f$ est **concave** sur $I$ si $f\'\'\\leq 0$ sur $I$ : la courbe est **en-dessous de ses tangentes**.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Retenir l\'image : une **courbe convexe** ressemble à un bol ($\\smile$) — elle est creuse, et si tu poses une règle sur deux points, la règle passe au-dessus de la courbe. Une **courbe concave** est comme une colline ($\\frown$) — bombée vers le haut.',
+      },
+      { type: 'subsection', num: '4.1', title: 'Point d\'inflexion' },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Un **point d\'inflexion** est un point où $\\mathcal{C}_f$ **traverse** sa tangente, c\'est-à-dire où la convexité change de sens. Cela correspond à $f\'\'$ qui **s\'annule en changeant de signe**.',
+      },
+      {
+        type: 'piege',
+        text: 'Si $f\'\'(x_0)=0$ mais $f\'\'$ **ne change pas de signe** en $x_0$ (ex. $f(x)=x^4$ en $0$), il n\'y a **pas** de point d\'inflexion.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — $f(x)=xe^x$',
+        lines: [
+          '$f\'(x)=(1+x)e^x$, $f\'\'(x)=(2+x)e^x$.',
+          '$f\'\'(x)\\geq 0\\iff x\\geq-2$ : $f$ convexe sur $[-2,+\\infty[$, concave sur $]-\\infty,-2]$.',
+          'Point d\'inflexion en $x=-2$.',
+        ],
+      },
+      { type: 'subsection', num: '4.2', title: 'Application : inégalités' },
+      {
+        type: 'propriete',
+        text: 'Si $f$ est convexe sur $I$, alors pour tout $x\\in I$ et tout $a\\in I$ : $f(x)\\geq f\'(a)(x-a)+f(a)$ (la courbe est au-dessus de chaque tangente). Cela permet de prouver des **inégalités fondamentales** : ex. $e^x\\geq x+1$ pour tout $x$ (convexité de $e^x$ en $a=0$).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 12 à 14 : convexité, inflexion, inégalité eˣ ≥ x+1' },
+    ],
+  },
+  {
+    id: 'continuite',
+    num: '5',
+    title: 'Continuité et TVI',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Une fonction est continue si on peut tracer sa courbe **sans lever le crayon**. C\'est l\'hypothèse clé du théorème des valeurs intermédiaires, l\'outil roi pour prouver qu\'une équation $f(x)=k$ a une solution.',
+      },
+      { type: 'subsection', num: '5.1', title: 'Continuité' },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: '$f$ est **continue** en $a$ si $\\displaystyle\\lim_{x\\to a}f(x)=f(a)$. Elle est continue sur $I$ si elle l\'est en tout point de $I$.',
+      },
+      {
+        type: 'propriete',
+        text: 'Si $f$ est **dérivable** en $a$, alors $f$ est **continue** en $a$. La **réciproque est fausse** : $x\\mapsto|x|$ est continue en $0$ mais non dérivable (les pentes à gauche $-1$ et à droite $+1$ diffèrent).',
+      },
+      {
+        type: 'reflex',
+        text: 'Les fonctions polynomiales, rationnelles, racine, $\\exp$, $\\ln$, $\\sin$, $\\cos$ sont continues sur tout intervalle de leur ensemble de définition. Toute composée ou combinaison de telles fonctions l\'est aussi.',
+      },
+      { type: 'subsection', num: '5.2', title: 'Théorème des valeurs intermédiaires (TVI)' },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME DES VALEURS INTERMÉDIAIRES',
+        content: 'Soit $f$ **continue** sur $[a,b]$. Pour tout réel $k$ compris entre $f(a)$ et $f(b)$, il existe $c\\in[a,b]$ tel que $f(c)=k$.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Le TVI dit : « si tu pars de $f(a)$ et tu arrives à $f(b)$ sans lever le crayon, tu passes **obligatoirement** par toute valeur intermédiaire. » Il garantit l\'**existence** d\'une solution, mais pas son **unicité**.',
+      },
+      {
+        type: 'definition',
+        badge: 'COROLLAIRE — Unicité',
+        content: 'Si $f$ est **continue ET strictement monotone** sur $[a,b]$, alors pour tout $k$ entre $f(a)$ et $f(b)$, l\'équation $f(x)=k$ admet une **unique** solution dans $[a,b]$.',
+      },
+      {
+        type: 'methode',
+        title: 'PROUVER L\'UNICITÉ D\'UNE SOLUTION',
+        steps: [
+          '**Continuité.** Justifier que $f$ est continue sur l\'intervalle (polynôme, composée de fonctions continues…).',
+          '**Stricte monotonie.** Étudier le signe de $f\'$ pour conclure que $f$ est strictement croissante (ou décroissante).',
+          '**Valeurs aux bornes.** Vérifier que $k$ est compris entre $f(a)$ et $f(b)$ (ou entre les limites si l\'intervalle est $\\mathbb{R}$).',
+          '**Conclusion.** Par le corollaire du TVI : il existe une **unique** solution. On peut ensuite l\'encadrer par dichotomie (calculer $f$ en des points intermédiaires).',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 15 à 18 : continuité, TVI, unicité, nombre de solutions' },
+    ],
+  },
+];
+
+// ── Fiche de révision Les fonctions ──────────────────────────────────────────
+const FONCTIONS_FICHE_DATA = [
+  {
+    title: '1  Limites & Asymptotes',
+    rows: [
+      {
+        label: 'Asym. horizontale',
+        tex: 'f(x)\\to\\ell\\text{ en }\\pm\\infty\\Rightarrow y=\\ell',
+        vars: '$\\ell$ : valeur finie vers laquelle $f$ tend · La droite $y=\\ell$ est asymptote horizontale à $\\mathcal{C}_f$',
+      },
+      {
+        label: 'Asym. verticale',
+        tex: 'f(x)\\to\\pm\\infty\\text{ en }a\\Rightarrow x=a',
+        vars: '$a$ : valeur interdite ou singulière de $f$ · La droite $x=a$ est asymptote verticale à $\\mathcal{C}_f$',
+      },
+      {
+        label: 'Gendarmes',
+        tex: 'g\\leq f\\leq h,\\;g,h\\to\\ell\\Rightarrow f\\to\\ell',
+        vars: '$g,h$ : fonctions encadrantes (gendarmes) · $\\ell$ : limite commune · Si $g\\to+\\infty$ et $f\\geq g$, alors $f\\to+\\infty$',
+      },
+      {
+        label: 'Croissances comp.',
+        tex: '\\frac{e^x}{x^n}\\to+\\infty,\\quad x^n e^{-x}\\to 0',
+        vars: 'Valable en $+\\infty$ pour tout $n\\in\\mathbb{N}$ · $x^n\\ll e^x$ : l\'exponentielle domine toujours les puissances',
+      },
+    ],
+  },
+  {
+    title: '2  Tangente & Dérivation',
+    rows: [
+      {
+        label: 'Tangente en $a$',
+        tex: 'y=f\'(a)(x-a)+f(a)',
+        vars: '$f\'(a)$ : pente (nombre dérivé) · $f(a)$ : ordonnée du point de tangence · On pose $h\\to 0$ dans $\\dfrac{f(a+h)-f(a)}{h}$',
+      },
+      {
+        label: 'Produit',
+        tex: '(fg)\'=f\'g+fg\'',
+        vars: '$f,g$ : deux fonctions dérivables · Mémoriser : « dérivée première × deuxième + première × dérivée deuxième »',
+      },
+      {
+        label: 'Quotient',
+        tex: '\\left(\\dfrac{f}{g}\\right)\'=\\dfrac{f\'g-fg\'}{g^2}',
+        vars: '$g\\neq 0$ sur l\'intervalle · Mémoriser : « dérivée × bas − haut × dérivée bas, sur bas² »',
+      },
+      {
+        label: 'Composée',
+        tex: '(f\\circ g)\'=g\'\\cdot(f\'\\circ g)',
+        vars: 'Mémoriser : $(e^u)\'=u\'e^u$ · $(\\ln u)\'=u\'/u$ · $(\\sqrt{u})\'=u\'/(2\\sqrt{u})$ · $(u^n)\'=nu\'u^{n-1}$',
+      },
+    ],
+  },
+  {
+    title: '3  Variations & Extrema',
+    rows: [
+      {
+        label: 'Signe de $f\'$',
+        tex: 'f\'(x)>0\\Rightarrow f\\nearrow\\;;\\quad f\'<0\\Rightarrow f\\searrow',
+        vars: 'Si $f\'$ s\'annule **en changeant de signe** : extremum local. De $+$ à $-$ : maximum ; de $-$ à $+$ : minimum',
+      },
+    ],
+  },
+  {
+    title: '4  Convexité',
+    rows: [
+      {
+        label: 'Convexe',
+        tex: 'f\'\'\\geq 0\\Leftrightarrow\\mathcal{C}_f\\text{ au-dessus de ses tangentes}',
+        vars: '$f\'\'$ : dérivée seconde de $f$ · Courbe convexe : forme de bol $\\smile$ · Au-dessus des tangentes',
+      },
+      {
+        label: 'Concave',
+        tex: 'f\'\'\\leq 0\\Leftrightarrow\\mathcal{C}_f\\text{ en-dessous de ses tangentes}',
+        vars: 'Courbe concave : forme de colline $\\frown$ · En-dessous des tangentes',
+      },
+      {
+        label: 'Inflexion',
+        tex: 'f\'\'(x_0)=0\\text{ (avec changement de signe)}',
+        vars: '$x_0$ : abscisse du point d\'inflexion · $f\'\'$ doit **changer de signe** (si $f\'\'$ ne change pas de signe, pas d\'inflexion)',
+      },
+    ],
+  },
+  {
+    title: '5  Continuité & TVI',
+    rows: [
+      {
+        label: 'Continue en $a$',
+        tex: '\\lim_{x\\to a}f(x)=f(a)',
+        vars: 'Dérivable $\\Rightarrow$ continue (réciproque fausse : $|x|$ est continue mais non dérivable en $0$)',
+      },
+      {
+        label: 'TVI',
+        tex: 'k\\in[f(a),f(b)]\\Rightarrow\\exists\\, c\\in[a,b],\\;f(c)=k',
+        vars: '$f$ : continue sur $[a,b]$ · $k$ : valeur intermédiaire · Garantit l\'**existence** d\'une solution — pas l\'unicité',
+      },
+      {
+        label: 'Unicité',
+        tex: 'f\\text{ continue}+\\text{strictement monotone}\\Rightarrow!c',
+        vars: '$!c$ : une **unique** solution · Méthode : (1) continuité (2) stricte monotonie ($f\'>0$) (3) $k$ entre $f(a)$ et $f(b)$',
+      },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -1058,9 +1421,10 @@ const OBJECTIFS = [
 
 function CourseTab({ module }: { module: PhysicsModule }) {
   const isMaths = module.subject === 'Maths';
+  const isFonctions = module.id === 'maths-fonctions';
   const pal = isMaths ? V : A;
-  const sections = isMaths ? SUITES_COURS : COURS;
-  const objectifs = isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const sections = isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -1224,8 +1588,9 @@ const FICHE_DATA = [
 
 function FicheTab({ module }: { module: PhysicsModule }) {
   const isMaths = module.subject === 'Maths';
-  const ficheData = isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isFonctions = module.id === 'maths-fonctions';
+  const ficheData = isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
