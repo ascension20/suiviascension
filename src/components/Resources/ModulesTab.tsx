@@ -64,6 +64,23 @@ export function ModulesTab({ onXpGain }: Props) {
     });
   }, [user, profile, completedByModule, updateProfile, onXpGain]);
 
+  const [filterLevel, setFilterLevel] = useState<string | null>(null);
+  const [filterSubject, setFilterSubject] = useState<string | null>(null);
+
+  const LEVEL_ORDER = ['Terminale', 'Première', 'Seconde', '3ème'];
+  const availableLevels = LEVEL_ORDER.filter(l => ALL_MODULES.some(m => m.level === l));
+  const availableSubjects = [...new Set(ALL_MODULES.map(m => m.subject))].sort();
+
+  const filtered = ALL_MODULES.filter(m =>
+    (!filterLevel || m.level === filterLevel) &&
+    (!filterSubject || m.subject === filterSubject)
+  );
+
+  // Groupement par niveau pour l'affichage
+  const grouped = LEVEL_ORDER
+    .filter(l => filtered.some(m => m.level === l))
+    .map(l => ({ level: l, modules: filtered.filter(m => m.level === l) }));
+
   if (selected) {
     const completedIds = completedByModule[selected.id] ?? new Set<string>();
     return (
@@ -92,24 +109,114 @@ export function ModulesTab({ onXpGain }: Props) {
         initial={{ opacity: 0, x: -24 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 24 }}
-        className="space-y-4"
+        className="space-y-5"
       >
-        <p className="text-sm text-white/50 mb-2">
-          Avance niveau par niveau. Chaque exercice se débloque après le précédent.
-        </p>
+        {/* Filtres */}
+        <div className="space-y-2">
+          {/* Filtre matière */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest w-14 shrink-0">Matière</span>
+            <div className="flex gap-1.5 flex-wrap">
+              <FilterChip
+                label="Tout"
+                active={filterSubject === null}
+                onClick={() => setFilterSubject(null)}
+                color="neutral"
+              />
+              {availableSubjects.map(s => (
+                <FilterChip
+                  key={s}
+                  label={s}
+                  active={filterSubject === s}
+                  onClick={() => setFilterSubject(filterSubject === s ? null : s)}
+                  color={s === 'Maths' ? 'violet' : 'amber'}
+                />
+              ))}
+            </div>
+          </div>
 
-        {/* Modules disponibles */}
-        {ALL_MODULES.map(mod => (
-          <ModuleCard
-            key={mod.id}
-            mod={mod}
-            completedIds={completedByModule[mod.id] ?? new Set()}
-            onOpen={() => setSelected(mod)}
-          />
-        ))}
+          {/* Filtre niveau */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest w-14 shrink-0">Niveau</span>
+            <div className="flex gap-1.5 flex-wrap">
+              <FilterChip
+                label="Tout"
+                active={filterLevel === null}
+                onClick={() => setFilterLevel(null)}
+                color="neutral"
+              />
+              {availableLevels.map(l => (
+                <FilterChip
+                  key={l}
+                  label={l}
+                  active={filterLevel === l}
+                  onClick={() => setFilterLevel(filterLevel === l ? null : l)}
+                  color="blue"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
 
+        <div className="h-px bg-white/8" />
+
+        {/* Modules groupés par niveau */}
+        {grouped.length === 0 ? (
+          <p className="text-sm text-white/40 text-center py-8">Aucun module pour ces filtres.</p>
+        ) : (
+          grouped.map(group => (
+            <div key={group.level}>
+              {/* En-tête de niveau — masqué si un seul niveau affiché */}
+              {grouped.length > 1 && (
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[11px] font-black text-white/50 uppercase tracking-widest">{group.level}</span>
+                  <div className="flex-1 h-px bg-white/8" />
+                </div>
+              )}
+              <div className="space-y-3">
+                {group.modules.map(mod => (
+                  <ModuleCard
+                    key={mod.id}
+                    mod={mod}
+                    completedIds={completedByModule[mod.id] ?? new Set()}
+                    onOpen={() => setSelected(mod)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))
+        )}
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+// ── Chip de filtre ────────────────────────────────────────────────────────────
+function FilterChip({
+  label, active, onClick, color,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  color: 'neutral' | 'violet' | 'amber' | 'blue';
+}) {
+  const activeStyles: Record<string, string> = {
+    neutral: 'bg-white/20 border-white/40 text-white',
+    violet:  'bg-violet-500/25 border-violet-500/60 text-violet-200',
+    amber:   'bg-amber-500/25 border-amber-500/60 text-amber-200',
+    blue:    'bg-blue-500/25 border-blue-500/60 text-blue-200',
+  };
+  const inactiveStyle = 'bg-white/5 border-white/10 text-white/45 hover:bg-white/10 hover:text-white/70';
+
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1 rounded-full border text-[11px] font-semibold transition-all ${
+        active ? activeStyles[color] : inactiveStyle
+      }`}
+    >
+      {label}
+    </button>
   );
 }
 
