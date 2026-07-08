@@ -11,6 +11,7 @@ import { FONCTIONS_QCM, FONCTIONS_EXERCISES, FONCTIONS_CORRECTIONS } from '@/lib
 import { LOGARITHME_QCM, LOGARITHME_EXERCISES, LOGARITHME_CORRECTIONS } from '@/lib/logarithme-content';
 import { PROBABILITES_QCM, PROBABILITES_EXERCISES, PROBABILITES_CORRECTIONS } from '@/lib/probabilites-content';
 import { GEOMETRIE_QCM, GEOMETRIE_EXERCISES, GEOMETRIE_CORRECTIONS } from '@/lib/geometrie-content';
+import { PRIMITIVES_QCM, PRIMITIVES_EXERCISES, PRIMITIVES_CORRECTIONS } from '@/lib/primitives-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -46,14 +47,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isLogarithme = module.id === 'maths-logarithme';
     const isProbabilites = module.id === 'maths-probabilites';
     const isGeometrie = module.id === 'maths-geometrie';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm') {
-      const questions = isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isPrimitives = module.id === 'maths-primitives';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm') {
+      const questions = isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -2232,6 +2234,394 @@ const GEOMETRIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Primitives & intégrales ───────────────────────────────────────────
+const PRIMITIVES_OBJECTIFS = [
+  'Déterminer les **primitives** des fonctions usuelles et vérifier en dérivant.',
+  'Reconnaître les **formes composées** $u\'u^n$, $u\'/u$, $u\'e^u$ et ajuster le facteur constant.',
+  'Trouver la primitive vérifiant une **condition initiale** $F(x_0)=y_0$.',
+  'Calculer une **intégrale** avec le théorème fondamental $\\int_a^b f=F(b)-F(a)$.',
+  'Utiliser **linéarité, Chasles, positivité** et calculer une **valeur moyenne**.',
+  'Maîtriser l\'**intégration par parties** et les calculs d\'**aires** (sous une courbe, entre deux courbes).',
+];
+
+const PRIMITIVES_FICHE_DATA = [
+  {
+    title: '1  Primitives — Définition',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'F\\text{ primitive de }f\\text{ sur }I\\;:\\;F\'=f',
+        vars: 'Toute fonction **continue** admet des primitives · Elles diffèrent d\'une constante : $F(x)+k$',
+      },
+      {
+        label: 'Condition initiale',
+        tex: 'F(x_0)=y_0\\;\\Rightarrow\\;k\\text{ unique}',
+        vars: 'Unique primitive vérifiant la condition · Trouver $k$ via $F(x_0)+k=y_0$',
+      },
+    ],
+  },
+  {
+    title: '2  Primitives usuelles',
+    rows: [
+      {
+        label: 'Puissances',
+        tex: 'x^n\\to\\dfrac{x^{n+1}}{n+1}\\;;\\;\\dfrac{1}{x^2}\\to-\\dfrac{1}{x}\\;;\\;\\dfrac{1}{\\sqrt{x}}\\to 2\\sqrt{x}',
+        vars: 'Sur $\\mathbb{R}$ pour $x^n$ ; sur $]0\\,;+\\infty[$ pour les autres',
+      },
+      {
+        label: 'ln · exp · trigo',
+        tex: '\\dfrac{1}{x}\\to\\ln x\\;;\\;e^x\\to e^x\\;;\\;\\sin x\\to-\\cos x\\;;\\;\\cos x\\to\\sin x',
+        vars: '$\\frac{1}{x}\\to\\ln x$ sur $]0\\,;+\\infty[$ · Toujours $+k$',
+      },
+    ],
+  },
+  {
+    title: '3  Formes composées',
+    rows: [
+      {
+        label: 'Les 5 formes',
+        tex: 'u\'u^n\\to\\dfrac{u^{n+1}}{n+1}\\;;\\;\\dfrac{u\'}{u}\\to\\ln u\\;;\\;u\'e^u\\to e^u',
+        vars: '$\\dfrac{u\'}{\\sqrt{u}}\\to 2\\sqrt{u}$ · $\\dfrac{u\'}{u^2}\\to-\\dfrac{1}{u}$ · ($u>0$ pour $\\ln u$ et $\\sqrt{u}$)',
+      },
+      {
+        label: 'Méthode',
+        tex: '\\text{repérer }u\\;\\to\\;\\text{vérifier }u\'\\;\\to\\;\\text{ajuster le facteur}',
+        vars: 'Ex. $xe^{x^2}=\\frac{1}{2}(2x)e^{x^2}\\to\\frac{1}{2}e^{x^2}$ · **Toujours vérifier en dérivant**',
+      },
+    ],
+  },
+  {
+    title: '4  Intégrale & Théorème fondamental',
+    rows: [
+      {
+        label: 'Intégrale = aire',
+        tex: 'f\\geq 0\\;:\\;\\int_a^b f(x)\\,\\mathrm{d}x=\\text{aire sous }\\mathcal{C}_f',
+        vars: 'En unités d\'aire · $f\\leq 0$ : intégrale $=$ opposé de l\'aire · Signes comptés algébriquement',
+      },
+      {
+        label: 'Théorème fondamental',
+        tex: '\\int_a^b f(x)\\,\\mathrm{d}x=\\bigl[F(x)\\bigr]_a^b=F(b)-F(a)',
+        vars: '$F$ primitive **quelconque** de $f$ — la constante $k$ s\'élimine',
+      },
+    ],
+  },
+  {
+    title: '5  Propriétés',
+    rows: [
+      {
+        label: 'Linéarité · Chasles',
+        tex: '\\int_a^b(\\lambda f+\\mu g)=\\lambda\\int_a^b f+\\mu\\int_a^b g\\;;\\;\\int_a^b f=\\int_a^c f+\\int_c^b f',
+        vars: '$\\int_a^a f=0$ · $\\int_b^a f=-\\int_a^b f$',
+      },
+      {
+        label: 'Positivité · Ordre',
+        tex: 'f\\geq 0\\Rightarrow\\int_a^b f\\geq 0\\;;\\;f\\leq g\\Rightarrow\\int_a^b f\\leq\\int_a^b g',
+        vars: '($a\\leq b$) · **Piège** : intégrale nulle $\\neq$ fonction nulle (compensation des aires)',
+      },
+      {
+        label: 'Valeur moyenne',
+        tex: '\\mu=\\dfrac{1}{b-a}\\int_a^b f(x)\\,\\mathrm{d}x',
+        vars: 'Le rectangle de hauteur $\\mu$ a la même aire que le domaine sous la courbe',
+      },
+    ],
+  },
+  {
+    title: '6  IPP & Aires',
+    rows: [
+      {
+        label: 'Intégration par parties',
+        tex: '\\int_a^b uv\'=\\bigl[uv\\bigr]_a^b-\\int_a^b u\'v',
+        vars: '$u$ se **simplifie** en dérivant (polynôme, $\\ln$) ; $v\'$ se **primitive** ($e^x$, $\\sin$, $\\cos$)',
+      },
+      {
+        label: 'Aire entre deux courbes',
+        tex: '\\mathcal{A}=\\int_a^b\\bigl(f(x)-g(x)\\bigr)\\,\\mathrm{d}x\\quad(f\\geq g)',
+        vars: 'Vérifier d\'abord $f\\geq g$ sur $[a\\,;b]$ (chercher les points d\'intersection)',
+      },
+    ],
+  },
+];
+
+const PRIMITIVES_COURS: Section[] = [
+  {
+    id: 'primitives-def',
+    num: '1',
+    title: 'Primitives — définition',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Primitive',
+        content: 'Soit $f$ une fonction définie sur un intervalle $I$. Une fonction $F$ est une **primitive** de $f$ sur $I$ lorsque $F$ est dérivable sur $I$ et $F\'=f$ sur $I$.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Primitiver, c\'est « remonter » la dérivation : on cherche la fonction dont la dérivée est $f$. C\'est l\'opération inverse de dériver.',
+      },
+      {
+        type: 'propriete',
+        text: '**Existence et unicité à une constante près** — Toute fonction **continue** sur un intervalle $I$ y admet des primitives. Si $F$ est une primitive de $f$ sur $I$, alors les primitives de $f$ sont exactement les fonctions $x\\mapsto F(x)+k$, $k\\in\\mathbb{R}$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Primitive vérifiant une condition** — Pour tout point $x_0\\in I$ et tout réel $y_0$, il existe une **unique** primitive $F$ de $f$ sur $I$ telle que $F(x_0)=y_0$.',
+      },
+      {
+        type: 'methode',
+        title: 'PRIMITIVE VÉRIFIANT F(x₀) = y₀',
+        steps: [
+          'Déterminer la forme générale $F(x)+k$ des primitives.',
+          'Utiliser la condition $F(x_0)+k=y_0$ pour trouver $k$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Les primitives de $f(x)=2x+1$ sont $F(x)=x^2+x+k$.',
+          'Celle vérifiant $F(0)=3$ : $0+0+k=3$, donc $k=3$ et $F(x)=x^2+x+3$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 3 et 10 : primitive vérifiant une condition initiale' },
+    ],
+  },
+  {
+    id: 'primitives-usuelles',
+    num: '2',
+    title: 'Primitives des fonctions usuelles',
+    blocks: [
+      {
+        type: 'para',
+        text: 'On lit ce tableau **à l\'envers du tableau des dérivées**. $k$ désigne une constante réelle quelconque.',
+      },
+      {
+        type: 'formules',
+        label: 'PRIMITIVES USUELLES',
+        rows: [
+          { desc: 'Constante :', tex: 'a\\;\\to\\;ax+k\\quad\\text{sur }\\mathbb{R}' },
+          { desc: 'Puissance :', tex: 'x^n\\;\\to\\;\\dfrac{x^{n+1}}{n+1}+k\\quad\\text{sur }\\mathbb{R}' },
+          { desc: 'Inverse carré :', tex: '\\dfrac{1}{x^2}\\;\\to\\;-\\dfrac{1}{x}+k' },
+          { desc: 'Racine :', tex: '\\dfrac{1}{\\sqrt{x}}\\;\\to\\;2\\sqrt{x}+k\\quad\\text{sur }]0;+\\infty[' },
+          { desc: 'Inverse :', tex: '\\dfrac{1}{x}\\;\\to\\;\\ln x+k\\quad\\text{sur }]0;+\\infty[' },
+          { desc: 'Exponentielle :', tex: 'e^x\\;\\to\\;e^x+k' },
+          { desc: 'Sinus :', tex: '\\sin x\\;\\to\\;-\\cos x+k' },
+          { desc: 'Cosinus :', tex: '\\cos x\\;\\to\\;\\sin x+k' },
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Linéarité** — Si $F$ et $G$ sont des primitives de $f$ et $g$, alors $F+G$ est une primitive de $f+g$, et $\\lambda F$ est une primitive de $\\lambda f$ ($\\lambda\\in\\mathbb{R}$).',
+      },
+      {
+        type: 'piege',
+        text: 'Il n\'existe **pas** de règle simple pour la primitive d\'un produit ou d\'un quotient (contrairement à la dérivation). On se ramène aux formes du tableau ou aux formes composées de la section suivante.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2 et 6 : primitives de polynômes, puissances, exp & trigo' },
+    ],
+  },
+  {
+    id: 'primitives-composees',
+    num: '3',
+    title: 'Primitives composées u\'·f(u)',
+    blocks: [
+      {
+        type: 'para',
+        text: 'En « renversant » les formules de dérivation des fonctions composées, on obtient des formes très fréquentes. On note $u$ une fonction dérivable et $u\'$ sa dérivée.',
+      },
+      {
+        type: 'formules',
+        label: 'FORMES COMPOSÉES',
+        rows: [
+          { tex: 'u\'u^n\\;\\to\\;\\dfrac{u^{n+1}}{n+1}' },
+          { tex: '\\dfrac{u\'}{u}\\;\\to\\;\\ln u\\quad(u>0)' },
+          { tex: 'u\'e^u\\;\\to\\;e^u' },
+          { tex: '\\dfrac{u\'}{\\sqrt{u}}\\;\\to\\;2\\sqrt{u}\\quad(u>0)' },
+          { tex: '\\dfrac{u\'}{u^2}\\;\\to\\;-\\dfrac{1}{u}' },
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'RECONNAÎTRE UNE FORME COMPOSÉE',
+        steps: [
+          'Repérer une fonction « intérieure » $u$.',
+          'Vérifier que sa dérivée $u\'$ apparaît (à un facteur constant près) en facteur.',
+          'Appliquer la formule ; ajuster le facteur constant si besoin.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          '$f(x)=2xe^{x^2}$ : avec $u=x^2$, $u\'=2x$, forme $u\'e^u$, donc $F(x)=e^{x^2}$.',
+          '$f(x)=\\dfrac{2x}{x^2+1}$ : avec $u=x^2+1>0$, forme $\\dfrac{u\'}{u}$, donc $F(x)=\\ln(x^2+1)$.',
+          '$f(x)=2x(x^2+1)^3$ : forme $u\'u^3$, donc $F(x)=\\dfrac{(x^2+1)^4}{4}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Le facteur constant** — Pour $f(x)=xe^{x^2}$, on a $u\'=2x$ mais seul $x$ apparaît : on écrit $f=\\frac{1}{2}(2x)e^{x^2}$, d\'où $F(x)=\\frac{1}{2}e^{x^2}$. **Toujours** vérifier en dérivant $F$.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 7, 8, 9 et 17 : formes u\'uⁿ, u\'/u, u\'eᵘ' },
+    ],
+  },
+  {
+    id: 'integrale-aire',
+    num: '4',
+    title: 'Intégrale & aire',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Intégrale d\'une fonction continue positive',
+        content: 'Soit $f$ continue et **positive** sur $[a\\,;b]$. L\'**intégrale** de $f$ sur $[a\\,;b]$, notée $\\displaystyle\\int_a^b f(x)\\,\\mathrm{d}x$, est l\'**aire** (en unités d\'aire) du domaine compris entre la courbe de $f$, l\'axe des abscisses et les droites $x=a$ et $x=b$.',
+      },
+      {
+        type: 'figure',
+        caption: 'L\'intégrale $\\int_a^b f(x)\\,\\mathrm{d}x$ est l\'aire du domaine sous la courbe $\\mathcal{C}_f$ entre $a$ et $b$.',
+        src: '/modules/maths-primitives/fig-aire.png',
+      },
+      {
+        type: 'idee_cle',
+        text: 'La variable $x$ et le « $\\mathrm{d}x$ » évoquent une somme d\'aires de fines tranches verticales de hauteur $f(x)$ et de largeur infinitésimale $\\mathrm{d}x$. L\'intégrale est la limite de cette somme : d\'où le symbole $\\int$, un « S » allongé pour « somme ».',
+      },
+      {
+        type: 'piege',
+        text: '**Signe** — Si $f$ est négative sur $[a\\,;b]$, l\'intégrale est l\'**opposé** de l\'aire (négative). Si $f$ change de signe, l\'intégrale compte les aires au-dessus de l\'axe positivement et celles en dessous négativement.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 5 et 14 : signe d\'une intégrale, valeur absolue' },
+    ],
+  },
+  {
+    id: 'theoreme-fondamental',
+    num: '5',
+    title: 'Théorème fondamental & calcul',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME FONDAMENTAL DE L\'ANALYSE',
+        content: 'Soit $f$ continue sur $[a\\,;b]$ et $F$ une primitive quelconque de $f$. Alors :',
+        formulas: ['\\int_a^b f(x)\\,\\mathrm{d}x=F(b)-F(a)=\\bigl[F(x)\\bigr]_a^b'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Le résultat ne dépend pas de la primitive choisie : la constante $k$ s\'élimine dans $F(b)-F(a)$. Ce théorème relie deux mondes — l\'aire (intégrale) et l\'anti-dérivation (primitive) — et transforme un calcul d\'aire en une simple soustraction.',
+      },
+      {
+        type: 'methode',
+        title: 'CALCULER UNE INTÉGRALE',
+        steps: [
+          'Déterminer une primitive $F$ de $f$ (tableaux, formes composées).',
+          'Calculer $F(b)-F(a)$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          '$\\displaystyle\\int_0^1 x^2\\,\\mathrm{d}x=\\left[\\tfrac{x^3}{3}\\right]_0^1=\\tfrac{1}{3}$.',
+          '$\\displaystyle\\int_1^2\\tfrac{1}{x}\\,\\mathrm{d}x=\\bigl[\\ln x\\bigr]_1^2=\\ln 2$.',
+          '$\\displaystyle\\int_0^1 e^x\\,\\mathrm{d}x=\\bigl[e^x\\bigr]_0^1=e-1$.',
+          '$\\displaystyle\\int_0^\\pi\\sin x\\,\\mathrm{d}x=\\bigl[-\\cos x\\bigr]_0^\\pi=-(-1)-(-1)=2$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 11, 12 et 13 : calculs d\'intégrales' },
+    ],
+  },
+  {
+    id: 'proprietes',
+    num: '6',
+    title: 'Propriétés de l\'intégrale',
+    blocks: [
+      {
+        type: 'propriete',
+        text: '**Linéarité et relation de Chasles** — Pour $f,g$ continues, $\\lambda,\\mu\\in\\mathbb{R}$, et $c\\in[a\\,;b]$ : $\\displaystyle\\int_a^b(\\lambda f+\\mu g)=\\lambda\\int_a^b f+\\mu\\int_a^b g$ et $\\displaystyle\\int_a^b f=\\int_a^c f+\\int_c^b f$. De plus $\\displaystyle\\int_a^a f=0$ et $\\displaystyle\\int_b^a f=-\\int_a^b f$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Positivité et ordre** — Si $a\\leq b$ : $f\\geq 0$ sur $[a\\,;b]\\Rightarrow\\displaystyle\\int_a^b f\\geq 0$. Et si $f\\leq g$ sur $[a\\,;b]$ : $\\displaystyle\\int_a^b f\\leq\\int_a^b g$.',
+      },
+      {
+        type: 'piege',
+        text: 'Une intégrale nulle ne signifie **pas** que la fonction est nulle : les aires positives et négatives peuvent se compenser (ex. $\\int_{-1}^{1}x\\,\\mathrm{d}x=0$).',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Valeur moyenne',
+        content: 'La **valeur moyenne** de $f$ sur $[a\\,;b]$ ($a<b$) est :',
+        formulas: ['\\mu=\\dfrac{1}{b-a}\\int_a^b f(x)\\,\\mathrm{d}x'],
+      },
+      {
+        type: 'figure',
+        caption: 'La valeur moyenne $\\mu$ : le rectangle de hauteur $\\mu$ a la même aire que le domaine sous la courbe.',
+        src: '/modules/maths-primitives/fig-moyenne.png',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Valeur moyenne de $f(x)=x^2$ sur $[0\\,;3]$ : $\\mu=\\dfrac{1}{3}\\displaystyle\\int_0^3 x^2\\,\\mathrm{d}x=\\dfrac{1}{3}\\times 9=3$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 13, 14 et 15 : linéarité, Chasles, valeur moyenne' },
+    ],
+  },
+  {
+    id: 'ipp-aires',
+    num: '7',
+    title: 'Intégration par parties & aires',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Intégration par parties (IPP)',
+        content: 'Si $u$ et $v$ sont dérivables à dérivées continues sur $[a\\,;b]$ :',
+        formulas: ['\\int_a^b u(x)\\,v\'(x)\\,\\mathrm{d}x=\\bigl[u(x)v(x)\\bigr]_a^b-\\int_a^b u\'(x)\\,v(x)\\,\\mathrm{d}x'],
+      },
+      {
+        type: 'methode',
+        title: 'CHOISIR u ET v\'',
+        steps: [
+          'Choisir $u$ qui se **simplifie** en dérivant (souvent un polynôme, ou $\\ln$).',
+          'Choisir $v\'$ que l\'on sait **primitiver** (souvent $e^x$, $\\sin$, $\\cos$).',
+          'Appliquer la formule ; l\'intégrale restante doit être plus simple.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE 1 — ∫ xeˣ dx',
+        lines: [
+          'On pose $u=x$ ($u\'=1$) et $v\'=e^x$ ($v=e^x$) :',
+          '$\\displaystyle\\int_0^1 xe^x\\,\\mathrm{d}x=\\bigl[xe^x\\bigr]_0^1-\\int_0^1 e^x\\,\\mathrm{d}x=e-(e-1)=1$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE 2 — ∫ ln x dx',
+        lines: [
+          'On pose $u=\\ln x$ ($u\'=\\tfrac{1}{x}$) et $v\'=1$ ($v=x$) :',
+          '$\\displaystyle\\int_1^e\\ln x\\,\\mathrm{d}x=\\bigl[x\\ln x\\bigr]_1^e-\\int_1^e 1\\,\\mathrm{d}x=e-(e-1)=1$.',
+        ],
+      },
+      { type: 'subsection', num: '7.1', title: 'Aire entre deux courbes' },
+      {
+        type: 'propriete',
+        text: 'Si $f\\geq g$ sur $[a\\,;b]$, l\'aire du domaine compris entre les deux courbes est $\\mathcal{A}=\\displaystyle\\int_a^b\\bigl(f(x)-g(x)\\bigr)\\,\\mathrm{d}x$.',
+      },
+      {
+        type: 'figure',
+        caption: 'Aire entre $y=x$ et $y=x^2$ sur $[0\\,;1]$, où $x\\geq x^2$.',
+        src: '/modules/maths-primitives/fig-entre-courbes.png',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Sur $[0\\,;1]$, $x\\geq x^2$, donc l\'aire entre $y=x$ et $y=x^2$ vaut',
+          '$\\displaystyle\\int_0^1(x-x^2)\\,\\mathrm{d}x=\\left[\\tfrac{x^2}{2}-\\tfrac{x^3}{3}\\right]_0^1=\\tfrac{1}{2}-\\tfrac{1}{3}=\\tfrac{1}{6}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 16, 18, 19, 20 : IPP & aires — puis sujets bac 21 à 23' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -2515,8 +2905,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isProbabilitesCours = module.id === 'maths-probabilites';
   const pal = isMaths ? V : A;
   const isGeometrieCours = module.id === 'maths-geometrie';
-  const sections = isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isPrimitivesCours = module.id === 'maths-primitives';
+  const sections = isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -2684,8 +3075,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isLogarithmeFiche = module.id === 'maths-logarithme';
   const isProbabilitesFiche = module.id === 'maths-probabilites';
   const isGeometrieFiche = module.id === 'maths-geometrie';
-  const ficheData = isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isPrimitivesFiche = module.id === 'maths-primitives';
+  const ficheData = isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
