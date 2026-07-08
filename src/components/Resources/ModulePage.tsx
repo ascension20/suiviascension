@@ -13,6 +13,7 @@ import { PROBABILITES_QCM, PROBABILITES_EXERCISES, PROBABILITES_CORRECTIONS } fr
 import { GEOMETRIE_QCM, GEOMETRIE_EXERCISES, GEOMETRIE_CORRECTIONS } from '@/lib/geometrie-content';
 import { PRIMITIVES_QCM, PRIMITIVES_EXERCISES, PRIMITIVES_CORRECTIONS } from '@/lib/primitives-content';
 import { EXPONENTIELLE_QCM, EXPONENTIELLE_EXERCISES, EXPONENTIELLE_CORRECTIONS } from '@/lib/exponentielle-content';
+import { EQUADIFF_QCM, EQUADIFF_EXERCISES, EQUADIFF_CORRECTIONS } from '@/lib/equadiff-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -50,14 +51,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isGeometrie = module.id === 'maths-geometrie';
     const isPrimitives = module.id === 'maths-primitives';
     const isExponentielle = module.id === 'maths-exponentielle';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm') {
-      const questions = isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isEquadiff = module.id === 'maths-equadiff';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm') {
+      const questions = isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -2959,6 +2961,305 @@ const EXPONENTIELLE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Équations différentielles ─────────────────────────────────────────
+const EQUADIFF_OBJECTIFS = [
+  'Comprendre ce qu\'est une **équation différentielle** : l\'inconnue est une fonction.',
+  'Résoudre $y\'=ay$ : solutions $x\\mapsto Ce^{ax}$, avec croissance ou décroissance selon le signe de $a$.',
+  'Appliquer le **théorème de Cauchy** : une condition initiale isole une unique solution.',
+  'Résoudre $y\'=ay+b$ : structure « particulière + homogène », **solution d\'équilibre** $-\\frac{b}{a}$.',
+  'Étudier le comportement des solutions en $+\\infty$ (convergence vers l\'équilibre ou divergence).',
+  '**Modéliser** : refroidissement de Newton, croissance de population, charge d\'un condensateur.',
+];
+
+const EQUADIFF_FICHE_DATA = [
+  {
+    title: '1  Définition & Équation y\' = ay',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\text{inconnue}=\\text{une fonction }y\\text{, reliant }y\\text{ et }y\'',
+        vars: 'Résoudre = trouver **toutes** les fonctions solutions · Premier ordre : seuls $y$ et $y\'$ interviennent',
+      },
+      {
+        label: 'Solutions de y\' = ay',
+        tex: 'x\\mapsto Ce^{ax},\\quad C\\in\\mathbb{R}',
+        vars: '$a>0$ : croissance · $a<0$ : décroissance · Sans condition : **infinité** de solutions ($C$ libre)',
+      },
+    ],
+  },
+  {
+    title: '2  Condition initiale (Cauchy)',
+    rows: [
+      {
+        label: 'Théorème de Cauchy',
+        tex: 'y(x_0)=y_0\\;\\Rightarrow\\;\\text{unique solution}',
+        vars: 'Par chaque point du plan passe exactement une courbe solution',
+      },
+      {
+        label: 'Méthode',
+        tex: 'y=Ce^{ax}\\;\\to\\;Ce^{ax_0}=y_0\\;\\to\\;C',
+        vars: 'Injecter la condition dans la forme générale pour trouver $C$ · Ex. $y\'=2y$, $y(0)=3$ : $y=3e^{2x}$',
+      },
+    ],
+  },
+  {
+    title: '3  Équation y\' = ay + b',
+    rows: [
+      {
+        label: 'Solutions',
+        tex: 'x\\mapsto Ce^{ax}-\\dfrac{b}{a},\\quad C\\in\\mathbb{R}\\;(a\\neq 0)',
+        vars: 'Structure : solution générale = particulière $(-\\frac{b}{a})$ + homogène $(Ce^{ax})$',
+      },
+      {
+        label: 'Solution d\'équilibre',
+        tex: 'y=-\\dfrac{b}{a}\\quad\\text{(constante)}',
+        vars: '$a<0$ : les solutions **convergent** vers $-\\frac{b}{a}$ · $a>0$ : elles s\'en écartent · **Attention au signe !**',
+      },
+    ],
+  },
+  {
+    title: '4  Résolution complète',
+    rows: [
+      {
+        label: 'Méthode',
+        tex: 'y=Ce^{ax}-\\dfrac{b}{a}\\;\\to\\;y(x_0)=y_0\\;\\to\\;C\\;\\to\\;\\text{limite}',
+        vars: 'Identifier $a$ et $b$ **exactement** depuis la forme $y\'=ay+b$ · Interpréter équilibre et limite en $+\\infty$',
+      },
+      {
+        label: 'Vérification',
+        tex: '\\text{dériver }y\\text{ et injecter dans l\'équation}',
+        vars: 'Réflexe : toujours vérifier une solution en la dérivant',
+      },
+    ],
+  },
+  {
+    title: '5  Modélisation',
+    rows: [
+      {
+        label: 'Refroidissement',
+        tex: 'T\'=-k\\,(T-T_{\\text{amb}})',
+        vars: 'Forme $T\'=-kT+kT_{\\text{amb}}$ · La température tend vers $T_{\\text{amb}}$ (équilibre)',
+      },
+      {
+        label: 'Condensateur',
+        tex: 'RC\\,u\'+u=E\\;\\iff\\;u\'=-\\tfrac{1}{RC}u+\\tfrac{E}{RC}',
+        vars: 'La tension tend vers $E$ avec le temps caractéristique $\\tau=RC$',
+      },
+      {
+        label: 'Croissance',
+        tex: 'P\'=aP\\;\\Rightarrow\\;P(t)=P_0\\,e^{at}',
+        vars: 'Taux proportionnel à la quantité présente · Modèle logistique (non linéaire) en ouverture',
+      },
+    ],
+  },
+];
+
+const EQUADIFF_COURS: Section[] = [
+  {
+    id: 'definition',
+    num: '1',
+    title: 'Définition & vocabulaire',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Équation différentielle',
+        content: 'Une **équation différentielle** est une équation dont l\'inconnue est une **fonction** $y$, et qui relie $y$ à ses dérivées ($y\'$, $y\'\'$, …). **Résoudre** l\'équation, c\'est trouver toutes les fonctions $y$, dérivables sur un intervalle, qui la vérifient.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Une équation ordinaire cherche des **nombres** ; une équation différentielle cherche des **fonctions**. Elle décrit une loi d\'évolution (« la vitesse de variation dépend de l\'état présent ») et ses solutions sont les trajectoires possibles du système.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE FONDATEUR',
+        lines: [
+          'La fonction exponentielle est la solution de $y\'=y$ valant $1$ en $0$.',
+          'Ce chapitre généralise cette idée aux équations $y\'=ay$ et $y\'=ay+b$.',
+        ],
+      },
+      {
+        type: 'reflex',
+        text: '**Ordre.** On se limite ici aux équations du **premier ordre** (elles ne font intervenir que $y$ et $y\'$), à coefficients constants.',
+      },
+    ],
+  },
+  {
+    id: 'equation-ay',
+    num: '2',
+    title: 'Équation y\' = ay',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Solutions de y\' = ay',
+        content: 'Soit $a$ un réel. Les solutions sur $\\mathbb{R}$ de l\'équation $y\'=ay$ sont les fonctions :',
+        formulas: ['x\\mapsto C\\,e^{ax},\\qquad C\\in\\mathbb{R}'],
+      },
+      {
+        type: 'idee_cle',
+        text: '$y\'=ay$ dit « le taux de variation est proportionnel à la quantité présente » : c\'est le modèle universel de la croissance ou décroissance exponentielle. La constante $C$ fixe la « taille de départ », et le signe de $a$ décide croissance ($a>0$) ou décroissance ($a<0$).',
+      },
+      {
+        type: 'figure',
+        caption: 'Famille des solutions de $y\'=0{,}5\\,y$ : une courbe $x\\mapsto Ce^{0{,}5x}$ par valeur de $C$. La solution nulle ($C=0$) est incluse.',
+        src: '/modules/maths-equadiff/fig-famille.png',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Les solutions de $y\'=3y$ sont $x\\mapsto Ce^{3x}$. Les solutions de $y\'=-2y$ sont $x\\mapsto Ce^{-2x}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'La constante $C$ est **quelconque** : il y a une infinité de solutions. Pour en isoler une seule, il faut une condition supplémentaire (section 3).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2 et 5 : solutions de y\'=ay, vérification, mise en forme' },
+    ],
+  },
+  {
+    id: 'cauchy',
+    num: '3',
+    title: 'Condition initiale — Cauchy',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Problème de Cauchy',
+        content: 'Soit $a\\in\\mathbb{R}$, et $(x_0,y_0)$ donné. L\'équation $y\'=ay$ admet une **unique** solution vérifiant la condition initiale $y(x_0)=y_0$.',
+      },
+      {
+        type: 'methode',
+        title: 'SOLUTION VÉRIFIANT y(x₀) = y₀',
+        steps: [
+          'Écrire la forme générale : $y(x)=Ce^{ax}$.',
+          'Utiliser la condition : $Ce^{ax_0}=y_0$, en déduire $C=y_0\\,e^{-ax_0}$.',
+          'Conclure avec la solution unique.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Résoudre $y\'=2y$ avec $y(0)=3$. Forme générale $y(x)=Ce^{2x}$ ; condition $Ce^0=C=3$.',
+          'La solution est $y(x)=3e^{2x}$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Géométriquement : par chaque point du plan passe **exactement une** courbe solution. La condition initiale sélectionne la courbe qui passe par le point $(x_0,y_0)$ dans la famille précédente.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 6 et 7 : problèmes de Cauchy, condition en x₀ ≠ 0' },
+    ],
+  },
+  {
+    id: 'equation-ayb',
+    num: '4',
+    title: 'Équation y\' = ay + b',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Solutions de y\' = ay + b',
+        content: 'Soit $a\\neq 0$ et $b$ réels. Les solutions sur $\\mathbb{R}$ de $y\'=ay+b$ sont les fonctions :',
+        formulas: ['x\\mapsto C\\,e^{ax}-\\dfrac{b}{a},\\qquad C\\in\\mathbb{R}'],
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Solution particulière constante',
+        content: 'La fonction constante $x\\mapsto-\\dfrac{b}{a}$ est une solution (elle vérifie $y\'=0=a\\cdot(-\\tfrac{b}{a})+b$). On l\'appelle **solution d\'équilibre** : les autres solutions s\'en écartent ($a>0$) ou s\'en rapprochent ($a<0$).',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Toute solution est la somme d\'une **solution particulière** constante ($-\\frac{b}{a}$) et de la **solution générale de l\'équation homogène** $y\'=ay$ (les $Ce^{ax}$). C\'est la structure « particulière + homogène ».',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Solutions de $y\'=-y+4$ ($a=-1$, $b=4$) : $y(x)=Ce^{-x}-\\dfrac{4}{-1}=Ce^{-x}+4$.',
+          'L\'équilibre est $y=4$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 8 et 9 : solutions de y\'=ay+b, solution d\'équilibre' },
+    ],
+  },
+  {
+    id: 'resolution',
+    num: '5',
+    title: 'Résolution complète',
+    blocks: [
+      {
+        type: 'methode',
+        title: 'RÉSOUDRE y\' = ay + b AVEC y(x₀) = y₀',
+        steps: [
+          'Identifier $a$ et $b$, écrire la forme générale $y(x)=Ce^{ax}-\\dfrac{b}{a}$.',
+          'Injecter la condition initiale $y(x_0)=y_0$ pour déterminer $C$.',
+          'Écrire la solution unique et, si besoin, étudier son comportement en $+\\infty$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE COMPLET',
+        lines: [
+          'Résoudre $y\'=-y+4$ avec $y(0)=1$.',
+          'Forme générale : $y(x)=Ce^{-x}+4$. Condition : $y(0)=C+4=1$, donc $C=-3$. La solution est $y(x)=-3e^{-x}+4$.',
+          'Quand $x\\to+\\infty$, $e^{-x}\\to 0$, donc $y(x)\\to 4$ : la solution tend vers l\'équilibre.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Le signe de $-\\frac{b}{a}$** — Attention au signe : dans $y\'=-y+4$, $a=-1$ et $b=4$, donc $-\\frac{b}{a}=-\\frac{4}{-1}=+4$. Toujours identifier $a$ et $b$ à partir de la forme $y\'=ay+b$ **exactement**.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 10, 12 et 13 : résolutions complètes, comportement en +∞' },
+    ],
+  },
+  {
+    id: 'modelisation',
+    num: '6',
+    title: 'Modélisation',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Les équations $y\'=ay+b$ modélisent de nombreux phénomènes physiques, biologiques ou économiques d\'évolution « vers un équilibre ».',
+      },
+      {
+        type: 'exemple',
+        title: 'REFROIDISSEMENT (LOI DE NEWTON)',
+        lines: [
+          'Un corps de température $T(t)$ plongé dans un milieu à $T_{\\text{amb}}=20°$ vérifie $T\'=-k\\,(T-T_{\\text{amb}})$, soit $T\'=-kT+kT_{\\text{amb}}$.',
+          'Avec $k=0{,}1$ et $T(0)=90°$ : $T(t)=20+70\\,e^{-0{,}1t}$. La température décroît de $90°$ vers l\'asymptote $20°$.',
+        ],
+      },
+      {
+        type: 'figure',
+        caption: 'Refroidissement : $T(t)=20+70e^{-0{,}1t}$ tend vers la température ambiante $20°$ (équilibre).',
+        src: '/modules/maths-equadiff/fig-refroidissement.png',
+      },
+      {
+        type: 'exemple',
+        title: 'CHARGE D\'UN CONDENSATEUR',
+        lines: [
+          'La tension $u(t)$ aux bornes d\'un condensateur (circuit RC, source $E$) vérifie $RC\\,u\'+u=E$, soit $u\'=-\\dfrac{1}{RC}\\,u+\\dfrac{E}{RC}$.',
+          'La tension tend vers $E$ avec le temps caractéristique $\\tau=RC$.',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'MODÉLISER',
+        steps: [
+          'Traduire l\'énoncé en une équation $y\'=ay+b$ (identifier le taux $a$ et le terme source $b$).',
+          'Résoudre avec la condition initiale.',
+          'Interpréter : équilibre $-\\frac{b}{a}$, sens de variation, limite en $+\\infty$.',
+        ],
+      },
+      {
+        type: 'reflex',
+        text: '**Ouverture — modèle logistique.** Pour une population limitée, on utilise $N\'=aN\\bigl(1-\\frac{N}{M}\\bigr)$ (non linéaire). Le changement de variable $g=\\frac{1}{N}$ la ramène à une équation du type étudié ici — c\'est un grand classique de sujet de bac.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 11, 14 et 15 : refroidissement, croissance, condensateur — puis sujets bac 16 à 18' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -3244,8 +3545,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isGeometrieCours = module.id === 'maths-geometrie';
   const isPrimitivesCours = module.id === 'maths-primitives';
   const isExponentielleCours = module.id === 'maths-exponentielle';
-  const sections = isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isEquadiffCours = module.id === 'maths-equadiff';
+  const sections = isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -3415,8 +3717,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isGeometrieFiche = module.id === 'maths-geometrie';
   const isPrimitivesFiche = module.id === 'maths-primitives';
   const isExponentielleFiche = module.id === 'maths-exponentielle';
-  const ficheData = isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isEquadiffFiche = module.id === 'maths-equadiff';
+  const ficheData = isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
