@@ -10,6 +10,7 @@ import { SUITES_QCM, SUITES_EXERCISES, SUITES_CORRECTIONS } from '@/lib/suites-c
 import { FONCTIONS_QCM, FONCTIONS_EXERCISES, FONCTIONS_CORRECTIONS } from '@/lib/fonctions-content';
 import { LOGARITHME_QCM, LOGARITHME_EXERCISES, LOGARITHME_CORRECTIONS } from '@/lib/logarithme-content';
 import { PROBABILITES_QCM, PROBABILITES_EXERCISES, PROBABILITES_CORRECTIONS } from '@/lib/probabilites-content';
+import { GEOMETRIE_QCM, GEOMETRIE_EXERCISES, GEOMETRIE_CORRECTIONS } from '@/lib/geometrie-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -44,14 +45,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isFonctions = module.id === 'maths-fonctions';
     const isLogarithme = module.id === 'maths-logarithme';
     const isProbabilites = module.id === 'maths-probabilites';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm') {
-      const questions = isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isGeometrie = module.id === 'maths-geometrie';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm') {
+      const questions = isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -1839,6 +1841,397 @@ const PROBABILITES_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Géométrie dans l'espace ───────────────────────────────────────────
+const GEOMETRIE_OBJECTIFS = [
+  'Manipuler **colinéarité** et **coplanarité** de vecteurs (alignement, base, repère).',
+  'Calculer **normes, distances et milieux** avec les coordonnées en repère orthonormé.',
+  'Écrire et exploiter la **représentation paramétrique** d\'une droite de l\'espace.',
+  'Utiliser le **produit scalaire** : orthogonalité, angles, vecteur orthogonal à deux vecteurs.',
+  'Déterminer l\'**équation cartésienne d\'un plan** à partir d\'un vecteur normal.',
+  'Étudier les **positions relatives** et calculer la **distance d\'un point à un plan** (projeté orthogonal).',
+];
+
+const GEOMETRIE_FICHE_DATA = [
+  {
+    title: '1  Vecteurs — Colinéarité & Coplanarité',
+    rows: [
+      {
+        label: 'Colinéarité',
+        tex: '\\vec{u},\\vec{v}\\text{ colinéaires}\\iff\\vec{v}=k\\vec{u}',
+        vars: 'Points alignés : $\\vec{AB}$ et $\\vec{AC}$ colinéaires · $k$ réel, $\\vec{u}\\neq\\vec{0}$',
+      },
+      {
+        label: 'Coplanarité',
+        tex: '\\vec{w}=a\\vec{u}+b\\vec{v}',
+        vars: '$\\vec{w}$ coplanaire à $\\vec{u},\\vec{v}$ non colinéaires · Résoudre le système sur les coordonnées',
+      },
+      {
+        label: 'Base & repère',
+        tex: '\\vec{i},\\vec{j},\\vec{k}\\text{ non coplanaires}\\Rightarrow\\text{base}',
+        vars: 'Avec une origine $O$ : repère $(O\\,;\\vec{i},\\vec{j},\\vec{k})$ · Écriture unique $\\vec{u}=x\\vec{i}+y\\vec{j}+z\\vec{k}$',
+      },
+    ],
+  },
+  {
+    title: '2  Coordonnées & Distances',
+    rows: [
+      {
+        label: 'Vecteur & milieu',
+        tex: '\\vec{AB}\\,(x_B-x_A\\,;\\,y_B-y_A\\,;\\,z_B-z_A)',
+        vars: 'Milieu $I$ de $[AB]$ : moyennes des coordonnées $\\left(\\frac{x_A+x_B}{2},\\frac{y_A+y_B}{2},\\frac{z_A+z_B}{2}\\right)$',
+      },
+      {
+        label: 'Norme & distance',
+        tex: '\\|\\vec{u}\\|=\\sqrt{x^2+y^2+z^2}',
+        vars: '$AB=\\sqrt{(x_B-x_A)^2+(y_B-y_A)^2+(z_B-z_A)^2}$ · **Uniquement en repère orthonormé**',
+      },
+    ],
+  },
+  {
+    title: '3  Droites — Représentation paramétrique',
+    rows: [
+      {
+        label: 'Paramétrique',
+        tex: 'x=x_A+at\\;;\\;y=y_A+bt\\;;\\;z=z_A+ct\\quad(t\\in\\mathbb{R})',
+        vars: 'Point $A(x_A,y_A,z_A)$, vecteur directeur $\\vec{u}(a,b,c)$ · Chaque $t$ donne un point unique',
+      },
+      {
+        label: 'Appartenance',
+        tex: '\\text{même }t\\text{ dans les trois équations}',
+        vars: 'Trouver $t$ avec la 1ʳᵉ équation, vérifier qu\'il convient dans les deux autres',
+      },
+    ],
+  },
+  {
+    title: '4  Produit scalaire',
+    rows: [
+      {
+        label: 'Trois expressions',
+        tex: '\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\|\\vec{v}\\|\\cos(\\vec{u},\\vec{v})=xx\'+yy\'+zz\'',
+        vars: 'Aussi $\\frac{1}{2}\\bigl(\\|\\vec{u}\\|^2+\\|\\vec{v}\\|^2-\\|\\vec{u}-\\vec{v}\\|^2\\bigr)$ · Analytique en repère orthonormé',
+      },
+      {
+        label: 'Orthogonalité',
+        tex: '\\vec{u}\\perp\\vec{v}\\iff\\vec{u}\\cdot\\vec{v}=0',
+        vars: 'En coordonnées : $xx\'+yy\'+zz\'=0$',
+      },
+      {
+        label: 'Angle',
+        tex: '\\cos(\\vec{u},\\vec{v})=\\dfrac{\\vec{u}\\cdot\\vec{v}}{\\|\\vec{u}\\|\\,\\|\\vec{v}\\|}',
+        vars: 'Calculer le produit scalaire analytique et les normes, puis en déduire l\'angle',
+      },
+    ],
+  },
+  {
+    title: '5  Plans',
+    rows: [
+      {
+        label: 'Vecteur normal',
+        tex: 'M\\in(P)\\iff\\vec{AM}\\cdot\\vec{n}=0',
+        vars: '$\\vec{n}\\perp(P)$ : orthogonal à tous les vecteurs de $(P)$ · Vérifier $\\vec{n}\\cdot\\vec{u}=0$ **et** $\\vec{n}\\cdot\\vec{v}=0$',
+      },
+      {
+        label: 'Équation cartésienne',
+        tex: 'ax+by+cz+d=0\\quad\\text{avec}\\quad\\vec{n}(a,b,c)',
+        vars: '$d$ trouvé en injectant un point du plan · Les coefficients de $x,y,z$ donnent le vecteur normal',
+      },
+    ],
+  },
+  {
+    title: '6  Positions relatives & Distances',
+    rows: [
+      {
+        label: 'Droite & plan',
+        tex: '\\vec{u}\\cdot\\vec{n}\\neq 0\\;:\\;\\text{sécants}\\;;\\;\\vec{u}\\cdot\\vec{n}=0\\;:\\;\\text{parallèles}',
+        vars: 'Parallèle : incluse si un point de $\\mathcal{D}$ est dans $(P)$ · Intersection : substituer la paramétrique, résoudre en $t$',
+      },
+      {
+        label: 'Deux plans',
+        tex: '\\vec{n_1},\\vec{n_2}\\text{ colinéaires}\\;:\\;\\text{parallèles}',
+        vars: 'Sinon : sécants selon une droite',
+      },
+      {
+        label: 'Distance point → plan',
+        tex: 'd(M,P)=\\dfrac{|ax_0+by_0+cz_0+d|}{\\sqrt{a^2+b^2+c^2}}',
+        vars: '$(P) : ax+by+cz+d=0$, $M(x_0,y_0,z_0)$ · Atteinte au projeté orthogonal $H$ : $d(M,P)=MH$',
+      },
+    ],
+  },
+];
+
+const GEOMETRIE_COURS: Section[] = [
+  {
+    id: 'vecteurs',
+    num: '1',
+    title: 'Vecteurs de l\'espace',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Les vecteurs de l\'espace se manipulent comme dans le plan : addition, multiplication par un réel, relation de Chasles. La nouveauté est la notion de **coplanarité**.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Colinéarité',
+        content: 'Deux vecteurs $\\vec{u}$ et $\\vec{v}$ sont **colinéaires** lorsqu\'il existe un réel $k$ tel que $\\vec{v}=k\\,\\vec{u}$ (avec $\\vec{u}\\neq\\vec{0}$). Trois points $A$, $B$, $C$ sont alignés si et seulement si $\\vec{AB}$ et $\\vec{AC}$ sont colinéaires.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Vecteurs coplanaires',
+        content: 'Trois vecteurs $\\vec{u}$, $\\vec{v}$, $\\vec{w}$ sont **coplanaires** lorsqu\'ils admettent des représentants dans un même plan. De façon équivalente, $\\vec{w}$ est coplanaire à $\\vec{u},\\vec{v}$ (non colinéaires) s\'il existe des réels $a,b$ tels que $\\vec{w}=a\\,\\vec{u}+b\\,\\vec{v}$.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Deux vecteurs non colinéaires « engendrent » un plan. Un troisième vecteur est coplanaire s\'il reste dans ce plan, c\'est-à-dire s\'il s\'écrit comme combinaison des deux premiers. S\'il en « sort », les trois vecteurs forment une **base** de l\'espace.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Base et repère',
+        content: 'Trois vecteurs $\\vec{i},\\vec{j},\\vec{k}$ non coplanaires forment une **base** de l\'espace. Associés à un point origine $O$, ils forment un **repère** $(O\\,;\\vec{i},\\vec{j},\\vec{k})$. Tout vecteur $\\vec{u}$ s\'écrit alors de manière unique $\\vec{u}=x\\vec{i}+y\\vec{j}+z\\vec{k}$, et $(x,y,z)$ sont ses **coordonnées**.',
+      },
+      {
+        type: 'methode',
+        title: 'MONTRER QUE TROIS POINTS/VECTEURS SONT COPLANAIRES',
+        steps: [
+          'Chercher deux réels $a,b$ tels que $\\vec{w}=a\\vec{u}+b\\vec{v}$ (résoudre le système sur les coordonnées).',
+          'Si le système a une solution : coplanaires. Sinon : non coplanaires.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 7 et 8 : colinéarité, coplanarité, alignement' },
+    ],
+  },
+  {
+    id: 'coordonnees',
+    num: '2',
+    title: 'Repère & coordonnées',
+    blocks: [
+      {
+        type: 'para',
+        text: 'On se place désormais dans un repère **orthonormé** $(O\\,;\\vec{i},\\vec{j},\\vec{k})$ : les trois vecteurs de base sont deux à deux orthogonaux et de norme 1.',
+      },
+      {
+        type: 'figure',
+        caption: 'Un point $M$ et ses coordonnées $(2\\,;3\\,;2)$ dans le repère orthonormé.',
+        src: '/modules/maths-geometrie/fig-repere.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Calculs avec coordonnées** — Pour $A(x_A,y_A,z_A)$ et $B(x_B,y_B,z_B)$ : $\\vec{AB}\\,(x_B-x_A\\,;\\,y_B-y_A\\,;\\,z_B-z_A)$, et le milieu de $[AB]$ est $I\\left(\\frac{x_A+x_B}{2},\\frac{y_A+y_B}{2},\\frac{z_A+z_B}{2}\\right)$.',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Norme et distance (repère orthonormé)',
+        content: 'La norme du vecteur $\\vec{u}(x,y,z)$ est :',
+        formulas: ['\\|\\vec{u}\\|=\\sqrt{x^2+y^2+z^2}\\qquad;\\qquad AB=\\sqrt{(x_B-x_A)^2+(y_B-y_A)^2+(z_B-z_A)^2}'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Pour $\\vec{u}(2,-1,2)$ : $\\|\\vec{u}\\|=\\sqrt{4+1+4}=\\sqrt{9}=3$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'Les formules de norme, distance et produit scalaire par coordonnées **ne sont valables que dans un repère orthonormé**. Toujours vérifier cette hypothèse avant de les appliquer.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 2, 3 et 9 : distance, milieu, nature d\'un triangle' },
+    ],
+  },
+  {
+    id: 'droites',
+    num: '3',
+    title: 'Représentation paramétrique d\'une droite',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Droite par un point et un vecteur directeur',
+        content: 'La droite $\\mathcal{D}$ passant par $A(x_A,y_A,z_A)$ et de **vecteur directeur** $\\vec{u}(a,b,c)$ est l\'ensemble des points $M$ tels que $\\vec{AM}=t\\,\\vec{u}$, $t\\in\\mathbb{R}$. Une **représentation paramétrique** de $\\mathcal{D}$ est :',
+        formulas: ['\\begin{cases}x=x_A+at\\\\y=y_A+bt\\\\z=z_A+ct\\end{cases}\\quad t\\in\\mathbb{R}'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Le paramètre $t$ est une « horloge » : à $t=0$ on est en $A$, et quand $t$ varie, le point $M$ parcourt toute la droite dans la direction de $\\vec{u}$. Chaque valeur de $t$ donne un point, et un seul.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Droite passant par $A(1,2,3)$ de vecteur directeur $\\vec{u}(1,-1,2)$ : $x=1+t$, $y=2-t$, $z=3+2t$ ($t\\in\\mathbb{R}$).',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'UN POINT APPARTIENT-IL À LA DROITE ?',
+        steps: [
+          'Écrire les trois équations avec les coordonnées du point.',
+          'Trouver $t$ à partir de la première équation.',
+          'Vérifier que **ce même** $t$ convient dans les deux autres. Si oui, le point est sur la droite.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 4 et 10 : représentation paramétrique, appartenance' },
+    ],
+  },
+  {
+    id: 'produit-scalaire',
+    num: '4',
+    title: 'Produit scalaire dans l\'espace',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Le produit scalaire garde toutes ses propriétés du plan (symétrie, bilinéarité) et se calcule de trois façons.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Trois expressions',
+        content: 'Pour $\\vec{u}$ et $\\vec{v}$ : $\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\,\\|\\vec{v}\\|\\cos(\\vec{u},\\vec{v})$ (géométrique), $\\vec{u}\\cdot\\vec{v}=\\frac{1}{2}\\bigl(\\|\\vec{u}\\|^2+\\|\\vec{v}\\|^2-\\|\\vec{u}-\\vec{v}\\|^2\\bigr)$ (avec les normes), et en repère **orthonormé**, avec $\\vec{u}(x,y,z)$ et $\\vec{v}(x\',y\',z\')$ :',
+        formulas: ['\\vec{u}\\cdot\\vec{v}=xx\'+yy\'+zz\'\\quad\\text{(analytique)}'],
+      },
+      {
+        type: 'propriete',
+        text: '**Orthogonalité** — $\\vec{u}$ et $\\vec{v}$ sont **orthogonaux** si et seulement si $\\vec{u}\\cdot\\vec{v}=0$. En coordonnées : $xx\'+yy\'+zz\'=0$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          '$\\vec{u}(1,2,-1)\\cdot\\vec{v}(3,0,1)=3+0-1=2$.',
+          '$\\vec{u}(1,2,-1)\\cdot\\vec{w}(2,-1,0)=2-2+0=0$ : $\\vec{u}$ et $\\vec{w}$ sont orthogonaux.',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'CALCULER UN ANGLE',
+        steps: [
+          'Calculer $\\vec{u}\\cdot\\vec{v}$ (analytique) et les normes $\\|\\vec{u}\\|$, $\\|\\vec{v}\\|$.',
+          'En déduire $\\cos(\\vec{u},\\vec{v})=\\dfrac{\\vec{u}\\cdot\\vec{v}}{\\|\\vec{u}\\|\\,\\|\\vec{v}\\|}$, puis l\'angle. Ex. $\\vec{u}(1,1,0)$, $\\vec{v}(1,0,1)$ : $\\cos=\\dfrac{1}{\\sqrt{2}\\cdot\\sqrt{2}}=\\dfrac{1}{2}$, donc l\'angle vaut $60°$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 5, 11 et 12 : orthogonalité, angle, vecteur orthogonal à deux vecteurs' },
+    ],
+  },
+  {
+    id: 'plans',
+    num: '5',
+    title: 'Vecteur normal & équation d\'un plan',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Vecteur normal',
+        content: 'Un vecteur $\\vec{n}\\neq\\vec{0}$ est **normal** au plan $(P)$ s\'il est orthogonal à tous les vecteurs de $(P)$. Un point $M$ appartient au plan passant par $A$ et de vecteur normal $\\vec{n}$ si et seulement si $\\vec{AM}\\cdot\\vec{n}=0$.',
+      },
+      {
+        type: 'figure',
+        caption: 'Le vecteur $\\vec{n}$ est normal au plan $(P)$ : pour tout point $M$ du plan, $\\vec{n}\\cdot\\vec{AM}=0$.',
+        src: '/modules/maths-geometrie/fig-normal.png',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Équation cartésienne d\'un plan',
+        content: 'Dans un repère orthonormé, tout plan de vecteur normal $\\vec{n}(a,b,c)$ admet une équation de la forme $ax+by+cz+d=0$. Réciproquement, l\'ensemble des points vérifiant une telle équation (avec $(a,b,c)\\neq(0,0,0)$) est un plan de vecteur normal $\\vec{n}(a,b,c)$.',
+      },
+      {
+        type: 'methode',
+        title: 'ÉQUATION D\'UN PLAN CONNAISSANT A ET n',
+        steps: [
+          'Écrire $ax+by+cz+d=0$ avec $(a,b,c)$ les coordonnées de $\\vec{n}$.',
+          'Injecter les coordonnées de $A$ pour trouver $d$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Plan passant par $A(1,0,-2)$ de vecteur normal $\\vec{n}(2,-1,3)$ :',
+          '$2(x-1)-1(y-0)+3(z+2)=0\\iff 2x-y+3z+4=0$. Vérification en $A$ : $2-0-6+4=0$. ✓',
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'Pour montrer qu\'un vecteur est normal à un plan défini par deux vecteurs directeurs $\\vec{u},\\vec{v}$, il faut vérifier $\\vec{n}\\cdot\\vec{u}=0$ **et** $\\vec{n}\\cdot\\vec{v}=0$ (l\'orthogonalité à un seul ne suffit pas).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 6 et 13 : équation cartésienne, plan par trois points' },
+    ],
+  },
+  {
+    id: 'positions',
+    num: '6',
+    title: 'Positions relatives & intersections',
+    blocks: [
+      {
+        type: 'propriete',
+        text: '**Droite et plan** — Soit $\\mathcal{D}$ de vecteur directeur $\\vec{u}$ et $(P)$ de vecteur normal $\\vec{n}$. Si $\\vec{u}\\cdot\\vec{n}\\neq 0$ : $\\mathcal{D}$ et $(P)$ sont **sécants** en un unique point. Si $\\vec{u}\\cdot\\vec{n}=0$ : $\\mathcal{D}$ est **parallèle** à $(P)$ (incluse si un point de $\\mathcal{D}$ est dans $(P)$, strictement parallèle sinon).',
+      },
+      {
+        type: 'methode',
+        title: 'INTERSECTION DROITE / PLAN',
+        steps: [
+          'Substituer la représentation paramétrique $(x,y,z)$ de $\\mathcal{D}$ dans l\'équation cartésienne de $(P)$.',
+          'Résoudre l\'équation en $t$. Une solution unique $\\Rightarrow$ un point d\'intersection.',
+          'Reporter la valeur de $t$ pour obtenir les coordonnées du point.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Droite $x=1+t$, $y=2+t$, $z=t$ et plan $2x-y+3z+4=0$. En substituant :',
+          '$2(1+t)-(2+t)+3t+4=0\\iff 4t+4=0\\iff t=-1$. Le point d\'intersection est $(0\\,;1\\,;-1)$.',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Deux plans** — Deux plans de vecteurs normaux $\\vec{n_1},\\vec{n_2}$ sont **parallèles** si $\\vec{n_1},\\vec{n_2}$ sont colinéaires (confondus ou strictement parallèles), et **sécants selon une droite** sinon.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 14, 15 et 16 : positions relatives, intersection droite/plan' },
+    ],
+  },
+  {
+    id: 'distances',
+    num: '7',
+    title: 'Projeté orthogonal & distances',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Projeté orthogonal sur un plan',
+        content: 'Le **projeté orthogonal** $H$ d\'un point $M$ sur un plan $(P)$ est le point d\'intersection de $(P)$ avec la droite passant par $M$ et de vecteur directeur $\\vec{n}$ (normal à $(P)$). C\'est le point de $(P)$ **le plus proche** de $M$.',
+      },
+      {
+        type: 'figure',
+        caption: 'La distance de $M$ au plan $(P)$ est la longueur $MH$, où $H$ est le projeté orthogonal de $M$.',
+        src: '/modules/maths-geometrie/fig-projete.png',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Distance d\'un point à un plan',
+        content: 'Dans un repère orthonormé, la distance du point $M(x_0,y_0,z_0)$ au plan d\'équation $ax+by+cz+d=0$ est :',
+        formulas: ['d(M,P)=\\dfrac{|ax_0+by_0+cz_0+d|}{\\sqrt{a^2+b^2+c^2}}'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Distance de $M(1,1,1)$ au plan $2x-y+3z+4=0$ :',
+          '$d=\\dfrac{|2\\times 1-1+3\\times 1+4|}{\\sqrt{2^2+(-1)^2+3^2}}=\\dfrac{|8|}{\\sqrt{14}}=\\dfrac{8}{\\sqrt{14}}\\approx 2{,}14$.',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'COORDONNÉES DU PROJETÉ ORTHOGONAL H',
+        steps: [
+          'Écrire la droite passant par $M$ de vecteur directeur $\\vec{n}$ (paramétrée par $t$).',
+          'Injecter dans l\'équation du plan et résoudre en $t$.',
+          'Reporter $t$ : on obtient $H$. Alors $d(M,P)=MH$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '« Descendre » de $M$ vers le plan le long de la normale donne le chemin le plus court : tout autre point du plan est plus loin (théorème de Pythagore dans le triangle rectangle $MHK$). D\'où le rôle central du vecteur normal dans les calculs de distance.',
+      },
+      { type: 'lien_ex', text: '→ Exercice 17 : distance & projeté — puis sujets bac 18 à 20' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -2121,8 +2514,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isLogarithmeCours = module.id === 'maths-logarithme';
   const isProbabilitesCours = module.id === 'maths-probabilites';
   const pal = isMaths ? V : A;
-  const sections = isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isGeometrieCours = module.id === 'maths-geometrie';
+  const sections = isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -2289,8 +2683,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isFonctions = module.id === 'maths-fonctions';
   const isLogarithmeFiche = module.id === 'maths-logarithme';
   const isProbabilitesFiche = module.id === 'maths-probabilites';
-  const ficheData = isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isGeometrieFiche = module.id === 'maths-geometrie';
+  const ficheData = isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
