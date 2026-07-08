@@ -9,6 +9,7 @@ import { NEWTON_QCM, NEWTON_EXERCISES, NEWTON_CORRECTIONS } from '@/lib/newton-c
 import { SUITES_QCM, SUITES_EXERCISES, SUITES_CORRECTIONS } from '@/lib/suites-content';
 import { FONCTIONS_QCM, FONCTIONS_EXERCISES, FONCTIONS_CORRECTIONS } from '@/lib/fonctions-content';
 import { LOGARITHME_QCM, LOGARITHME_EXERCISES, LOGARITHME_CORRECTIONS } from '@/lib/logarithme-content';
+import { PROBABILITES_QCM, PROBABILITES_EXERCISES, PROBABILITES_CORRECTIONS } from '@/lib/probabilites-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -42,14 +43,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isMaths = module.subject === 'Maths';
     const isFonctions = module.id === 'maths-fonctions';
     const isLogarithme = module.id === 'maths-logarithme';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm') {
-      const questions = isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isProbabilites = module.id === 'maths-probabilites';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm') {
+      const questions = isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -1388,6 +1390,455 @@ const LOGARITHME_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Probabilités & loi binomiale ──────────────────────────────────────
+const PROBABILITES_OBJECTIFS = [
+  'Calculer une **probabilité conditionnelle** $\\mathbb{P}_B(A)$ et exploiter un **arbre pondéré**.',
+  'Appliquer la formule des **probabilités totales** et inverser un conditionnement (idée de Bayes).',
+  'Reconnaître l\'**indépendance** de deux événements et la distinguer de l\'incompatibilité.',
+  'Déterminer la **loi d\'une variable aléatoire**, son espérance, sa variance et son écart-type.',
+  'Reconnaître un **schéma de Bernoulli** et mener les calculs de la **loi binomiale** $\\mathcal{B}(n,p)$.',
+  'Majorer un écart par **Bienaymé-Tchebychev** et dimensionner un échantillon (loi des grands nombres).',
+];
+
+const PROBABILITES_FICHE_DATA = [
+  {
+    title: '1  Conditionnelles & Arbres',
+    rows: [
+      {
+        label: 'Proba conditionnelle',
+        tex: '\\mathbb{P}_B(A)=\\dfrac{\\mathbb{P}(A\\cap B)}{\\mathbb{P}(B)} \\quad (\\mathbb{P}(B)\\neq 0)',
+        vars: 'Intersection : $\\mathbb{P}(A\\cap B)=\\mathbb{P}(B)\\,\\mathbb{P}_B(A)=\\mathbb{P}(A)\\,\\mathbb{P}_A(B)$ · Attention : $\\mathbb{P}_B(A)\\neq\\mathbb{P}_A(B)$',
+      },
+      {
+        label: 'Arbre pondéré',
+        tex: '\\text{nœud : somme}=1\\;;\\;\\text{chemin : produit}',
+        vars: 'Feuille finale = somme des chemins qui y mènent · Les secondes branches portent des probabilités conditionnelles',
+      },
+      {
+        label: 'Probas totales',
+        tex: '\\mathbb{P}(B)=\\mathbb{P}(A)\\mathbb{P}_A(B)+\\mathbb{P}(\\bar{A})\\mathbb{P}_{\\bar{A}}(B)',
+        vars: 'Partition $\\{A,\\bar{A}\\}$ (cas le plus fréquent) · Généralise à toute partition $A_1,\\dots,A_n$ de $\\Omega$',
+      },
+      {
+        label: 'Inversion (Bayes)',
+        tex: '\\mathbb{P}_B(A)=\\dfrac{\\mathbb{P}(A)\\,\\mathbb{P}_A(B)}{\\mathbb{P}(B)}',
+        vars: '$\\mathbb{P}(B)$ se calcule par les probabilités totales · Sert à « remonter » l\'arbre (ex. dépistage)',
+      },
+    ],
+  },
+  {
+    title: '2  Indépendance',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'A,B\\text{ indép.}\\iff\\mathbb{P}(A\\cap B)=\\mathbb{P}(A)\\mathbb{P}(B)',
+        vars: 'Équivalent (si $\\mathbb{P}(B)\\neq 0$) : $\\mathbb{P}_B(A)=\\mathbb{P}(A)$ · Se propage aux complémentaires $\\bar{A}$, $\\bar{B}$',
+      },
+      {
+        label: 'Piège',
+        tex: '\\text{indépendant}\\neq\\text{incompatible}',
+        vars: 'Incompatibles ($A\\cap B=\\varnothing$) de probas non nulles : jamais indépendants — ils s\'excluent, ils ne s\'ignorent pas',
+      },
+    ],
+  },
+  {
+    title: '3  Variables aléatoires & Linéarité',
+    rows: [
+      {
+        label: 'Espérance · Variance',
+        tex: '\\mathbb{E}(X)=\\sum_i x_i\\mathbb{P}(X=x_i)\\;;\\;\\mathrm{V}(X)=\\mathbb{E}(X^2)-\\mathbb{E}(X)^2',
+        vars: '$\\sigma(X)=\\sqrt{\\mathrm{V}(X)}$ · König-Huygens, valable pour toute variable aléatoire',
+      },
+      {
+        label: 'Transformation affine',
+        tex: '\\mathbb{E}(aX+b)=a\\mathbb{E}(X)+b\\;;\\;\\mathrm{V}(aX+b)=a^2\\mathrm{V}(X)',
+        vars: '$\\sigma(aX+b)=|a|\\sigma(X)$ · Le décalage $b$ ne change pas l\'étalement',
+      },
+      {
+        label: 'Somme',
+        tex: '\\mathbb{E}(X+Y)=\\mathbb{E}(X)+\\mathbb{E}(Y)\\;\\text{(toujours)}',
+        vars: '$\\mathrm{V}(X+Y)=\\mathrm{V}(X)+\\mathrm{V}(Y)$ **seulement si** $X,Y$ indépendantes',
+      },
+    ],
+  },
+  {
+    title: '4  Bernoulli & Binomiale',
+    rows: [
+      {
+        label: 'Loi de Bernoulli',
+        tex: '\\mathcal{B}(p):\\;\\mathbb{E}(X)=p\\;;\\;\\mathrm{V}(X)=p(1-p)',
+        vars: '2 issues : succès ($p$) / échec ($1-p$) · $X$ vaut $1$ ou $0$',
+      },
+      {
+        label: 'Loi binomiale',
+        tex: '\\mathbb{P}(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}',
+        vars: '$n$ épreuves identiques **indépendantes** · $\\mathbb{E}=np$, $\\mathrm{V}=np(1-p)$, $\\sigma=\\sqrt{np(1-p)}$',
+      },
+      {
+        label: 'Coefficient binomial',
+        tex: '\\dbinom{n}{k}=\\dbinom{n}{n-k}\\;;\\;\\dbinom{n}{k}+\\dbinom{n}{k+1}=\\dbinom{n+1}{k+1}',
+        vars: 'Nombre de chemins à $k$ succès parmi $n$ · Triangle de Pascal ou calculatrice',
+      },
+      {
+        label: 'Calculatrice',
+        tex: '\\mathbb{P}(X\\geq k)=1-\\mathbb{P}(X\\leq k-1)',
+        vars: '$\\mathbb{P}(X=k)$ : binomFdp$(n,p,k)$ · $\\mathbb{P}(X\\leq k)$ : binomFRép$(n,p,k)$',
+      },
+    ],
+  },
+  {
+    title: '5  Échantillon & Grands nombres',
+    rows: [
+      {
+        label: 'Échantillon',
+        tex: 'M_n=\\dfrac{S_n}{n}:\\;\\mathbb{E}=\\mu\\;;\\;\\mathrm{V}=\\dfrac{v}{n}\\;;\\;\\sigma=\\dfrac{\\sigma(X)}{\\sqrt{n}}',
+        vars: '$X_1,\\dots,X_n$ indépendantes de même loi ($\\mu$, $v$) · $S_n$ : $\\mathbb{E}=n\\mu$, $\\mathrm{V}=nv$',
+      },
+      {
+        label: 'Bienaymé-Tchebychev',
+        tex: '\\mathbb{P}\\bigl(|X-\\mu|\\geq\\delta\\bigr)\\leq\\dfrac{v}{\\delta^2}',
+        vars: 'Concentration : $\\mathbb{P}\\bigl(|M_n-\\mu|\\geq\\delta\\bigr)\\leq\\dfrac{v}{n\\delta^2}$ · Borne toujours valable, jamais fine',
+      },
+      {
+        label: 'Loi des grands nombres',
+        tex: '\\lim_{n\\to+\\infty}\\mathbb{P}\\bigl(|M_n-\\mu|\\geq\\delta\\bigr)=0',
+        vars: 'Dimensionner : $n\\geq\\dfrac{v}{\\alpha\\,\\delta^2}$ pour garantir un risque $\\leq\\alpha$',
+      },
+    ],
+  },
+];
+
+const PROBABILITES_COURS: Section[] = [
+  {
+    id: 'conditionnelles',
+    num: '1',
+    title: 'Probabilités conditionnelles',
+    blocks: [
+      {
+        type: 'para',
+        text: 'On travaille sur un univers fini $\\Omega$ muni d\'une probabilité $\\mathbb{P}$. Conditionner, c\'est **réduire l\'univers** : on se place dans le monde où un événement s\'est déjà réalisé, et on recalcule les probabilités dans ce monde plus petit.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Probabilité conditionnelle',
+        content: 'Soit $A$ et $B$ deux événements avec $\\mathbb{P}(B)\\neq 0$. La **probabilité de $A$ sachant $B$** est $\\mathbb{P}_B(A)=\\dfrac{\\mathbb{P}(A\\cap B)}{\\mathbb{P}(B)}$. On la note aussi $\\mathbb{P}(A\\mid B)$.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Savoir que $B$ est réalisé revient à « zoomer » sur $B$ : $B$ devient le nouvel univers, de masse $\\mathbb{P}(B)$. On mesure alors la part de $A$ qui vit à l\'intérieur de $B$, c\'est-à-dire $\\mathbb{P}(A\\cap B)$, et on la ramène à $1$ en divisant par $\\mathbb{P}(B)$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Probabilité d\'une intersection** — Si $\\mathbb{P}(B)\\neq 0$, alors $\\mathbb{P}(A\\cap B)=\\mathbb{P}(B)\\times\\mathbb{P}_B(A)$. De même, si $\\mathbb{P}(A)\\neq 0$, $\\mathbb{P}(A\\cap B)=\\mathbb{P}(A)\\times\\mathbb{P}_A(B)$. C\'est la formule la plus utilisée du chapitre.',
+      },
+      { type: 'subsection', num: '1.1', title: 'Arbre pondéré' },
+      {
+        type: 'para',
+        text: 'Un arbre pondéré traduit visuellement les probabilités conditionnelles. Chaque nœud se sépare en branches dont les probabilités **somment à 1**. La probabilité d\'un chemin est le **produit** des probabilités rencontrées le long du chemin.',
+      },
+      {
+        type: 'figure',
+        caption: 'Arbre pondéré à deux niveaux — les probabilités portées par les secondes branches sont des probabilités conditionnelles.',
+        src: '/modules/maths-probabilites/fig-arbre.png',
+      },
+      {
+        type: 'methode',
+        title: 'LIRE UN ARBRE',
+        steps: [
+          '**Somme des branches** issues d\'un même nœud $=1$ (permet de retrouver une probabilité manquante).',
+          '**Probabilité d\'un chemin** $=$ produit des probabilités du chemin, ex. $\\mathbb{P}(A\\cap B)=\\mathbb{P}(A)\\times\\mathbb{P}_A(B)$.',
+          '**Probabilité d\'une feuille « finale »** (ex. l\'événement $B$) $=$ somme des probabilités des chemins qui y mènent.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'Ne pas confondre $\\mathbb{P}_B(A)$ et $\\mathbb{P}_A(B)$ : ce ne sont pas les mêmes ! Et $\\mathbb{P}(A\\cap B)$ n\'est **pas** une probabilité conditionnelle : c\'est la masse de l\'intersection dans l\'univers entier.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1 et 2 : conditionnelles, arbre pondéré' },
+    ],
+  },
+  {
+    id: 'probas-totales',
+    num: '2',
+    title: 'Formule des probabilités totales',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Souvent on connaît une probabilité « par morceaux » (selon plusieurs cas de figure) et on veut la recoller pour obtenir la probabilité globale.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Partition',
+        content: 'Des événements $A_1,\\dots,A_n$ forment une **partition de l\'univers** lorsqu\'ils sont deux à deux incompatibles, de probabilités non nulles, et que $A_1\\cup\\dots\\cup A_n=\\Omega$. Le cas le plus fréquent est la partition $\\{A,\\bar{A}\\}$.',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Probabilités totales',
+        content: 'Si $A_1,\\dots,A_n$ forme une partition de $\\Omega$, alors pour tout événement $B$ : $\\mathbb{P}(B)=\\displaystyle\\sum_{i=1}^{n}\\mathbb{P}(A_i\\cap B)=\\sum_{i=1}^{n}\\mathbb{P}(A_i)\\,\\mathbb{P}_{A_i}(B)$. En particulier, avec la partition $\\{A,\\bar{A}\\}$ :',
+        formulas: ['\\mathbb{P}(B)=\\mathbb{P}(A)\\mathbb{P}_A(B)+\\mathbb{P}(\\bar{A})\\mathbb{P}_{\\bar{A}}(B)'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'On découpe $B$ selon les « régions » de la partition, on calcule la part de $B$ dans chaque région, puis on additionne. Sur l\'arbre : la probabilité de $B$ est la **somme des chemins** qui aboutissent à $B$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Dépistage',
+        lines: [
+          'Une maladie touche $2\\%$ d\'une population. Un test détecte la maladie chez $95\\%$ des malades ($\\mathbb{P}_M(T)=0{,}95$) mais donne aussi $4\\%$ de faux positifs ($\\mathbb{P}_{\\bar{M}}(T)=0{,}04$).',
+          'Alors $\\mathbb{P}(T)=0{,}02\\times 0{,}95+0{,}98\\times 0{,}04=0{,}0582$. Un test positif tombe donc dans environ $5{,}8\\%$ des cas.',
+        ],
+      },
+      { type: 'subsection', num: '2.1', title: 'Probabilités « inversées »' },
+      {
+        type: 'propriete',
+        text: '**Inversion du conditionnement** — $\\mathbb{P}_B(A)=\\dfrac{\\mathbb{P}(A)\\,\\mathbb{P}_A(B)}{\\mathbb{P}(B)}$, où $\\mathbb{P}(B)$ se calcule par les probabilités totales. C\'est la **formule de Bayes** (hors programme comme formule, mais l\'idée est exigible).',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Suite du dépistage',
+        lines: [
+          'Sachant que le test est positif, la probabilité d\'être réellement malade vaut $\\mathbb{P}_T(M)=\\dfrac{\\mathbb{P}(M)\\mathbb{P}_M(T)}{\\mathbb{P}(T)}=\\dfrac{0{,}02\\times 0{,}95}{0{,}0582}\\approx 0{,}33$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'Le test est « fiable à 95 % », pourtant un positif n\'est réellement malade qu\'à $33\\%$ ! La raison : la maladie est rare, donc les faux positifs (nombreux car ils portent sur les $98\\%$ de bien-portants) écrasent les vrais positifs. C\'est l\'effet de la **fréquence de base**.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 6 et 13 : probabilités totales, dépistage & Bayes' },
+    ],
+  },
+  {
+    id: 'independance',
+    num: '3',
+    title: 'Indépendance',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Deux événements sont indépendants lorsque la réalisation de l\'un ne change pas la probabilité de l\'autre.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Événements indépendants',
+        content: '$A$ et $B$ sont **indépendants** lorsque $\\mathbb{P}(A\\cap B)=\\mathbb{P}(A)\\times\\mathbb{P}(B)$. De façon équivalente (si $\\mathbb{P}(B)\\neq 0$) : $\\mathbb{P}_B(A)=\\mathbb{P}(A)$.',
+      },
+      {
+        type: 'piege',
+        text: '**Indépendant ≠ incompatible.** Deux événements incompatibles ($A\\cap B=\\varnothing$) de probabilités non nulles ne sont *jamais* indépendants : si $A$ est réalisé, $B$ est impossible, donc $A$ informe fortement sur $B$. Incompatible = ils s\'excluent ; indépendant = ils s\'ignorent.',
+      },
+      {
+        type: 'propriete',
+        text: 'Si $A$ et $B$ sont indépendants, alors $A$ et $\\bar{B}$ le sont aussi, ainsi que $\\bar{A}$ et $B$, et $\\bar{A}$ et $\\bar{B}$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'On lance deux dés équilibrés. « Le premier dé donne 6 » et « le second dé donne un nombre pair » sont indépendants : $\\mathbb{P}(A\\cap B)=\\dfrac{1}{6}\\times\\dfrac{1}{2}=\\dfrac{1}{12}=\\mathbb{P}(A)\\mathbb{P}(B)$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 3 et 7 : indépendance par le calcul, propagation au complémentaire' },
+    ],
+  },
+  {
+    id: 'variables-aleatoires',
+    num: '4',
+    title: 'Variables aléatoires',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Une variable aléatoire associe un nombre à chaque issue d\'une expérience. Elle permet de calculer une valeur « moyenne » (l\'**espérance**) et de mesurer la dispersion (**variance**, **écart-type**).',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Loi de probabilité',
+        content: 'Une **variable aléatoire** $X$ sur $\\Omega$ prend les valeurs $x_1,\\dots,x_n$. Sa **loi** est la donnée des $\\mathbb{P}(X=x_i)$, avec $\\sum_i\\mathbb{P}(X=x_i)=1$.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Espérance, variance, écart-type',
+        content: 'L\'espérance est la valeur moyenne attendue ; l\'écart-type mesure l\'étalement autour de cette moyenne.',
+        formulas: [
+          '\\mathbb{E}(X)=\\sum_i x_i\\,\\mathbb{P}(X=x_i)\\qquad;\\qquad\\mathrm{V}(X)=\\mathbb{E}(X^2)-\\mathbb{E}(X)^2\\qquad;\\qquad\\sigma(X)=\\sqrt{\\mathrm{V}(X)}',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Linéarité et transformation** — Pour tous réels $a,b$ : $\\mathbb{E}(aX+b)=a\\,\\mathbb{E}(X)+b$, $\\mathrm{V}(aX+b)=a^2\\,\\mathrm{V}(X)$, $\\sigma(aX+b)=|a|\\,\\sigma(X)$.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Ajouter $b$ décale toute la distribution : la moyenne bouge, mais l\'étalement non — d\'où $\\mathrm{V}(aX+b)=a^2\\mathrm{V}(X)$, sans $b$. Le facteur $a^2$ vient de ce que la variance est un carré : dilater les valeurs par $a$ dilate les écarts par $a$, donc leurs carrés par $a^2$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Linéarité de l\'espérance** — Pour deux variables aléatoires $X$ et $Y$ sur le même univers : $\\mathbb{E}(X+Y)=\\mathbb{E}(X)+\\mathbb{E}(Y)$. Cette égalité est **toujours vraie**, que $X$ et $Y$ soient indépendantes ou non.',
+      },
+      {
+        type: 'propriete',
+        text: '**Variance d\'une somme (cas indépendant)** — Si $X$ et $Y$ sont **indépendantes**, alors $\\mathrm{V}(X+Y)=\\mathrm{V}(X)+\\mathrm{V}(Y)$.',
+      },
+      {
+        type: 'piege',
+        text: 'La variance ne s\'additionne *que* pour des variables indépendantes. L\'espérance, elle, s\'additionne toujours. Ne jamais écrire $\\mathrm{V}(X+Y)=\\mathrm{V}(X)+\\mathrm{V}(Y)$ sans avoir justifié l\'indépendance.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 8, 9 et 14 : lois, espérance, linéarité, somme de variables' },
+    ],
+  },
+  {
+    id: 'binomiale',
+    num: '5',
+    title: 'Épreuves de Bernoulli & loi binomiale',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Épreuve et loi de Bernoulli',
+        content: 'Une **épreuve de Bernoulli** de paramètre $p$ a deux issues : succès (probabilité $p$) et échec (probabilité $1-p$). La variable $X$ valant $1$ en cas de succès et $0$ sinon suit la **loi de Bernoulli** $\\mathcal{B}(p)$, avec $\\mathbb{E}(X)=p$ et $\\mathrm{V}(X)=p(1-p)$.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Schéma de Bernoulli & loi binomiale',
+        content: 'Un **schéma de Bernoulli** est la répétition de $n$ épreuves de Bernoulli identiques et **indépendantes**. La variable $X$ comptant le nombre de succès suit la **loi binomiale** $\\mathcal{B}(n,p)$.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Coefficient binomial',
+        content: '$\\dbinom{n}{k}$ est le nombre de chemins réalisant exactement $k$ succès parmi $n$ épreuves. On lit sa valeur sur le triangle de Pascal ou à la calculatrice. Propriétés :',
+        formulas: [
+          '\\dbinom{n}{0}=\\dbinom{n}{n}=1\\qquad;\\qquad\\dbinom{n}{k}=\\dbinom{n}{n-k}\\qquad;\\qquad\\dbinom{n}{k}+\\dbinom{n}{k+1}=\\dbinom{n+1}{k+1}',
+        ],
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Loi binomiale',
+        content: 'Si $X\\sim\\mathcal{B}(n,p)$, alors pour tout $k\\in\\{0,1,\\dots,n\\}$ :',
+        formulas: [
+          '\\mathbb{P}(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}\\qquad;\\qquad\\mathbb{E}(X)=np\\quad;\\quad\\mathrm{V}(X)=np(1-p)\\quad;\\quad\\sigma(X)=\\sqrt{np(1-p)}',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Un chemin précis à $k$ succès a pour probabilité $p^k(1-p)^{n-k}$ (produit des branches, épreuves indépendantes). Il existe $\\binom{n}{k}$ tels chemins, tous de même probabilité : on multiplie donc par $\\binom{n}{k}$.',
+      },
+      {
+        type: 'figure',
+        caption: 'Loi binomiale $\\mathcal{B}(10\\,;0{,}4)$ : $\\mathbb{E}(X)=4$, $\\mathrm{V}(X)=2{,}4$. Le mode est proche de l\'espérance.',
+        src: '/modules/maths-probabilites/fig-binomiale.png',
+      },
+      {
+        type: 'methode',
+        title: 'CALCULS À LA CALCULATRICE',
+        steps: [
+          '$\\mathbb{P}(X=k)$ : binomFdp (ou binompdf)$(n,p,k)$.',
+          '$\\mathbb{P}(X\\leq k)$ : binomFRép (ou binomcdf)$(n,p,k)$.',
+          '$\\mathbb{P}(X\\geq k)=1-\\mathbb{P}(X\\leq k-1)$ ; $\\mathbb{P}(a\\leq X\\leq b)=\\mathbb{P}(X\\leq b)-\\mathbb{P}(X\\leq a-1)$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — QCM',
+        lines: [
+          '$10$ questions, $4$ choix, réponses au hasard : $X\\sim\\mathcal{B}(10\\,;0{,}25)$.',
+          'Probabilité d\'avoir au moins $8$ bonnes réponses avec $p=0{,}4$ : $\\mathbb{P}(X\\geq 8)=1-\\mathbb{P}(X\\leq 7)\\approx 0{,}012$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Conditions à vérifier avant d\'écrire « $X\\sim\\mathcal{B}(n,p)$ »** — Il faut : (1) un nombre **fixé** $n$ d\'épreuves, (2) **deux** issues seulement, (3) épreuves **identiques** (même $p$), (4) épreuves **indépendantes**. Le tirage *sans remise* casse l\'indépendance et n\'est donc pas binomial.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 5, 10 et 15 : calculs binomiaux, au moins un, seuil de lancers' },
+    ],
+  },
+  {
+    id: 'echantillon',
+    num: '6',
+    title: 'Somme de variables & échantillon',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Nouveauté de Terminale : on étudie ce qui se passe quand on **répète** et qu\'on **moyenne** une même expérience.',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Échantillon',
+        content: 'Un **échantillon de taille $n$** de la loi de $X$ est une liste $(X_1,\\dots,X_n)$ de variables **indépendantes et de même loi** que $X$. On pose :',
+        formulas: ['S_n=X_1+\\dots+X_n\\quad\\text{(somme)}\\qquad;\\qquad M_n=\\dfrac{S_n}{n}\\quad\\text{(moyenne empirique)}'],
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Espérance et variance de Sₙ et Mₙ',
+        content: 'Si les $X_i$ sont indépendants de même loi que $X$, avec $\\mathbb{E}(X)=\\mu$ et $\\mathrm{V}(X)=v$ :',
+        formulas: [
+          '\\mathbb{E}(S_n)=n\\mu\\quad;\\quad\\mathrm{V}(S_n)=nv\\qquad;\\qquad\\mathbb{E}(M_n)=\\mu\\quad;\\quad\\mathrm{V}(M_n)=\\dfrac{v}{n}\\quad;\\quad\\sigma(M_n)=\\dfrac{\\sigma(X)}{\\sqrt{n}}',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: 'La moyenne $M_n$ est centrée sur la « vraie » valeur $\\mu$ (son espérance vaut $\\mu$), et sa dispersion **diminue** quand $n$ grandit : $\\mathrm{V}(M_n)=v/n\\to 0$. Autrement dit, plus on prend d\'observations, plus la moyenne est stable et proche de $\\mu$. C\'est la base de tout sondage.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Lien avec la binomiale',
+        lines: [
+          'Si chaque $X_i\\sim\\mathcal{B}(p)$ (Bernoulli), alors $S_n=X_1+\\dots+X_n\\sim\\mathcal{B}(n,p)$.',
+          'On retrouve $\\mathbb{E}(S_n)=np$ et $\\mathrm{V}(S_n)=np(1-p)$ : la loi binomiale est une somme de Bernoulli indépendantes.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercice 11 : moyenne empirique d\'un échantillon' },
+    ],
+  },
+  {
+    id: 'concentration',
+    num: '7',
+    title: 'Concentration & loi des grands nombres',
+    blocks: [
+      {
+        type: 'para',
+        text: 'On formalise l\'idée que la moyenne empirique se concentre autour de l\'espérance.',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Inégalité de Bienaymé-Tchebychev',
+        content: 'Pour toute variable aléatoire $X$ d\'espérance $\\mu$ et de variance $v$, et pour tout réel $\\delta>0$ :',
+        formulas: ['\\mathbb{P}\\bigl(|X-\\mu|\\geq\\delta\\bigr)\\leq\\dfrac{v}{\\delta^2}'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Cette inégalité borne la probabilité de s\'écarter « beaucoup » de la moyenne, uniquement à partir de la variance — sans connaître la loi. Plus la variance est petite ou plus $\\delta$ est grand, plus s\'éloigner est improbable. La borne est **volontairement grossière** : elle est toujours valable, jamais fine.',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Inégalité de concentration',
+        content: 'Pour la moyenne empirique $M_n$ d\'un échantillon de $X$ (espérance $\\mu$, variance $v$), et tout $\\delta>0$ :',
+        formulas: ['\\mathbb{P}\\bigl(|M_n-\\mu|\\geq\\delta\\bigr)\\leq\\dfrac{v}{n\\,\\delta^2}'],
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Loi des grands nombres',
+        content: 'Quand $n\\to+\\infty$, la probabilité que $M_n$ s\'écarte de $\\mu$ de plus de $\\delta$ tend vers $0$ : $\\displaystyle\\lim_{n\\to+\\infty}\\mathbb{P}\\bigl(|M_n-\\mu|\\geq\\delta\\bigr)=0$. La moyenne empirique se rapproche de l\'espérance quand la taille de l\'échantillon augmente.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Combien d\'observations ?',
+        lines: [
+          'Soit $X\\sim\\mathcal{B}(100\\,;0{,}5)$, donc $\\mu=50$ et $v=25$. La probabilité de s\'écarter d\'au moins $15$ de la moyenne vérifie $\\mathbb{P}\\bigl(|X-50|\\geq 15\\bigr)\\leq\\dfrac{25}{15^2}=\\dfrac{25}{225}\\approx 0{,}11$.',
+          'La vraie valeur ($\\approx 0{,}0035$) est bien plus petite : la borne est correcte mais large, ce qui est normal.',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'DIMENSIONNER UN ÉCHANTILLON',
+        steps: [
+          'On veut $\\mathbb{P}(|M_n-\\mu|\\geq\\delta)\\leq\\alpha$.',
+          'Il suffit que $\\dfrac{v}{n\\delta^2}\\leq\\alpha$, donc $n\\geq\\dfrac{v}{\\alpha\\,\\delta^2}$.',
+          'On prend le plus petit entier $n$ satisfaisant cette inégalité.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 12 et 16 : Tchebychev, dimensionnement — puis sujets bac 17 à 20' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -1668,9 +2119,10 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isMaths = module.subject === 'Maths';
   const isFonctions = module.id === 'maths-fonctions';
   const isLogarithmeCours = module.id === 'maths-logarithme';
+  const isProbabilitesCours = module.id === 'maths-probabilites';
   const pal = isMaths ? V : A;
-  const sections = isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const sections = isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -1836,8 +2288,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isMaths = module.subject === 'Maths';
   const isFonctions = module.id === 'maths-fonctions';
   const isLogarithmeFiche = module.id === 'maths-logarithme';
-  const ficheData = isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isProbabilitesFiche = module.id === 'maths-probabilites';
+  const ficheData = isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
