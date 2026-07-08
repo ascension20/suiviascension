@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Zap, ChevronRight } from 'lucide-react';
+import { Clock, Zap, ChevronRight, ChevronDown, Check, GraduationCap, BookOpen, RotateCcw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { ALL_MODULES, type PhysicsModule, type ModuleLevel } from '@/lib/modules-data';
@@ -112,50 +112,50 @@ export function ModulesTab({ onXpGain }: Props) {
         className="space-y-5"
       >
         {/* Filtres */}
-        <div className="space-y-2">
-          {/* Filtre matière */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest w-14 shrink-0">Matière</span>
-            <div className="flex gap-1.5 flex-wrap">
-              <FilterChip
-                label="Tout"
-                active={filterSubject === null}
-                onClick={() => setFilterSubject(null)}
-                color="neutral"
-              />
-              {availableSubjects.map(s => (
-                <FilterChip
-                  key={s}
-                  label={s}
-                  active={filterSubject === s}
-                  onClick={() => setFilterSubject(filterSubject === s ? null : s)}
-                  color={s === 'Maths' ? 'violet' : 'amber'}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Filtre niveau */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest w-14 shrink-0">Niveau</span>
-            <div className="flex gap-1.5 flex-wrap">
-              <FilterChip
-                label="Tout"
-                active={filterLevel === null}
-                onClick={() => setFilterLevel(null)}
-                color="neutral"
-              />
-              {availableLevels.map(l => (
-                <FilterChip
-                  key={l}
-                  label={l}
-                  active={filterLevel === l}
-                  onClick={() => setFilterLevel(filterLevel === l ? null : l)}
-                  color="blue"
-                />
-              ))}
-            </div>
-          </div>
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <FilterDropdown
+            icon={<BookOpen size={14} />}
+            label="Matière"
+            placeholder="Toutes les matières"
+            value={filterSubject}
+            onChange={setFilterSubject}
+            options={availableSubjects.map(s => ({
+              value: s,
+              label: s,
+              dotHsl: s === 'Maths' ? '270 65% 62%' : '38 92% 50%',
+              count: ALL_MODULES.filter(m => m.subject === s).length,
+            }))}
+          />
+          <FilterDropdown
+            icon={<GraduationCap size={14} />}
+            label="Niveau"
+            placeholder="Tous les niveaux"
+            value={filterLevel}
+            onChange={setFilterLevel}
+            options={availableLevels.map(l => ({
+              value: l,
+              label: l,
+              dotHsl: '210 85% 60%',
+              count: ALL_MODULES.filter(m => m.level === l).length,
+            }))}
+          />
+          <AnimatePresence>
+            {(filterSubject || filterLevel) && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                onClick={() => { setFilterSubject(null); setFilterLevel(null); }}
+                className="flex items-center gap-1.5 px-3 h-10 rounded-xl text-[12px] font-semibold text-white/45 hover:text-white/80 bg-white/[0.03] hover:bg-white/[0.07] border border-white/8 transition-colors"
+              >
+                <RotateCcw size={12} />
+                Réinitialiser
+              </motion.button>
+            )}
+          </AnimatePresence>
+          <span className="ml-auto text-[11px] font-medium text-white/30 tabular-nums">
+            {filtered.length} module{filtered.length > 1 ? 's' : ''}
+          </span>
         </div>
 
         <div className="h-px bg-white/8" />
@@ -191,31 +191,135 @@ export function ModulesTab({ onXpGain }: Props) {
   );
 }
 
-// ── Chip de filtre ────────────────────────────────────────────────────────────
-function FilterChip({
-  label, active, onClick, color,
-}: {
+// ── Menu déroulant de filtre ──────────────────────────────────────────────────
+interface FilterOption {
+  value: string;
   label: string;
-  active: boolean;
-  onClick: () => void;
-  color: 'neutral' | 'violet' | 'amber' | 'blue';
+  dotHsl: string;   // pastille de couleur "H S% L%"
+  count: number;    // nombre de modules concernés
+}
+
+function FilterDropdown({
+  icon, label, placeholder, value, onChange, options,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  placeholder: string;
+  value: string | null;
+  onChange: (v: string | null) => void;
+  options: FilterOption[];
 }) {
-  const activeStyles: Record<string, string> = {
-    neutral: 'bg-white/20 border-white/40 text-white',
-    violet:  'bg-violet-500/25 border-violet-500/60 text-violet-200',
-    amber:   'bg-amber-500/25 border-amber-500/60 text-amber-200',
-    blue:    'bg-blue-500/25 border-blue-500/60 text-blue-200',
-  };
-  const inactiveStyle = 'bg-white/5 border-white/10 text-white/45 hover:bg-white/10 hover:text-white/70';
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Fermeture au clic extérieur & à Échap
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const selected = options.find(o => o.value === value) ?? null;
 
   return (
+    <div ref={ref} className="relative">
+      {/* Déclencheur */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={`group flex items-center gap-2.5 h-10 pl-3 pr-2.5 rounded-xl border text-left transition-all ${
+          open
+            ? 'bg-white/[0.08] border-white/25 shadow-lg shadow-black/20'
+            : selected
+              ? 'bg-white/[0.06] border-white/20 hover:border-white/30'
+              : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/20'
+        }`}
+      >
+        <span className={`transition-colors ${selected ? 'text-white/70' : 'text-white/30'}`}>{icon}</span>
+        <span className="flex flex-col leading-none gap-0.5">
+          <span className="text-[9px] font-black uppercase tracking-widest text-white/30">{label}</span>
+          <span className={`text-[12.5px] font-semibold flex items-center gap-1.5 ${selected ? 'text-white' : 'text-white/50'}`}>
+            {selected && (
+              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `hsl(${selected.dotHsl})` }} />
+            )}
+            {selected ? selected.label : placeholder}
+          </span>
+        </span>
+        <ChevronDown
+          size={15}
+          className={`ml-1 shrink-0 transition-transform duration-200 ${open ? 'rotate-180 text-white/70' : 'text-white/30 group-hover:text-white/50'}`}
+        />
+      </button>
+
+      {/* Panneau */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="listbox"
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.14, ease: 'easeOut' }}
+            className="absolute z-40 mt-2 left-0 min-w-[220px] rounded-xl border border-white/12 bg-[#101826]/95 backdrop-blur-xl shadow-2xl shadow-black/50 overflow-hidden py-1.5"
+          >
+            {/* Option « tout » */}
+            <DropdownItem
+              active={value === null}
+              onClick={() => { onChange(null); setOpen(false); }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-white/25 shrink-0" />
+              <span className="flex-1 text-white/70">{placeholder}</span>
+            </DropdownItem>
+
+            <div className="my-1.5 h-px bg-white/8 mx-3" />
+
+            {options.map(opt => (
+              <DropdownItem
+                key={opt.value}
+                active={value === opt.value}
+                onClick={() => { onChange(opt.value); setOpen(false); }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `hsl(${opt.dotHsl})` }} />
+                <span className="flex-1">{opt.label}</span>
+                <span className="text-[10px] font-bold text-white/25 tabular-nums px-1.5 py-0.5 rounded-md bg-white/[0.05]">
+                  {opt.count}
+                </span>
+              </DropdownItem>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function DropdownItem({
+  active, onClick, children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
     <button
+      role="option"
+      aria-selected={active}
       onClick={onClick}
-      className={`px-3 py-1 rounded-full border text-[11px] font-semibold transition-all ${
-        active ? activeStyles[color] : inactiveStyle
+      className={`w-full flex items-center gap-2.5 px-3.5 py-2 text-[12.5px] font-semibold text-left transition-colors ${
+        active ? 'bg-white/[0.08] text-white' : 'text-white/60 hover:bg-white/[0.05] hover:text-white/90'
       }`}
     >
-      {label}
+      {children}
+      {active && <Check size={14} className="text-white/70 shrink-0" />}
     </button>
   );
 }

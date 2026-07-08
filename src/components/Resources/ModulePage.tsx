@@ -12,6 +12,7 @@ import { LOGARITHME_QCM, LOGARITHME_EXERCISES, LOGARITHME_CORRECTIONS } from '@/
 import { PROBABILITES_QCM, PROBABILITES_EXERCISES, PROBABILITES_CORRECTIONS } from '@/lib/probabilites-content';
 import { GEOMETRIE_QCM, GEOMETRIE_EXERCISES, GEOMETRIE_CORRECTIONS } from '@/lib/geometrie-content';
 import { PRIMITIVES_QCM, PRIMITIVES_EXERCISES, PRIMITIVES_CORRECTIONS } from '@/lib/primitives-content';
+import { EXPONENTIELLE_QCM, EXPONENTIELLE_EXERCISES, EXPONENTIELLE_CORRECTIONS } from '@/lib/exponentielle-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -48,14 +49,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isProbabilites = module.id === 'maths-probabilites';
     const isGeometrie = module.id === 'maths-geometrie';
     const isPrimitives = module.id === 'maths-primitives';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm') {
-      const questions = isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isExponentielle = module.id === 'maths-exponentielle';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm') {
+      const questions = isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -2622,6 +2624,341 @@ const PRIMITIVES_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Fonction exponentielle ────────────────────────────────────────────
+const EXPONENTIELLE_OBJECTIFS = [
+  'Connaître la **définition** de $\\exp$ ($f\'=f$, $f(0)=1$) et ses valeurs clés $e^0=1$, $e^1=e$.',
+  'Manipuler les **propriétés algébriques** : $e^{a+b}=e^ae^b$, $e^{-a}=1/e^a$, $(e^a)^n=e^{na}$.',
+  'Dériver $e^u$ : appliquer $(e^u)\'=u\'e^u$ et factoriser pour étudier le signe.',
+  'Calculer des **limites** avec les croissances comparées ($e^x$ l\'emporte sur $x^n$).',
+  'Résoudre **équations et inéquations** avec $e^x$, y compris par changement de variable $X=e^x$.',
+  'Mener l\'**étude complète** d\'une fonction produit polynôme × exponentielle.',
+];
+
+const EXPONENTIELLE_FICHE_DATA = [
+  {
+    title: '1  Définition & Signe',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'f\'=f\\;\\text{et}\\;f(0)=1\\;\\Rightarrow\\;f=\\exp',
+        vars: 'Unique fonction vérifiant ces conditions · $\\exp(x)=e^x$, $e=\\exp(1)\\approx 2{,}718$ · $e^0=1$, $e^1=e$',
+      },
+      {
+        label: 'Signe · Dérivée',
+        tex: 'e^x>0\\;\\text{pour tout }x\\;;\\;(e^x)\'=e^x',
+        vars: 'Strictement croissante sur $\\mathbb{R}$ · $e^x=0$ n\'a **aucune** solution',
+      },
+      {
+        label: 'Tangente en 0',
+        tex: 'y=x+1\\;;\\;e^x\\geq x+1\\;\\text{pour tout }x',
+        vars: 'La courbe est toujours au-dessus de sa tangente en $0$',
+      },
+    ],
+  },
+  {
+    title: '2  Propriétés algébriques',
+    rows: [
+      {
+        label: 'Relation fonctionnelle',
+        tex: 'e^{a+b}=e^a\\times e^b',
+        vars: 'L\'exponentielle transforme les **sommes en produits** — miroir exact du logarithme',
+      },
+      {
+        label: 'Inverse · Quotient · Puissance',
+        tex: 'e^{-a}=\\dfrac{1}{e^a}\\;;\\;e^{a-b}=\\dfrac{e^a}{e^b}\\;;\\;(e^a)^n=e^{na}',
+        vars: 'Mêmes règles que les puissances · Attention : $e^{a+b}\\neq e^a+e^b$',
+      },
+    ],
+  },
+  {
+    title: '3  Dérivée composée & Primitive',
+    rows: [
+      {
+        label: 'Dérivée de e^u',
+        tex: '(e^u)\'=u\'\\,e^u',
+        vars: 'Ex. $(e^{x^2})\'=2xe^{x^2}$ ; $(e^{2x})\'=2e^{2x}$ — ne pas oublier le facteur $u\'$',
+      },
+      {
+        label: 'Primitives',
+        tex: 'u\'e^u\\to e^u\\;;\\;e^{ax}\\to\\dfrac{1}{a}e^{ax}\\;(a\\neq 0)',
+        vars: 'Réciproque de la dérivation composée',
+      },
+    ],
+  },
+  {
+    title: '4  Limites & Croissances comparées',
+    rows: [
+      {
+        label: 'Limites de référence',
+        tex: '\\lim_{x\\to+\\infty}e^x=+\\infty\\;;\\;\\lim_{x\\to-\\infty}e^x=0^+',
+        vars: 'Asymptote horizontale $y=0$ en $-\\infty$',
+      },
+      {
+        label: 'Croissances comparées',
+        tex: '\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty\\;;\\;\\lim_{x\\to-\\infty}x\\,e^x=0',
+        vars: '« exp l\'emporte sur les puissances » · Lever les FI en factorisant par $e^x$',
+      },
+      {
+        label: 'Taux en 0',
+        tex: '\\lim_{x\\to 0}\\dfrac{e^x-1}{x}=1',
+        vars: 'Nombre dérivé de $\\exp$ en $0$ (vaut $e^0=1$)',
+      },
+    ],
+  },
+  {
+    title: '5  Équations & Inéquations',
+    rows: [
+      {
+        label: 'Résolution',
+        tex: 'e^a=e^b\\iff a=b\\;;\\;e^a<e^b\\iff a<b',
+        vars: 'Stricte croissance : l\'ordre des exposants est conservé',
+      },
+      {
+        label: 'Changement de variable',
+        tex: 'X=e^x\\;(X>0)',
+        vars: 'Pour un polynôme en $e^x$ · Revenir à $x$ en gardant seulement les racines $X>0$',
+      },
+      {
+        label: 'Lien avec ln',
+        tex: '\\ln(e^x)=x\\;;\\;e^{\\ln x}=x\\;(x>0)',
+        vars: 'Fonctions réciproques · Courbes symétriques par rapport à $y=x$',
+      },
+    ],
+  },
+];
+
+const EXPONENTIELLE_COURS: Section[] = [
+  {
+    id: 'definition',
+    num: '1',
+    title: 'Définition',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME-DÉFINITION',
+        content: 'Il existe une **unique** fonction $f$ dérivable sur $\\mathbb{R}$ telle que $f\'=f$ et $f(0)=1$. Cette fonction est la **fonction exponentielle**, notée $\\exp$. On pose $e=\\exp(1)\\approx 2{,}718$, et pour tout réel $x$, $\\exp(x)=e^x$.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'L\'exponentielle est « sa propre dérivée » : sa pente en chaque point est égale à sa valeur. Partant de $1$ en $0$, elle croît de plus en plus vite — c\'est le modèle mathématique de toute croissance « à taux proportionnel à la quantité présente » (intérêts composés, populations, désintégration).',
+      },
+      {
+        type: 'propriete',
+        text: '**Premières valeurs** — $e^0=1$ et $e^1=e$. L\'exponentielle prolonge les puissances de $e$ : $e^2=e\\times e$, $e^{-1}=\\dfrac{1}{e}$, etc.',
+      },
+      {
+        type: 'reflex',
+        text: '**Notation.** Les deux écritures $\\exp(x)$ et $e^x$ désignent la même chose. On privilégie $e^x$, qui rappelle les règles de calcul sur les puissances.',
+      },
+    ],
+  },
+  {
+    id: 'signe-derivee',
+    num: '2',
+    title: 'Signe, dérivée & variations',
+    blocks: [
+      {
+        type: 'propriete',
+        text: '**Signe et dérivée** — Pour tout réel $x$, $e^x>0$. De plus $\\exp$ est dérivable sur $\\mathbb{R}$ et $(e^x)\'=e^x$. La fonction exponentielle est donc **strictement croissante** sur $\\mathbb{R}$.',
+      },
+      {
+        type: 'figure',
+        caption: 'Courbe de $x\\mapsto e^x$ : elle passe par $(0\\,;1)$, sa tangente en ce point est $y=x+1$, et l\'axe des abscisses est asymptote en $-\\infty$.',
+        src: '/modules/maths-exponentielle/fig-courbe.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Tangente en 0** — La tangente à la courbe de $\\exp$ au point d\'abscisse $0$ a pour équation $y=x+1$. Elle est toujours située **en dessous** de la courbe : pour tout $x$, $e^x\\geq x+1$.',
+      },
+      {
+        type: 'piege',
+        text: '$e^x$ n\'est **jamais** nul ni négatif : une équation du type $e^x=0$ n\'a pas de solution, et un facteur $e^x$ ne change jamais le signe d\'une expression ($e^x$ est toujours $>0$).',
+      },
+      { type: 'lien_ex', text: '→ Exercice 17 : l\'inégalité eˣ ≥ x+1 par l\'étude de eˣ−x' },
+    ],
+  },
+  {
+    id: 'algebre',
+    num: '3',
+    title: 'Propriétés algébriques',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Relation fonctionnelle',
+        content: 'Pour tous réels $a$ et $b$, et tout entier $n$ :',
+        formulas: ['e^{a+b}=e^a\\times e^b\\qquad;\\qquad e^{-a}=\\dfrac{1}{e^a}\\qquad;\\qquad e^{a-b}=\\dfrac{e^a}{e^b}\\qquad;\\qquad(e^a)^n=e^{na}'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'L\'exponentielle transforme les **sommes en produits** : ajouter dans l\'exposant revient à multiplier les valeurs. C\'est la propriété qui fait toute la puissance de l\'outil, et l\'exact miroir du logarithme, qui transforme les produits en sommes.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          '$e^3\\times e^{-1}=e^{3-1}=e^2$ ; $\\dfrac{e^5}{e^2}=e^3$ ; $(e^2)^3=e^6$.',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'SIMPLIFIER UNE EXPRESSION',
+        steps: [
+          'Regrouper les facteurs $e^{\\bullet}$ : additionner les exposants pour un produit, les soustraire pour un quotient.',
+          'Faire apparaître un exposant unique, puis conclure.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 5 et 6 : simplifications, forme e^kx, factorisation' },
+    ],
+  },
+  {
+    id: 'derivee-eu',
+    num: '4',
+    title: 'Dérivée de e^u',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Dérivée composée',
+        content: 'Si $u$ est dérivable sur un intervalle $I$, alors $x\\mapsto e^{u(x)}$ est dérivable sur $I$ et $(e^u)\'=u\'\\,e^u$.',
+      },
+      {
+        type: 'methode',
+        title: 'MÉTHODE',
+        steps: [
+          'Identifier l\'exposant $u$ et calculer sa dérivée $u\'$.',
+          'Appliquer $(e^u)\'=u\'e^u$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          '$(e^{x^2})\'=2x\\,e^{x^2}$ ; $(e^{-x})\'=-e^{-x}$ ; $(e^{3x+1})\'=3e^{3x+1}$.',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Primitive** — Réciproquement, une primitive de $u\'e^u$ est $e^u$. En particulier, une primitive de $x\\mapsto e^{ax}$ ($a\\neq 0$) est $x\\mapsto\\dfrac{1}{a}e^{ax}$.',
+      },
+      {
+        type: 'piege',
+        text: '$(e^{2x})\'=2e^{2x}$ et non $e^{2x}$ : ne pas oublier le facteur $u\'$. **Toujours dériver l\'exposant.**',
+      },
+      { type: 'lien_ex', text: '→ Exercices 2, 7, 8 et 9 : dérivées de e^u, produits, quotients' },
+    ],
+  },
+  {
+    id: 'limites',
+    num: '5',
+    title: 'Limites & croissances comparées',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Limites de référence',
+        content: 'Aux deux infinis :',
+        formulas: ['\\lim_{x\\to+\\infty}e^x=+\\infty\\qquad;\\qquad\\lim_{x\\to-\\infty}e^x=0^+'],
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Croissances comparées',
+        content: 'L\'exponentielle « l\'emporte » sur toute puissance de $x$ :',
+        formulas: ['\\lim_{x\\to+\\infty}\\dfrac{e^x}{x}=+\\infty\\qquad;\\qquad\\lim_{x\\to+\\infty}\\dfrac{e^x}{x^n}=+\\infty\\qquad;\\qquad\\lim_{x\\to-\\infty}x\\,e^x=0'],
+      },
+      {
+        type: 'figure',
+        caption: 'Croissances comparées : $e^x$ finit toujours par dépasser $x^2$ (et toute puissance de $x$).',
+        src: '/modules/maths-exponentielle/fig-croissances.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Limite du taux en 0** — $\\displaystyle\\lim_{x\\to 0}\\dfrac{e^x-1}{x}=1$. Cette limite traduit que $e^0=1$ et que le nombre dérivé de $\\exp$ en $0$ vaut $1$.',
+      },
+      {
+        type: 'methode',
+        title: 'LEVER UNE FORME INDÉTERMINÉE',
+        steps: [
+          'Reconnaître la forme ($\\infty-\\infty$, $0\\times\\infty$, $\\frac{\\infty}{\\infty}$).',
+          'Factoriser par le terme dominant (souvent $e^x$) et utiliser les croissances comparées. Ex. $\\displaystyle\\lim_{x\\to+\\infty}(e^x-x)=\\lim_{x\\to+\\infty}e^x\\left(1-\\tfrac{x}{e^x}\\right)=+\\infty$ car $\\tfrac{x}{e^x}\\to 0$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 13, 14 et 16 : limites, croissances comparées, formes indéterminées' },
+    ],
+  },
+  {
+    id: 'equations',
+    num: '6',
+    title: 'Équations & inéquations',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Résolution',
+        content: 'L\'exponentielle étant strictement croissante, pour tous réels $a,b$ : $e^a=e^b\\iff a=b$ et $e^a<e^b\\iff a<b$.',
+      },
+      {
+        type: 'methode',
+        title: 'ÉQUATION AVEC eˣ',
+        steps: [
+          'Se ramener à $e^A=e^B$ (puis $A=B$), ou poser $X=e^x$ ($X>0$) pour une équation polynomiale en $e^x$.',
+          'Résoudre, puis revenir à $x$ en n\'oubliant pas la contrainte $X>0$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Changement de variable',
+        lines: [
+          'Résoudre $e^{2x}-3e^x+2=0$. On pose $X=e^x>0$ : $X^2-3X+2=0$, soit $X=1$ ou $X=2$.',
+          'Donc $e^x=1$ ($x=0$) ou $e^x=2$ ($x=\\ln 2$).',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Inéquation',
+        lines: [
+          '$e^{x-3}>1=e^0\\iff x-3>0\\iff x>3$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 10, 11 et 12 : équations, changement de variable, inéquations' },
+    ],
+  },
+  {
+    id: 'etude',
+    num: '7',
+    title: 'Étude de fonctions & lien avec ln',
+    blocks: [
+      {
+        type: 'propriete',
+        text: '**Exp et ln réciproques** — Les fonctions $\\exp$ et $\\ln$ sont **réciproques** l\'une de l\'autre : pour tout $x\\in\\mathbb{R}$, $\\ln(e^x)=x$, et pour tout $x>0$, $e^{\\ln x}=x$. Leurs courbes sont symétriques par rapport à la droite $y=x$.',
+      },
+      {
+        type: 'methode',
+        title: 'ÉTUDIER UNE FONCTION AVEC e^u',
+        steps: [
+          'Domaine, puis dérivée avec $(e^u)\'=u\'e^u$.',
+          'Signe de $f\'$ : comme $e^u>0$, le signe de $f\'$ ne dépend que du reste. En déduire les variations.',
+          'Limites aux bornes (croissances comparées si besoin), extrema, tableau.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — f(x) = xe⁻ˣ',
+        lines: [
+          '$f\'(x)=1\\cdot e^{-x}+x\\cdot(-e^{-x})=(1-x)e^{-x}$. Comme $e^{-x}>0$, $f\'(x)$ a le signe de $1-x$ :',
+          '$f$ croît sur $]-\\infty\\,;1]$, décroît sur $[1\\,;+\\infty[$. Elle admet un **maximum** en $x=1$, valant $f(1)=e^{-1}=\\dfrac{1}{e}\\approx 0{,}37$.',
+        ],
+      },
+      {
+        type: 'figure',
+        caption: 'La fonction $x\\mapsto x\\,e^{-x}$ : maximum en $x=1$ de valeur $\\frac{1}{e}$, puis décroissance vers $0$ (croissances comparées).',
+        src: '/modules/maths-exponentielle/fig-xe-x.png',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Dans une étude, le facteur $e^u$ est « transparent » pour le signe (toujours positif) : c\'est le facteur polynomial qui pilote les variations. En $+\\infty$, c\'est en revanche l\'exponentielle qui décide de la limite, grâce aux croissances comparées.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 15, 17, 18 : études de fonctions — puis sujets bac 19 à 21' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -2906,8 +3243,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const pal = isMaths ? V : A;
   const isGeometrieCours = module.id === 'maths-geometrie';
   const isPrimitivesCours = module.id === 'maths-primitives';
-  const sections = isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isExponentielleCours = module.id === 'maths-exponentielle';
+  const sections = isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -3076,8 +3414,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isProbabilitesFiche = module.id === 'maths-probabilites';
   const isGeometrieFiche = module.id === 'maths-geometrie';
   const isPrimitivesFiche = module.id === 'maths-primitives';
-  const ficheData = isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isExponentielleFiche = module.id === 'maths-exponentielle';
+  const ficheData = isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
