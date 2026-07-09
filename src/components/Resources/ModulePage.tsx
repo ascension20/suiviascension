@@ -14,6 +14,7 @@ import { GEOMETRIE_QCM, GEOMETRIE_EXERCISES, GEOMETRIE_CORRECTIONS } from '@/lib
 import { PRIMITIVES_QCM, PRIMITIVES_EXERCISES, PRIMITIVES_CORRECTIONS } from '@/lib/primitives-content';
 import { EXPONENTIELLE_QCM, EXPONENTIELLE_EXERCISES, EXPONENTIELLE_CORRECTIONS } from '@/lib/exponentielle-content';
 import { EQUADIFF_QCM, EQUADIFF_EXERCISES, EQUADIFF_CORRECTIONS } from '@/lib/equadiff-content';
+import { TRIGO_QCM, TRIGO_EXERCISES, TRIGO_CORRECTIONS } from '@/lib/trigo-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -52,14 +53,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isPrimitives = module.id === 'maths-primitives';
     const isExponentielle = module.id === 'maths-exponentielle';
     const isEquadiff = module.id === 'maths-equadiff';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm') {
-      const questions = isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isTrigo = module.id === 'maths-trigo';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm') {
+      const questions = isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -3260,6 +3262,338 @@ const EQUADIFF_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Fonctions sinus & cosinus ─────────────────────────────────────────
+const TRIGO_OBJECTIFS = [
+  'Lire le **cercle trigonométrique** : radians, valeurs remarquables, identité $\\cos^2 x+\\sin^2 x=1$.',
+  'Retrouver les **angles associés** ($-x$, $\\pi-x$, $\\pi+x$, $\\tfrac{\\pi}{2}\\pm x$) par les symétries du cercle.',
+  'Exploiter **parité et périodicité** pour réduire l\'intervalle d\'étude.',
+  'Dériver avec $(\\sin u)\'=u\'\\cos u$ et $(\\cos u)\'=-u\'\\sin u$ (attention au signe moins).',
+  'Utiliser les **limites de référence** $\\frac{\\sin x}{x}\\to 1$ et $\\frac{\\cos x-1}{x}\\to 0$ en $0$.',
+  'Résoudre les **équations trigonométriques** et mener l\'étude d\'une fonction trigonométrique.',
+];
+
+const TRIGO_FICHE_DATA = [
+  {
+    title: '1  Cercle & Valeurs remarquables',
+    rows: [
+      {
+        label: 'Cercle trigonométrique',
+        tex: 'M(\\cos x\\,;\\sin x)\\;;\\;\\cos^2 x+\\sin^2 x=1',
+        vars: 'Tour $=2\\pi$, plat $=\\pi$, droit $=\\frac{\\pi}{2}$ · $|\\cos x|\\leq 1$, $|\\sin x|\\leq 1$',
+      },
+      {
+        label: 'Valeurs clés',
+        tex: '\\cos\\tfrac{\\pi}{6}=\\tfrac{\\sqrt{3}}{2}\\;;\\;\\cos\\tfrac{\\pi}{4}=\\tfrac{\\sqrt{2}}{2}\\;;\\;\\cos\\tfrac{\\pi}{3}=\\tfrac{1}{2}',
+        vars: '$\\sin$ : valeurs inversées ($\\sin\\frac{\\pi}{6}=\\frac{1}{2}$, $\\sin\\frac{\\pi}{3}=\\frac{\\sqrt{3}}{2}$) · $\\cos 0=1$, $\\sin 0=0$, $\\cos\\frac{\\pi}{2}=0$, $\\sin\\frac{\\pi}{2}=1$',
+      },
+    ],
+  },
+  {
+    title: '2  Angles associés',
+    rows: [
+      {
+        label: 'Symétries',
+        tex: '\\cos(-x)=\\cos x\\;;\\;\\sin(\\pi-x)=\\sin x\\;;\\;\\cos(\\pi+x)=-\\cos x',
+        vars: '$\\sin(-x)=-\\sin x$ · $\\cos(\\pi-x)=-\\cos x$ · $\\sin(\\pi+x)=-\\sin x$',
+      },
+      {
+        label: 'Quart de tour',
+        tex: '\\cos\\left(\\tfrac{\\pi}{2}-x\\right)=\\sin x\\;;\\;\\sin\\left(\\tfrac{\\pi}{2}-x\\right)=\\cos x',
+        vars: '$\\cos\\left(\\frac{\\pi}{2}+x\\right)=-\\sin x$ · Se retrouvent sur le cercle — pas de par-cœur',
+      },
+    ],
+  },
+  {
+    title: '3  Parité · Périodicité',
+    rows: [
+      {
+        label: 'Parité',
+        tex: '\\cos\\text{ paire}\\;;\\;\\sin\\text{ impaire}',
+        vars: 'Courbe de $\\cos$ symétrique par rapport à l\'axe des ordonnées ; celle de $\\sin$ par rapport à l\'origine',
+      },
+      {
+        label: 'Périodicité',
+        tex: '\\cos(x+2\\pi)=\\cos x\\;;\\;\\sin(x+2\\pi)=\\sin x',
+        vars: 'Période $2\\pi$ · $\\sin(ax)$ : période $\\frac{2\\pi}{a}$ · Étudier sur un intervalle de longueur $2\\pi$',
+      },
+    ],
+  },
+  {
+    title: '4  Dérivées & Primitives',
+    rows: [
+      {
+        label: 'Dérivées',
+        tex: '(\\sin x)\'=\\cos x\\;;\\;(\\cos x)\'=-\\sin x',
+        vars: '**Attention au signe moins** sur la dérivée du cosinus',
+      },
+      {
+        label: 'Composées',
+        tex: '(\\sin u)\'=u\'\\cos u\\;;\\;(\\cos u)\'=-u\'\\sin u',
+        vars: 'Ex. $(\\sin 2x)\'=2\\cos 2x$ — ne pas oublier le facteur $u\'$',
+      },
+      {
+        label: 'Primitives',
+        tex: '\\cos\\to\\sin\\;;\\;\\sin\\to-\\cos',
+        vars: '$\\cos(ax)\\to\\frac{1}{a}\\sin(ax)$ · $\\sin(ax)\\to-\\frac{1}{a}\\cos(ax)$',
+      },
+    ],
+  },
+  {
+    title: '5  Limites & Équations',
+    rows: [
+      {
+        label: 'Limites de référence',
+        tex: '\\lim_{x\\to 0}\\dfrac{\\sin x}{x}=1\\;;\\;\\lim_{x\\to 0}\\dfrac{\\cos x-1}{x}=0',
+        vars: 'Faire apparaître $\\frac{\\sin(\\bullet)}{\\bullet}$ en multipliant/divisant · Forme $\\frac{0}{0}$ sans transformation',
+      },
+      {
+        label: 'Équations de référence',
+        tex: '\\cos x=\\cos\\alpha\\iff x=\\pm\\alpha+2k\\pi',
+        vars: '$\\sin x=\\sin\\alpha\\iff x=\\alpha+2k\\pi$ ou $x=\\pi-\\alpha+2k\\pi$ · Sélectionner les $k$ selon l\'intervalle',
+      },
+    ],
+  },
+];
+
+const TRIGO_COURS: Section[] = [
+  {
+    id: 'cercle',
+    num: '1',
+    title: 'Cercle trigonométrique & valeurs',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Radian & cercle trigonométrique',
+        content: 'Le **radian** mesure les angles : un tour complet vaut $2\\pi$, un angle plat $\\pi$, un angle droit $\\dfrac{\\pi}{2}$. Sur le **cercle trigonométrique** (rayon 1), à tout réel $x$ correspond un point $M$ tel que $\\cos x$ est son abscisse et $\\sin x$ son ordonnée.',
+      },
+      {
+        type: 'figure',
+        caption: 'Le point $M$ associé à l\'angle $\\theta$ : $\\cos\\theta$ est son abscisse, $\\sin\\theta$ son ordonnée.',
+        src: '/modules/maths-trigo/fig-cercle.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Identité fondamentale** — Pour tout réel $x$ : $\\cos^2 x+\\sin^2 x=1$, et $-1\\leq\\cos x\\leq 1$, $-1\\leq\\sin x\\leq 1$.',
+      },
+      {
+        type: 'formules',
+        label: 'VALEURS REMARQUABLES',
+        rows: [
+          { desc: '$x=0$ :', tex: '\\cos 0=1\\quad;\\quad\\sin 0=0' },
+          { desc: '$x=\\tfrac{\\pi}{6}$ :', tex: '\\cos\\tfrac{\\pi}{6}=\\tfrac{\\sqrt{3}}{2}\\quad;\\quad\\sin\\tfrac{\\pi}{6}=\\tfrac{1}{2}' },
+          { desc: '$x=\\tfrac{\\pi}{4}$ :', tex: '\\cos\\tfrac{\\pi}{4}=\\tfrac{\\sqrt{2}}{2}\\quad;\\quad\\sin\\tfrac{\\pi}{4}=\\tfrac{\\sqrt{2}}{2}' },
+          { desc: '$x=\\tfrac{\\pi}{3}$ :', tex: '\\cos\\tfrac{\\pi}{3}=\\tfrac{1}{2}\\quad;\\quad\\sin\\tfrac{\\pi}{3}=\\tfrac{\\sqrt{3}}{2}' },
+          { desc: '$x=\\tfrac{\\pi}{2}$ :', tex: '\\cos\\tfrac{\\pi}{2}=0\\quad;\\quad\\sin\\tfrac{\\pi}{2}=1' },
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercice 1 : valeurs remarquables et angles associés' },
+    ],
+  },
+  {
+    id: 'angles-associes',
+    num: '2',
+    title: 'Angles associés',
+    blocks: [
+      {
+        type: 'para',
+        text: 'La symétrie du cercle donne des relations entre les valeurs de $\\cos$ et $\\sin$ d\'angles liés.',
+      },
+      {
+        type: 'formules',
+        label: 'ANGLES ASSOCIÉS',
+        rows: [
+          { desc: '$-x$ :', tex: '\\cos(-x)=\\cos x\\quad;\\quad\\sin(-x)=-\\sin x' },
+          { desc: '$\\pi-x$ :', tex: '\\cos(\\pi-x)=-\\cos x\\quad;\\quad\\sin(\\pi-x)=\\sin x' },
+          { desc: '$\\pi+x$ :', tex: '\\cos(\\pi+x)=-\\cos x\\quad;\\quad\\sin(\\pi+x)=-\\sin x' },
+          { desc: '$\\tfrac{\\pi}{2}-x$ :', tex: '\\cos\\left(\\tfrac{\\pi}{2}-x\\right)=\\sin x\\quad;\\quad\\sin\\left(\\tfrac{\\pi}{2}-x\\right)=\\cos x' },
+          { desc: '$\\tfrac{\\pi}{2}+x$ :', tex: '\\cos\\left(\\tfrac{\\pi}{2}+x\\right)=-\\sin x\\quad;\\quad\\sin\\left(\\tfrac{\\pi}{2}+x\\right)=\\cos x' },
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Ces formules ne sont pas à « apprendre par cœur » : elles se retrouvent en plaçant le point sur le cercle et en lisant les symétries (par rapport aux axes ou à la première bissectrice). **Le cercle est votre antisèche.**',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          '$\\cos\\left(\\dfrac{2\\pi}{3}\\right)=\\cos\\left(\\pi-\\dfrac{\\pi}{3}\\right)=-\\cos\\dfrac{\\pi}{3}=-\\dfrac{1}{2}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 5 et 6 : simplifications, démonstration par le cercle' },
+    ],
+  },
+  {
+    id: 'fonctions',
+    num: '3',
+    title: 'Fonctions sinus et cosinus',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Les fonctions $x\\mapsto\\cos x$ et $x\\mapsto\\sin x$ sont définies sur $\\mathbb{R}$, à valeurs dans $[-1\\,;1]$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Parité** — La fonction cosinus est **paire** : $\\cos(-x)=\\cos x$ (courbe symétrique par rapport à l\'axe des ordonnées). La fonction sinus est **impaire** : $\\sin(-x)=-\\sin x$ (courbe symétrique par rapport à l\'origine).',
+      },
+      {
+        type: 'propriete',
+        text: '**Périodicité** — Les deux fonctions sont **périodiques de période $2\\pi$** : pour tout $x$, $\\cos(x+2\\pi)=\\cos x$ et $\\sin(x+2\\pi)=\\sin x$. Il suffit donc de les étudier sur un intervalle de longueur $2\\pi$ (par exemple $[-\\pi\\,;\\pi]$).',
+      },
+      {
+        type: 'figure',
+        caption: 'Courbes de $\\sin$ et $\\cos$ : deux sinusoïdes de période $2\\pi$, décalées de $\\frac{\\pi}{2}$ l\'une par rapport à l\'autre.',
+        src: '/modules/maths-trigo/fig-courbes.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Lien entre les deux** — $\\cos x=\\sin\\left(x+\\dfrac{\\pi}{2}\\right)$ et $\\sin x=\\cos\\left(x-\\dfrac{\\pi}{2}\\right)$ : la courbe du cosinus est celle du sinus décalée de $\\dfrac{\\pi}{2}$.',
+      },
+    ],
+  },
+  {
+    id: 'derivees',
+    num: '4',
+    title: 'Dérivées',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Dérivées de sin et cos',
+        content: 'Les fonctions $\\sin$ et $\\cos$ sont dérivables sur $\\mathbb{R}$, et :',
+        formulas: ['(\\sin x)\'=\\cos x\\qquad;\\qquad(\\cos x)\'=-\\sin x'],
+      },
+      {
+        type: 'piege',
+        text: '**Le signe moins** — La dérivée de $\\cos$ porte un signe $-$ : $(\\cos x)\'=-\\sin x$. Ne pas l\'oublier ! Un moyen mnémotechnique : dériver « avance » d\'un quart de tour, ce qui introduit le signe pour le cosinus.',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Dérivées composées',
+        content: 'Si $u$ est dérivable :',
+        formulas: ['\\bigl(\\sin(u)\\bigr)\'=u\'\\cos(u)\\qquad;\\qquad\\bigl(\\cos(u)\\bigr)\'=-u\'\\sin(u)'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          '$\\bigl(\\sin(2x)\\bigr)\'=2\\cos(2x)$ ; $\\bigl(\\cos(3x)\\bigr)\'=-3\\sin(3x)$ ; $\\bigl(\\sin(x^2)\\bigr)\'=2x\\cos(x^2)$.',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Primitives** — Une primitive de $\\cos$ est $\\sin$ ; une primitive de $\\sin$ est $-\\cos$. Plus généralement, une primitive de $\\cos(ax)$ est $\\dfrac{1}{a}\\sin(ax)$, et de $\\sin(ax)$ est $-\\dfrac{1}{a}\\cos(ax)$ ($a\\neq 0$).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 2, 7, 8 et 9 : dérivées de base, produit, composées, sin²x' },
+    ],
+  },
+  {
+    id: 'limites',
+    num: '5',
+    title: 'Limites de référence',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Limites en 0',
+        content: 'Deux limites à connaître :',
+        formulas: ['\\lim_{x\\to 0}\\dfrac{\\sin x}{x}=1\\qquad;\\qquad\\lim_{x\\to 0}\\dfrac{\\cos x-1}{x}=0'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Près de $0$, $\\sin x\\approx x$ : la courbe du sinus se confond avec sa tangente $y=x$. La première limite exprime exactement que le nombre dérivé de $\\sin$ en $0$ vaut $1$ (puisque $(\\sin)\'(0)=\\cos 0=1$). La seconde traduit que la tangente au cosinus en $0$ est horizontale.',
+      },
+      {
+        type: 'methode',
+        title: 'UTILISER CES LIMITES',
+        steps: [
+          'Faire apparaître le quotient $\\dfrac{\\sin(\\bullet)}{\\bullet}$ (ou $\\dfrac{\\cos(\\bullet)-1}{\\bullet}$) en multipliant/divisant.',
+          'Remplacer par sa limite $1$ (ou $0$) et conclure. Ex. $\\displaystyle\\lim_{x\\to 0}\\dfrac{\\sin(3x)}{x}=\\lim_{x\\to 0}3\\cdot\\dfrac{\\sin(3x)}{3x}=3\\times 1=3$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'Sans transformation, $\\dfrac{\\sin x}{x}$ en $0$ est une forme indéterminée $\\frac{0}{0}$ : la limite $1$ n\'est **pas** évidente et doit être invoquée explicitement comme résultat du cours.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 10 et 11 : limites avec sin(2x)/x, sin(5x)/3x, sin x/2x' },
+    ],
+  },
+  {
+    id: 'equations',
+    num: '6',
+    title: 'Équations trigonométriques',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Équations de référence',
+        content: 'Pour un réel $a\\in[-1\\,;1]$ :',
+        formulas: [
+          '\\cos x=\\cos\\alpha\\iff x=\\alpha+2k\\pi\\;\\text{ou}\\;x=-\\alpha+2k\\pi\\quad(k\\in\\mathbb{Z})',
+          '\\sin x=\\sin\\alpha\\iff x=\\alpha+2k\\pi\\;\\text{ou}\\;x=\\pi-\\alpha+2k\\pi\\quad(k\\in\\mathbb{Z})',
+        ],
+      },
+      {
+        type: 'figure',
+        caption: 'Résolution de $\\cos x=\\frac{1}{2}$ : la droite $x=\\frac{1}{2}$ coupe le cercle en deux points, $\\frac{\\pi}{3}$ et $-\\frac{\\pi}{3}$.',
+        src: '/modules/maths-trigo/fig-equation.png',
+      },
+      {
+        type: 'methode',
+        title: 'RÉSOUDRE UNE ÉQUATION TRIGONOMÉTRIQUE',
+        steps: [
+          'Écrire le second membre comme $\\cos\\alpha$ (ou $\\sin\\alpha$) avec une valeur remarquable.',
+          'Appliquer la formule de référence pour obtenir toutes les solutions.',
+          'Si un intervalle est imposé (ex. $[0\\,;2\\pi[$), sélectionner les valeurs de $k$ convenables.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Résoudre $\\cos x=\\dfrac{1}{2}$ sur $[0\\,;2\\pi[$. Comme $\\dfrac{1}{2}=\\cos\\dfrac{\\pi}{3}$ : $x=\\dfrac{\\pi}{3}$ ou $x=-\\dfrac{\\pi}{3}+2\\pi=\\dfrac{5\\pi}{3}$.',
+          'Solutions : $\\left\\{\\dfrac{\\pi}{3},\\dfrac{5\\pi}{3}\\right\\}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 12, 13 et 15 : équations cos et sin sur [0;2π[' },
+    ],
+  },
+  {
+    id: 'etude',
+    num: '7',
+    title: 'Étude de fonctions trigonométriques',
+    blocks: [
+      {
+        type: 'methode',
+        title: 'ÉTUDIER UNE FONCTION TRIGONOMÉTRIQUE',
+        steps: [
+          '**Réduire l\'intervalle d\'étude** grâce à la périodicité, puis à la parité (symétrie de la courbe).',
+          '**Dériver** avec $(\\sin u)\'=u\'\\cos u$, $(\\cos u)\'=-u\'\\sin u$.',
+          '**Étudier le signe de $f\'$** (souvent le signe d\'un $\\cos$ ou d\'un $\\sin$) pour dresser le tableau de variations.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — f(x) = sin x sur [0;2π]',
+        lines: [
+          '$f\'(x)=\\cos x$. Sur $[0\\,;2\\pi]$, $\\cos x>0$ sur $\\left[0\\,;\\tfrac{\\pi}{2}\\right[\\,\\cup\\,\\left]\\tfrac{3\\pi}{2}\\,;2\\pi\\right]$ et $\\cos x<0$ sur $\\left]\\tfrac{\\pi}{2}\\,;\\tfrac{3\\pi}{2}\\right[$.',
+          'Donc $f$ croît, puis décroît, puis croît : maximum $1$ en $\\tfrac{\\pi}{2}$, minimum $-1$ en $\\tfrac{3\\pi}{2}$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Dérivée d\'une composée',
+        lines: [
+          'Pour $g(x)=\\cos(2x)$, $g\'(x)=-2\\sin(2x)$. Le signe de $g\'$ est celui de $-\\sin(2x)$, ce qui permet d\'étudier $g$ sur une période $[0\\,;\\pi]$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Comme pour l\'exponentielle, une composée « $ax$ » à l\'intérieur d\'un $\\sin$ ou $\\cos$ **comprime ou étire** la sinusoïde : $\\sin(2x)$ oscille deux fois plus vite (période $\\pi$) que $\\sin x$ (période $2\\pi$).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 14, 16 et 17 : études de fonctions — puis sujets bac 18 à 20' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -3546,8 +3880,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isPrimitivesCours = module.id === 'maths-primitives';
   const isExponentielleCours = module.id === 'maths-exponentielle';
   const isEquadiffCours = module.id === 'maths-equadiff';
-  const sections = isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isTrigoCours = module.id === 'maths-trigo';
+  const sections = isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -3718,8 +4053,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isPrimitivesFiche = module.id === 'maths-primitives';
   const isExponentielleFiche = module.id === 'maths-exponentielle';
   const isEquadiffFiche = module.id === 'maths-equadiff';
-  const ficheData = isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isTrigoFiche = module.id === 'maths-trigo';
+  const ficheData = isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
