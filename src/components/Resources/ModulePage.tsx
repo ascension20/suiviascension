@@ -15,6 +15,7 @@ import { PRIMITIVES_QCM, PRIMITIVES_EXERCISES, PRIMITIVES_CORRECTIONS } from '@/
 import { EXPONENTIELLE_QCM, EXPONENTIELLE_EXERCISES, EXPONENTIELLE_CORRECTIONS } from '@/lib/exponentielle-content';
 import { EQUADIFF_QCM, EQUADIFF_EXERCISES, EQUADIFF_CORRECTIONS } from '@/lib/equadiff-content';
 import { TRIGO_QCM, TRIGO_EXERCISES, TRIGO_CORRECTIONS } from '@/lib/trigo-content';
+import { COMBINATOIRE_QCM, COMBINATOIRE_EXERCISES, COMBINATOIRE_CORRECTIONS } from '@/lib/combinatoire-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -54,14 +55,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isExponentielle = module.id === 'maths-exponentielle';
     const isEquadiff = module.id === 'maths-equadiff';
     const isTrigo = module.id === 'maths-trigo';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm') {
-      const questions = isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isCombinatoire = module.id === 'maths-combinatoire';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm') {
+      const questions = isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -3594,6 +3596,361 @@ const TRIGO_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Combinatoire & dénombrement ───────────────────────────────────────
+const COMBINATOIRE_OBJECTIFS = [
+  'Appliquer les **principes additif et multiplicatif** pour décomposer un dénombrement.',
+  'Compter les **k-uplets** ($n^k$) : listes ordonnées avec répétitions (tirage avec remise).',
+  'Compter les **arrangements** ($A_n^k$) et **permutations** ($n!$) : listes ordonnées sans répétition.',
+  'Compter les **combinaisons** $\\binom{n}{k}$ : parties à $k$ éléments (tirage simultané).',
+  'Utiliser les **propriétés** du coefficient binomial, la règle de Pascal et le **binôme de Newton**.',
+  '**Choisir le bon modèle** : l\'ordre compte-t-il ? les répétitions sont-elles autorisées ?',
+];
+
+const COMBINATOIRE_FICHE_DATA = [
+  {
+    title: '1  Principes fondamentaux',
+    rows: [
+      {
+        label: 'Principe additif',
+        tex: 'A\\cap B=\\varnothing\\;\\Rightarrow\\;|A\\cup B|=|A|+|B|',
+        vars: '« Ou » exclusif → on additionne · Cas général : $|A\\cup B|=|A|+|B|-|A\\cap B|$',
+      },
+      {
+        label: 'Principe multiplicatif',
+        tex: 'k\\text{ choix indépendants}\\;\\to\\;n_1\\times n_2\\times\\dots\\times n_k',
+        vars: '« Et » (étapes successives) → on multiplie · $|A\\times B|=|A|\\times|B|$',
+      },
+    ],
+  },
+  {
+    title: '2  Les quatre modèles',
+    rows: [
+      {
+        label: 'k-uplets (avec remise)',
+        tex: 'n^k',
+        vars: 'Liste **ordonnée**, répétitions **permises** · Ex. codes PIN : $10^4$',
+      },
+      {
+        label: 'Arrangements (sans remise)',
+        tex: 'A_n^k=\\dfrac{n!}{(n-k)!}=n(n-1)\\cdots(n-k+1)',
+        vars: 'Liste **ordonnée**, éléments **distincts** · Ex. podium : $A_{12}^3$',
+      },
+      {
+        label: 'Permutations',
+        tex: 'n!\\quad(\\text{avec }0!=1)',
+        vars: 'Rangement de **tous** les $n$ éléments · Cas $k=n$ des arrangements',
+      },
+      {
+        label: 'Combinaisons (simultané)',
+        tex: '\\dbinom{n}{k}=\\dfrac{A_n^k}{k!}=\\dfrac{n!}{k!\\,(n-k)!}',
+        vars: 'Partie à $k$ éléments, ordre **indifférent** · Ex. main de cartes, comité',
+      },
+    ],
+  },
+  {
+    title: '3  Propriétés & Pascal',
+    rows: [
+      {
+        label: 'Valeurs clés',
+        tex: '\\dbinom{n}{0}=\\dbinom{n}{n}=1\\;;\\;\\dbinom{n}{1}=n',
+        vars: 'Symétrie : $\\dbinom{n}{k}=\\dbinom{n}{n-k}$',
+      },
+      {
+        label: 'Règle de Pascal',
+        tex: '\\dbinom{n}{k}=\\dbinom{n-1}{k-1}+\\dbinom{n-1}{k}',
+        vars: 'Construit le **triangle de Pascal** de proche en proche',
+      },
+    ],
+  },
+  {
+    title: '4  Binôme de Newton',
+    rows: [
+      {
+        label: 'Formule',
+        tex: '(a+b)^n=\\sum_{k=0}^{n}\\dbinom{n}{k}a^kb^{\\,n-k}',
+        vars: 'Coefficients = $n$-ième ligne du triangle de Pascal',
+      },
+      {
+        label: 'Somme des coefficients',
+        tex: '\\sum_{k=0}^{n}\\dbinom{n}{k}=2^n',
+        vars: 'Nombre total de parties d\'un ensemble à $n$ éléments · Évaluer $(1+x)^n$ en $x=1$',
+      },
+    ],
+  },
+  {
+    title: '5  Choisir le modèle & Réflexes',
+    rows: [
+      {
+        label: 'Deux questions',
+        tex: '\\text{ordre ?}\\quad\\text{répétitions ?}',
+        vars: 'oui+oui → $n^k$ · oui+non → $A_n^k$ · non+non → $\\binom{n}{k}$',
+      },
+      {
+        label: 'Réflexes',
+        tex: '\\text{podium/mot}\\to\\text{ordre}\\;;\\;\\text{main/comité}\\to\\text{ordre indifférent}',
+        vars: 'Avec remise → répétitions · « Au moins un » → passer par le **complémentaire**',
+      },
+      {
+        label: 'Lien probabilités',
+        tex: 'P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}',
+        vars: '$\\binom{n}{k}$ compte les positions des $k$ succès parmi les $n$ épreuves',
+      },
+    ],
+  },
+];
+
+const COMBINATOIRE_COURS: Section[] = [
+  {
+    id: 'principes',
+    num: '1',
+    title: 'Cardinal & principes fondamentaux',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Cardinal',
+        content: 'Le **cardinal** d\'un ensemble fini $E$, noté $\\text{card}(E)$ ou $|E|$, est son nombre d\'éléments.',
+      },
+      {
+        type: 'propriete',
+        text: '**Principe additif** — Si $A$ et $B$ sont **disjoints** ($A\\cap B=\\varnothing$), alors $\\text{card}(A\\cup B)=\\text{card}(A)+\\text{card}(B)$. Plus généralement, $\\text{card}(A\\cup B)=\\text{card}(A)+\\text{card}(B)-\\text{card}(A\\cap B)$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Principe multiplicatif** — Le nombre de façons d\'effectuer une suite de $k$ choix **indépendants**, offrant respectivement $n_1,n_2,\\dots,n_k$ possibilités, est le **produit** $n_1\\times n_2\\times\\dots\\times n_k$. En particulier, $\\text{card}(A\\times B)=\\text{card}(A)\\times\\text{card}(B)$.',
+      },
+      {
+        type: 'idee_cle',
+        text: '« Ou » exclusif $\\to$ on **additionne** ; « et » (étapes successives) $\\to$ on **multiplie**. Ces deux principes suffisent à reconstruire toutes les formules du chapitre.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Un menu propose 3 entrées et 4 plats. Le nombre de repas (entrée **et** plat) est $3\\times 4=12$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercice 2 : le menu du restaurant' },
+    ],
+  },
+  {
+    id: 'k-uplets',
+    num: '2',
+    title: 'k-uplets (p-listes)',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — k-uplet',
+        content: 'Un **k-uplet** (ou $p$-liste) d\'un ensemble $E$ est une liste **ordonnée** de $k$ éléments de $E$, **avec répétitions autorisées**. C\'est un élément de $E^k=E\\times E\\times\\dots\\times E$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Nombre de k-uplets** — Si $\\text{card}(E)=n$, le nombre de k-uplets de $E$ est $n^k$.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Chacune des $k$ positions se remplit indépendamment avec l\'un des $n$ éléments : par le principe multiplicatif, $n\\times n\\times\\dots\\times n=n^k$. C\'est le modèle du **tirage successif avec remise**.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          'Nombre de mots de 3 lettres (alphabet de 26 lettres) : $26^3=17\\,576$.',
+          'Nombre de codes PIN à 4 chiffres : $10^4=10\\,000$.',
+          'Résultats possibles en lançant un dé 4 fois : $6^4=1296$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'Le k-uplet est le bon modèle dès que l\'ordre compte **et** que les répétitions sont possibles (tirage avec remise). Ne pas confondre avec les arrangements (sans répétition).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1 et 7 : codes, plaques, tirages avec remise' },
+    ],
+  },
+  {
+    id: 'arrangements',
+    num: '3',
+    title: 'Arrangements',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Arrangement',
+        content: 'Un **arrangement** de $k$ éléments parmi $n$ est une liste **ordonnée** de $k$ éléments **distincts** (sans répétition), avec $0\\leq k\\leq n$.',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Nombre d\'arrangements',
+        content: 'Le nombre d\'arrangements de $k$ éléments parmi $n$, noté $A_n^k$, est :',
+        formulas: ['A_n^k=n\\times(n-1)\\times\\dots\\times(n-k+1)=\\dfrac{n!}{(n-k)!}'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'La 1ʳᵉ position offre $n$ choix, la 2ᵉ n\'en offre plus que $n-1$ (un élément déjà utilisé), etc., jusqu\'à $n-k+1$ pour la $k$-ième. C\'est le modèle du **tirage successif sans remise**, où l\'ordre compte.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          'Podium (or, argent, bronze) parmi 8 athlètes : $A_8^3=8\\times 7\\times 6=336$.',
+          'Nombre de mots de 3 lettres distinctes (alphabet de 26) : $A_{26}^3=26\\times 25\\times 24=15\\,600$.',
+        ],
+      },
+      {
+        type: 'reflex',
+        text: '**Factorielle.** $n!=n\\times(n-1)\\times\\dots\\times 2\\times 1$, avec la convention $0!=1$. Ainsi $5!=120$.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 8, 9 et 17 : calculs, podium, mots de lettres distinctes' },
+    ],
+  },
+  {
+    id: 'permutations',
+    num: '4',
+    title: 'Permutations',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Permutation',
+        content: 'Une **permutation** d\'un ensemble à $n$ éléments est un rangement ordonné de **tous** ses éléments. C\'est un arrangement de $n$ éléments parmi $n$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Nombre de permutations** — Le nombre de permutations d\'un ensemble à $n$ éléments est $A_n^n=n!$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          'Nombre de façons de ranger 5 livres sur une étagère : $5!=120$.',
+          'Nombre d\'anagrammes du mot « MATH » (4 lettres distinctes) : $4!=24$.',
+          'Ordres de passage de 7 candidats : $7!=5040$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Lettres répétées** — La formule $n!$ suppose les éléments **distincts**. Pour un mot à lettres répétées (ex. « ANANAS »), il faut diviser par les factorielles des répétitions — situation plus subtile, à traiter au cas par cas.',
+      },
+      { type: 'lien_ex', text: '→ Exercice 4 : rangements de livres, anagrammes' },
+    ],
+  },
+  {
+    id: 'combinaisons',
+    num: '5',
+    title: 'Combinaisons',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Combinaison',
+        content: 'Une **combinaison** de $k$ éléments parmi $n$ est une **partie** (un sous-ensemble) à $k$ éléments : l\'ordre **ne compte pas** et il n\'y a pas de répétition.',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Coefficient binomial',
+        content: 'Le nombre de combinaisons de $k$ éléments parmi $n$, noté $\\dbinom{n}{k}$, est :',
+        formulas: ['\\dbinom{n}{k}=\\dfrac{A_n^k}{k!}=\\dfrac{n!}{k!\\,(n-k)!},\\qquad 0\\leq k\\leq n'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Un arrangement, c\'est choisir $k$ éléments **puis** les ordonner. Or chaque sous-ensemble de $k$ éléments peut être ordonné de $k!$ façons. On « efface » donc l\'ordre en divisant par $k!$ : $\\binom{n}{k}=\\frac{A_n^k}{k!}$. C\'est le **tirage simultané**.',
+      },
+      {
+        type: 'figure',
+        caption: 'Choisir le bon modèle : l\'ordre compte-t-il ? Les répétitions sont-elles autorisées ?',
+        src: '/modules/maths-combinatoire/fig-modele.png',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          'Nombre de mains de 5 cartes parmi 52 : $\\dbinom{52}{5}=2\\,598\\,960$.',
+          'Tirage du Loto (6 numéros parmi 49) : $\\dbinom{49}{6}=13\\,983\\,816$.',
+          'Choisir 2 délégués parmi 30 élèves : $\\dbinom{30}{2}=\\dfrac{30\\times 29}{2}=435$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 5, 10, 11 et 15 : calculs, mains de cartes, comités' },
+    ],
+  },
+  {
+    id: 'pascal',
+    num: '6',
+    title: 'Propriétés & triangle de Pascal',
+    blocks: [
+      {
+        type: 'propriete',
+        text: '**Propriétés des coefficients binomiaux** — $\\dbinom{n}{0}=\\dbinom{n}{n}=1$, $\\dbinom{n}{1}=n$, et $\\dbinom{n}{k}=\\dbinom{n}{n-k}$ (symétrie).',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Règle de Pascal',
+        content: 'Pour $1\\leq k\\leq n-1$ :',
+        formulas: ['\\dbinom{n}{k}=\\dbinom{n-1}{k-1}+\\dbinom{n-1}{k}'],
+      },
+      {
+        type: 'figure',
+        caption: 'Triangle de Pascal : chaque coefficient est la somme des deux situés juste au-dessus (ici $4+6=10$).',
+        src: '/modules/maths-combinatoire/fig-pascal.png',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Formule du binôme de Newton',
+        content: 'Pour tous réels $a,b$ et tout entier $n$ : les coefficients sont exactement la $n$-ième ligne du triangle de Pascal.',
+        formulas: ['(a+b)^n=\\sum_{k=0}^{n}\\dbinom{n}{k}a^kb^{\\,n-k}'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          '$(a+b)^4=a^4+4a^3b+6a^2b^2+4ab^3+b^4$ (coefficients $1,4,6,4,1$).',
+          'On vérifie aussi $\\displaystyle\\sum_{k=0}^{n}\\dbinom{n}{k}=2^n$ (nombre total de parties d\'un ensemble à $n$ éléments).',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 6, 12, 13 et 16 : symétrie, Pascal, binôme, coefficient' },
+    ],
+  },
+  {
+    id: 'modele',
+    num: '7',
+    title: 'Choisir le bon modèle',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Face à un problème de dénombrement, deux questions suffisent à trancher : **l\'ordre compte-t-il ?** et **les répétitions sont-elles autorisées ?**',
+      },
+      {
+        type: 'formules',
+        label: 'LES QUATRE MODÈLES',
+        rows: [
+          { desc: 'k-uplet (avec remise) — ordre oui, répétition oui :', tex: 'n^k' },
+          { desc: 'Arrangement (sans remise) — ordre oui, répétition non :', tex: '\\dfrac{n!}{(n-k)!}' },
+          { desc: 'Permutation ($k=n$) — ordre oui, répétition non :', tex: 'n!' },
+          { desc: 'Combinaison (simultané) — ordre non, répétition non :', tex: '\\dbinom{n}{k}' },
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'DÉNOMBRER',
+        steps: [
+          'Identifier ce qu\'on tire ($k$) et l\'ensemble de départ ($n$).',
+          'L\'ordre compte-t-il ? (podium/mot/rangement $\\Rightarrow$ oui ; poignée/main/comité $\\Rightarrow$ non).',
+          'Répétitions possibles ? (avec remise $\\Rightarrow$ oui ; sans remise $\\Rightarrow$ non).',
+          'Appliquer la formule correspondante.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE GUIDÉ',
+        lines: [
+          'Dans une classe de 30 élèves, on choisit un comité de 3 personnes (sans hiérarchie). L\'ordre ne compte pas, pas de répétition : c\'est une combinaison, $\\dbinom{30}{3}=\\dfrac{30\\times 29\\times 28}{6}=4060$.',
+          'Si l\'on choisit un président, un trésorier et un secrétaire (rôles distincts), l\'ordre compte : c\'est un arrangement, $A_{30}^3=30\\times 29\\times 28=24\\,360$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Lien avec les probabilités** — Le coefficient binomial $\\binom{n}{k}$ apparaît dans la **loi binomiale** : $P(X=k)=\\binom{n}{k}p^k(1-p)^{n-k}$. Le facteur $\\binom{n}{k}$ compte les positions possibles des $k$ succès parmi les $n$ épreuves.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 14 et 18 : trois modèles, complémentaire — puis sujets bac 19 à 21' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -3881,8 +4238,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isExponentielleCours = module.id === 'maths-exponentielle';
   const isEquadiffCours = module.id === 'maths-equadiff';
   const isTrigoCours = module.id === 'maths-trigo';
-  const sections = isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isCombinatoireCours = module.id === 'maths-combinatoire';
+  const sections = isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -4054,8 +4412,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isExponentielleFiche = module.id === 'maths-exponentielle';
   const isEquadiffFiche = module.id === 'maths-equadiff';
   const isTrigoFiche = module.id === 'maths-trigo';
-  const ficheData = isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isCombinatoireFiche = module.id === 'maths-combinatoire';
+  const ficheData = isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
