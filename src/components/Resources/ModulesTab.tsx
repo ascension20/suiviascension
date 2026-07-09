@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Zap, ChevronRight, ChevronDown, Check, GraduationCap, BookOpen, RotateCcw } from 'lucide-react';
+import {
+  Clock, Zap, ChevronRight, ChevronDown, Check, GraduationCap, BookOpen, RotateCcw,
+  Layers, Target, BarChart3, Play, Trophy, Sparkles,
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { ALL_MODULES, type PhysicsModule, type ModuleLevel } from '@/lib/modules-data';
@@ -76,10 +79,35 @@ export function ModulesTab({ onXpGain }: Props) {
     (!filterSubject || m.subject === filterSubject)
   );
 
-  // Groupement par niveau pour l'affichage
-  const grouped = LEVEL_ORDER
-    .filter(l => filtered.some(m => m.level === l))
-    .map(l => ({ level: l, modules: filtered.filter(m => m.level === l) }));
+  // Groupement par matière pour le catalogue
+  const grouped = availableSubjects
+    .filter(s => filtered.some(m => m.subject === s))
+    .map(s => ({ subject: s, modules: filtered.filter(m => m.subject === s) }));
+
+  // ── Statistiques globales ──────────────────────────────────────────────────
+  const doneCount = (m: PhysicsModule) => (completedByModule[m.id]?.size ?? 0);
+  const moduleXp = (m: PhysicsModule) => m.levels.reduce((s, l) => s + l.xpReward, 0);
+  const moduleEarnedXp = (m: PhysicsModule) =>
+    m.levels.filter(l => completedByModule[m.id]?.has(l.id)).reduce((s, l) => s + l.xpReward, 0);
+
+  const totalLevels   = ALL_MODULES.reduce((s, m) => s + m.levels.length, 0);
+  const doneLevels    = ALL_MODULES.reduce((s, m) => s + doneCount(m), 0);
+  const totalXpAll    = ALL_MODULES.reduce((s, m) => s + moduleXp(m), 0);
+  const earnedXpAll   = ALL_MODULES.reduce((s, m) => s + moduleEarnedXp(m), 0);
+  const globalPct     = totalXpAll > 0 ? Math.round((earnedXpAll / totalXpAll) * 100) : 0;
+  const completedMods = ALL_MODULES.filter(m => doneCount(m) === m.levels.length).length;
+
+  // Modules en cours (au moins 1 niveau fait, pas terminés), les plus avancés d'abord
+  const inProgress = ALL_MODULES
+    .map(m => ({ m, done: doneCount(m) }))
+    .filter(x => x.done > 0 && x.done < x.m.levels.length)
+    .sort((a, b) => b.done / b.m.levels.length - a.done / a.m.levels.length)
+    .slice(0, 3);
+
+  // Suggestion de démarrage si rien n'est en cours
+  const suggested = inProgress.length === 0
+    ? ALL_MODULES.find(m => doneCount(m) === 0) ?? null
+    : null;
 
   if (selected) {
     const completedIds = completedByModule[selected.id] ?? new Set<string>();
@@ -109,85 +137,293 @@ export function ModulesTab({ onXpGain }: Props) {
         initial={{ opacity: 0, x: -24 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 24 }}
-        className="space-y-5"
+        className="space-y-7"
       >
-        {/* Filtres */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <FilterDropdown
-            icon={<BookOpen size={14} />}
-            label="Matière"
-            placeholder="Toutes les matières"
-            value={filterSubject}
-            onChange={setFilterSubject}
-            options={availableSubjects.map(s => ({
-              value: s,
-              label: s,
-              dotHsl: s === 'Maths' ? '270 65% 62%' : '38 92% 50%',
-              count: ALL_MODULES.filter(m => m.subject === s).length,
-            }))}
-          />
-          <FilterDropdown
-            icon={<GraduationCap size={14} />}
-            label="Niveau"
-            placeholder="Tous les niveaux"
-            value={filterLevel}
-            onChange={setFilterLevel}
-            options={availableLevels.map(l => ({
-              value: l,
-              label: l,
-              dotHsl: '210 85% 60%',
-              count: ALL_MODULES.filter(m => m.level === l).length,
-            }))}
-          />
-          <AnimatePresence>
-            {(filterSubject || filterLevel) && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                onClick={() => { setFilterSubject(null); setFilterLevel(null); }}
-                className="flex items-center gap-1.5 px-3 h-10 rounded-xl text-[12px] font-semibold text-white/45 hover:text-white/80 bg-white/[0.03] hover:bg-white/[0.07] border border-white/8 transition-colors"
-              >
-                <RotateCcw size={12} />
-                Réinitialiser
-              </motion.button>
-            )}
-          </AnimatePresence>
-          <span className="ml-auto text-[11px] font-medium text-white/30 tabular-nums">
-            {filtered.length} module{filtered.length > 1 ? 's' : ''}
-          </span>
+        {/* ── En-tête héro ─────────────────────────────────────────────── */}
+        <div>
+          <p
+            className="text-[10px] font-black tracking-[0.25em] uppercase mb-1.5"
+            style={{ color: 'hsl(43 90% 50% / 0.5)' }}
+          >
+            Ascension · Entraînement
+          </p>
+          <h1
+            className="font-display font-black tracking-tight leading-none"
+            style={{
+              fontSize: 'clamp(1.3rem, 3vw, 1.75rem)',
+              background: 'linear-gradient(135deg, hsl(43 90% 44%), hsl(50 100% 66%))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            MODULES D'ENTRAÎNEMENT
+          </h1>
+          <p className="text-xs text-muted-foreground mt-1.5 font-mono tracking-wide">
+            Cours complet · Fiche de synthèse · Exercices corrigés · QCM
+          </p>
         </div>
 
-        <div className="h-px bg-white/8" />
+        {/* ── Stats globales ───────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+          <StatCard
+            icon={<Layers size={15} />}
+            hsl="270 65% 62%"
+            label="Modules"
+            value={`${ALL_MODULES.length}`}
+            sub={completedMods > 0 ? `${completedMods} terminé${completedMods > 1 ? 's' : ''}` : 'à explorer'}
+          />
+          <StatCard
+            icon={<Target size={15} />}
+            hsl="210 85% 60%"
+            label="Niveaux"
+            value={`${doneLevels}`}
+            sub={`/ ${totalLevels} complétés`}
+          />
+          <StatCard
+            icon={<Zap size={15} />}
+            hsl="43 90% 55%"
+            label="XP gagnés"
+            value={`${earnedXpAll}`}
+            sub={`/ ${totalXpAll} XP`}
+          />
+          <StatCard
+            icon={<BarChart3 size={15} />}
+            hsl="142 71% 48%"
+            label="Progression"
+            value={`${globalPct}%`}
+            bar={globalPct}
+          />
+        </div>
 
-        {/* Modules groupés par niveau */}
-        {grouped.length === 0 ? (
-          <p className="text-sm text-white/40 text-center py-8">Aucun module pour ces filtres.</p>
-        ) : (
-          grouped.map(group => (
-            <div key={group.level}>
-              {/* En-tête de niveau — masqué si un seul niveau affiché */}
-              {grouped.length > 1 && (
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[11px] font-black text-white/50 uppercase tracking-widest">{group.level}</span>
-                  <div className="flex-1 h-px bg-white/8" />
-                </div>
-              )}
-              <div className="space-y-3">
-                {group.modules.map(mod => (
-                  <ModuleCard
-                    key={mod.id}
-                    mod={mod}
-                    completedIds={completedByModule[mod.id] ?? new Set()}
-                    onOpen={() => setSelected(mod)}
-                  />
-                ))}
-              </div>
+        {/* ── Reprendre / Commencer ────────────────────────────────────── */}
+        {(inProgress.length > 0 || suggested) && (
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span
+                className="flex items-center gap-1.5 text-[10px] font-black tracking-[0.16em] uppercase"
+                style={{ color: 'hsl(43 90% 55%)' }}
+              >
+                {inProgress.length > 0 ? <Play size={11} /> : <Sparkles size={11} />}
+                {inProgress.length > 0 ? 'Reprendre' : 'Commencer ici'}
+              </span>
+              <div
+                className="flex-1 h-px"
+                style={{ background: 'linear-gradient(to right, hsl(43 90% 50% / 0.18), transparent)' }}
+              />
             </div>
-          ))
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              {inProgress.length > 0
+                ? inProgress.map(({ m }) => (
+                    <ContinueCard
+                      key={m.id}
+                      mod={m}
+                      completedIds={completedByModule[m.id] ?? new Set()}
+                      onOpen={() => setSelected(m)}
+                    />
+                  ))
+                : suggested && (
+                    <ContinueCard
+                      mod={suggested}
+                      completedIds={new Set()}
+                      onOpen={() => setSelected(suggested)}
+                    />
+                  )}
+            </div>
+          </div>
         )}
+
+        {/* ── Catalogue ────────────────────────────────────────────────── */}
+        <div>
+          <div className="flex items-center gap-3 mb-3">
+            <span
+              className="flex items-center gap-1.5 text-[10px] font-black tracking-[0.16em] uppercase"
+              style={{ color: 'hsl(43 90% 55%)' }}
+            >
+              <BookOpen size={11} />
+              Catalogue
+            </span>
+            <div
+              className="flex-1 h-px"
+              style={{ background: 'linear-gradient(to right, hsl(43 90% 50% / 0.18), transparent)' }}
+            />
+          </div>
+
+          {/* Filtres */}
+          <div className="flex items-center gap-2.5 flex-wrap mb-4">
+            <FilterDropdown
+              icon={<BookOpen size={14} />}
+              label="Matière"
+              placeholder="Toutes les matières"
+              value={filterSubject}
+              onChange={setFilterSubject}
+              options={availableSubjects.map(s => ({
+                value: s,
+                label: s,
+                dotHsl: s === 'Maths' ? '270 65% 62%' : '38 92% 50%',
+                count: ALL_MODULES.filter(m => m.subject === s).length,
+              }))}
+            />
+            <FilterDropdown
+              icon={<GraduationCap size={14} />}
+              label="Niveau"
+              placeholder="Tous les niveaux"
+              value={filterLevel}
+              onChange={setFilterLevel}
+              options={availableLevels.map(l => ({
+                value: l,
+                label: l,
+                dotHsl: '210 85% 60%',
+                count: ALL_MODULES.filter(m => m.level === l).length,
+              }))}
+            />
+            <AnimatePresence>
+              {(filterSubject || filterLevel) && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  onClick={() => { setFilterSubject(null); setFilterLevel(null); }}
+                  className="flex items-center gap-1.5 px-3 h-10 rounded-xl text-[12px] font-semibold text-white/45 hover:text-white/80 bg-white/[0.03] hover:bg-white/[0.07] border border-white/8 transition-colors"
+                >
+                  <RotateCcw size={12} />
+                  Réinitialiser
+                </motion.button>
+              )}
+            </AnimatePresence>
+            <span className="ml-auto text-[11px] font-medium text-white/30 tabular-nums">
+              {filtered.length} module{filtered.length > 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {/* Modules groupés par matière */}
+          {grouped.length === 0 ? (
+            <p className="text-sm text-white/40 text-center py-8">Aucun module pour ces filtres.</p>
+          ) : (
+            <div className="space-y-6">
+              {grouped.map(group => {
+                const subjHsl = group.subject === 'Maths' ? '270 65% 62%' : '38 92% 50%';
+                const subjDone = group.modules.reduce((s, m) => s + doneCount(m), 0);
+                const subjTotal = group.modules.reduce((s, m) => s + m.levels.length, 0);
+                return (
+                  <div key={group.subject}>
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: `hsl(${subjHsl})` }} />
+                      <span className="text-[12px] font-black uppercase tracking-widest" style={{ color: `hsl(${subjHsl})` }}>
+                        {group.subject}
+                      </span>
+                      <span className="text-[10px] font-bold text-white/25 tabular-nums">
+                        {group.modules.length} module{group.modules.length > 1 ? 's' : ''} · {subjDone}/{subjTotal} niveaux
+                      </span>
+                      <div className="flex-1 h-px" style={{ background: `hsl(${subjHsl} / 0.15)` }} />
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {group.modules.map(mod => (
+                        <ModuleCard
+                          key={mod.id}
+                          mod={mod}
+                          completedIds={completedByModule[mod.id] ?? new Set()}
+                          onOpen={() => setSelected(mod)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+// ── Carte statistique ─────────────────────────────────────────────────────────
+function StatCard({
+  icon, hsl, label, value, sub, bar,
+}: {
+  icon: React.ReactNode;
+  hsl: string;
+  label: string;
+  value: string;
+  sub?: string;
+  bar?: number;
+}) {
+  return (
+    <div
+      className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 flex flex-col gap-1.5"
+      style={{ boxShadow: `inset 0 0 30px hsl(${hsl} / 0.03)` }}
+    >
+      <div className="flex items-center gap-2">
+        <span
+          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+          style={{ background: `hsl(${hsl} / 0.14)`, color: `hsl(${hsl})` }}
+        >
+          {icon}
+        </span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-white/35">{label}</span>
+      </div>
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-xl font-black text-white tabular-nums leading-none">{value}</span>
+        {sub && <span className="text-[11px] font-semibold text-white/35">{sub}</span>}
+      </div>
+      {bar !== undefined && (
+        <div className="h-1.5 rounded-full bg-white/10 overflow-hidden mt-0.5">
+          <motion.div
+            className="h-full rounded-full"
+            style={{ background: `hsl(${hsl})` }}
+            initial={{ width: 0 }}
+            animate={{ width: `${bar}%` }}
+            transition={{ duration: 0.6 }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Carte « reprendre » ───────────────────────────────────────────────────────
+function ContinueCard({
+  mod, completedIds, onOpen,
+}: {
+  mod: PhysicsModule;
+  completedIds: Set<string>;
+  onOpen: () => void;
+}) {
+  const totalXp = mod.levels.reduce((s, l) => s + l.xpReward, 0);
+  const earnedXp = mod.levels.filter(l => completedIds.has(l.id)).reduce((s, l) => s + l.xpReward, 0);
+  const pct = totalXp > 0 ? Math.round((earnedXp / totalXp) * 100) : 0;
+  const nextLevel = mod.levels.find(l => !completedIds.has(l.id));
+  const accentColor = `hsl(${mod.accentHsl})`;
+
+  return (
+    <motion.button
+      onClick={onOpen}
+      whileTap={{ scale: 0.985 }}
+      className="group text-left rounded-2xl border border-white/10 hover:border-white/25 bg-white/[0.04] hover:bg-white/[0.07] p-4 transition-all"
+      style={{ borderLeftColor: accentColor, borderLeftWidth: 3 }}
+    >
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <h4 className="font-bold text-white text-[13.5px] leading-tight truncate">{mod.title}</h4>
+        <span
+          className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
+          style={{ background: `${accentColor}22`, color: accentColor }}
+        >
+          <Play size={13} className="ml-0.5" />
+        </span>
+      </div>
+      {nextLevel && (
+        <p className="text-[11px] text-white/45 mb-2.5 truncate">
+          {completedIds.size > 0 ? 'Prochain niveau' : 'Premier niveau'} : <span className="text-white/70 font-semibold">{nextLevel.title}</span>
+        </p>
+      )}
+      <div className="flex items-center gap-2.5">
+        <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+          <div className="h-full rounded-full" style={{ background: accentColor, width: `${pct}%` }} />
+        </div>
+        <span className="text-[11px] font-bold tabular-nums" style={{ color: accentColor }}>{pct}%</span>
+      </div>
+    </motion.button>
   );
 }
 
@@ -355,6 +591,13 @@ function ModuleCard({
               style={{ background: `${accentColor}22`, border: `1px solid ${accentColor}44` }}>
               {mod.subject} · {mod.level}
             </span>
+            {pct === 100 && (
+              <span className="flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full"
+                style={{ background: 'hsl(43 90% 55% / 0.15)', color: 'hsl(43 90% 55%)', border: '1px solid hsl(43 90% 55% / 0.35)' }}>
+                <Trophy size={10} />
+                TERMINÉ
+              </span>
+            )}
           </div>
           <h3 className="font-bold text-white text-base">{mod.title}</h3>
           <p className="text-sm text-white/50">{mod.subtitle}</p>
