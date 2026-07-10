@@ -16,6 +16,7 @@ import { EXPONENTIELLE_QCM, EXPONENTIELLE_EXERCISES, EXPONENTIELLE_CORRECTIONS }
 import { EQUADIFF_QCM, EQUADIFF_EXERCISES, EQUADIFF_CORRECTIONS } from '@/lib/equadiff-content';
 import { TRIGO_QCM, TRIGO_EXERCISES, TRIGO_CORRECTIONS } from '@/lib/trigo-content';
 import { COMBINATOIRE_QCM, COMBINATOIRE_EXERCISES, COMBINATOIRE_CORRECTIONS } from '@/lib/combinatoire-content';
+import { GRAVITATION_QCM, GRAVITATION_EXERCISES, GRAVITATION_CORRECTIONS } from '@/lib/gravitation-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -56,14 +57,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isEquadiff = module.id === 'maths-equadiff';
     const isTrigo = module.id === 'maths-trigo';
     const isCombinatoire = module.id === 'maths-combinatoire';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm') {
-      const questions = isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isGravitation = module.id === 'phys-gravitation';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm') {
+      const questions = isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -3951,6 +3953,321 @@ const COMBINATOIRE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Mouvement dans un champ de gravitation ────────────────────────────
+const GRAVITATION_OBJECTIFS = [
+  'Appliquer la **loi de la gravitation universelle** $F=G\\dfrac{m_A m_B}{d^2}$ et caractériser le vecteur force.',
+  'Définir le **champ de gravitation** $\\mathcal{G}=G\\dfrac{M}{d^2}$ et le relier au poids ($g$ à la surface).',
+  'Énoncer les **trois lois de Kepler** (orbites, aires, périodes) et les interpréter.',
+  'Établir la **vitesse d\'un satellite** en orbite circulaire par la 2ᵉ loi de Newton.',
+  'Utiliser la **3ᵉ loi de Kepler** pour trouver une période ou « peser » un astre central.',
+  'Caractériser un **satellite géostationnaire** et calculer son altitude.',
+];
+
+const GRAVITATION_FICHE_DATA = [
+  {
+    title: '1  Gravitation universelle & Champ',
+    rows: [
+      {
+        label: 'Loi de Newton',
+        tex: 'F=G\\dfrac{m_A m_B}{d^2}\\quad(\\text{en N})',
+        vars: 'Forces attractives, opposées, portées par $(AB)$ · $d$ = distance entre les **centres** · $G=6{,}67\\times 10^{-11}\\,\\text{SI}$',
+      },
+      {
+        label: 'Champ de gravitation',
+        tex: '\\mathcal{G}=G\\dfrac{M}{d^2}\\quad(\\text{en N·kg}^{-1})',
+        vars: 'Radial, dirigé vers l\'astre · Force subie : $\\vec{F}=m\\vec{\\mathcal{G}}$',
+      },
+      {
+        label: 'Lien avec le poids',
+        tex: 'g=G\\dfrac{M}{R^2}\\quad;\\quad P=mg',
+        vars: 'À la surface ($d=R$) · La masse ne dépend pas de l\'astre, le poids si',
+      },
+    ],
+  },
+  {
+    title: '2  Lois de Kepler',
+    rows: [
+      {
+        label: 'Les trois lois',
+        tex: '\\text{1. ellipses}\\;;\\;\\text{2. aires}\\;;\\;\\text{3. }\\dfrac{T^2}{a^3}=\\text{cste}',
+        vars: '1. Orbites elliptiques, astre à un foyer · 2. Aires égales en durées égales · 3. Loi des périodes',
+      },
+      {
+        label: 'Loi des aires',
+        tex: '\\text{aires égales} \\Rightarrow v\\text{ max au périhélie}',
+        vars: 'La planète va plus vite près de l\'astre (périhélie), plus lentement loin (aphélie)',
+      },
+    ],
+  },
+  {
+    title: '3  Mouvement circulaire',
+    rows: [
+      {
+        label: 'Vitesse orbitale',
+        tex: 'v=\\sqrt{\\dfrac{GM}{r}}',
+        vars: '2ᵉ loi de Newton : $\\dfrac{v^2}{r}=G\\dfrac{M}{r^2}$ · **Indépendante** de la masse du satellite · Mouvement circulaire uniforme',
+      },
+      {
+        label: 'Accélération centripète',
+        tex: 'a=\\dfrac{v^2}{r}\\;\\text{, dirigée vers le centre}',
+        vars: '$v$ constante mais direction variable ⇒ $a\\neq 0$',
+      },
+      {
+        label: 'Période de révolution',
+        tex: 'T=\\dfrac{2\\pi r}{v}=2\\pi\\sqrt{\\dfrac{r^3}{GM}}',
+        vars: 'Durée d\'un tour · $r$ = rayon Terre + altitude',
+      },
+    ],
+  },
+  {
+    title: '4  3ᵉ loi & Masse d\'un astre',
+    rows: [
+      {
+        label: '3ᵉ loi (cas circulaire)',
+        tex: '\\dfrac{T^2}{r^3}=\\dfrac{4\\pi^2}{GM}',
+        vars: 'Ne dépend que de l\'astre central $M$ · Identique pour tous ses satellites',
+      },
+      {
+        label: 'Masse d\'un astre',
+        tex: 'M=\\dfrac{4\\pi^2 r^3}{GT^2}',
+        vars: '« Peser » une planète / étoile en connaissant $T$ et $r$ d\'un de ses satellites',
+      },
+    ],
+  },
+  {
+    title: '5  Satellite géostationnaire',
+    rows: [
+      {
+        label: 'Trois conditions',
+        tex: 'T=86\\,164\\,\\text{s}\\;(\\approx 24\\,\\text{h})',
+        vars: 'Plan équatorial · Même sens que la Terre · Période = période de rotation terrestre',
+      },
+      {
+        label: 'Altitude',
+        tex: 'r=\\left(\\dfrac{Gm_T T^2}{4\\pi^2}\\right)^{1/3}\\;\\Rightarrow\\;h\\approx 35\\,800\\,\\text{km}',
+        vars: 'Applications : télécommunications, télévision, météo (antennes fixes au sol)',
+      },
+    ],
+  },
+];
+
+const GRAVITATION_COURS: Section[] = [
+  {
+    id: 'gravitation-universelle',
+    num: '1',
+    title: 'Loi de la gravitation universelle',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Toute masse attire toute autre masse : c\'est l\'interaction gravitationnelle, énoncée par Newton en 1687.',
+      },
+      {
+        type: 'definition',
+        badge: 'LOI DE LA GRAVITATION UNIVERSELLE',
+        content: 'Deux corps ponctuels $A$ et $B$, de masses $m_A$ et $m_B$, séparés d\'une distance $d$, exercent l\'un sur l\'autre des forces attractives, de même valeur : $F=G\\dfrac{m_A\\,m_B}{d^2}$ avec $F$ en newtons (N), $m$ en kilogrammes (kg), $d$ en mètres (m), et $G=6{,}67\\times 10^{-11}\\,\\text{N·m}^2\\text{·kg}^{-2}$ la **constante de gravitation universelle**.',
+      },
+      {
+        type: 'figure',
+        caption: 'Les forces $\\vec{F}_{B/A}$ et $\\vec{F}_{A/B}$ sont opposées (3ᵉ loi de Newton), portées par la droite $(AB)$ et dirigées l\'une vers l\'autre (attraction).',
+        src: '/modules/phys-gravitation/fig-gravitation.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Caractéristiques du vecteur force** — $\\vec{F}_{B/A}$ (force exercée par $B$ sur $A$) a pour direction la droite $(AB)$, pour sens de $A$ vers $B$ (attractive), et pour valeur $G\\dfrac{m_A m_B}{d^2}$. D\'après la 3ᵉ loi de Newton, $\\vec{F}_{A/B}=-\\vec{F}_{B/A}$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Terre / Lune',
+        lines: [
+          'Avec $m_T=5{,}97\\times 10^{24}\\,\\text{kg}$, $m_L=7{,}35\\times 10^{22}\\,\\text{kg}$, $d=3{,}84\\times 10^{8}\\,\\text{m}$ :',
+          '$F=6{,}67\\times 10^{-11}\\times\\dfrac{5{,}97\\times 10^{24}\\times 7{,}35\\times 10^{22}}{(3{,}84\\times 10^{8})^2}\\approx 1{,}98\\times 10^{20}\\,\\text{N}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Les unités** — Toujours travailler en unités SI (kg, m). La distance $d$ est celle entre les **centres** des astres, pas entre leurs surfaces.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2 et 3 : force Soleil-Terre, ordre de grandeur, forces réciproques' },
+    ],
+  },
+  {
+    id: 'champ',
+    num: '2',
+    title: 'Le champ de gravitation',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Champ de gravitation',
+        content: 'Un astre de masse $M$ crée autour de lui un **champ de gravitation**. En un point situé à la distance $d$ de son centre, le vecteur champ $\\vec{\\mathcal{G}}$ a pour valeur $\\mathcal{G}=G\\dfrac{M}{d^2}$ (en N·kg⁻¹), une direction radiale et un sens dirigé **vers l\'astre**.',
+      },
+      {
+        type: 'propriete',
+        text: '**Force et champ** — Un corps de masse $m$ placé en un point où règne le champ $\\vec{\\mathcal{G}}$ subit la force $\\vec{F}=m\\vec{\\mathcal{G}}$. Le champ décrit donc l\'influence gravitationnelle de l\'astre, indépendamment du corps qu\'on y place.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Le champ, c\'est « ce que ressentirait » une masse-test placée à cet endroit, par unité de masse. On sépare la **cause** (l\'astre $M$ qui crée le champ) de l\'**effet** (la force sur un corps $m$) : $\\vec{F}=m\\vec{\\mathcal{G}}$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Lien avec le poids** — À la surface d\'un astre ($d=R$), le champ de gravitation vaut $\\mathcal{G}=G\\dfrac{M}{R^2}$. C\'est (en très bonne approximation) l\'intensité de pesanteur $g$. Ainsi le poids s\'écrit $P=mg$ avec $g=G\\dfrac{M}{R^2}$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Pesanteur terrestre',
+        lines: [
+          '$g=6{,}67\\times 10^{-11}\\times\\dfrac{5{,}97\\times 10^{24}}{(6{,}37\\times 10^{6})^2}\\approx 9{,}81\\,\\text{N·kg}^{-1}$, la valeur bien connue de $g$ à la surface de la Terre.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 6 et 7 : pesanteur sur Mars, champ en altitude, poids & masse' },
+    ],
+  },
+  {
+    id: 'kepler',
+    num: '3',
+    title: 'Les trois lois de Kepler',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Établies empiriquement par Kepler (1609-1619) à partir des observations de Tycho Brahe, ces lois décrivent le mouvement des planètes autour du Soleil (et, plus généralement, d\'un satellite autour d\'un astre attracteur).',
+      },
+      {
+        type: 'definition',
+        badge: '1ʳᵉ LOI — Loi des orbites',
+        content: 'Dans le référentiel héliocentrique, chaque planète décrit une **ellipse** dont le Soleil occupe l\'un des **foyers**.',
+      },
+      {
+        type: 'definition',
+        badge: '2ᵉ LOI — Loi des aires',
+        content: 'Le segment reliant le Soleil à la planète balaie des **aires égales pendant des durées égales**. La planète va donc plus vite près du Soleil (périhélie) que loin de lui (aphélie).',
+      },
+      {
+        type: 'figure',
+        caption: 'Loi des aires : les deux secteurs colorés ont la même aire et sont balayés dans la même durée ; la planète est plus rapide au périhélie.',
+        src: '/modules/phys-gravitation/fig-kepler.png',
+      },
+      {
+        type: 'definition',
+        badge: '3ᵉ LOI — Loi des périodes',
+        content: 'Le carré de la période de révolution $T$ est proportionnel au cube du demi-grand axe $a$ de l\'orbite : $\\dfrac{T^2}{a^3}=\\text{constante}$. Cette constante est la même pour tous les astres orbitant autour d\'un même corps attracteur.',
+      },
+      {
+        type: 'reflex',
+        text: '**Orbite circulaire** — Pour une orbite quasi circulaire (cas de nombreux satellites), le demi-grand axe $a$ se confond avec le rayon $r$ de l\'orbite. On écrira alors $\\dfrac{T^2}{r^3}=\\text{constante}$.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 10, 11 et 12 : loi des aires, constante de Kepler, comparaison de périodes' },
+    ],
+  },
+  {
+    id: 'circulaire',
+    num: '4',
+    title: 'Mouvement circulaire d\'un satellite',
+    blocks: [
+      {
+        type: 'para',
+        text: 'On étudie un satellite de masse $m$ en orbite **circulaire** de rayon $r$ autour d\'un astre de masse $M$, dans le référentiel géocentrique (supposé galiléen), en négligeant les frottements.',
+      },
+      {
+        type: 'figure',
+        caption: 'La seule force est la force gravitationnelle $\\vec{F}$, dirigée vers le centre : elle est centripète. La vitesse $\\vec{v}$ est tangente à l\'orbite.',
+        src: '/modules/phys-gravitation/fig-satellite.png',
+      },
+      {
+        type: 'methode',
+        title: '2ᵉ LOI DE NEWTON',
+        steps: [
+          'La seule force est $\\vec{F}=m\\vec{\\mathcal{G}}$, dirigée vers le centre. La 2ᵉ loi de Newton donne $\\vec{F}=m\\vec{a}$, donc $\\vec{a}=\\vec{\\mathcal{G}}$ : l\'accélération est **centripète**.',
+          'Pour un mouvement circulaire uniforme, $a=\\dfrac{v^2}{r}$. En projetant sur l\'axe radial : $\\dfrac{v^2}{r}=G\\dfrac{M}{r^2}$.',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Vitesse sur l\'orbite** — On en déduit la valeur de la vitesse, **indépendante de la masse du satellite** : $v=\\sqrt{\\dfrac{GM}{r}}$. Le mouvement circulaire est donc **uniforme** ($v$ constante).',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — La Station spatiale (ISS)',
+        lines: [
+          'À une altitude de $400\\,\\text{km}$, soit $r=6{,}77\\times 10^{6}\\,\\text{m}$ :',
+          '$v=\\sqrt{\\dfrac{6{,}67\\times 10^{-11}\\times 5{,}97\\times 10^{24}}{6{,}77\\times 10^{6}}}\\approx 7{,}67\\times 10^{3}\\,\\text{m·s}^{-1}\\approx 7{,}7\\,\\text{km·s}^{-1}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'Le mouvement circulaire uniforme n\'est **pas** sans accélération : la vitesse a une valeur constante, mais sa **direction** change en permanence. L\'accélération (centripète) est non nulle.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 5, 8, 9 et 15 : vitesse, période, vitesse de la Lune, établir v' },
+    ],
+  },
+  {
+    id: 'periode',
+    num: '5',
+    title: 'Période & 3ᵉ loi de Kepler',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'MÉTHODE — Période de révolution',
+        content: 'La période $T$ est la durée d\'un tour, soit le périmètre $2\\pi r$ divisé par la vitesse :',
+        formulas: ['T=\\dfrac{2\\pi r}{v}=\\dfrac{2\\pi r}{\\sqrt{GM/r}}=2\\pi\\sqrt{\\dfrac{r^3}{GM}}'],
+      },
+      {
+        type: 'propriete',
+        text: '**Démonstration de la 3ᵉ loi (cas circulaire)** — En élevant au carré : $T^2=4\\pi^2\\dfrac{r^3}{GM}$, d\'où $\\dfrac{T^2}{r^3}=\\dfrac{4\\pi^2}{GM}$. Le rapport $\\dfrac{T^2}{r^3}$ ne dépend que de la masse $M$ de l\'astre attracteur : il est identique pour tous ses satellites, ce qui démontre la 3ᵉ loi de Kepler.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Vérification autour de la Terre',
+        lines: [
+          'Pour tout satellite terrestre, $\\dfrac{T^2}{r^3}=\\dfrac{4\\pi^2}{Gm_T}\\approx 9{,}9\\times 10^{-14}\\,\\text{s}^2\\text{·m}^{-3}$.',
+          'On vérifie que l\'ISS, un satellite géostationnaire et la Lune donnent bien la même valeur — ce qui confirme la loi.',
+        ],
+      },
+      {
+        type: 'definition',
+        badge: 'MÉTHODE — Déterminer la masse d\'un astre',
+        content: 'Connaissant la période $T$ et le rayon $r$ d\'un satellite, on inverse la relation pour trouver la masse de l\'astre central :',
+        formulas: ['M=\\dfrac{4\\pi^2 r^3}{GT^2}'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'C\'est ainsi que l\'on « pèse » les planètes et les étoiles : il suffit d\'observer un satellite (naturel ou artificiel) et de mesurer sa période et le rayon de son orbite.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 11, 14 : constante de Kepler, masse de Jupiter — puis sujets bac 17, 18' },
+    ],
+  },
+  {
+    id: 'geostationnaire',
+    num: '6',
+    title: 'Satellites géostationnaires',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Satellite géostationnaire',
+        content: 'Un satellite **géostationnaire** reste immobile au-dessus d\'un même point de la Terre. Pour cela, il doit vérifier trois conditions : orbite dans le **plan équatorial**, sens de rotation identique à celui de la Terre, et période égale à la **période de rotation de la Terre** ($T\\approx 23\\,\\text{h}\\,56\\,\\text{min}\\approx 86\\,164\\,\\text{s}$).',
+      },
+      {
+        type: 'definition',
+        badge: 'MÉTHODE — Altitude du satellite géostationnaire',
+        content: 'On impose $T=86\\,164\\,\\text{s}$ dans la 3ᵉ loi et on isole $r$ :',
+        formulas: ['r=\\left(\\dfrac{Gm_T T^2}{4\\pi^2}\\right)^{1/3}'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Calcul de l\'altitude',
+        lines: [
+          '$r=\\left(\\dfrac{6{,}67\\times 10^{-11}\\times 5{,}97\\times 10^{24}\\times(86\\,164)^2}{4\\pi^2}\\right)^{1/3}\\approx 4{,}22\\times 10^{7}\\,\\text{m}$.',
+          'Le rayon terrestre étant $R_T=6{,}37\\times 10^{6}\\,\\text{m}$, l\'altitude est $h=r-R_T\\approx 3{,}58\\times 10^{7}\\,\\text{m}\\approx 35\\,800\\,\\text{km}$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Applications** — Les satellites géostationnaires sont utilisés pour les télécommunications, la télévision et la météorologie : restant fixes dans le ciel, ils permettent des antennes paraboliques immobiles au sol. À l\'inverse, les satellites d\'observation (imagerie, GPS) sont sur des orbites plus basses, non géostationnaires.',
+      },
+      { type: 'lien_ex', text: '→ Exercice 13 et sujet bac 16 : satellite géostationnaire, satellite d\'observation' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -4239,8 +4556,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isEquadiffCours = module.id === 'maths-equadiff';
   const isTrigoCours = module.id === 'maths-trigo';
   const isCombinatoireCours = module.id === 'maths-combinatoire';
-  const sections = isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isGravitationCours = module.id === 'phys-gravitation';
+  const sections = isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -4413,8 +4731,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isEquadiffFiche = module.id === 'maths-equadiff';
   const isTrigoFiche = module.id === 'maths-trigo';
   const isCombinatoireFiche = module.id === 'maths-combinatoire';
-  const ficheData = isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isGravitationFiche = module.id === 'phys-gravitation';
+  const ficheData = isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
