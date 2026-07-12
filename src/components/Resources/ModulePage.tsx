@@ -18,6 +18,7 @@ import { TRIGO_QCM, TRIGO_EXERCISES, TRIGO_CORRECTIONS } from '@/lib/trigo-conte
 import { COMBINATOIRE_QCM, COMBINATOIRE_EXERCISES, COMBINATOIRE_CORRECTIONS } from '@/lib/combinatoire-content';
 import { GRAVITATION_QCM, GRAVITATION_EXERCISES, GRAVITATION_CORRECTIONS } from '@/lib/gravitation-content';
 import { ENERGIE_QCM, ENERGIE_EXERCISES, ENERGIE_CORRECTIONS } from '@/lib/energie-content';
+import { BILANS_QCM, BILANS_EXERCISES, BILANS_CORRECTIONS } from '@/lib/bilans-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -60,14 +61,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isCombinatoire = module.id === 'maths-combinatoire';
     const isGravitation = module.id === 'phys-gravitation';
     const isEnergie = module.id === 'phys-energie';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm') {
-      const questions = isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isBilans = module.id === 'phys-bilans';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm') {
+      const questions = isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4563,6 +4565,323 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Bilans thermiques ─────────────────────────────────────────────────
+const BILANS_OBJECTIFS = [
+  'Définir l\'**énergie interne** $U$ et la relier à la **température** d\'un corps incompressible.',
+  'Énoncer et appliquer le **premier principe** $\\Delta U=W+Q$ avec les **conventions de signe**.',
+  'Calculer une énergie thermique avec la **capacité thermique** : $Q=mc\\Delta T$.',
+  'Distinguer les **trois modes de transfert** : conduction, convection, rayonnement.',
+  'Manipuler le **flux thermique** $\\Phi=Q/\\Delta t$ et la **résistance thermique** $R_{th}=e/(\\lambda S)$.',
+  'Établir un **bilan thermique** (équilibre, calorimétrie, régime stationnaire).',
+];
+
+const BILANS_FICHE_DATA = [
+  {
+    title: '1  Énergie interne & température',
+    rows: [
+      {
+        label: 'Énergie interne',
+        tex: 'U=E_{c,\\text{micro}}+E_{p,\\text{micro}}',
+        vars: 'Énergie stockée à l\'échelle **microscopique** (agitation + interactions), en joules (J)',
+      },
+      {
+        label: 'Corps incompressible',
+        tex: 'U=U(T)',
+        vars: 'Pour un solide/liquide, $U$ ne dépend que de la **température** : $T\\nearrow\\;\\Rightarrow\\;U\\nearrow$',
+      },
+      {
+        label: 'Températures',
+        tex: 'T\\,(\\text{K})=\\theta\\,(°\\text{C})+273{,}15\\;;\\;\\Delta T=\\Delta\\theta',
+        vars: 'Une **variation** de température est identique en K et en °C',
+      },
+    ],
+  },
+  {
+    title: '2  Premier principe',
+    rows: [
+      {
+        label: 'Énoncé',
+        tex: '\\Delta U=W+Q',
+        vars: 'Conservation de l\'énergie · $W$ = travail, $Q$ = transfert thermique',
+      },
+      {
+        label: 'Conventions de signe',
+        tex: 'Q>0:\\text{reçu}\\;;\\;Q<0:\\text{cédé}',
+        vars: 'Énergie **reçue** par le système comptée $>0$, **cédée** $<0$',
+      },
+      {
+        label: 'Sans travail',
+        tex: 'W\\approx 0\\;\\Rightarrow\\;\\Delta U=Q',
+        vars: 'Solide/liquide chauffé sans variation de volume notable',
+      },
+    ],
+  },
+  {
+    title: '3  Capacité thermique',
+    rows: [
+      {
+        label: 'Relation fondamentale',
+        tex: 'Q=mc\\,\\Delta T',
+        vars: '$c$ = capacité thermique **massique** (J·kg⁻¹·K⁻¹) · $c_{\\text{eau}}=4180$',
+      },
+      {
+        label: 'Capacité de l\'objet',
+        tex: 'C=mc\\;\\Rightarrow\\;Q=C\\,\\Delta T',
+        vars: '$C$ en J·K⁻¹ concerne l\'objet entier',
+      },
+      {
+        label: 'Signe',
+        tex: '\\Delta T=T_f-T_i',
+        vars: 'Refroidissement : $\\Delta T<0$ donc $Q<0$ (le corps cède). **Ne jamais oublier le signe**',
+      },
+    ],
+  },
+  {
+    title: '4  Modes de transfert',
+    rows: [
+      {
+        label: 'Conduction',
+        tex: '\\text{contact, sans déplacement de matière}',
+        vars: 'De proche en proche dans un solide (ou fluide immobile)',
+      },
+      {
+        label: 'Convection',
+        tex: '\\text{déplacement d\'un fluide}',
+        vars: 'Courants chauds qui montent, froids qui descendent',
+      },
+      {
+        label: 'Rayonnement',
+        tex: '\\text{ondes électromagnétiques}',
+        vars: 'Sans support matériel : fonctionne **dans le vide** (chaleur du Soleil)',
+      },
+    ],
+  },
+  {
+    title: '5  Flux & résistance thermique',
+    rows: [
+      {
+        label: 'Flux thermique',
+        tex: '\\Phi=\\dfrac{Q}{\\Delta t}',
+        vars: 'Une **puissance** thermique, en watts (W)',
+      },
+      {
+        label: 'Résistance thermique',
+        tex: 'R_{th}=\\dfrac{e}{\\lambda S}',
+        vars: 'En K·W⁻¹ · $e$ épaisseur, $\\lambda$ conductivité, $S$ surface · Isolant : $R_{th}$ **grande**',
+      },
+      {
+        label: 'Régime stationnaire',
+        tex: '\\Phi=\\dfrac{T_{\\text{chaud}}-T_{\\text{froid}}}{R_{th}}=\\dfrac{\\Delta T}{R_{th}}',
+        vars: 'Analogie loi d\'Ohm : $\\Delta T\\leftrightarrow U$, $\\Phi\\leftrightarrow I$, $R_{th}\\leftrightarrow R$',
+      },
+    ],
+  },
+  {
+    title: '6  Bilans & équilibre',
+    rows: [
+      {
+        label: 'Système isolé',
+        tex: '\\textstyle\\sum Q_i=0',
+        vars: 'Les échanges internes se compensent (calorimétrie)',
+      },
+      {
+        label: 'Température d\'équilibre',
+        tex: 'T_{eq}=\\dfrac{\\sum m_i c_i T_i}{\\sum m_i c_i}',
+        vars: 'Moyenne des températures pondérée par $m_ic_i$',
+      },
+      {
+        label: 'Refroidissement (Newton)',
+        tex: 'T\'=-k\\,(T-T_{\\text{ext}})',
+        vars: 'Décroissance **exponentielle** de $T$ vers $T_{\\text{ext}}$',
+      },
+    ],
+  },
+];
+
+const BILANS_COURS: Section[] = [
+  {
+    id: 'energie-interne',
+    num: '1',
+    title: 'Énergie interne & température',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Énergie interne',
+        content: 'L\'**énergie interne** $U$ d\'un système est l\'énergie stockée à l\'échelle **microscopique** : somme des énergies cinétiques d\'agitation des particules et des énergies potentielles d\'interaction entre elles. Elle s\'exprime en **joules (J)**.',
+      },
+      {
+        type: 'propriete',
+        text: '**Énergie interne et température** — Pour un système **incompressible** (solide ou liquide), l\'énergie interne ne dépend que de la **température** : plus la température est élevée, plus l\'agitation thermique — donc $U$ — est grande.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'La température mesure l\'agitation **moyenne** des particules ; l\'énergie interne, elle, comptabilise l\'énergie **totale** de cette agitation. Chauffer un corps, c\'est augmenter son énergie interne.',
+      },
+      {
+        type: 'formules',
+        label: 'Températures',
+        rows: [
+          { tex: 'T\\,(\\text{K})=\\theta\\,(°\\text{C})+273{,}15' },
+          { tex: '\\Delta T=\\Delta\\theta\\quad(\\text{variation identique en K et en °C})' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'premier-principe',
+    num: '2',
+    title: 'Premier principe',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'PREMIER PRINCIPE DE LA THERMODYNAMIQUE',
+        content: 'La variation d\'énergie interne d\'un système au cours d\'une transformation est égale à la somme des énergies échangées avec l\'extérieur, par **travail** $W$ et par **transfert thermique** $Q$. C\'est un principe de **conservation de l\'énergie**.',
+        formulas: ['\\Delta U=W+Q'],
+      },
+      {
+        type: 'propriete',
+        text: '**Conventions de signe** — Une énergie **reçue** par le système est comptée positivement ($Q>0$ : le système est chauffé), une énergie **cédée** négativement ($Q<0$ : le système se refroidit).',
+      },
+      {
+        type: 'propriete',
+        text: '**Cas usuel — pas de travail** — Pour un solide ou un liquide chauffé sans variation de volume notable, le travail est négligeable ($W\\approx 0$), et le premier principe se réduit à $\\Delta U=Q$. Toute l\'énergie thermique reçue sert à faire varier l\'énergie interne (donc la température).',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Une casserole d\'eau reçoit $Q=+50\\,\\text{kJ}$ de la plaque : son énergie interne augmente de $\\Delta U=+50\\,\\text{kJ}$, et sa température s\'élève.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2 et 5 : calcul de ΔU, conventions de signe, interprétation' },
+    ],
+  },
+  {
+    id: 'capacite',
+    num: '3',
+    title: 'Capacité thermique',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'RELATION FONDAMENTALE',
+        content: 'L\'énergie thermique $Q$ à fournir à un corps incompressible de masse $m$ pour élever sa température de $\\Delta T$ est $Q=mc\\,\\Delta T$, où $c$ est la **capacité thermique massique** (en J·kg⁻¹·K⁻¹), caractéristique du matériau.',
+        formulas: ['Q=m\\,c\\,\\Delta T'],
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Capacités thermiques',
+        content: 'La **capacité thermique massique** $c$ est l\'énergie nécessaire pour élever $1\\,\\text{kg}$ du corps de $1\\,\\text{K}$. La **capacité thermique** $C=mc$ (en J·K⁻¹) concerne l\'objet entier : $Q=C\\,\\Delta T$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Chauffer de l\'eau',
+        lines: [
+          'Pour porter $1{,}0\\,\\text{kg}$ d\'eau ($c=4180\\,\\text{J·kg}^{-1}\\text{·K}^{-1}$) de $20\\,°\\text{C}$ à $100\\,°\\text{C}$ :',
+          '$Q=mc\\,\\Delta T=1{,}0\\times 4180\\times 80\\approx 3{,}3\\times 10^{5}\\,\\text{J}=334\\,\\text{kJ}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Signe de $\\Delta T$** — $\\Delta T=T_{\\text{final}}-T_{\\text{initial}}$. Lors d\'un refroidissement, $\\Delta T<0$ donc $Q<0$ (le corps cède de l\'énergie). Ne jamais oublier le signe.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 6, 7, 8 et 12 : chauffage d\'eau, autre matériau, capacité C, température finale' },
+    ],
+  },
+  {
+    id: 'modes',
+    num: '4',
+    title: 'Les trois modes de transfert',
+    blocks: [
+      {
+        type: 'para',
+        text: 'L\'énergie thermique se transfère spontanément du corps **chaud** vers le corps **froid**, selon trois mécanismes.',
+      },
+      {
+        type: 'figure',
+        caption: 'Conduction (contact, sans déplacement de matière), convection (mouvement d\'un fluide), rayonnement (ondes électromagnétiques, sans support).',
+        src: '/modules/phys-bilans/fig-transferts.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Les trois modes** — **Conduction** : transfert de proche en proche dans un solide (ou un fluide immobile), sans déplacement global de matière (ex. : une cuillère qui chauffe dans une casserole). **Convection** : transfert par déplacement d\'un fluide (courants chauds qui montent, froids qui descendent ; ex. : radiateur, eau qui bout). **Rayonnement** : transfert par ondes électromagnétiques, sans support matériel — fonctionne dans le vide (ex. : chaleur du Soleil, d\'un feu).',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Conduction = « de main en main » ; convection = « transport par le fluide qui bouge » ; rayonnement = « à distance, même dans le vide ». Les trois coexistent souvent (un radiateur chauffe par convection **et** rayonnement).',
+      },
+    ],
+  },
+  {
+    id: 'flux',
+    num: '5',
+    title: 'Flux & résistance thermique',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Flux thermique',
+        content: 'Le **flux thermique** $\\Phi$ est l\'énergie thermique transférée par unité de temps. C\'est une **puissance** thermique, en watts (W).',
+        formulas: ['\\Phi=\\dfrac{Q}{\\Delta t}'],
+      },
+      {
+        type: 'figure',
+        caption: 'À travers une paroi, le flux thermique va du chaud vers le froid ; il est d\'autant plus grand que l\'écart de température est important et la résistance faible.',
+        src: '/modules/phys-bilans/fig-flux.png',
+      },
+      {
+        type: 'definition',
+        badge: 'RÉSISTANCE THERMIQUE',
+        content: 'Pour une paroi plane d\'épaisseur $e$, de surface $S$ et de conductivité thermique $\\lambda$, la **résistance thermique** est $R_{th}=\\dfrac{e}{\\lambda S}$ (en K·W⁻¹), et le flux qui la traverse, en régime stationnaire, vaut $\\Phi=\\dfrac{T_{\\text{chaud}}-T_{\\text{froid}}}{R_{th}}=\\dfrac{\\Delta T}{R_{th}}$.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Analogie électrique** — C\'est l\'analogue thermique de la loi d\'Ohm : $\\Delta T$ joue le rôle de la tension, $\\Phi$ celui du courant, $R_{th}$ celui de la résistance. Un bon isolant a une **grande** résistance thermique ($\\lambda$ faible ou $e$ grand) et laisse passer peu de flux.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Mur',
+        lines: [
+          'Un mur d\'épaisseur $e=0{,}20\\,\\text{m}$, de conductivité $\\lambda=1{,}0\\,\\text{W·m}^{-1}\\text{·K}^{-1}$ et de surface $S=10\\,\\text{m}^2$ a une résistance $R_{th}=\\dfrac{0{,}20}{1{,}0\\times 10}=0{,}020\\,\\text{K·W}^{-1}$.',
+          'Sous un écart $\\Delta T=15\\,\\text{K}$, le flux vaut $\\Phi=\\dfrac{15}{0{,}020}=750\\,\\text{W}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 10, 11, 14, 15, 16 : flux, résistance, comparaison d\'isolants, pertes' },
+    ],
+  },
+  {
+    id: 'bilans',
+    num: '6',
+    title: 'Bilans & régime stationnaire',
+    blocks: [
+      {
+        type: 'methode',
+        title: 'BILAN THERMIQUE',
+        steps: [
+          'Choisir le système et identifier les échanges (reçus $>0$, cédés $<0$).',
+          'Appliquer $\\Delta U=Q$ ($=mc\\,\\Delta T$ pour un corps incompressible).',
+          'En régime stationnaire, la température est constante : le flux entrant égale le flux sortant.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Mise à l\'équilibre thermique',
+        lines: [
+          'On mélange $0{,}30\\,\\text{kg}$ d\'eau à $80\\,°\\text{C}$ et $0{,}20\\,\\text{kg}$ d\'eau à $20\\,°\\text{C}$ (système isolé). L\'énergie cédée par l\'eau chaude est reçue par l\'eau froide : $m_1c(T_{eq}-80)+m_2c(T_{eq}-20)=0$.',
+          'On obtient $T_{eq}=\\dfrac{m_1\\times 80+m_2\\times 20}{m_1+m_2}\\approx 56\\,°\\text{C}$.',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Loi de refroidissement de Newton** — Un corps de température $T$ dans un milieu à $T_{\\text{ext}}$ perd de l\'énergie à un flux proportionnel à l\'écart : $\\Phi=hS\\,(T-T_{\\text{ext}})$. On aboutit à une **équation différentielle** $T\'=-k\\,(T-T_{\\text{ext}})$, dont la solution est une décroissance exponentielle de $T$ vers $T_{\\text{ext}}$.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Bilan global** — Toutes ces situations illustrent la **conservation de l\'énergie** : l\'énergie n\'est ni créée ni détruite, seulement transférée (par travail ou chaleur) et convertie d\'une forme à une autre. Le premier principe en est l\'expression quantitative.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 9, 13 et sujets bac 17, 18, 19 : mélange, calorimétrie, isolation, piscine' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -4853,8 +5172,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isCombinatoireCours = module.id === 'maths-combinatoire';
   const isGravitationCours = module.id === 'phys-gravitation';
   const isEnergieCours = module.id === 'phys-energie';
-  const sections = isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isBilansCours = module.id === 'phys-bilans';
+  const sections = isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -5029,8 +5349,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isCombinatoireFiche = module.id === 'maths-combinatoire';
   const isGravitationFiche = module.id === 'phys-gravitation';
   const isEnergieFiche = module.id === 'phys-energie';
-  const ficheData = isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isBilansFiche = module.id === 'phys-bilans';
+  const ficheData = isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
