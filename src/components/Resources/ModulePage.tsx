@@ -780,9 +780,9 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
     case 'figure':
       return (
         <div className="rounded-xl overflow-hidden border border-white/10 bg-[#0d1520]">
-          <div className="px-3 pt-3 pb-1">
+          <div className="px-3 pt-3 pb-1 flex justify-center">
             {b.src
-              ? <img src={b.src} alt={b.caption} className="w-full rounded" />
+              ? <img src={b.src} alt={b.caption} className="block mx-auto w-auto max-w-full max-h-[360px] rounded" />
               : b.svg ? <b.svg /> : null}
           </div>
           <div className="px-3 py-2 border-t border-white/8 bg-white/[0.02]">
