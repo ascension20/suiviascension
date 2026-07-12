@@ -17,6 +17,7 @@ import { EQUADIFF_QCM, EQUADIFF_EXERCISES, EQUADIFF_CORRECTIONS } from '@/lib/eq
 import { TRIGO_QCM, TRIGO_EXERCISES, TRIGO_CORRECTIONS } from '@/lib/trigo-content';
 import { COMBINATOIRE_QCM, COMBINATOIRE_EXERCISES, COMBINATOIRE_CORRECTIONS } from '@/lib/combinatoire-content';
 import { GRAVITATION_QCM, GRAVITATION_EXERCISES, GRAVITATION_CORRECTIONS } from '@/lib/gravitation-content';
+import { ENERGIE_QCM, ENERGIE_EXERCISES, ENERGIE_CORRECTIONS } from '@/lib/energie-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -58,14 +59,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isTrigo = module.id === 'maths-trigo';
     const isCombinatoire = module.id === 'maths-combinatoire';
     const isGravitation = module.id === 'phys-gravitation';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm') {
-      const questions = isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isEnergie = module.id === 'phys-energie';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm') {
+      const questions = isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4268,6 +4270,299 @@ const GRAVITATION_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Énergie mécanique ─────────────────────────────────────────────────
+const ENERGIE_OBJECTIFS = [
+  'Calculer le **travail d\'une force constante** $W=F\\times AB\\times\\cos\\alpha$ et en déterminer le signe.',
+  'Utiliser le **travail du poids** $W(\\vec{P})=mgh$, indépendant du chemin (force conservative).',
+  'Définir l\'**énergie cinétique** et appliquer le **théorème de l\'énergie cinétique** (TEC).',
+  'Manipuler l\'**énergie potentielle de pesanteur** $E_{pp}=mgz$ et le choix de l\'origine.',
+  'Exploiter la **conservation de l\'énergie mécanique** sans frottement.',
+  'Établir un **bilan énergétique** avec frottements (énergie dissipée, non-conservation).',
+];
+
+const ENERGIE_FICHE_DATA = [
+  {
+    title: '1  Travail d\'une force',
+    rows: [
+      {
+        label: 'Force constante',
+        tex: 'W_{AB}(\\vec{F})=\\vec{F}\\cdot\\vec{AB}=F\\times AB\\times\\cos\\alpha',
+        vars: 'En joules (J) · $\\alpha$ = angle entre $\\vec{F}$ et le déplacement · Seule la composante selon $\\vec{AB}$ travaille',
+      },
+      {
+        label: 'Signe',
+        tex: '\\alpha<90°:\\text{moteur}\\;;\\;\\alpha>90°:\\text{résistant}\\;;\\;\\alpha=90°:\\text{nul}',
+        vars: 'Force perpendiculaire ($\\cos 90°=0$) ⇒ travail nul (réaction normale, force centripète)',
+      },
+      {
+        label: 'Travail du poids',
+        tex: 'W_{AB}(\\vec{P})=mg(z_A-z_B)=mgh',
+        vars: 'Ne dépend **que de la dénivellation** $h$, pas du chemin · Descente : moteur · Montée : résistant · Poids = force **conservative**',
+      },
+    ],
+  },
+  {
+    title: '2  Énergie cinétique & TEC',
+    rows: [
+      {
+        label: 'Énergie cinétique',
+        tex: 'E_c=\\tfrac{1}{2}mv^2',
+        vars: 'En joules · $m$ en kg, $v$ en m·s⁻¹ · Proportionnelle au **carré** de la vitesse',
+      },
+      {
+        label: 'Théorème (TEC)',
+        tex: '\\Delta E_c=E_c(B)-E_c(A)=\\sum W_{AB}(\\vec{F})',
+        vars: 'Référentiel galiléen · Somme des travaux de **toutes** les forces · Chute libre : $v=\\sqrt{2gh}$',
+      },
+    ],
+  },
+  {
+    title: '3  Énergie potentielle & mécanique',
+    rows: [
+      {
+        label: 'Énergie potentielle',
+        tex: 'E_{pp}=mgz\\quad(\\text{axe vers le haut})',
+        vars: 'Définie à une constante près · Origine $E_{pp}=0$ **arbitraire** (souvent le sol) · $W(\\vec{P})=-\\Delta E_{pp}$',
+      },
+      {
+        label: 'Énergie mécanique',
+        tex: 'E_m=E_c+E_{pp}=\\tfrac{1}{2}mv^2+mgz',
+        vars: 'Somme des énergies cinétique et potentielle',
+      },
+    ],
+  },
+  {
+    title: '4  Conservation',
+    rows: [
+      {
+        label: 'Sans frottement',
+        tex: 'E_m=\\text{constante}\\;\\Leftrightarrow\\;\\Delta E_m=0',
+        vars: 'Si seules des forces **conservatives** (poids) travaillent · $E_c$ et $E_{pp}$ se convertissent l\'une en l\'autre',
+      },
+      {
+        label: 'Application type',
+        tex: '\\tfrac{1}{2}mv^2=mgh\\;\\Rightarrow\\;v=\\sqrt{2gh}',
+        vars: 'Pendule, toboggan, chute : la vitesse au point bas ne dépend pas de la masse',
+      },
+    ],
+  },
+  {
+    title: '5  Frottements & non-conservation',
+    rows: [
+      {
+        label: 'Variation de Em',
+        tex: '\\Delta E_m=\\sum W(\\vec{F}_{\\text{non cons.}})',
+        vars: 'Frottements : travail résistant ($W<0$) ⇒ $E_m$ **diminue**',
+      },
+      {
+        label: 'Énergie dissipée',
+        tex: '|\\Delta E_m|=f\\times L\\quad(\\text{frottement constant})',
+        vars: 'Énergie « perdue » = dissipée sous forme thermique · Le bilan énergétique global reste équilibré',
+      },
+      {
+        label: 'Méthode — bilan',
+        tex: '\\text{système}\\to\\text{forces}\\to\\Delta E_m=W(\\vec{f})',
+        vars: 'Choisir système, référentiel, origine des altitudes · $\\Delta E_m=0$ sans frottement',
+      },
+    ],
+  },
+];
+
+const ENERGIE_COURS: Section[] = [
+  {
+    id: 'travail',
+    num: '1',
+    title: 'Travail d\'une force',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Travail d\'une force constante',
+        content: 'Le **travail** d\'une force constante $\\vec{F}$ lors d\'un déplacement $\\vec{AB}$ est le produit scalaire $W_{AB}(\\vec{F})=\\vec{F}\\cdot\\vec{AB}=F\\times AB\\times\\cos\\alpha$, où $\\alpha$ est l\'angle entre $\\vec{F}$ et $\\vec{AB}$. Le travail s\'exprime en **joules (J)**.',
+      },
+      {
+        type: 'figure',
+        caption: 'Le travail dépend de la force, du déplacement et de l\'angle $\\alpha$ entre les deux : seule la composante de $\\vec{F}$ selon le déplacement travaille.',
+        src: '/modules/phys-energie/fig-travail.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Signe du travail** — Selon l\'angle $\\alpha$ : $\\alpha<90°$ ($\\cos\\alpha>0$) : travail **moteur** ($W>0$), la force favorise le mouvement ; $\\alpha>90°$ ($\\cos\\alpha<0$) : travail **résistant** ($W<0$), la force s\'oppose au mouvement ; $\\alpha=90°$ ($\\cos\\alpha=0$) : travail **nul**, la force ne travaille pas.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Travailler, c\'est « pousser dans le sens où ça avance ». Une force perpendiculaire au déplacement (comme la force centripète d\'un satellite, ou la réaction normale d\'un support) ne fournit aucun travail.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Une force $F=50\\,\\text{N}$ inclinée de $30°$ tire un objet sur $AB=8{,}0\\,\\text{m}$ : $W=50\\times 8{,}0\\times\\cos 30°\\approx 3{,}5\\times 10^{2}\\,\\text{J}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2 et 7 : force horizontale, inclinée, perpendiculaire' },
+    ],
+  },
+  {
+    id: 'poids',
+    num: '2',
+    title: 'Travail du poids',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Travail du poids',
+        content: 'Le travail du poids $\\vec{P}=m\\vec{g}$ entre deux points $A$ et $B$ ne dépend que de la différence d\'altitude : $W_{AB}(\\vec{P})=mg(z_A-z_B)$, où l\'axe des altitudes $z$ est orienté **vers le haut**.',
+      },
+      {
+        type: 'propriete',
+        text: '**Indépendance du chemin** — Le travail du poids **ne dépend pas du chemin suivi**, mais uniquement des positions de départ et d\'arrivée. Une descente donne $W>0$ (moteur), une montée $W<0$ (résistant). On dit que le poids est une **force conservative**.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Un objet de masse $m=2{,}0\\,\\text{kg}$ descend de $h=10\\,\\text{m}$ :',
+          '$W(\\vec{P})=mgh=2{,}0\\times 9{,}81\\times 10\\approx 2{,}0\\times 10^{2}\\,\\text{J}$, quel que soit le trajet (chute verticale, plan incliné, toboggan…).',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Orientation de l\'axe** — La formule $W=mg(z_A-z_B)$ suppose l\'axe $z$ orienté vers le haut. En cas de descente, $z_A>z_B$ donc $W>0$. Toujours préciser l\'orientation de l\'axe avant de calculer.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 4 et 8 : descente, montée, plan incliné' },
+    ],
+  },
+  {
+    id: 'cinetique',
+    num: '3',
+    title: 'Énergie cinétique & théorème',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Énergie cinétique',
+        content: 'Un système de masse $m$ animé d\'une vitesse $v$ possède l\'énergie cinétique $E_c=\\tfrac{1}{2}mv^2$ (en joules, avec $m$ en kg et $v$ en m·s⁻¹).',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME DE L\'ÉNERGIE CINÉTIQUE (TEC)',
+        content: 'Dans un référentiel galiléen, la variation d\'énergie cinétique d\'un système entre deux instants est égale à la **somme des travaux** de toutes les forces qui s\'exercent sur lui :',
+        formulas: ['\\Delta E_c=E_c(B)-E_c(A)=\\sum W_{AB}(\\vec{F})'],
+      },
+      {
+        type: 'methode',
+        title: 'APPLIQUER LE TEC',
+        steps: [
+          'Faire le bilan des forces et calculer le travail de chacune.',
+          'Écrire $\\tfrac{1}{2}mv_B^2-\\tfrac{1}{2}mv_A^2=\\sum W$.',
+          'Isoler l\'inconnue (souvent $v_B$ ou une distance).',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Chute libre',
+        lines: [
+          'Un objet lâché sans vitesse tombe de $h=10\\,\\text{m}$. Seul le poids travaille : $\\tfrac{1}{2}mv^2-0=mgh$,',
+          'd\'où $v=\\sqrt{2gh}=\\sqrt{2\\times 9{,}81\\times 10}\\approx 14\\,\\text{m·s}^{-1}$ — indépendant de la masse.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 5, 9, 12, 13 : calcul d\'Ec, TEC, freinage, arrêt par frottement' },
+    ],
+  },
+  {
+    id: 'potentielle',
+    num: '4',
+    title: 'Énergie potentielle de pesanteur',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Énergie potentielle de pesanteur',
+        content: 'L\'énergie potentielle de pesanteur d\'un système de masse $m$ situé à l\'altitude $z$ (axe vers le haut) est $E_{pp}=mgz$, définie à une constante près : elle dépend du **choix de l\'origine des altitudes** ($E_{pp}=0$ au niveau de référence choisi).',
+      },
+      {
+        type: 'propriete',
+        text: '**Lien avec le travail du poids** — Le travail du poids est l\'opposé de la variation d\'énergie potentielle : $W_{AB}(\\vec{P})=-\\Delta E_{pp}=E_{pp}(A)-E_{pp}(B)$. C\'est la signature d\'une force conservative : elle « stocke » et « restitue » de l\'énergie sous forme potentielle.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'L\'énergie potentielle mesure l\'énergie « emmagasinée en hauteur » : plus un objet est haut, plus il peut acquérir de vitesse en tombant. Monter en stocke, descendre la libère en énergie cinétique.',
+      },
+      {
+        type: 'piege',
+        text: '**L\'origine est arbitraire** — Seules les **variations** d\'énergie potentielle ont un sens physique. On peut choisir librement le niveau où $E_{pp}=0$ (souvent le sol ou le point le plus bas) ; il faut simplement s\'y tenir tout au long du problème.',
+      },
+      { type: 'lien_ex', text: '→ Exercice 6 : calcul de l\'énergie mécanique' },
+    ],
+  },
+  {
+    id: 'conservation',
+    num: '5',
+    title: 'Énergie mécanique & conservation',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Énergie mécanique',
+        content: 'L\'énergie mécanique d\'un système est la somme de ses énergies cinétique et potentielle : $E_m=E_c+E_{pp}=\\tfrac{1}{2}mv^2+mgz$.',
+      },
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Conservation de l\'énergie mécanique',
+        content: 'Si les seules forces qui travaillent sont **conservatives** (poids seul, frottements négligeables), l\'énergie mécanique **se conserve** : $E_m=\\text{constante}$, soit $\\Delta E_m=0$. L\'énergie se convertit alors continuellement entre formes cinétique et potentielle.',
+      },
+      {
+        type: 'figure',
+        caption: 'Chute sans frottement : $E_{pp}$ diminue, $E_c$ augmente d\'autant, et leur somme $E_m$ reste constante.',
+        src: '/modules/phys-energie/fig-conservation.png',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Pendule',
+        lines: [
+          'Un pendule lâché d\'une hauteur $h=0{,}20\\,\\text{m}$ (sans frottement) atteint au point bas la vitesse $v=\\sqrt{2gh}\\approx 2{,}0\\,\\text{m·s}^{-1}$ : toute l\'énergie potentielle initiale s\'est convertie en énergie cinétique.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 10, 11 et 18 : toboggan, pendule, hauteur de départ' },
+    ],
+  },
+  {
+    id: 'frottements',
+    num: '6',
+    title: 'Frottements & non-conservation',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME — Variation de l\'énergie mécanique',
+        content: 'En présence de forces **non conservatives** (frottements), l\'énergie mécanique varie, et sa variation est égale au travail de ces forces : $\\Delta E_m=\\sum W(\\vec{F}_{\\text{non conservatives}})$. Les frottements ayant un travail résistant ($W<0$), l\'énergie mécanique **diminue**.',
+      },
+      {
+        type: 'figure',
+        caption: 'Avec frottements, $E_m$ décroît : l\'énergie « perdue » est dissipée, essentiellement sous forme thermique.',
+        src: '/modules/phys-energie/fig-frottements.png',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Où va l\'énergie ?** — L\'énergie n\'est jamais « détruite » : la baisse d\'énergie mécanique correspond à de l\'énergie transférée au milieu (échauffement des surfaces, de l\'air…). Le bilan énergétique global reste équilibré — c\'est le principe de conservation de l\'énergie.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Descente avec frottements',
+        lines: [
+          'Un objet de masse $5{,}0\\,\\text{kg}$ descend de $h=4{,}0\\,\\text{m}$ le long d\'un plan ($L=10\\,\\text{m}$), avec une force de frottement $f=8{,}0\\,\\text{N}$. Bilan :',
+          '$E_c^{\\text{final}}=mgh-fL=5{,}0\\times 9{,}81\\times 4{,}0-8{,}0\\times 10\\approx 1{,}2\\times 10^{2}\\,\\text{J}$, d\'où $v=\\sqrt{2E_c/m}\\approx 6{,}8\\,\\text{m·s}^{-1}$ (contre $8{,}9\\,\\text{m·s}^{-1}$ sans frottement).',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'BILAN ÉNERGÉTIQUE',
+        steps: [
+          'Choisir le système, le référentiel et l\'origine des altitudes.',
+          'Identifier les forces conservatives (poids) et non conservatives (frottements).',
+          'Appliquer $\\Delta E_m=W(\\vec{f})$ (ou $\\Delta E_m=0$ sans frottement).',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 14, 15 : descente avec frottements, énergie dissipée — puis sujets bac 16, 17' },
+    ],
+  },
+];
+
 // ── Contenu Suites & Récurrence ───────────────────────────────────────────────
 const SUITES_OBJECTIFS = [
   'Rédiger un raisonnement par **récurrence simple, double ou forte** en trois étapes.',
@@ -4557,8 +4852,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isTrigoCours = module.id === 'maths-trigo';
   const isCombinatoireCours = module.id === 'maths-combinatoire';
   const isGravitationCours = module.id === 'phys-gravitation';
-  const sections = isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isEnergieCours = module.id === 'phys-energie';
+  const sections = isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -4732,8 +5028,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isTrigoFiche = module.id === 'maths-trigo';
   const isCombinatoireFiche = module.id === 'maths-combinatoire';
   const isGravitationFiche = module.id === 'phys-gravitation';
-  const ficheData = isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isEnergieFiche = module.id === 'phys-energie';
+  const ficheData = isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
