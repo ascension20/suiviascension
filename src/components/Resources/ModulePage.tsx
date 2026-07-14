@@ -19,6 +19,7 @@ import { COMBINATOIRE_QCM, COMBINATOIRE_EXERCISES, COMBINATOIRE_CORRECTIONS } fr
 import { GRAVITATION_QCM, GRAVITATION_EXERCISES, GRAVITATION_CORRECTIONS } from '@/lib/gravitation-content';
 import { ENERGIE_QCM, ENERGIE_EXERCISES, ENERGIE_CORRECTIONS } from '@/lib/energie-content';
 import { BILANS_QCM, BILANS_EXERCISES, BILANS_CORRECTIONS } from '@/lib/bilans-content';
+import { ONDES_QCM, ONDES_EXERCISES, ONDES_CORRECTIONS } from '@/lib/ondes-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -62,14 +63,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isGravitation = module.id === 'phys-gravitation';
     const isEnergie = module.id === 'phys-energie';
     const isBilans = module.id === 'phys-bilans';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm') {
-      const questions = isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isOndes = module.id === 'phys-ondes';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm') {
+      const questions = isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4565,6 +4567,291 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Ondes mécaniques ──────────────────────────────────────────────────
+const ONDES_OBJECTIFS = [
+  'Définir une **onde mécanique progressive** et le transport d\'énergie sans transport de matière.',
+  'Distinguer ondes **transversales** et **longitudinales**.',
+  'Relier **célérité**, distance et durée, et exploiter la notion de **retard** $\\tau=d/v$.',
+  'Comprendre la **double périodicité** (temporelle $T$, spatiale $\\lambda$) et $f=1/T$.',
+  'Appliquer la **relation fondamentale** $\\lambda=vT=v/f$.',
+  'Étudier les **ondes sonores** et les mesures de distance par **écho** (sonar, échographie).',
+];
+
+const ONDES_FICHE_DATA = [
+  {
+    title: '1  Onde progressive',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\text{perturbation} \\longrightarrow \\text{propagation}',
+        vars: 'Propagation d\'une perturbation dans un milieu matériel · **sans** transport de matière, **avec** transport d\'énergie',
+      },
+      {
+        label: 'Transversale',
+        tex: '\\text{oscillation} \\perp \\text{propagation}',
+        vars: 'Corde, vague à la surface de l\'eau',
+      },
+      {
+        label: 'Longitudinale',
+        tex: '\\text{oscillation} \\parallel \\text{propagation}',
+        vars: 'Son, ressort comprimé (compressions / dilatations)',
+      },
+    ],
+  },
+  {
+    title: '2  Célérité & retard',
+    rows: [
+      {
+        label: 'Célérité',
+        tex: 'v=\\dfrac{d}{\\Delta t}',
+        vars: 'En m·s⁻¹ · dépend du **milieu** (nature, température), pas de la source',
+      },
+      {
+        label: 'Retard',
+        tex: '\\tau=\\dfrac{d}{v}',
+        vars: 'Le point $B$ à distance $d$ reproduit le mouvement de $A$ avec le retard $\\tau$ : $B(t)=A(t-\\tau)$',
+      },
+    ],
+  },
+  {
+    title: '3  Double périodicité',
+    rows: [
+      {
+        label: 'Périodicité temporelle',
+        tex: 'f=\\dfrac{1}{T}',
+        vars: 'Période $T$ (en s) · fréquence $f$ (en Hz) · **imposée par la source**, invariante',
+      },
+      {
+        label: 'Périodicité spatiale',
+        tex: '\\lambda \\;(\\text{en m})',
+        vars: 'Distance entre deux points identiques à un instant donné = distance parcourue en une période',
+      },
+    ],
+  },
+  {
+    title: '4  Relation fondamentale',
+    rows: [
+      {
+        label: 'Longueur d\'onde',
+        tex: '\\lambda=v\\,T=\\dfrac{v}{f}',
+        vars: '$\\lambda$ en m, $v$ en m·s⁻¹, $T$ en s, $f$ en Hz · toujours vérifier l\'homogénéité (SI)',
+      },
+      {
+        label: 'Changement de milieu',
+        tex: 'f\\;\\text{inchangée}\\;;\\;v,\\lambda\\;\\text{changent}',
+        vars: '$f$ fixée par la source ; $v$ et donc $\\lambda$ dépendent du milieu',
+      },
+    ],
+  },
+  {
+    title: '5  Ondes sonores',
+    rows: [
+      {
+        label: 'Nature',
+        tex: '\\text{onde longitudinale}',
+        vars: 'Compressions/dilatations · **pas** de son dans le vide (milieu matériel requis)',
+      },
+      {
+        label: 'Célérités',
+        tex: 'v_{\\text{air}}\\approx 340\\;;\\;v_{\\text{eau}}\\approx 1500\\,\\text{m·s}^{-1}',
+        vars: 'Plus le milieu est rigide, plus le son va vite',
+      },
+      {
+        label: 'Domaines',
+        tex: '20\\,\\text{Hz} \\le \\text{audible} \\le 20\\,\\text{kHz}',
+        vars: 'Infrasons $<20\\,\\text{Hz}$ · Ultrasons $>20\\,\\text{kHz}$ · aigu ⇒ $f$ grande',
+      },
+    ],
+  },
+  {
+    title: '6  Écho & mesures',
+    rows: [
+      {
+        label: 'Mesure par écho',
+        tex: 'd=\\dfrac{v\\,\\Delta t}{2}',
+        vars: 'L\'onde parcourt l\'aller-retour ($2d$) · base du sonar, de l\'échographie, du radar',
+      },
+    ],
+  },
+];
+
+const ONDES_COURS: Section[] = [
+  {
+    id: 'onde-progressive',
+    num: '1',
+    title: 'Onde mécanique progressive',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Onde mécanique progressive',
+        content: 'Une **onde mécanique progressive** est la propagation d\'une **perturbation** dans un milieu matériel, qui se déplace de proche en proche **sans transport de matière**, mais **avec transport d\'énergie**.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Un bouchon sur l\'eau monte et descend au passage d\'une vague mais ne part pas avec elle : la matière oscille sur place, seule la perturbation (et son énergie) avance. De même, la « ola » dans un stade se propage alors que chaque spectateur reste à sa place.',
+      },
+      {
+        type: 'figure',
+        caption: 'Onde transversale : la matière oscille perpendiculairement à la propagation. Onde longitudinale : elle oscille parallèlement (compressions et dilatations).',
+        src: '/modules/phys-ondes/fig-types.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Transversale ou longitudinale** — **Transversale** : la perturbation est perpendiculaire à la direction de propagation (ex. : onde sur une corde, vague). **Longitudinale** : la perturbation est parallèle à la direction de propagation (ex. : son, ressort comprimé).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1 et 2 : classement transversale/longitudinale, transport d\'énergie' },
+    ],
+  },
+  {
+    id: 'celerite',
+    num: '2',
+    title: 'Célérité & retard',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Célérité',
+        content: 'La **célérité** $v$ d\'une onde est la vitesse de propagation de la perturbation dans le milieu : $v=\\dfrac{d}{\\Delta t}$ (en m·s⁻¹). Elle dépend du **milieu** (nature, température…), pas de la source.',
+      },
+      {
+        type: 'figure',
+        caption: 'La perturbation émise en $A$ à l\'instant $t$ atteint $B$ à l\'instant $t+\\tau$, après avoir parcouru la distance $d=v\\,\\tau$.',
+        src: '/modules/phys-ondes/fig-retard.png',
+      },
+      {
+        type: 'definition',
+        badge: 'RETARD',
+        content: 'Un point $B$ situé à la distance $d$ de la source reproduit le mouvement de $A$ avec un **retard** $\\tau=\\dfrac{d}{v}$. Le mouvement de $B$ à l\'instant $t$ est celui qu\'avait $A$ à l\'instant $t-\\tau$.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Le tonnerre',
+        lines: [
+          'La lumière de l\'éclair est quasi instantanée, mais le son ($v\\approx 340\\,\\text{m·s}^{-1}$) met du temps à parvenir.',
+          'Un retard de $3\\,\\text{s}$ correspond à $d=v\\,\\tau=340\\times 3\\approx 1{,}0\\times 10^{3}\\,\\text{m}$ : l\'orage est à environ $1\\,\\text{km}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 6, 11, 14 : distance de l\'orage, retard entre capteurs, déphasage' },
+    ],
+  },
+  {
+    id: 'periodique',
+    num: '3',
+    title: 'Ondes progressives périodiques',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Onde périodique',
+        content: 'Une onde est **périodique** lorsque la perturbation se répète identique à elle-même. Elle présente une **double périodicité** : temporelle et spatiale.',
+      },
+      {
+        type: 'figure',
+        caption: 'Périodicité spatiale : la longueur d\'onde $\\lambda$ sépare deux points identiques à un instant donné. Périodicité temporelle : la période $T$ sépare deux états identiques d\'un même point.',
+        src: '/modules/phys-ondes/fig-periodicite.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Les deux périodicités** — **Périodicité temporelle** : en un point fixe, le mouvement se répète toutes les périodes $T$ (en s). La **fréquence** est $f=\\dfrac{1}{T}$ (en hertz, Hz). **Périodicité spatiale** : à un instant donné, le motif se répète tous les longueurs d\'onde $\\lambda$ (en m). C\'est la distance parcourue par l\'onde pendant une période.',
+      },
+      {
+        type: 'piege',
+        text: '**Rappel** — La fréquence $f$ est imposée par la **source** et ne change pas quand l\'onde change de milieu. En revanche, la célérité $v$ — et donc $\\lambda$ — dépendent du milieu.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 3 et 8 : calcul de fréquence, son audible' },
+    ],
+  },
+  {
+    id: 'relation',
+    num: '4',
+    title: 'Relation fondamentale',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'RELATION LONGUEUR D\'ONDE – PÉRIODE',
+        content: 'La longueur d\'onde est la distance parcourue pendant une période, avec $\\lambda$ en m, $v$ en m·s⁻¹, $T$ en s, $f$ en Hz.',
+        formulas: ['\\lambda=v\\,T=\\dfrac{v}{f}'],
+      },
+      {
+        type: 'methode',
+        title: 'RELIER LES GRANDEURS',
+        steps: [
+          'Repérer les grandeurs connues parmi $v$, $T$ (ou $f$) et $\\lambda$.',
+          'Utiliser $\\lambda=vT=\\dfrac{v}{f}$ et $f=\\dfrac{1}{T}$ pour isoler l\'inconnue.',
+          'Vérifier l\'homogénéité des unités (SI).',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          'Son de fréquence $f=440\\,\\text{Hz}$ (le « la ») dans l\'air ($v=340\\,\\text{m·s}^{-1}$) : $\\lambda=\\dfrac{v}{f}=\\dfrac{340}{440}\\approx 0{,}77\\,\\text{m}$.',
+          'Houle de longueur d\'onde $\\lambda=30\\,\\text{m}$ et de période $T=6{,}0\\,\\text{s}$ : $v=\\dfrac{\\lambda}{T}=\\dfrac{30}{6{,}0}=5{,}0\\,\\text{m·s}^{-1}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Ne pas confondre** — $v$, $f$ et $\\lambda$ sont trois grandeurs distinctes. Changer de milieu modifie $v$ et $\\lambda$, mais **pas** $f$ (fixée par la source). Attention aussi aux unités : une fréquence en kHz, une longueur en cm doivent être converties en SI.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 5, 9, 10 : longueur d\'onde, célérité de la houle, conversions' },
+    ],
+  },
+  {
+    id: 'sonores',
+    num: '5',
+    title: 'Les ondes sonores',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Onde sonore',
+        content: 'Le **son** est une onde mécanique **longitudinale** : il correspond à des compressions et dilatations successives de l\'air (ou d\'un autre milieu). Il ne se propage **pas** dans le vide (il faut un milieu matériel).',
+      },
+      {
+        type: 'propriete',
+        text: '**Célérité du son** — Dans l\'air à $20\\,°\\text{C}$, $v\\approx 340\\,\\text{m·s}^{-1}$. La célérité est bien plus grande dans les liquides ($\\approx 1500\\,\\text{m·s}^{-1}$ dans l\'eau) et les solides : plus le milieu est « rigide », plus le son va vite.',
+      },
+      {
+        type: 'propriete',
+        text: '**Hauteur et fréquence** — La hauteur d\'un son (grave / aigu) est liée à sa fréquence : un son aigu a une fréquence élevée. L\'oreille humaine perçoit les fréquences entre environ $20\\,\\text{Hz}$ et $20\\,\\text{kHz}$ ; en dessous, ce sont des **infrasons**, au-dessus des **ultrasons**.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Ultrasons',
+        lines: [
+          'Un ultrason de fréquence $f=40\\,\\text{kHz}$ dans l\'air a une longueur d\'onde $\\lambda=\\dfrac{v}{f}=\\dfrac{340}{40\\,000}\\approx 8{,}5\\times 10^{-3}\\,\\text{m}=8{,}5\\,\\text{mm}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 7 et 8 : de quoi dépend la célérité, son audible' },
+    ],
+  },
+  {
+    id: 'echo',
+    num: '6',
+    title: 'Applications : écho & mesures',
+    blocks: [
+      {
+        type: 'methode',
+        title: 'MESURE D\'UNE DISTANCE PAR ÉCHO',
+        steps: [
+          'Une onde émise se réfléchit sur un obstacle et revient : elle parcourt l\'aller-retour, soit $2d$.',
+          'Si l\'écho revient après une durée $\\Delta t$, alors $d=\\dfrac{v\\,\\Delta t}{2}$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Écho sonore & sonar',
+        lines: [
+          'Un cri renvoyé par une falaise revient après $\\Delta t=0{,}50\\,\\text{s}$ : $d=\\dfrac{v\\,\\Delta t}{2}=\\dfrac{340\\times 0{,}50}{2}=85\\,\\text{m}$.',
+          'Un sonar émet un ultrason dans l\'eau ($v\\approx 1500\\,\\text{m·s}^{-1}$) ; l\'écho du fond revient après $\\Delta t=0{,}20\\,\\text{s}$ : $d=\\dfrac{1500\\times 0{,}20}{2}=1{,}5\\times 10^{2}\\,\\text{m}$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Applications** — Ce principe (émission → réflexion → mesure du retard) est à la base du **sonar** (profondeur, bancs de poissons), de l\'**échographie** médicale (ultrasons) et du **radar** (avec des ondes électromagnétiques, plus rapides). Mesurer un temps permet de remonter à une distance.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 12, 13, 15 et sujets bac 16, 18 : écho, sonar, échographie, orage' },
+    ],
+  },
+];
+
 // ── Contenu Bilans thermiques ─────────────────────────────────────────────────
 const BILANS_OBJECTIFS = [
   'Définir l\'**énergie interne** $U$ et la relier à la **température** d\'un corps incompressible.',
@@ -5173,8 +5460,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isGravitationCours = module.id === 'phys-gravitation';
   const isEnergieCours = module.id === 'phys-energie';
   const isBilansCours = module.id === 'phys-bilans';
-  const sections = isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isOndesCours = module.id === 'phys-ondes';
+  const sections = isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -5350,8 +5638,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isGravitationFiche = module.id === 'phys-gravitation';
   const isEnergieFiche = module.id === 'phys-energie';
   const isBilansFiche = module.id === 'phys-bilans';
-  const ficheData = isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isOndesFiche = module.id === 'phys-ondes';
+  const ficheData = isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
