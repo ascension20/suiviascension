@@ -20,6 +20,7 @@ import { GRAVITATION_QCM, GRAVITATION_EXERCISES, GRAVITATION_CORRECTIONS } from 
 import { ENERGIE_QCM, ENERGIE_EXERCISES, ENERGIE_CORRECTIONS } from '@/lib/energie-content';
 import { BILANS_QCM, BILANS_EXERCISES, BILANS_CORRECTIONS } from '@/lib/bilans-content';
 import { ONDES_QCM, ONDES_EXERCISES, ONDES_CORRECTIONS } from '@/lib/ondes-content';
+import { DIFFRACTION_QCM, DIFFRACTION_EXERCISES, DIFFRACTION_CORRECTIONS } from '@/lib/diffraction-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -64,14 +65,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isEnergie = module.id === 'phys-energie';
     const isBilans = module.id === 'phys-bilans';
     const isOndes = module.id === 'phys-ondes';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm') {
-      const questions = isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isDiffraction = module.id === 'phys-diffraction';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm') {
+      const questions = isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4567,6 +4569,310 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Diffraction & interférences ───────────────────────────────────────
+const DIFFRACTION_OBJECTIFS = [
+  'Reconnaître le phénomène de **diffraction** et sa condition d\'observation ($a$ de l\'ordre de $\\lambda$).',
+  'Calculer l\'**écart angulaire** $\\theta=\\lambda/a$ (en radians) et interpréter son évolution.',
+  'Exploiter la **figure de diffraction** et la largeur de la tache centrale $L=2D\\lambda/a$.',
+  'Définir les **interférences**, la **différence de marche** et la condition de cohérence.',
+  'Distinguer interférences **constructives** ($\\delta=k\\lambda$) et **destructives** ($\\delta=(k+\\tfrac{1}{2})\\lambda$).',
+  'Décrire le dispositif des **fentes de Young** et calculer l\'**interfrange** $i=\\lambda D/b$.',
+];
+
+const DIFFRACTION_FICHE_DATA = [
+  {
+    title: '1  Diffraction',
+    rows: [
+      {
+        label: 'Phénomène',
+        tex: '\\text{étalement à travers une ouverture / obstacle}',
+        vars: 'Dimension $a$ comparable à $\\lambda$ · concerne **toutes** les ondes (mécaniques, lumineuses)',
+      },
+      {
+        label: 'Condition',
+        tex: 'a \\lesssim \\lambda',
+        vars: 'Nette quand $a$ est de l\'ordre de $\\lambda$ ou plus petit · fente large ⇒ diffraction négligeable',
+      },
+    ],
+  },
+  {
+    title: '2  Écart angulaire & tache centrale',
+    rows: [
+      {
+        label: 'Écart angulaire',
+        tex: '\\theta=\\dfrac{\\lambda}{a}',
+        vars: '$\\theta$ en **radians** · fente fine ($a$ petit) ⇒ $\\theta$ grand (étalement fort)',
+      },
+      {
+        label: 'Tache centrale',
+        tex: 'L=2D\\theta=\\dfrac{2D\\lambda}{a}',
+        vars: 'Largeur de la tache centrale sur l\'écran (à distance $D$) · double des taches secondaires',
+      },
+      {
+        label: 'Mesure',
+        tex: '\\lambda=\\dfrac{aL}{2D}',
+        vars: 'On remonte à $\\lambda$ — ou à la largeur $a$ d\'un fil fin (cheveu)',
+      },
+    ],
+  },
+  {
+    title: '3  Interférences',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\text{superposition de 2 ondes de même fréquence}',
+        vars: 'Sources **cohérentes** (même fréquence, déphasage constant) — en pratique, une même source',
+      },
+      {
+        label: 'Différence de marche',
+        tex: '\\delta=\\left|d_2-d_1\\right|=\\left|S_2M-S_1M\\right|',
+        vars: 'Différence des distances parcourues par les deux ondes',
+      },
+    ],
+  },
+  {
+    title: '4  Constructives ou destructives',
+    rows: [
+      {
+        label: 'Constructives',
+        tex: '\\delta=k\\lambda \\quad (k\\in\\mathbb{Z})',
+        vars: 'Ondes **en phase** ⇒ amplitude maximale, frange **brillante**',
+      },
+      {
+        label: 'Destructives',
+        tex: '\\delta=\\left(k+\\tfrac{1}{2}\\right)\\lambda',
+        vars: 'Ondes en **opposition de phase** ⇒ frange **sombre**',
+      },
+      {
+        label: 'Énergie',
+        tex: '\\text{redistribuée, non détruite}',
+        vars: 'Retirée des franges sombres, concentrée sur les brillantes',
+      },
+    ],
+  },
+  {
+    title: '5  Fentes de Young',
+    rows: [
+      {
+        label: 'Dispositif',
+        tex: '2\\text{ fentes distantes de } b, \\text{ écran à } D',
+        vars: 'Deux sources cohérentes ⇒ franges brillantes et sombres régulièrement espacées',
+      },
+      {
+        label: 'Interfrange',
+        tex: 'i=\\dfrac{\\lambda D}{b}',
+        vars: 'Distance entre deux franges consécutives (mêmes unités, SI)',
+      },
+      {
+        label: 'Mesure de λ',
+        tex: '\\lambda=\\dfrac{i\\,b}{D}',
+        vars: 'Mesurer $i$ (sur plusieurs franges) puis connaître $b$ et $D$',
+      },
+    ],
+  },
+  {
+    title: '6  Caractère ondulatoire',
+    rows: [
+      {
+        label: 'Preuve',
+        tex: '\\text{diffraction} + \\text{interférences}',
+        vars: 'Ces deux phénomènes prouvent que la lumière est une **onde** · $\\theta$ en rad, énergie redistribuée',
+      },
+    ],
+  },
+];
+
+const DIFFRACTION_COURS: Section[] = [
+  {
+    id: 'diffraction-phenomene',
+    num: '1',
+    title: 'Le phénomène de diffraction',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Diffraction',
+        content: 'La **diffraction** est l\'étalement d\'une onde qui rencontre une **ouverture** ou un **obstacle** de dimension $a$ comparable à sa longueur d\'onde $\\lambda$. L\'onde ne se propage plus en ligne droite : elle contourne l\'obstacle.',
+      },
+      {
+        type: 'figure',
+        caption: 'Une onde plane traverse une fente de largeur $a$ : au-delà, elle se propage sous forme d\'ondes qui s\'étalent dans un cône d\'ouverture angulaire $\\theta$.',
+        src: '/modules/phys-diffraction/fig-diffraction.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Condition d\'observation** — La diffraction est d\'autant plus marquée que l\'ouverture est **petite** devant la longueur d\'onde. Elle devient nette lorsque $a$ est de l\'ordre de $\\lambda$ (ou plus petit). Elle concerne **toutes les ondes** (mécaniques comme lumineuses).',
+      },
+      {
+        type: 'idee_cle',
+        text: 'La diffraction est la « preuve » du caractère ondulatoire : si la lumière était un simple jet de billes, elle passerait tout droit. Qu\'elle s\'étale derrière une fente fine montre qu\'elle se comporte comme une onde.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2 et 6 : condition de diffraction, caractère ondulatoire, son vs lumière' },
+    ],
+  },
+  {
+    id: 'ecart-angulaire',
+    num: '2',
+    title: 'Écart angulaire de diffraction',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'ÉCART ANGULAIRE',
+        content: 'Pour une fente (ou un fil) de largeur $a$, la demi-largeur angulaire $\\theta$ de la tache centrale de diffraction est donnée par la relation ci-dessous, avec $\\theta$ en **radians**, $\\lambda$ et $a$ en **mètres**.',
+        formulas: ['\\theta=\\dfrac{\\lambda}{a}'],
+      },
+      {
+        type: 'piege',
+        text: '**Unités & domaine de validité** — $\\theta$ est en **radians** (pas en degrés). La relation $\\theta=\\lambda/a$ suppose l\'angle petit, ce qui est le cas en optique ($\\lambda$ de l\'ordre de $10^{-7}\\,\\text{m}$, $a$ de l\'ordre de $10^{-4}\\,\\text{m}$).',
+      },
+      {
+        type: 'propriete',
+        text: '**Interprétation** — Plus la fente est **fine** ($a$ petit), plus $\\theta$ est **grand** : l\'onde s\'étale davantage. Inversement, une large ouverture diffracte peu (l\'onde passe presque tout droit).',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Un laser ($\\lambda=633\\,\\text{nm}$) traverse une fente de largeur $a=0{,}10\\,\\text{mm}=1{,}0\\times 10^{-4}\\,\\text{m}$ :',
+          '$\\theta=\\dfrac{633\\times 10^{-9}}{1{,}0\\times 10^{-4}}\\approx 6{,}3\\times 10^{-3}\\,\\text{rad}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercice 3 : calcul de l\'écart angulaire' },
+    ],
+  },
+  {
+    id: 'figure-diffraction',
+    num: '3',
+    title: 'Figure de diffraction',
+    blocks: [
+      {
+        type: 'figure',
+        caption: 'Sur l\'écran : une tache centrale large et intense, encadrée de taches secondaires plus faibles. La largeur $L$ de la tache centrale est le double de celle des taches latérales.',
+        src: '/modules/phys-diffraction/fig-tache.png',
+      },
+      {
+        type: 'definition',
+        badge: 'LARGEUR DE LA TACHE CENTRALE',
+        content: 'Sur un écran placé à la distance $D$ de la fente, la largeur $L$ de la tache centrale vaut (pour $\\theta$ petit, $\\tan\\theta\\approx\\theta$) :',
+        formulas: ['L=2D\\theta=\\dfrac{2D\\lambda}{a}'],
+      },
+      {
+        type: 'methode',
+        title: 'MESURER UNE LONGUEUR D\'ONDE (OU UNE LARGEUR)',
+        steps: [
+          'En mesurant $L$ sur l\'écran et connaissant $D$ et $a$, on remonte à la longueur d\'onde : $\\lambda=\\dfrac{aL}{2D}$.',
+          'Inversement, connaissant $\\lambda$, on peut mesurer la largeur $a$ d\'un fil très fin (ex. : un cheveu).',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Avec $\\lambda=633\\,\\text{nm}$, $a=0{,}10\\,\\text{mm}$, $D=2{,}0\\,\\text{m}$ : $L=\\dfrac{2\\times 2{,}0\\times 633\\times 10^{-9}}{1{,}0\\times 10^{-4}}\\approx 2{,}5\\times 10^{-2}\\,\\text{m}=2{,}5\\,\\text{cm}$.',
+          'Avec une fente deux fois plus fine, la tache serait deux fois plus large.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 7, 8, 9, 14 : largeur L, variations, mesure de λ, diamètre d\'un cheveu' },
+    ],
+  },
+  {
+    id: 'interferences',
+    num: '4',
+    title: 'Les interférences',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Interférences',
+        content: 'Il y a **interférences** lorsque deux ondes de **même fréquence** se superposent en un point. Les amplitudes s\'ajoutent : le résultat peut être renforcé ou atténué.',
+      },
+      {
+        type: 'propriete',
+        text: '**Condition — sources cohérentes** — Pour observer des interférences stables, les deux ondes doivent être **cohérentes** : même fréquence et déphasage constant. En pratique, on éclaire deux fentes avec une **même source** (laser), afin qu\'elles émettent des ondes synchrones.',
+      },
+      {
+        type: 'definition',
+        badge: 'DIFFÉRENCE DE MARCHE',
+        content: 'La **différence de marche** $\\delta$ en un point $M$ est la différence des distances parcourues par les deux ondes issues des sources $S_1$ et $S_2$ : $\\delta=\\left|d_2-d_1\\right|=\\left|S_2M-S_1M\\right|$. C\'est elle qui détermine si les ondes arrivent en phase ou non.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Deux ondes « en pas » (crête sur crête) se renforcent ; « à contretemps » (crête sur creux) elles s\'annulent. La différence de marche mesure le décalage entre les deux, exprimé en multiples de $\\lambda$.',
+      },
+      { type: 'lien_ex', text: '→ Exercice 11 : différence de marche au centre' },
+    ],
+  },
+  {
+    id: 'constructives',
+    num: '5',
+    title: 'Constructives ou destructives',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'INTERFÉRENCES CONSTRUCTIVES',
+        content: 'Les ondes arrivent **en phase** et se renforcent (amplitude maximale, frange **brillante**) lorsque la différence de marche est un multiple **entier** de $\\lambda$ :',
+        formulas: ['\\delta=k\\lambda \\qquad (k\\in\\mathbb{Z})'],
+      },
+      {
+        type: 'definition',
+        badge: 'INTERFÉRENCES DESTRUCTIVES',
+        content: 'Les ondes arrivent **en opposition de phase** et s\'annulent (frange **sombre**) lorsque la différence de marche est un multiple **demi-entier** de $\\lambda$ :',
+        formulas: ['\\delta=\\left(k+\\tfrac{1}{2}\\right)\\lambda \\qquad (k\\in\\mathbb{Z})'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Si $\\delta=0$ (au centre) : les ondes sont en phase → frange brillante centrale.',
+          'Si $\\delta=\\tfrac{\\lambda}{2}$ : opposition de phase → frange sombre. Si $\\delta=\\lambda$ : de nouveau brillante.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Conservation de l\'énergie** — Les interférences ne « détruisent » pas l\'énergie : elle est simplement **redistribuée** — retirée des franges sombres et concentrée sur les franges brillantes.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 10 : interférence constructive, destructive' },
+    ],
+  },
+  {
+    id: 'young',
+    num: '6',
+    title: 'Les fentes de Young',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DISPOSITIF',
+        content: 'Deux fentes fines $S_1$ et $S_2$, distantes de $b$, éclairées par un laser, jouent le rôle de deux sources cohérentes. Sur un écran placé à la distance $D$, on observe une série de **franges** brillantes et sombres régulièrement espacées.',
+      },
+      {
+        type: 'figure',
+        caption: 'Les ondes issues des deux fentes se superposent : là où elles arrivent en phase, une frange brillante ; en opposition, une frange sombre. L\'espacement régulier est l\'interfrange $i$.',
+        src: '/modules/phys-diffraction/fig-young.png',
+      },
+      {
+        type: 'definition',
+        badge: 'INTERFRANGE',
+        content: 'La distance entre deux franges brillantes (ou sombres) consécutives, appelée **interfrange** $i$, vaut (avec $i$, $\\lambda$, $D$, $b$ en mètres) :',
+        formulas: ['i=\\dfrac{\\lambda D}{b}'],
+      },
+      {
+        type: 'methode',
+        title: 'MESURER λ AVEC LES FENTES DE YOUNG',
+        steps: [
+          'Mesurer l\'interfrange $i$ (souvent en mesurant la largeur de plusieurs franges puis en divisant).',
+          'Connaissant $b$ et $D$, on en déduit $\\lambda=\\dfrac{i\\,b}{D}$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Avec $\\lambda=633\\,\\text{nm}$, $b=0{,}50\\,\\text{mm}$, $D=2{,}0\\,\\text{m}$ : $i=\\dfrac{633\\times 10^{-9}\\times 2{,}0}{0{,}50\\times 10^{-3}}\\approx 2{,}5\\times 10^{-3}\\,\\text{m}=2{,}5\\,\\text{mm}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 5, 12, 13 et sujets bac 15, 16, 17 : interfrange, mesure de λ, laser vert' },
+    ],
+  },
+];
+
 // ── Contenu Ondes mécaniques ──────────────────────────────────────────────────
 const ONDES_OBJECTIFS = [
   'Définir une **onde mécanique progressive** et le transport d\'énergie sans transport de matière.',
@@ -5461,8 +5767,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isEnergieCours = module.id === 'phys-energie';
   const isBilansCours = module.id === 'phys-bilans';
   const isOndesCours = module.id === 'phys-ondes';
-  const sections = isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isDiffractionCours = module.id === 'phys-diffraction';
+  const sections = isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -5639,8 +5946,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isEnergieFiche = module.id === 'phys-energie';
   const isBilansFiche = module.id === 'phys-bilans';
   const isOndesFiche = module.id === 'phys-ondes';
-  const ficheData = isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isDiffractionFiche = module.id === 'phys-diffraction';
+  const ficheData = isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
