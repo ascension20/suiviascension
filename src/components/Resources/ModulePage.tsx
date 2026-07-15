@@ -27,6 +27,7 @@ import { RC_QCM, RC_EXERCISES, RC_CORRECTIONS } from '@/lib/rc-content';
 import { LUNETTE_QCM, LUNETTE_EXERCISES, LUNETTE_CORRECTIONS } from '@/lib/lunette-content';
 import { ACIDE_QCM, ACIDE_EXERCISES, ACIDE_CORRECTIONS } from '@/lib/acide-content';
 import { TITRAGES_QCM, TITRAGES_EXERCISES, TITRAGES_CORRECTIONS } from '@/lib/titrages-content';
+import { OXYDO_QCM, OXYDO_EXERCISES, OXYDO_CORRECTIONS } from '@/lib/oxydo-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -78,14 +79,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isLunette = module.id === 'phys-lunette';
     const isAcide = module.id === 'chim-acide';
     const isTitrages = module.id === 'chim-titrages';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm') {
-      const questions = isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isOxydo = module.id === 'chim-oxydo';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm') {
+      const questions = isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4581,6 +4583,380 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu L'oxydoréduction (Chimie) ─────────────────────────────────────────
+const OXYDO_OBJECTIFS = [
+  'Définir un **oxydant**, un **réducteur** et un **couple Ox/Red** ($\\text{Ox} + n\\,e^- = \\text{Red}$).',
+  'Équilibrer une **demi-équation électronique** en milieu acide (méthode O · H · charges).',
+  'Écrire l\'**équation bilan** d\'une réaction d\'oxydoréduction en éliminant les électrons.',
+  'Décrire une **pile** : anode, cathode, pont salin, sens des électrons et du courant, f.é.m.',
+  'Exploiter la **loi de Faraday** ($Q=I\\Delta t=n(e^-)F$) pour la capacité d\'une pile.',
+  'Distinguer **pile** (spontanée) et **électrolyse** (forcée) et exploiter un dépôt électrolytique.',
+];
+
+const OXYDO_FICHE_DATA = [
+  {
+    title: '1  Couples Ox/Red',
+    rows: [
+      {
+        label: 'Définitions',
+        tex: '\\text{oxydant : capte } e^- \\;/\\; \\text{réducteur : cède } e^-',
+        vars: 'L\'oxydant **subit la réduction**, le réducteur **subit l\'oxydation**',
+      },
+      {
+        label: 'Demi-équation',
+        tex: '\\text{Ox} + n\\,e^- = \\text{Red}',
+        vars: 'Relie l\'oxydant et le réducteur conjugué d\'un même couple $\\text{Ox}/\\text{Red}$',
+      },
+      {
+        label: 'Exemples',
+        tex: '\\text{Cu}^{2+}/\\text{Cu} \\;;\\; \\text{Fe}^{3+}/\\text{Fe}^{2+} \\;;\\; \\text{I}_2/\\text{I}^-',
+        vars: 'Analogie acido-basique : réducteur ↔ acide (donneur), oxydant ↔ base (accepteur)',
+      },
+    ],
+  },
+  {
+    title: '2  Demi-équation (milieu acide)',
+    rows: [
+      {
+        label: 'Méthode',
+        tex: '\\text{élément} \\to \\text{O avec } \\text{H}_2\\text{O} \\to \\text{H avec } \\text{H}^+ \\to \\text{charges avec } e^-',
+        vars: 'Puis vérifier : mêmes atomes et même charge totale de chaque côté',
+      },
+      {
+        label: 'Permanganate',
+        tex: '\\text{MnO}_4^- + 8\\,\\text{H}^+ + 5\\,e^- = \\text{Mn}^{2+} + 4\\,\\text{H}_2\\text{O}',
+        vars: 'Contrôle des charges : $+7 = +2$ ✓ (garde-fou systématique)',
+      },
+      {
+        label: 'Dichromate',
+        tex: '\\text{Cr}_2\\text{O}_7^{2-} + 14\\,\\text{H}^+ + 6\\,e^- = 2\\,\\text{Cr}^{3+} + 7\\,\\text{H}_2\\text{O}',
+        vars: 'Charges : $+12 = +6$ ✓',
+      },
+    ],
+  },
+  {
+    title: '3  Équation bilan',
+    rows: [
+      {
+        label: 'Principe',
+        tex: '\\text{transfert de } e^- \\text{ entre 2 couples}',
+        vars: 'Les électrons **ne doivent pas apparaître** dans le bilan',
+      },
+      {
+        label: 'Méthode',
+        tex: 'n_1\\,e^-\\text{ cédés} = n_2\\,e^-\\text{ captés}',
+        vars: 'Multiplier chaque demi-équation pour égaliser les électrons, puis additionner',
+      },
+      {
+        label: 'Exemple',
+        tex: '\\text{MnO}_4^- + 5\\,\\text{Fe}^{2+} + 8\\,\\text{H}^+ \\to \\text{Mn}^{2+} + 5\\,\\text{Fe}^{3+} + 4\\,\\text{H}_2\\text{O}',
+        vars: 'Charges : $+17 = +17$ ✓',
+      },
+    ],
+  },
+  {
+    title: '4  Les piles',
+    rows: [
+      {
+        label: 'Anode / cathode',
+        tex: '\\text{anode : oxydation (pôle } -) \\;/\\; \\text{cathode : réduction (pôle } +)',
+        vars: '$e^-$ : anode → cathode · courant : cathode → anode (circuit extérieur)',
+      },
+      {
+        label: 'Pont salin',
+        tex: '\\text{assure l\'électroneutralité}',
+        vars: 'Laisse migrer les ions et ferme le circuit ; sans lui la pile s\'arrête',
+      },
+      {
+        label: 'F.é.m.',
+        tex: 'E = U_{\\text{à vide}} > 0',
+        vars: 'Tension aux bornes quand la pile **ne débite pas**, entre pôle $+$ et pôle $-$',
+      },
+    ],
+  },
+  {
+    title: '5  Capacité (loi de Faraday)',
+    rows: [
+      {
+        label: 'Constante de Faraday',
+        tex: 'F = 9{,}65\\times 10^{4}\\ \\text{C·mol}^{-1}',
+        vars: 'Charge portée par une mole d\'électrons',
+      },
+      {
+        label: 'Charge débitée',
+        tex: 'Q = I\\,\\Delta t = n(e^-)\\,F',
+        vars: '$Q$ en C, $I$ en A, $\\Delta t$ en **secondes**',
+      },
+      {
+        label: 'Quantité d\'électrons',
+        tex: 'n(e^-) = n_{\\text{limitant}}\\times n',
+        vars: '$n$ = nombre d\'$e^-$ échangés par entité (facteur de la demi-équation)',
+      },
+    ],
+  },
+  {
+    title: '6  Électrolyse',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\text{transformation forcée}',
+        vars: 'Un générateur impose le courant, sens **inverse** de l\'évolution spontanée',
+      },
+      {
+        label: 'Invariant',
+        tex: '\\text{anode = oxydation} \\;/\\; \\text{cathode = réduction}',
+        vars: 'Seule la **polarité** s\'inverse : anode = pôle $+$, cathode = pôle $-$',
+      },
+      {
+        label: 'Applications',
+        tex: '\\text{galvanoplastie · Al · recharge}',
+        vars: 'Chromage, dorure, production d\'aluminium ; recharger = pile en électrolyse',
+      },
+    ],
+  },
+];
+
+const OXYDO_COURS: Section[] = [
+  {
+    id: 'couple',
+    num: '1',
+    title: 'Oxydant, réducteur, couple',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITIONS',
+        content: 'Un **oxydant** est une espèce capable de **capter** un ou plusieurs électrons. Un **réducteur** est une espèce capable de **céder** un ou plusieurs électrons.',
+      },
+      {
+        type: 'figure',
+        caption: 'Un oxydant capte des électrons pour devenir son réducteur conjugué (réduction) ; réciproquement, le réducteur cède des électrons (oxydation). Ensemble, ils forment un couple Ox/Red.',
+        src: '/modules/chim-oxydo/fig-couple.png',
+      },
+      {
+        type: 'definition',
+        badge: 'COUPLE OXYDANT / RÉDUCTEUR',
+        content: 'Un oxydant $\\text{Ox}$ et son réducteur conjugué $\\text{Red}$ forment un **couple**, noté $\\text{Ox}/\\text{Red}$, relié par la **demi-équation électronique** :',
+        formulas: ['\\text{Ox} + n\\,e^- = \\text{Red}'],
+      },
+      {
+        type: 'formules',
+        label: 'Exemples de couples',
+        rows: [
+          { desc: 'Cuivre', tex: '\\text{Cu}^{2+}/\\text{Cu} \\;:\\; \\text{Cu}^{2+} + 2\\,e^- = \\text{Cu}' },
+          { desc: 'Fer', tex: '\\text{Fe}^{3+}/\\text{Fe}^{2+} \\;:\\; \\text{Fe}^{3+} + e^- = \\text{Fe}^{2+}' },
+          { desc: 'Diiode', tex: '\\text{I}_2/\\text{I}^- \\;:\\; \\text{I}_2 + 2\\,e^- = 2\\,\\text{I}^-' },
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '**Le parallèle à retenir.** L\'oxydoréduction est à l\'électron ce que l\'acido-basique est au proton : même logique de couple, même méthode des demi-équations, même principe de transfert. Acide ↔ réducteur (donneur), base ↔ oxydant (accepteur).',
+      },
+      {
+        type: 'piege',
+        content: '**Piège de vocabulaire.** L\'oxydant subit la **réduction**, le réducteur subit l\'**oxydation**. Les noms désignent le rôle joué, pas la transformation subie — c\'est contre-intuitif, mais il faut le savoir par cœur.',
+      },
+    ],
+  },
+  {
+    id: 'demi-equation',
+    num: '2',
+    title: 'Équilibrer une demi-équation',
+    blocks: [
+      {
+        type: 'methode',
+        title: 'Demi-équation en milieu acide',
+        steps: [
+          'Équilibrer l\'élément qui change de degré d\'oxydation (autre que $\\text{O}$ et $\\text{H}$).',
+          'Équilibrer les oxygènes avec des molécules $\\text{H}_2\\text{O}$.',
+          'Équilibrer les hydrogènes avec des ions $\\text{H}^+$.',
+          'Équilibrer les charges avec des électrons $e^-$.',
+          'Vérifier : mêmes atomes et même charge totale de chaque côté.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'Le permanganate $\\text{MnO}_4^-/\\text{Mn}^{2+}$',
+        lines: [
+          '**1.** $\\text{MnO}_4^- \\to \\text{Mn}^{2+}$ (le manganèse est déjà équilibré).',
+          '**2.** 4 oxygènes à gauche : $\\text{MnO}_4^- \\to \\text{Mn}^{2+} + 4\\,\\text{H}_2\\text{O}$.',
+          '**3.** 8 hydrogènes à droite : $\\text{MnO}_4^- + 8\\,\\text{H}^+ \\to \\text{Mn}^{2+} + 4\\,\\text{H}_2\\text{O}$.',
+          '**4.** Charges : $+7$ à gauche, $+2$ à droite. On ajoute $5\\,e^-$ à gauche :',
+          '$\\text{MnO}_4^- + 8\\,\\text{H}^+ + 5\\,e^- = \\text{Mn}^{2+} + 4\\,\\text{H}_2\\text{O}$',
+          '**5.** Vérification — Mn : $1=1$ ; O : $4=4$ ; H : $8=8$ ; charges : $+2=+2$. ✓',
+        ],
+      },
+      {
+        type: 'reflex',
+        content: '**Le contrôle des charges.** La vérification des charges est le meilleur garde-fou : une demi-équation dont les charges ne s\'équilibrent pas est nécessairement fausse. Faites-la systématiquement.',
+      },
+    ],
+  },
+  {
+    id: 'reaction',
+    num: '3',
+    title: 'La réaction d\'oxydoréduction',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'PRINCIPE',
+        content: 'Une réaction d\'oxydoréduction est un **transfert d\'électrons** entre le réducteur d\'un couple et l\'oxydant d\'un autre couple. Les électrons n\'existant pas libres en solution, ils sont intégralement échangés : ils **ne doivent pas apparaître** dans le bilan.',
+      },
+      {
+        type: 'methode',
+        title: 'Écrire l\'équation bilan',
+        steps: [
+          'Identifier les deux couples et écrire leurs demi-équations.',
+          'Écrire l\'une dans le sens de la réduction, l\'autre dans le sens de l\'oxydation.',
+          'Multiplier chaque demi-équation pour que le nombre d\'électrons cédés soit égal au nombre d\'électrons captés.',
+          'Additionner : les électrons doivent disparaître.',
+          'Vérifier atomes et charges.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'Permanganate et ion fer(II)',
+        lines: [
+          'Couples $\\text{MnO}_4^-/\\text{Mn}^{2+}$ (réduction) et $\\text{Fe}^{3+}/\\text{Fe}^{2+}$ (oxydation) :',
+          '$\\text{MnO}_4^- + 8\\,\\text{H}^+ + 5\\,e^- = \\text{Mn}^{2+} + 4\\,\\text{H}_2\\text{O}$',
+          '$5\\times\\big(\\text{Fe}^{2+} = \\text{Fe}^{3+} + e^-\\big)$',
+          'En additionnant, les $5\\,e^-$ se simplifient :',
+          '$\\text{MnO}_4^- + 5\\,\\text{Fe}^{2+} + 8\\,\\text{H}^+ \\to \\text{Mn}^{2+} + 5\\,\\text{Fe}^{3+} + 4\\,\\text{H}_2\\text{O}$',
+          'Vérification des charges : $+17$ à gauche ; $+17$ à droite. ✓',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'La réaction de la pile Daniell',
+        lines: [
+          'Couples $\\text{Cu}^{2+}/\\text{Cu}$ et $\\text{Zn}^{2+}/\\text{Zn}$, échangeant chacun $2\\,e^-$ : même nombre d\'électrons, aucun coefficient à ajuster.',
+          '$\\text{Zn} + \\text{Cu}^{2+} \\to \\text{Zn}^{2+} + \\text{Cu}$',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'piles',
+    num: '4',
+    title: 'Les piles',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Une **pile** est un dispositif qui convertit l\'énergie d\'une réaction d\'oxydoréduction **spontanée** en énergie électrique. Les deux couples sont séparés en **demi-piles** : les électrons ne peuvent alors transiter que par le circuit extérieur — c\'est ce qui produit le courant.',
+      },
+      {
+        type: 'figure',
+        caption: 'Pile Daniell : la lame de zinc (anode, pôle −) est oxydée et se consomme ; les ions cuivre sont réduits sur la lame de cuivre (cathode, pôle +), qui s\'épaissit. Les électrons circulent de l\'anode vers la cathode dans le fil ; le pont salin assure la neutralité électrique.',
+        src: '/modules/chim-oxydo/fig-pile.png',
+      },
+      {
+        type: 'propriete',
+        content: '**Les règles à connaître.** **Anode** : siège de l\'oxydation — dans une pile, c\'est le pôle −. **Cathode** : siège de la réduction — dans une pile, c\'est le pôle +. Les électrons circulent de l\'anode vers la cathode dans le circuit extérieur ; le courant, de sens conventionnel opposé, va de la cathode vers l\'anode.',
+      },
+      {
+        type: 'propriete',
+        content: '**Rôle du pont salin.** La demi-pile où a lieu l\'oxydation accumule des cations, l\'autre en perd : sans compensation, la réaction s\'arrêterait. Le pont salin laisse migrer les ions et assure l\'électroneutralité des deux solutions, fermant ainsi le circuit.',
+      },
+      {
+        type: 'definition',
+        badge: 'FORCE ÉLECTROMOTRICE',
+        content: 'La **force électromotrice** (f.é.m.) $E$ d\'une pile est la tension à ses bornes lorsqu\'elle **ne débite pas**. Elle est toujours positive, mesurée entre le pôle + et le pôle −.',
+      },
+    ],
+  },
+  {
+    id: 'capacite',
+    num: '5',
+    title: 'Capacité d\'une pile',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'CONSTANTE DE FARADAY',
+        content: 'La charge portée par une mole d\'électrons est la **constante de Faraday** :',
+        formulas: ['F = 9{,}65\\times 10^{4}\\ \\text{C·mol}^{-1}'],
+      },
+      {
+        type: 'formules',
+        label: 'Charge débitée',
+        rows: [
+          { desc: 'Loi de Faraday', tex: 'Q = I\\,\\Delta t = n(e^-)\\,F' },
+          { desc: 'Unités', tex: 'Q\\ (\\text{C}) \\;,\\; I\\ (\\text{A}) \\;,\\; \\Delta t\\ (\\text{s})' },
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'Calculer la capacité d\'une pile',
+        steps: [
+          'Écrire l\'équation de la réaction et identifier le réactif limitant.',
+          'Calculer sa quantité de matière initiale $n$ (souvent $n=\\tfrac{m}{M}$).',
+          'Déterminer $n(e^-)$ à partir de la demi-équation : nombre d\'électrons échangés par entité, multiplié par $n$.',
+          'En déduire $Q=n(e^-)\\,F$, puis la durée de fonctionnement $\\Delta t = \\tfrac{Q}{I}$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'Pile Daniell',
+        lines: [
+          'Une pile Daniell contient une lame de zinc de $m=1{,}0\\ \\text{g}$ ($M_{\\text{Zn}}=65{,}4\\ \\text{g·mol}^{-1}$), réactif limitant.',
+          '$n(\\text{Zn}) = \\tfrac{1{,}0}{65{,}4} = 1{,}53\\times 10^{-2}\\ \\text{mol}$.',
+          'D\'après $\\text{Zn} = \\text{Zn}^{2+} + 2\\,e^-$, on a $n(e^-) = 2\\,n(\\text{Zn}) = 3{,}06\\times 10^{-2}\\ \\text{mol}$.',
+          'D\'où $Q = n(e^-)\\,F = 3{,}06\\times 10^{-2}\\times 9{,}65\\times 10^{4} \\approx 2{,}95\\times 10^{3}\\ \\text{C}$.',
+          'Pour $I=0{,}30\\ \\text{A}$ : $\\Delta t = \\tfrac{Q}{I} \\approx 9{,}8\\times 10^{3}\\ \\text{s} \\approx 2{,}7\\ \\text{h}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        content: '**Piège.** Le facteur $n$ de la demi-équation est indispensable : oublier le $2$ de $\\text{Zn} = \\text{Zn}^{2+} + 2\\,e^-$ divise la capacité par deux. Et $\\Delta t$ doit être en **secondes** — convertir les heures !',
+      },
+    ],
+  },
+  {
+    id: 'electrolyse',
+    num: '6',
+    title: 'L\'électrolyse',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Une **électrolyse** est une transformation **forcée** : un générateur impose le passage du courant et force la réaction à se produire dans le **sens inverse** de son évolution spontanée.',
+      },
+      {
+        type: 'figure',
+        caption: 'Électrolyse : le générateur impose le sens du courant. L\'anode reste le siège de l\'oxydation et la cathode celui de la réduction — mais les polarités sont inversées par rapport à une pile.',
+        src: '/modules/chim-oxydo/fig-electrolyse.png',
+      },
+      {
+        type: 'formules',
+        label: 'Pile ou électrolyse : le tableau',
+        rows: [
+          { desc: 'Transformation', tex: '\\text{pile : spontanée} \\;\\;/\\;\\; \\text{électrolyse : forcée}' },
+          { desc: 'Énergie', tex: '\\text{chimique}\\to\\text{électrique} \\;\\;/\\;\\; \\text{électrique}\\to\\text{chimique}' },
+          { desc: 'Anode (oxydation)', tex: '\\text{pile : pôle } - \\;\\;/\\;\\; \\text{électrolyse : pôle } +' },
+          { desc: 'Cathode (réduction)', tex: '\\text{pile : pôle } + \\;\\;/\\;\\; \\text{électrolyse : pôle } -' },
+        ],
+      },
+      {
+        type: 'reflex',
+        content: '**La règle qui ne change jamais.** L\'anode est toujours le siège de l\'oxydation, la cathode toujours celui de la réduction. Seule la polarité s\'inverse. Retenez la règle par la transformation, jamais par le signe.',
+      },
+      {
+        type: 'exemple',
+        title: 'Dépôt électrolytique de cuivre',
+        lines: [
+          'Un courant $I=2{,}0\\ \\text{A}$ circule pendant $\\Delta t=15\\ \\text{min}=900\\ \\text{s}$ : $Q = I\\,\\Delta t = 1{,}8\\times 10^{3}\\ \\text{C}$,',
+          'donc $n(e^-) = \\tfrac{Q}{F} = 1{,}87\\times 10^{-2}\\ \\text{mol}$.',
+          'À la cathode, $\\text{Cu}^{2+} + 2\\,e^- = \\text{Cu}$, donc $n(\\text{Cu}) = \\tfrac{n(e^-)}{2} = 9{,}3\\times 10^{-3}\\ \\text{mol}$,',
+          'soit $m = n\\,M_{\\text{Cu}} = 9{,}3\\times 10^{-3}\\times 63{,}5 \\approx 0{,}59\\ \\text{g}$ de cuivre déposé.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '**Applications.** L\'électrolyse permet la **galvanoplastie** (chromage, dorure), la **production d\'aluminium** et de dichlore, et la **recharge des accumulateurs** : une batterie qui se recharge n\'est rien d\'autre qu\'une pile fonctionnant en électrolyse.',
+      },
+    ],
+  },
+];
+
 // ── Contenu Les titrages (Chimie) ─────────────────────────────────────────────
 const TITRAGES_OBJECTIFS = [
   'Décrire le **principe** d\'un titrage et les propriétés de la **réaction support** (totale, rapide, unique).',
@@ -7562,8 +7938,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isLunetteCours = module.id === 'phys-lunette';
   const isAcideCours = module.id === 'chim-acide';
   const isTitragesCours = module.id === 'chim-titrages';
-  const sections = isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isOxydoCours = module.id === 'chim-oxydo';
+  const sections = isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -7747,8 +8124,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isLunetteFiche = module.id === 'phys-lunette';
   const isAcideFiche = module.id === 'chim-acide';
   const isTitragesFiche = module.id === 'chim-titrages';
-  const ficheData = isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isOxydoFiche = module.id === 'chim-oxydo';
+  const ficheData = isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
