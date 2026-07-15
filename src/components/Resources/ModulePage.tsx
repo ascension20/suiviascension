@@ -25,6 +25,7 @@ import { DOPPLER_QCM, DOPPLER_EXERCISES, DOPPLER_CORRECTIONS } from '@/lib/doppl
 import { PHOTON_QCM, PHOTON_EXERCISES, PHOTON_CORRECTIONS } from '@/lib/photon-content';
 import { RC_QCM, RC_EXERCISES, RC_CORRECTIONS } from '@/lib/rc-content';
 import { LUNETTE_QCM, LUNETTE_EXERCISES, LUNETTE_CORRECTIONS } from '@/lib/lunette-content';
+import { ACIDE_QCM, ACIDE_EXERCISES, ACIDE_CORRECTIONS } from '@/lib/acide-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -74,14 +75,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isPhoton = module.id === 'phys-photon';
     const isRC = module.id === 'phys-rc';
     const isLunette = module.id === 'phys-lunette';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm') {
-      const questions = isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isAcide = module.id === 'chim-acide';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm') {
+      const questions = isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4577,6 +4579,304 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Réactions acide-base (Chimie) ─────────────────────────────────────
+const ACIDE_OBJECTIFS = [
+  'Définir **acide** et **base** au sens de Brønsted et identifier les **couples acide/base**.',
+  'Écrire l\'équation d\'une **réaction acide-base** (transfert de proton) et repérer l\'eau **amphotère**.',
+  'Manipuler le **pH** : $\\text{pH}=-\\log\\left[\\text{H}_3\\text{O}^+\\right]$ et l\'échelle acide/neutre/basique.',
+  'Exploiter le **produit ionique de l\'eau** $K_e$ (bases et acides forts).',
+  'Utiliser la **constante d\'acidité** $K_a$ / $\\text{p}K_a$ et comparer la **force des acides**.',
+  'Appliquer la **relation de Henderson** et le **diagramme de prédominance**.',
+];
+
+const ACIDE_FICHE_DATA = [
+  {
+    title: '1  Brønsted & couples',
+    rows: [
+      {
+        label: 'Définitions',
+        tex: '\\text{acide}\\to\\text{cède }\\text{H}^+ \\;;\\; \\text{base}\\to\\text{capte }\\text{H}^+',
+        vars: 'Couple acide/base $\\text{AH}/\\text{A}^-$ · demi-équation $\\text{AH}=\\text{A}^-+\\text{H}^+$',
+      },
+      {
+        label: 'Espèce amphotère',
+        tex: '\\text{à la fois acide et base}',
+        vars: 'Eau : acide de $\\text{H}_2\\text{O}/\\text{HO}^-$ et base de $\\text{H}_3\\text{O}^+/\\text{H}_2\\text{O}$',
+      },
+      {
+        label: 'Réaction',
+        tex: '\\text{transfert de proton entre 2 couples}',
+        vars: 'Additionner les demi-équations : les $\\text{H}^+$ se simplifient',
+      },
+    ],
+  },
+  {
+    title: '2  pH',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\text{pH}=-\\log\\left[\\text{H}_3\\text{O}^+\\right]',
+        vars: '$\\left[\\text{H}_3\\text{O}^+\\right]=10^{-\\text{pH}}$ (en mol·L⁻¹)',
+      },
+      {
+        label: 'Échelle (25 °C)',
+        tex: '\\text{pH}<7\\;\\text{acide}\\;;\\;=7\\;\\text{neutre}\\;;\\;>7\\;\\text{basique}',
+        vars: 'Une unité de pH ⇔ concentration × 10 (échelle logarithmique)',
+      },
+    ],
+  },
+  {
+    title: '3  Produit ionique',
+    rows: [
+      {
+        label: 'Autoprotolyse',
+        tex: 'K_e=\\left[\\text{H}_3\\text{O}^+\\right]\\left[\\text{HO}^-\\right]=1{,}0\\times 10^{-14}',
+        vars: '$\\text{p}K_e=14{,}0$ à 25 °C · valable dans **toute** solution aqueuse',
+      },
+      {
+        label: 'Base forte',
+        tex: '\\left[\\text{HO}^-\\right]=c \\Rightarrow \\left[\\text{H}_3\\text{O}^+\\right]=\\dfrac{K_e}{c}',
+        vars: 'Acide fort : $\\left[\\text{H}_3\\text{O}^+\\right]=c$ · puis $\\text{pH}=-\\log\\left[\\text{H}_3\\text{O}^+\\right]$',
+      },
+    ],
+  },
+  {
+    title: '4  Constante d\'acidité',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'K_a=\\dfrac{\\left[\\text{A}^-\\right]\\left[\\text{H}_3\\text{O}^+\\right]}{[\\text{AH}]}',
+        vars: '$\\text{p}K_a=-\\log K_a$ · $K_a=10^{-\\text{p}K_a}$',
+      },
+      {
+        label: 'Force',
+        tex: 'K_a\\;\\text{grand} \\Leftrightarrow \\text{p}K_a\\;\\text{petit} \\Leftrightarrow \\text{acide fort}',
+        vars: 'Fort : réaction totale · faible : équilibre · acide fort ⇒ base conjuguée faible',
+      },
+    ],
+  },
+  {
+    title: '5  Prédominance & Henderson',
+    rows: [
+      {
+        label: 'Henderson',
+        tex: '\\text{pH}=\\text{p}K_a+\\log\\dfrac{\\left[\\text{A}^-\\right]}{[\\text{AH}]}',
+        vars: '$\\dfrac{\\left[\\text{A}^-\\right]}{[\\text{AH}]}=10^{\\text{pH}-\\text{p}K_a}$',
+      },
+      {
+        label: 'Prédominance',
+        tex: '\\text{pH}=\\text{p}K_a \\Rightarrow [\\text{AH}]=\\left[\\text{A}^-\\right]',
+        vars: '$\\text{pH}<\\text{p}K_a$ : $\\text{AH}$ prédomine · $\\text{pH}>\\text{p}K_a$ : $\\text{A}^-$ prédomine',
+      },
+    ],
+  },
+];
+
+const ACIDE_COURS: Section[] = [
+  {
+    id: 'bronsted',
+    num: '1',
+    title: 'Acides & bases selon Brønsted',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITIONS — Brønsted',
+        content: 'Un **acide** est une espèce capable de **céder** un proton $\\text{H}^+$. Une **base** est une espèce capable de **capter** un proton $\\text{H}^+$.',
+      },
+      {
+        type: 'figure',
+        caption: 'Un acide $\\text{AH}$ cède un proton et devient sa base conjuguée $\\text{A}^-$ ; réciproquement, $\\text{A}^-$ peut capter un proton. Ensemble, ils forment un couple acide/base.',
+        src: '/modules/chim-acide/fig-couple.png',
+      },
+      {
+        type: 'definition',
+        badge: 'COUPLE ACIDE/BASE',
+        content: 'Un acide $\\text{AH}$ et sa **base conjuguée** $\\text{A}^-$ constituent un **couple acide/base**, noté $\\text{AH}/\\text{A}^-$, relié par la **demi-équation** : $\\text{AH}=\\text{A}^-+\\text{H}^+$.',
+        formulas: ['\\text{AH}=\\text{A}^-+\\text{H}^+'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES DE COUPLES',
+        lines: [
+          '$\\text{CH}_3\\text{COOH}/\\text{CH}_3\\text{COO}^-$ (acide éthanoïque) ; $\\text{NH}_4^+/\\text{NH}_3$ (ion ammonium) ; $\\text{H}_3\\text{O}^+/\\text{H}_2\\text{O}$ et $\\text{H}_2\\text{O}/\\text{HO}^-$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**L\'eau, espèce amphotère** — L\'eau appartient à **deux** couples : elle est l\'acide du couple $\\text{H}_2\\text{O}/\\text{HO}^-$ et la base du couple $\\text{H}_3\\text{O}^+/\\text{H}_2\\text{O}$. Une telle espèce, à la fois acide et base, est dite **amphotère**.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2, 3, 10 : définitions, base conjuguée, demi-équations, amphotère' },
+    ],
+  },
+  {
+    id: 'reaction',
+    num: '2',
+    title: 'La réaction acide-base',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'PRINCIPE',
+        content: 'Une **réaction acide-base** est un **transfert de proton** entre l\'acide d\'un couple et la base d\'un autre couple. Le proton $\\text{H}^+$ n\'existe pas libre en solution : il est **toujours** échangé.',
+      },
+      {
+        type: 'methode',
+        title: 'ÉCRIRE L\'ÉQUATION D\'UNE RÉACTION ACIDE-BASE',
+        steps: [
+          'Identifier les deux couples mis en jeu : $\\text{A}_1\\text{H}/\\text{A}_1^-$ et $\\text{A}_2\\text{H}/\\text{A}_2^-$.',
+          'Écrire les deux demi-équations, l\'une dans le sens de la **perte** du proton (l\'acide qui réagit), l\'autre dans le sens du **gain**.',
+          'Additionner : les $\\text{H}^+$ doivent se **simplifier**.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Acide éthanoïque et ammoniac',
+        lines: [
+          'Couples $\\text{CH}_3\\text{COOH}/\\text{CH}_3\\text{COO}^-$ et $\\text{NH}_4^+/\\text{NH}_3$ : $\\text{CH}_3\\text{COOH}=\\text{CH}_3\\text{COO}^-+\\text{H}^+$ et $\\text{NH}_3+\\text{H}^+=\\text{NH}_4^+$.',
+          'En additionnant : $\\text{CH}_3\\text{COOH}+\\text{NH}_3\\to\\text{CH}_3\\text{COO}^-+\\text{NH}_4^+$.',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Un acide dans l\'eau** — L\'eau joue le rôle de base : $\\text{AH}+\\text{H}_2\\text{O}\\rightleftharpoons\\text{A}^-+\\text{H}_3\\text{O}^+$. C\'est cette réaction qui libère les ions oxonium responsables de l\'acidité de la solution.',
+      },
+      { type: 'lien_ex', text: '→ Exercice 20 et sujet bac 22 : équation-bilan, réaction du vinaigre avec l\'eau' },
+    ],
+  },
+  {
+    id: 'ph',
+    num: '3',
+    title: 'Le pH d\'une solution',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — pH',
+        content: 'Le **pH** d\'une solution aqueuse diluée est défini par $\\text{pH}=-\\log\\left[\\text{H}_3\\text{O}^+\\right]$, où $\\left[\\text{H}_3\\text{O}^+\\right]$ est la concentration en ions oxonium exprimée en mol·L⁻¹ (rapportée à $c°=1\\,\\text{mol·L}^{-1}$). Le pH est sans unité. Relation inverse : $\\left[\\text{H}_3\\text{O}^+\\right]=10^{-\\text{pH}}$.',
+        formulas: ['\\text{pH}=-\\log\\left[\\text{H}_3\\text{O}^+\\right]'],
+      },
+      {
+        type: 'figure',
+        caption: 'Échelle de pH à 25 °C : une solution est acide si $\\text{pH}<7$, neutre si $\\text{pH}=7$, basique si $\\text{pH}>7$.',
+        src: '/modules/chim-acide/fig-echelle.png',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES',
+        lines: [
+          '$\\left[\\text{H}_3\\text{O}^+\\right]=1{,}0\\times 10^{-2}\\,\\text{mol·L}^{-1}\\Rightarrow\\text{pH}=2{,}0$.',
+          '$\\text{pH}=3{,}4\\Rightarrow\\left[\\text{H}_3\\text{O}^+\\right]=10^{-3{,}4}\\approx 4{,}0\\times 10^{-4}\\,\\text{mol·L}^{-1}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**L\'échelle logarithmique** — Une unité de pH en moins correspond à une concentration **multipliée par 10**. Passer de $\\text{pH}=3$ à $\\text{pH}=1$ revient à multiplier $\\left[\\text{H}_3\\text{O}^+\\right]$ par 100, pas par 3 !',
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 5, 11, 12 : calcul du pH, concentration, suc gastrique, dilution' },
+    ],
+  },
+  {
+    id: 'produit-ionique',
+    num: '4',
+    title: 'Produit ionique de l\'eau',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'AUTOPROTOLYSE DE L\'EAU',
+        content: 'L\'eau réagit très faiblement sur elle-même (elle est amphotère) : $2\\,\\text{H}_2\\text{O}\\rightleftharpoons\\text{H}_3\\text{O}^++\\text{HO}^-$. La constante d\'équilibre associée est le **produit ionique de l\'eau** $K_e=\\left[\\text{H}_3\\text{O}^+\\right]\\left[\\text{HO}^-\\right]=1{,}0\\times 10^{-14}$ à 25 °C, soit $\\text{p}K_e=14{,}0$.',
+        formulas: ['K_e=\\left[\\text{H}_3\\text{O}^+\\right]\\left[\\text{HO}^-\\right]=1{,}0\\times 10^{-14}'],
+      },
+      {
+        type: 'propriete',
+        text: '**Conséquences** — Dans **toute** solution aqueuse, $\\left[\\text{H}_3\\text{O}^+\\right]\\left[\\text{HO}^-\\right]=K_e$ : connaître l\'un donne l\'autre. Eau pure : $\\left[\\text{H}_3\\text{O}^+\\right]=\\left[\\text{HO}^-\\right]=\\sqrt{K_e}=1{,}0\\times 10^{-7}\\,\\text{mol·L}^{-1}$, d\'où $\\text{pH}=7{,}0$. Solution acide : $\\left[\\text{H}_3\\text{O}^+\\right]>\\left[\\text{HO}^-\\right]$ ; basique : l\'inverse.',
+      },
+      {
+        type: 'methode',
+        title: 'pH D\'UNE SOLUTION DE BASE FORTE',
+        steps: [
+          'La base forte est totalement dissociée : $\\left[\\text{HO}^-\\right]=c$.',
+          'Calculer $\\left[\\text{H}_3\\text{O}^+\\right]=\\dfrac{K_e}{\\left[\\text{HO}^-\\right]}$.',
+          'En déduire $\\text{pH}=-\\log\\left[\\text{H}_3\\text{O}^+\\right]$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Soude à $c=1{,}0\\times 10^{-3}\\,\\text{mol·L}^{-1}$ : $\\left[\\text{HO}^-\\right]=1{,}0\\times 10^{-3}$, donc $\\left[\\text{H}_3\\text{O}^+\\right]=\\dfrac{10^{-14}}{10^{-3}}=10^{-11}$, d\'où $\\text{pH}=11{,}0$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 6, 13, 14, 15 et sujet bac 23 : [OH⁻], base forte, acide fort, soude' },
+    ],
+  },
+  {
+    id: 'constante-acidite',
+    num: '5',
+    title: 'Constante d\'acidité & force',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'CONSTANTE D\'ACIDITÉ Ka',
+        content: 'Pour le couple $\\text{AH}/\\text{A}^-$, la réaction avec l\'eau $\\text{AH}+\\text{H}_2\\text{O}\\rightleftharpoons\\text{A}^-+\\text{H}_3\\text{O}^+$ a pour constante d\'équilibre la **constante d\'acidité** $K_a=\\dfrac{\\left[\\text{A}^-\\right]\\left[\\text{H}_3\\text{O}^+\\right]}{[\\text{AH}]}$, et l\'on pose $\\text{p}K_a=-\\log K_a$, soit $K_a=10^{-\\text{p}K_a}$.',
+        formulas: ['K_a=\\dfrac{\\left[\\text{A}^-\\right]\\left[\\text{H}_3\\text{O}^+\\right]}{[\\text{AH}]}'],
+      },
+      {
+        type: 'propriete',
+        text: '**Force d\'un acide** — Un acide est d\'autant **plus fort** que $K_a$ est grand, donc que $\\text{p}K_a$ est petit. Un **acide fort** réagit totalement avec l\'eau (ex. : $\\text{HCl}$) ; un **acide faible** réagit partiellement (équilibre). Plus l\'acide est fort, plus sa base conjuguée est faible (et réciproquement).',
+      },
+      {
+        type: 'exemple',
+        title: 'QUELQUES pKa (25 °C)',
+        lines: [
+          '$\\text{CH}_3\\text{COOH}/\\text{CH}_3\\text{COO}^-$ : $\\text{p}K_a=4{,}8$ ; $\\text{HCOOH}/\\text{HCOO}^-$ : $3{,}8$ ; $\\text{CO}_2,\\text{H}_2\\text{O}/\\text{HCO}_3^-$ : $6{,}4$ ; $\\text{NH}_4^+/\\text{NH}_3$ : $9{,}2$. L\'acide méthanoïque ($3{,}8$) est donc plus fort que l\'acide éthanoïque ($4{,}8$).',
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'Ne pas confondre **force** (liée au $\\text{p}K_a$, propriété de l\'espèce) et **concentration** (propriété de la solution). Une solution diluée d\'acide fort peut avoir un pH plus élevé qu\'une solution concentrée d\'acide faible.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 7, 8, 16, 17 et sujet bac 22 : Ka, pKa, comparaison, fort ou faible' },
+    ],
+  },
+  {
+    id: 'predominance',
+    num: '6',
+    title: 'Prédominance & relation de Henderson',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'RELATION FONDAMENTALE',
+        content: 'En passant $K_a=\\dfrac{\\left[\\text{A}^-\\right]\\left[\\text{H}_3\\text{O}^+\\right]}{[\\text{AH}]}$ au logarithme, on obtient la **relation de Henderson** :',
+        formulas: ['\\text{pH}=\\text{p}K_a+\\log\\dfrac{\\left[\\text{A}^-\\right]}{[\\text{AH}]}'],
+      },
+      {
+        type: 'figure',
+        caption: 'Diagrammes de prédominance et de distribution : les deux espèces sont en proportions égales lorsque $\\text{pH}=\\text{p}K_a$ ; l\'acide domine à gauche, la base à droite.',
+        src: '/modules/chim-acide/fig-predominance.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Règles de prédominance** — $\\text{pH}=\\text{p}K_a\\Rightarrow[\\text{AH}]=\\left[\\text{A}^-\\right]$ (50 % / 50 %). $\\text{pH}<\\text{p}K_a\\Rightarrow$ l\'**acide** $\\text{AH}$ prédomine. $\\text{pH}>\\text{p}K_a\\Rightarrow$ la **base** $\\text{A}^-$ prédomine.',
+      },
+      {
+        type: 'methode',
+        title: 'EXPLOITER LA RELATION',
+        steps: [
+          'Connaissant $\\text{pH}$ et $\\text{p}K_a$, le rapport se calcule par $\\dfrac{\\left[\\text{A}^-\\right]}{[\\text{AH}]}=10^{\\text{pH}-\\text{p}K_a}$.',
+          'Un écart d\'**une** unité de pH correspond à un rapport de $10$ ; de **deux** unités, à un rapport de $100$ (l\'espèce minoritaire devient négligeable).',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Acide éthanoïque ($\\text{p}K_a=4{,}8$) dans une solution de $\\text{pH}=5{,}8$ : $\\dfrac{\\left[\\text{A}^-\\right]}{[\\text{AH}]}=10^{5{,}8-4{,}8}=10$.',
+          'L\'ion éthanoate est $10$ fois plus concentré que l\'acide : la base prédomine, conformément à $\\text{pH}>\\text{p}K_a$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 9, 18, 19, 21 et sujet bac 24 : pH = pKa, ammoniac, diagramme, pH du sang' },
+    ],
+  },
+];
+
 // ── Contenu La lunette astronomique ───────────────────────────────────────────
 const LUNETTE_OBJECTIFS = [
   'Caractériser une **lentille mince convergente** (centre optique, foyers, vergence).',
@@ -6951,8 +7251,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isPhotonCours = module.id === 'phys-photon';
   const isRCCours = module.id === 'phys-rc';
   const isLunetteCours = module.id === 'phys-lunette';
-  const sections = isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isAcideCours = module.id === 'chim-acide';
+  const sections = isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -7134,8 +7435,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isPhotonFiche = module.id === 'phys-photon';
   const isRCFiche = module.id === 'phys-rc';
   const isLunetteFiche = module.id === 'phys-lunette';
-  const ficheData = isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isAcideFiche = module.id === 'chim-acide';
+  const ficheData = isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';

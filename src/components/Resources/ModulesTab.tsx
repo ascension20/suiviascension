@@ -13,6 +13,14 @@ interface Props {
   onXpGain?: (amount: number) => void;
 }
 
+// Ordre d'affichage des matières (programme + progression logique)
+const SUBJECT_ORDER = ['Physique', 'Chimie', 'Maths'];
+// Couleur associée à chaque matière (accent des modules)
+const subjectHsl = (subject: string) =>
+  subject === 'Maths' ? '270 65% 62%'
+  : subject === 'Chimie' ? '150 55% 42%'
+  : '205 85% 60%';
+
 export function ModulesTab({ onXpGain }: Props) {
   const { user, profile, updateProfile } = useAuth();
   const [completedByModule, setCompletedByModule] = useState<Record<string, Set<string>>>({});
@@ -72,7 +80,8 @@ export function ModulesTab({ onXpGain }: Props) {
 
   const LEVEL_ORDER = ['Terminale', 'Première', 'Seconde', '3ème'];
   const availableLevels = LEVEL_ORDER.filter(l => ALL_MODULES.some(m => m.level === l));
-  const availableSubjects = [...new Set(ALL_MODULES.map(m => m.subject))].sort();
+  const availableSubjects = [...new Set(ALL_MODULES.map(m => m.subject))]
+    .sort((a, b) => SUBJECT_ORDER.indexOf(a) - SUBJECT_ORDER.indexOf(b));
 
   const filtered = ALL_MODULES.filter(m =>
     (!filterLevel || m.level === filterLevel) &&
@@ -260,7 +269,7 @@ export function ModulesTab({ onXpGain }: Props) {
               options={availableSubjects.map(s => ({
                 value: s,
                 label: s,
-                dotHsl: s === 'Maths' ? '270 65% 62%' : '38 92% 50%',
+                dotHsl: subjectHsl(s),
                 count: ALL_MODULES.filter(m => m.subject === s).length,
               }))}
             />
@@ -302,7 +311,7 @@ export function ModulesTab({ onXpGain }: Props) {
           ) : (
             <div className="space-y-6">
               {grouped.map(group => {
-                const subjHsl = group.subject === 'Maths' ? '270 65% 62%' : '38 92% 50%';
+                const subjHsl = subjectHsl(group.subject);
                 const subjDone = group.modules.reduce((s, m) => s + doneCount(m), 0);
                 const subjTotal = group.modules.reduce((s, m) => s + m.levels.length, 0);
                 return (
