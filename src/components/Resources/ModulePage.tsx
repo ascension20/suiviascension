@@ -23,6 +23,7 @@ import { ONDES_QCM, ONDES_EXERCISES, ONDES_CORRECTIONS } from '@/lib/ondes-conte
 import { DIFFRACTION_QCM, DIFFRACTION_EXERCISES, DIFFRACTION_CORRECTIONS } from '@/lib/diffraction-content';
 import { DOPPLER_QCM, DOPPLER_EXERCISES, DOPPLER_CORRECTIONS } from '@/lib/doppler-content';
 import { PHOTON_QCM, PHOTON_EXERCISES, PHOTON_CORRECTIONS } from '@/lib/photon-content';
+import { RC_QCM, RC_EXERCISES, RC_CORRECTIONS } from '@/lib/rc-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -70,14 +71,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isDiffraction = module.id === 'phys-diffraction';
     const isDoppler = module.id === 'phys-doppler';
     const isPhoton = module.id === 'phys-photon';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm') {
-      const questions = isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isRC = module.id === 'phys-rc';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm') {
+      const questions = isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4573,6 +4575,311 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Le circuit RC ─────────────────────────────────────────────────────
+const RC_OBJECTIFS = [
+  'Décrire un **condensateur** et exploiter la relation charge-tension $q=C\\,u_C$.',
+  'Établir l\'**équation différentielle** de la charge d\'un circuit RC série.',
+  'Reconnaître la **solution exponentielle** $u_C(t)=E(1-\\mathrm{e}^{-t/\\tau})$ et son régime permanent.',
+  'Définir la **constante de temps** $\\tau=RC$, sa dimension et sa détermination graphique.',
+  'Étudier la **décharge** $u_C(t)=E\\,\\mathrm{e}^{-t/\\tau}$ et les repères 63 % / 37 %.',
+  'Calculer l\'**énergie stockée** $E=\\tfrac{1}{2}C\\,u_C^2$ et connaître les applications du RC.',
+];
+
+const RC_FICHE_DATA = [
+  {
+    title: '1  Condensateur',
+    rows: [
+      {
+        label: 'Charge-tension',
+        tex: 'q=C\\,u_C',
+        vars: '$q$ en coulombs (C), $u_C$ en volts (V) · $C$ : capacité en **farads (F)**',
+      },
+      {
+        label: 'Intensité',
+        tex: 'i=\\dfrac{\\mathrm{d}q}{\\mathrm{d}t}=C\\dfrac{\\mathrm{d}u_C}{\\mathrm{d}t}',
+        vars: '$u_C$ constante ⇒ $i=0$ (régime permanent : bloque le courant continu)',
+      },
+    ],
+  },
+  {
+    title: '2  Équation différentielle (charge)',
+    rows: [
+      {
+        label: 'Loi des mailles',
+        tex: 'E=R\\,i+u_C',
+        vars: 'Circuit RC série avec générateur $E$',
+      },
+      {
+        label: 'Équation',
+        tex: '\\dfrac{\\mathrm{d}u_C}{\\mathrm{d}t}+\\dfrac{1}{RC}u_C=\\dfrac{E}{RC}',
+        vars: 'Forme $y\'+ay=b$ (linéaire du 1er ordre, second membre)',
+      },
+    ],
+  },
+  {
+    title: '3  Solutions',
+    rows: [
+      {
+        label: 'Charge',
+        tex: 'u_C(t)=E\\left(1-\\mathrm{e}^{-t/\\tau}\\right)',
+        vars: '$i(t)=\\dfrac{E}{R}\\mathrm{e}^{-t/\\tau}$ (maximale à $t=0$)',
+      },
+      {
+        label: 'Décharge',
+        tex: 'u_C(t)=E\\,\\mathrm{e}^{-t/\\tau}',
+        vars: 'Équation sans second membre $\\dfrac{\\mathrm{d}u_C}{\\mathrm{d}t}+\\dfrac{1}{RC}u_C=0$',
+      },
+    ],
+  },
+  {
+    title: '4  Constante de temps',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\tau=R\\,C \\;(\\text{en s})',
+        vars: '$\\Omega\\times\\text{F}=\\text{s}$ (homogénéité) · plus $\\tau$ est petit, plus le circuit est rapide',
+      },
+      {
+        label: 'Repères',
+        tex: '63\\,\\%\\;(\\text{charge}) \\;/\\; 37\\,\\%\\;(\\text{décharge})',
+        vars: 'À $t=\\tau$ · régime permanent atteint au bout de $\\approx 5\\tau$ (99 %)',
+      },
+      {
+        label: 'Détermination',
+        tex: '\\tau = \\text{abscisse à } 0{,}63\\,E',
+        vars: 'Ou : la tangente à l\'origine coupe l\'asymptote à $t=\\tau$',
+      },
+    ],
+  },
+  {
+    title: '5  Énergie & mesure',
+    rows: [
+      {
+        label: 'Énergie stockée',
+        tex: 'E_{\\text{stockée}}=\\tfrac{1}{2}C\\,u_C^2 \\;(\\text{J})',
+        vars: 'L\'énergie dépend du **carré** de la tension',
+      },
+      {
+        label: 'Mesurer C',
+        tex: 'C=\\dfrac{\\tau}{R}',
+        vars: 'Lire $\\tau$ sur la courbe puis diviser par $R$',
+      },
+      {
+        label: 'Réflexes',
+        tex: 'u_C \\text{ continue} \\;;\\; i \\text{ peut sauter}',
+        vars: 'À $t=0^+$ : $i_0=E/R$ · unités SI (Ω, F, s)',
+      },
+    ],
+  },
+];
+
+const RC_COURS: Section[] = [
+  {
+    id: 'condensateur',
+    num: '1',
+    title: 'Le condensateur',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Condensateur',
+        content: 'Un **condensateur** est constitué de deux armatures conductrices séparées par un isolant. Il **stocke des charges électriques** : les armatures portent des charges opposées $+q$ et $-q$.',
+      },
+      {
+        type: 'definition',
+        badge: 'RELATION CHARGE-TENSION',
+        content: 'La charge $q$ portée par l\'armature positive est proportionnelle à la tension $u_C$ à ses bornes : $q=C\\,u_C$, où $C$ est la **capacité** du condensateur, en **farads (F)**, avec $q$ en coulombs (C) et $u_C$ en volts (V).',
+        formulas: ['q=C\\,u_C'],
+      },
+      {
+        type: 'propriete',
+        text: '**Ordres de grandeur** — Le farad est une unité très grande : les condensateurs usuels valent de quelques pF ($10^{-12}\\,\\text{F}$) à quelques mF. On rencontre couramment des µF ($10^{-6}\\,\\text{F}$) et des nF ($10^{-9}\\,\\text{F}$).',
+      },
+      {
+        type: 'definition',
+        badge: 'INTENSITÉ ET CHARGE',
+        content: 'L\'intensité du courant qui charge le condensateur est le débit de charge :',
+        formulas: ['i=\\dfrac{\\mathrm{d}q}{\\mathrm{d}t}=C\\dfrac{\\mathrm{d}u_C}{\\mathrm{d}t}'],
+      },
+      {
+        type: 'idee_cle',
+        text: 'Un condensateur est un petit « réservoir » de charges : le courant qui y entre le remplit. Quand la tension ne varie plus ($\\mathrm{d}u_C/\\mathrm{d}t=0$), le courant s\'annule : le condensateur est plein, il se comporte comme un interrupteur ouvert.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2, 7, 8 : charge, tension, intensité, régime permanent' },
+    ],
+  },
+  {
+    id: 'equation-diff',
+    num: '2',
+    title: 'Équation différentielle de la charge',
+    blocks: [
+      {
+        type: 'para',
+        text: 'On étudie un circuit série comprenant un générateur de tension continue $E$, un conducteur ohmique de résistance $R$ et un condensateur de capacité $C$, initialement déchargé. À $t=0$, on ferme l\'interrupteur.',
+      },
+      {
+        type: 'figure',
+        caption: 'Circuit RC série. La loi des mailles impose $E=u_R+u_C=R\\,i+u_C$ à chaque instant.',
+        src: '/modules/phys-rc/fig-circuit.png',
+      },
+      {
+        type: 'methode',
+        title: 'ÉTABLIR L\'ÉQUATION DIFFÉRENTIELLE',
+        steps: [
+          'Loi des mailles : $E=R\\,i+u_C$.',
+          'Remplacer $i=C\\dfrac{\\mathrm{d}u_C}{\\mathrm{d}t}$ : $E=RC\\dfrac{\\mathrm{d}u_C}{\\mathrm{d}t}+u_C$.',
+          'Mettre sous forme canonique en divisant par $RC$.',
+        ],
+      },
+      {
+        type: 'definition',
+        badge: 'ÉQUATION DIFFÉRENTIELLE DE LA CHARGE',
+        content: 'C\'est une équation différentielle **linéaire du premier ordre à coefficients constants, avec second membre**.',
+        formulas: ['\\dfrac{\\mathrm{d}u_C}{\\mathrm{d}t}+\\dfrac{1}{RC}u_C=\\dfrac{E}{RC}'],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Lien avec les maths** — On retrouve exactement la forme $y\'+ay=b$ étudiée en spé maths, dont les solutions sont $y(t)=k\\,\\mathrm{e}^{-at}+\\dfrac{b}{a}$. La condition initiale fixe ensuite la constante $k$.',
+      },
+      { type: 'lien_ex', text: '→ Sujet bac 19 : étude complète d\'une charge' },
+    ],
+  },
+  {
+    id: 'charge',
+    num: '3',
+    title: 'La charge du condensateur',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'SOLUTION — Charge',
+        content: 'Avec la condition initiale $u_C(0)=0$ (condensateur déchargé), la solution est $u_C(t)=E\\left(1-\\mathrm{e}^{-t/\\tau}\\right)$, $\\tau=RC$. La tension croît de $0$ et tend vers $E$ : c\'est le **régime permanent**.',
+        formulas: ['u_C(t)=E\\left(1-\\mathrm{e}^{-t/\\tau}\\right)'],
+      },
+      {
+        type: 'figure',
+        caption: 'Charge du condensateur : croissance exponentielle vers $E$. À $t=\\tau$, la tension atteint $63\\,\\%$ de $E$ ; la tangente à l\'origine coupe l\'asymptote à $t=\\tau$.',
+        src: '/modules/phys-rc/fig-charge.png',
+      },
+      {
+        type: 'definition',
+        badge: 'INTENSITÉ PENDANT LA CHARGE',
+        content: 'L\'intensité est **maximale à $t=0$** ($i_0=E/R$, le condensateur déchargé se comporte comme un fil) puis décroît vers $0$ (condensateur chargé : plus aucun courant).',
+        formulas: ['i(t)=C\\dfrac{\\mathrm{d}u_C}{\\mathrm{d}t}=\\dfrac{E}{R}\\mathrm{e}^{-t/\\tau}'],
+      },
+      {
+        type: 'piege',
+        text: '**Continuité** — C\'est la **tension** $u_C$ qui est continue (elle ne peut pas sauter), pas l\'intensité : $i$ passe brutalement de $0$ à $E/R$ à la fermeture de l\'interrupteur.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 5, 12, 13, 14 : charge à t = τ, à t = 3τ, régime permanent, intensité initiale' },
+    ],
+  },
+  {
+    id: 'constante-temps',
+    num: '4',
+    title: 'La constante de temps τ',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Constante de temps',
+        content: 'La **constante de temps** du circuit vaut $\\tau=RC$ (en secondes), avec $R$ en ohms et $C$ en farads. Elle caractérise la **rapidité** de la charge : plus $\\tau$ est petit, plus le circuit est rapide.',
+        formulas: ['\\tau=R\\,C'],
+      },
+      {
+        type: 'propriete',
+        text: '**Homogénéité** — $[RC]=\\Omega\\times\\text{F}=\\text{s}$ : le produit $RC$ est bien homogène à un temps. C\'est une vérification classique attendue au bac.',
+      },
+      {
+        type: 'methode',
+        title: 'DÉTERMINER τ GRAPHIQUEMENT',
+        steps: [
+          'À 63 % : $u_C(\\tau)=E(1-\\mathrm{e}^{-1})\\approx 0{,}63\\,E$. On lit l\'abscisse du point à $63\\,\\%$ de $E$.',
+          'Tangente à l\'origine : elle coupe l\'asymptote $u_C=E$ à l\'abscisse $t=\\tau$.',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Durée du régime transitoire** — À $t=3\\tau$, $u_C\\approx 95\\,\\%$ de $E$ ; à $t=5\\tau$, $u_C\\approx 99\\,\\%$. On considère en pratique que le **régime permanent est atteint au bout de $5\\tau$**.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Avec $R=1{,}0\\,\\text{k}\\Omega$ et $C=1{,}0\\,\\mu\\text{F}$ : $\\tau=1{,}0\\times 10^{3}\\times 1{,}0\\times 10^{-6}=1{,}0\\times 10^{-3}\\,\\text{s}=1{,}0\\,\\text{ms}$. Le régime permanent est atteint après environ $5\\,\\text{ms}$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 4, 9, 10, 11 et sujet bac 20 : τ = RC, C et R inconnues, homogénéité' },
+    ],
+  },
+  {
+    id: 'decharge',
+    num: '5',
+    title: 'La décharge du condensateur',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Le condensateur, chargé sous la tension $E$, est maintenant relié au seul conducteur ohmique (le générateur est débranché).',
+      },
+      {
+        type: 'definition',
+        badge: 'ÉQUATION & SOLUTION — Décharge',
+        content: 'La loi des mailles donne $u_C+R\\,i=0$, d\'où l\'équation **sans second membre** $\\dfrac{\\mathrm{d}u_C}{\\mathrm{d}t}+\\dfrac{1}{RC}u_C=0$, dont la solution, avec $u_C(0)=E$, est $u_C(t)=E\\,\\mathrm{e}^{-t/\\tau}$.',
+        formulas: ['u_C(t)=E\\,\\mathrm{e}^{-t/\\tau}'],
+      },
+      {
+        type: 'figure',
+        caption: 'Décharge : décroissance exponentielle vers $0$. À $t=\\tau$, il ne reste que $37\\,\\%$ de $E$ ; la tangente à l\'origine coupe l\'axe des abscisses en $t=\\tau$.',
+        src: '/modules/phys-rc/fig-decharge.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Repères de la décharge** — $u_C(\\tau)=E\\,\\mathrm{e}^{-1}\\approx 0{,}37\\,E$ : à $t=\\tau$, le condensateur a perdu $63\\,\\%$ de sa tension. La décharge est quasi terminée au bout de $5\\tau$.',
+      },
+      {
+        type: 'piege',
+        text: '**Ne pas confondre** — Charge : $u_C=E(1-\\mathrm{e}^{-t/\\tau})$, on retient **63 %** à $t=\\tau$. Décharge : $u_C=E\\,\\mathrm{e}^{-t/\\tau}$, on retient **37 %**. La constante $\\tau=RC$ est la **même** dans les deux cas.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 6, 15, 18 : décharge à t = τ, à t = 3τ, temps de demi-tension' },
+    ],
+  },
+  {
+    id: 'energie',
+    num: '6',
+    title: 'Énergie & applications',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'ÉNERGIE STOCKÉE',
+        content: 'Un condensateur chargé sous la tension $u_C$ emmagasine l\'énergie (en joules) :',
+        formulas: ['E_{\\text{stockée}}=\\tfrac{1}{2}C\\,u_C^2'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Pour $C=100\\,\\mu\\text{F}$ chargé sous $12\\,\\text{V}$ : $E=\\tfrac{1}{2}\\times 100\\times 10^{-6}\\times 12^2=7{,}2\\times 10^{-3}\\,\\text{J}=7{,}2\\,\\text{mJ}$.',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'MESURER UNE CAPACITÉ INCONNUE',
+        steps: [
+          'Réaliser la charge et enregistrer $u_C(t)$.',
+          'Déterminer $\\tau$ graphiquement (63 % ou tangente à l\'origine).',
+          'En déduire $C=\\dfrac{\\tau}{R}$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Applications** — Le circuit RC sert de **temporisation** (minuterie, clignotant), de **filtre** (lissage d\'une tension, suppression de parasites), ou de **réserve d\'énergie à décharge rapide** (flash d\'appareil photo : charge lente sur plusieurs secondes, décharge en quelques millisecondes).',
+      },
+      {
+        type: 'piege',
+        text: '**À retenir** — Trois réflexes : $\\tau=RC$ est homogène à un temps ; $u_C$ est continue ; le régime permanent est atteint après $\\approx 5\\tau$.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 16, 17 et sujet bac 21 : énergie stockée, comparaison, flash d\'appareil photo' },
+    ],
+  },
+];
+
 // ── Contenu Le photon ─────────────────────────────────────────────────────────
 const PHOTON_OBJECTIFS = [
   'Comprendre la **dualité onde-particule** de la lumière et la notion de **photon**.',
@@ -6341,8 +6648,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isDiffractionCours = module.id === 'phys-diffraction';
   const isDopplerCours = module.id === 'phys-doppler';
   const isPhotonCours = module.id === 'phys-photon';
-  const sections = isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isRCCours = module.id === 'phys-rc';
+  const sections = isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -6522,8 +6830,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isDiffractionFiche = module.id === 'phys-diffraction';
   const isDopplerFiche = module.id === 'phys-doppler';
   const isPhotonFiche = module.id === 'phys-photon';
-  const ficheData = isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isRCFiche = module.id === 'phys-rc';
+  const ficheData = isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
