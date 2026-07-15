@@ -26,6 +26,7 @@ import { PHOTON_QCM, PHOTON_EXERCISES, PHOTON_CORRECTIONS } from '@/lib/photon-c
 import { RC_QCM, RC_EXERCISES, RC_CORRECTIONS } from '@/lib/rc-content';
 import { LUNETTE_QCM, LUNETTE_EXERCISES, LUNETTE_CORRECTIONS } from '@/lib/lunette-content';
 import { ACIDE_QCM, ACIDE_EXERCISES, ACIDE_CORRECTIONS } from '@/lib/acide-content';
+import { TITRAGES_QCM, TITRAGES_EXERCISES, TITRAGES_CORRECTIONS } from '@/lib/titrages-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -76,14 +77,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isRC = module.id === 'phys-rc';
     const isLunette = module.id === 'phys-lunette';
     const isAcide = module.id === 'chim-acide';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm') {
-      const questions = isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isTitrages = module.id === 'chim-titrages';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm') {
+      const questions = isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4579,6 +4581,313 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Les titrages (Chimie) ─────────────────────────────────────────────
+const TITRAGES_OBJECTIFS = [
+  'Décrire le **principe** d\'un titrage et les propriétés de la **réaction support** (totale, rapide, unique).',
+  'Définir l\'**équivalence** et exploiter la relation stœchiométrique $\\frac{n_A}{a}=\\frac{n_B}{b}$.',
+  'Repérer $V_E$ sur une courbe **pH-métrique** (tangentes, dérivée).',
+  'Interpréter la **demi-équivalence** d\'un acide faible ($\\text{pH}=\\text{p}K_a$).',
+  'Choisir un **indicateur coloré** et exploiter un suivi **conductimétrique**.',
+  'Résoudre un titrage complet (concentration, masse, dilution, stœchiométrie).',
+];
+
+const TITRAGES_FICHE_DATA = [
+  {
+    title: '1  Principe',
+    rows: [
+      {
+        label: 'Vocabulaire',
+        tex: '\\text{titrant (burette)} \\;/\\; \\text{titré (bécher)}',
+        vars: 'Titrant : $C$ connue · titré : $C$ inconnue (celle que l\'on cherche)',
+      },
+      {
+        label: 'Réaction support',
+        tex: '\\text{totale, rapide, unique}',
+        vars: 'Sans ces trois conditions, le titrage n\'a pas de sens',
+      },
+    ],
+  },
+  {
+    title: '2  Équivalence',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\text{proportions stœchiométriques}',
+        vars: 'Changement de réactif limitant · saut de pH / de couleur / rupture de pente',
+      },
+      {
+        label: 'Relation générale',
+        tex: '\\dfrac{n_A}{a}=\\dfrac{n_B}{b}',
+        vars: 'Pour $a\\,\\text{A}+b\\,\\text{B}\\to\\text{produits}$',
+      },
+      {
+        label: 'Cas 1:1',
+        tex: 'C_A V_A=C_B V_E \\;\\Rightarrow\\; C_A=\\dfrac{C_B V_E}{V_A}',
+        vars: 'Les volumes peuvent rester en mL (ils se simplifient)',
+      },
+    ],
+  },
+  {
+    title: '3  Suivi pH-métrique',
+    rows: [
+      {
+        label: 'Courbe',
+        tex: '\\text{3 zones : lente — saut — lente}',
+        vars: '$E$ = point d\'inflexion, au milieu du saut',
+      },
+      {
+        label: 'Tangentes / dérivée',
+        tex: '\\dfrac{\\mathrm{d}\\text{pH}}{\\mathrm{d}V}\\to\\text{maximum en } V_E',
+        vars: 'Tangentes : 2 parallèles + médiane · dérivée : pic (plus précis)',
+      },
+      {
+        label: 'pH à l\'équivalence',
+        tex: '\\text{fort/fort}=7 \\;;\\; \\text{faible/forte}>7 \\;;\\; \\text{base faible/acide fort}<7',
+        vars: 'Le pH à l\'équivalence n\'est pas toujours 7 !',
+      },
+    ],
+  },
+  {
+    title: '4  Demi-équivalence',
+    rows: [
+      {
+        label: 'Acide faible',
+        tex: 'V=\\dfrac{V_E}{2} \\;\\Rightarrow\\; [\\text{AH}]=\\left[\\text{A}^-\\right]',
+        vars: 'La moitié de l\'acide a été transformée en sa base conjuguée',
+      },
+      {
+        label: 'Lecture du pKa',
+        tex: '\\text{pH}=\\text{p}K_a',
+        vars: 'Méthode expérimentale de mesure d\'un $\\text{p}K_a$ · palier tampon autour de $V_E/2$',
+      },
+    ],
+  },
+  {
+    title: '5  Autres suivis',
+    rows: [
+      {
+        label: 'Indicateur coloré',
+        tex: '\\text{zone de virage}\\approx\\text{p}K_a\\pm 1',
+        vars: 'Doit être **incluse dans le saut** de pH · virage à une goutte près',
+      },
+      {
+        label: 'Conductimétrie',
+        tex: 'V_E=\\text{intersection des 2 droites}',
+        vars: '$\\sigma$ affine par morceaux · rupture de pente à l\'équivalence',
+      },
+    ],
+  },
+  {
+    title: '6  Pièges',
+    rows: [
+      {
+        label: 'Stœchiométrie',
+        tex: 'a\\neq b \\;\\Rightarrow\\; C_A V_A\\neq C_B V_E',
+        vars: 'Toujours repartir de $\\frac{n_A}{a}=\\frac{n_B}{b}$',
+      },
+      {
+        label: 'Dilution / eau',
+        tex: 'C_{\\text{mère}}=f\\times C_{\\text{dil}}',
+        vars: 'L\'eau ajoutée dans le bécher ne change pas $n_A$, donc $V_E$ inchangé',
+      },
+    ],
+  },
+];
+
+const TITRAGES_COURS: Section[] = [
+  {
+    id: 'principe',
+    num: '1',
+    title: 'Principe d\'un titrage',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Un **titrage** est une technique permettant de déterminer la **quantité de matière** (donc la concentration) d\'une espèce en solution — le **réactif titré** — en la faisant réagir avec une espèce de concentration connue — le **réactif titrant**, versé progressivement.',
+      },
+      {
+        type: 'figure',
+        caption: 'Montage d\'un titrage suivi par pH-métrie : le réactif titrant, de concentration connue, est versé depuis la burette dans le bécher contenant le réactif titré. L\'agitation assure l\'homogénéité ; la sonde mesure le pH en continu.',
+        src: '/modules/chim-titrages/fig-montage.png',
+      },
+      {
+        type: 'propriete',
+        text: '**La réaction support** — La réaction utilisée doit vérifier **trois conditions** : **totale** (elle se poursuit jusqu\'à épuisement du réactif limitant) ; **rapide** (le nouvel état d\'équilibre est atteint quasi instantanément) ; **unique** (c\'est la seule réaction qui se produit). Sans ces trois propriétés, le résultat du titrage n\'aurait aucun sens.',
+      },
+      {
+        type: 'piege',
+        text: '**Vocabulaire** — Le réactif titrant est dans la burette (concentration connue) ; le réactif titré est dans le bécher (concentration inconnue, c\'est lui que l\'on cherche). Ne pas les inverser dans les calculs !',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2, 8 : vocabulaire, réaction support, montage' },
+    ],
+  },
+  {
+    id: 'equivalence',
+    num: '2',
+    title: 'L\'équivalence',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Équivalence',
+        content: 'L\'**équivalence** est l\'instant du titrage où les réactifs titrant et titré ont été introduits dans les **proportions stœchiométriques** de l\'équation. Le volume de titrant versé à cet instant est le **volume équivalent** $V_E$.',
+      },
+      {
+        type: 'propriete',
+        text: '**Ce qui change à l\'équivalence** — **Avant** : le réactif titrant est limitant (entièrement consommé à chaque ajout). **À l\'équivalence** : les deux réactifs sont totalement consommés — c\'est le changement de réactif limitant. **Après** : le réactif titré a disparu, le titrant s\'accumule en excès. C\'est ce basculement brutal qui provoque la variation observable (saut de pH, changement de couleur, rupture de pente).',
+      },
+      {
+        type: 'definition',
+        badge: 'RELATION À L\'ÉQUIVALENCE',
+        content: 'Pour une réaction support d\'équation $a\\,\\text{A}+b\\,\\text{B}\\to\\text{produits}$, les réactifs sont dans les proportions stœchiométriques à l\'équivalence : $\\dfrac{n_A}{a}=\\dfrac{n_{B,\\text{versé}}}{b}$. Dans le cas le plus fréquent $a=b=1$, cela donne simplement $n_A=n_B$, soit :',
+        formulas: ['C_A V_A=C_B V_E'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'On titre $V_A=10{,}0\\,\\text{mL}$ d\'acide chlorhydrique par de la soude à $C_B=0{,}10\\,\\text{mol·L}^{-1}$. L\'équivalence est atteinte pour $V_E=10{,}0\\,\\text{mL}$.',
+          'Alors $C_A=\\dfrac{C_B V_E}{V_A}=\\dfrac{0{,}10\\times 10{,}0}{10{,}0}=0{,}10\\,\\text{mol·L}^{-1}$ (les volumes peuvent rester en mL : ils se simplifient).',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 4, 7, 9, 10 : calculs de V_E, C_A, C_B, définition' },
+    ],
+  },
+  {
+    id: 'ph-metrique',
+    num: '3',
+    title: 'Suivi pH-métrique',
+    blocks: [
+      {
+        type: 'figure',
+        caption: 'Courbe pH-métrique d\'un titrage d\'acide fort par une base forte : le pH varie lentement, puis brutalement au voisinage de l\'équivalence (saut de pH), avant de se stabiliser. Le point $E$ est repéré par la méthode des tangentes.',
+        src: '/modules/chim-titrages/fig-phmetrie.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Allure de la courbe** — La courbe $\\text{pH}=f(V)$ présente **trois zones** : une variation lente avant l\'équivalence, un **saut de pH** très brutal au voisinage de $V_E$, puis de nouveau une variation lente. Le point d\'équivalence $E$ est le **point d\'inflexion** de la courbe, situé au milieu du saut.',
+      },
+      {
+        type: 'methode',
+        title: 'REPÉRER V_E PAR LES TANGENTES',
+        steps: [
+          'Tracer une tangente à la courbe avant le saut.',
+          'Tracer une parallèle à cette tangente, après le saut.',
+          'Tracer la parallèle équidistante des deux précédentes : elle coupe la courbe au point $E$.',
+          'Lire $V_E$ en projetant $E$ sur l\'axe des abscisses.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Méthode de la dérivée** — On peut aussi tracer $\\dfrac{\\mathrm{d}\\text{pH}}{\\mathrm{d}V}=g(V)$ : cette courbe présente un **maximum** très net pour $V=V_E$, ce qui donne une lecture plus précise que les tangentes.',
+      },
+      {
+        type: 'piege',
+        text: '**Le pH à l\'équivalence** — Acide fort + base forte : $\\text{pH}_E=7{,}0$ (le sel formé est neutre). Acide faible + base forte : $\\text{pH}_E>7$ (la base conjuguée formée est basique). Base faible + acide fort : $\\text{pH}_E<7$. Le pH à l\'équivalence n\'est donc pas toujours égal à $7$ !',
+      },
+      { type: 'lien_ex', text: '→ Exercices 5, 12, 13, 20 : allure, tangentes, dérivée, pH à l\'équivalence' },
+    ],
+  },
+  {
+    id: 'acide-faible',
+    num: '4',
+    title: 'Cas de l\'acide faible',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'LA DEMI-ÉQUIVALENCE',
+        content: 'Lors du titrage d\'un **acide faible** $\\text{AH}$ par une base forte, à la **demi-équivalence** ($V=\\dfrac{V_E}{2}$), la moitié de l\'acide a été transformée en sa base conjuguée : $[\\text{AH}]=\\left[\\text{A}^-\\right]\\Rightarrow\\text{pH}=\\text{p}K_a$. C\'est la méthode expérimentale de détermination d\'un $\\text{p}K_a$ : il suffit de lire le pH à $V_E/2$.',
+        formulas: ['\\text{pH}=\\text{p}K_a \\quad (\\text{à } V_E/2)'],
+      },
+      {
+        type: 'methode',
+        title: 'DÉTERMINER UN pKa PAR TITRAGE',
+        steps: [
+          'Repérer $V_E$ (tangentes ou dérivée).',
+          'Calculer $V_E/2$.',
+          'Lire le pH sur la courbe pour ce volume : c\'est directement le $\\text{p}K_a$.',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Différences avec l\'acide fort** — Le pH initial est plus élevé (l\'acide faible est peu dissocié). Le saut de pH est moins ample. $\\text{pH}_E>7$ au lieu de $7{,}0$. La courbe présente un **palier** (zone tampon) autour de $V_E/2$.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Pourquoi un palier ?** — Autour de $V_E/2$, le mélange contient l\'acide et sa base conjuguée en quantités comparables : c\'est une **solution tampon**, qui résiste aux variations de pH. La courbe y est donc quasi plate.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 6, 14, 15, 16 et sujet bac 24 : demi-équivalence, démonstration, identification' },
+    ],
+  },
+  {
+    id: 'autres-suivis',
+    num: '5',
+    title: 'Autres suivis',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'SUIVI COLORIMÉTRIQUE',
+        content: 'Un **indicateur coloré** est un couple acide/base dont les deux formes ont des **couleurs différentes**. Il change de teinte dans sa **zone de virage**, intervalle de pH d\'environ deux unités encadrant son $\\text{p}K_a$.',
+      },
+      {
+        type: 'methode',
+        title: 'CHOISIR UN INDICATEUR COLORÉ',
+        steps: [
+          'La zone de virage de l\'indicateur doit être contenue dans le saut de pH du titrage.',
+          'Le changement de couleur coïncide alors avec l\'équivalence, à une goutte près.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLES D\'INDICATEURS',
+        lines: [
+          'Hélianthine (zone $3{,}1-4{,}4$) ; bleu de bromothymol ($6{,}0-7{,}6$) ; phénolphtaléine ($8{,}2-10{,}0$). Pour un titrage acide fort/base forte ($\\text{pH}_E=7{,}0$), le BBT convient parfaitement.',
+        ],
+      },
+      {
+        type: 'figure',
+        caption: 'Suivi conductimétrique : la conductivité varie linéairement par morceaux. Le volume équivalent se lit à l\'intersection des deux droites — la rupture de pente.',
+        src: '/modules/chim-titrages/fig-conductimetrie.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Suivi conductimétrique** — La conductivité $\\sigma$ dépend des ions présents et de leur mobilité. Elle évolue de façon **affine par morceaux** : chaque droite correspond à une composition ionique qui change régulièrement. Le changement de pente a lieu à l\'équivalence, quand la nature des ions présents bascule. On lit $V_E$ à l\'**intersection des deux droites**, prolongées (sans utiliser les points proches de $V_E$, perturbés).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 17, 18 et sujet bac 25 : indicateur, conductimétrie' },
+    ],
+  },
+  {
+    id: 'exploitation',
+    num: '6',
+    title: 'Exploitation & méthode',
+    blocks: [
+      {
+        type: 'methode',
+        title: 'RÉSOUDRE UN EXERCICE DE TITRAGE',
+        steps: [
+          'Écrire l\'équation de la réaction support et vérifier les coefficients stœchiométriques.',
+          'Déterminer $V_E$ (tangentes, dérivée, rupture de pente, ou changement de couleur).',
+          'Écrire la relation à l\'équivalence : $\\dfrac{n_A}{a}=\\dfrac{n_B}{b}$, soit $C_A V_A=C_B V_E$ si $a=b=1$.',
+          'En déduire $C_A=\\dfrac{C_B V_E}{V_A}$.',
+          'Remonter, si demandé, à la masse $m=n\\times M$, au titre massique, ou à la concentration avant dilution.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Pièges classiques** — **Stœchiométrie** : si l\'équation n\'est pas $1{:}1$, la relation $C_A V_A=C_B V_E$ est **fausse** ; toujours repartir de $\\dfrac{n_A}{a}=\\dfrac{n_B}{b}$. **Dilution** : si la solution a été diluée d\'un facteur $f$, $C_{\\text{mère}}=f\\times C_{\\text{diluée}}$. Ne pas confondre $V_A$ (prise d\'essai) et $V_E$ (volume versé à l\'équivalence). Le volume d\'eau ajouté dans le bécher **ne change pas** $n_A$.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Trois façons de repérer $V_E$** — pH-métrie (saut de pH), colorimétrie (changement de couleur), conductimétrie (rupture de pente) : trois techniques, un même volume équivalent. Le choix dépend de la précision recherchée et de la nature de la réaction.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**L\'idée en une phrase** — Un titrage, c\'est **compter** une quantité de matière inconnue en la faisant disparaître avec une quantité connue — et l\'équivalence est simplement l\'instant où l\'on sait, très précisément, que le compte est bon.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 11, 19, 21, 22 et sujets bac 23, 25 : eau ajoutée, masse, dilution, stœchiométrie' },
+    ],
+  },
+];
+
 // ── Contenu Réactions acide-base (Chimie) ─────────────────────────────────────
 const ACIDE_OBJECTIFS = [
   'Définir **acide** et **base** au sens de Brønsted et identifier les **couples acide/base**.',
@@ -7252,8 +7561,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isRCCours = module.id === 'phys-rc';
   const isLunetteCours = module.id === 'phys-lunette';
   const isAcideCours = module.id === 'chim-acide';
-  const sections = isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isTitragesCours = module.id === 'chim-titrages';
+  const sections = isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -7436,8 +7746,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isRCFiche = module.id === 'phys-rc';
   const isLunetteFiche = module.id === 'phys-lunette';
   const isAcideFiche = module.id === 'chim-acide';
-  const ficheData = isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isTitragesFiche = module.id === 'chim-titrages';
+  const ficheData = isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
