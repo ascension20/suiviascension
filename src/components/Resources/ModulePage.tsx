@@ -22,6 +22,7 @@ import { BILANS_QCM, BILANS_EXERCISES, BILANS_CORRECTIONS } from '@/lib/bilans-c
 import { ONDES_QCM, ONDES_EXERCISES, ONDES_CORRECTIONS } from '@/lib/ondes-content';
 import { DIFFRACTION_QCM, DIFFRACTION_EXERCISES, DIFFRACTION_CORRECTIONS } from '@/lib/diffraction-content';
 import { DOPPLER_QCM, DOPPLER_EXERCISES, DOPPLER_CORRECTIONS } from '@/lib/doppler-content';
+import { PHOTON_QCM, PHOTON_EXERCISES, PHOTON_CORRECTIONS } from '@/lib/photon-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -68,14 +69,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isOndes = module.id === 'phys-ondes';
     const isDiffraction = module.id === 'phys-diffraction';
     const isDoppler = module.id === 'phys-doppler';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm') {
-      const questions = isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isPhoton = module.id === 'phys-photon';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm') {
+      const questions = isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4571,6 +4573,300 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Le photon ─────────────────────────────────────────────────────────
+const PHOTON_OBJECTIFS = [
+  'Comprendre la **dualité onde-particule** de la lumière et la notion de **photon**.',
+  'Appliquer la relation de **Planck-Einstein** $E=h\\nu=\\dfrac{hc}{\\lambda}$.',
+  'Manipuler l\'**électronvolt** et convertir entre joules et eV.',
+  'Interpréter un **diagramme de niveaux d\'énergie** quantifiés (cas de l\'hydrogène).',
+  'Relier **absorption** et **émission** de photons aux transitions entre niveaux.',
+  'Distinguer **spectres d\'émission** et **d\'absorption**, signature d\'un élément.',
+];
+
+const PHOTON_FICHE_DATA = [
+  {
+    title: '1  Dualité & photon',
+    rows: [
+      {
+        label: 'Dualité onde-particule',
+        tex: '\\text{onde} \\;(\\lambda,\\nu) \\;/\\; \\text{particule} \\;(E=h\\nu)',
+        vars: 'Onde : diffraction, interférences · Particule : photons · aspects **complémentaires**',
+      },
+      {
+        label: 'Le photon',
+        tex: '\\text{grain d\'énergie lumineuse}',
+        vars: 'Masse **nulle**, se déplace à la célérité $c$ dans le vide',
+      },
+    ],
+  },
+  {
+    title: '2  Énergie d\'un photon',
+    rows: [
+      {
+        label: 'Planck-Einstein',
+        tex: 'E=h\\nu=\\dfrac{hc}{\\lambda}',
+        vars: '$h=6{,}63\\times 10^{-34}\\,\\text{J·s}$ · $c=3{,}00\\times 10^{8}\\,\\text{m·s}^{-1}$ · $E$ en J',
+      },
+      {
+        label: 'Conséquence',
+        tex: 'E\\propto\\dfrac{1}{\\lambda}',
+        vars: 'UV / X / γ : très énergétiques · IR / radio : peu énergétiques',
+      },
+    ],
+  },
+  {
+    title: '3  Électronvolt',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '1\\,\\text{eV}=1{,}60\\times 10^{-19}\\,\\text{J}',
+        vars: 'J → eV : diviser par $1{,}60\\times 10^{-19}$ · eV → J : multiplier',
+      },
+      {
+        label: 'Ordres de grandeur',
+        tex: '1{,}8\\;\\text{à}\\;3{,}1\\,\\text{eV (visible)}',
+        vars: 'Rouge $\\approx 1{,}8\\,\\text{eV}$, violet $\\approx 3{,}1\\,\\text{eV}$ · UV $250\\,\\text{nm}\\approx 5\\,\\text{eV}$',
+      },
+    ],
+  },
+  {
+    title: '4  Quantification & hydrogène',
+    rows: [
+      {
+        label: 'Niveaux quantifiés',
+        tex: '\\text{valeurs discrètes}',
+        vars: '$n=1$ : état fondamental · $n>1$ : états excités',
+      },
+      {
+        label: 'Hydrogène',
+        tex: 'E_n=-\\dfrac{13{,}6}{n^2}\\,\\text{eV}',
+        vars: 'Énergies **négatives** (électron lié) · ionisation depuis $n=1$ : $13{,}6\\,\\text{eV}$',
+      },
+    ],
+  },
+  {
+    title: '5  Transitions',
+    rows: [
+      {
+        label: 'Photon échangé',
+        tex: '|\\Delta E|=|E_n-E_p|=h\\nu=\\dfrac{hc}{\\lambda}',
+        vars: '**Absorption** : l\'atome monte · **Émission** : l\'atome descend',
+      },
+      {
+        label: 'Méthode (λ d\'une raie)',
+        tex: '\\lambda=\\dfrac{hc}{|\\Delta E|}',
+        vars: '$|\\Delta E|$ en eV → J ($\\times 1{,}60\\times 10^{-19}$) avant le calcul',
+      },
+    ],
+  },
+  {
+    title: '6  Spectres de raies',
+    rows: [
+      {
+        label: 'Émission',
+        tex: '\\text{raies colorées / fond noir}',
+        vars: 'Gaz excité (lampe à vapeur, étoile)',
+      },
+      {
+        label: 'Absorption',
+        tex: '\\text{raies noires / fond continu}',
+        vars: 'Lumière blanche traversant un gaz froid',
+      },
+      {
+        label: 'Signature',
+        tex: '\\text{mêmes }\\lambda',
+        vars: 'Les raies dépendent des niveaux : **signature** propre à chaque élément',
+      },
+    ],
+  },
+];
+
+const PHOTON_COURS: Section[] = [
+  {
+    id: 'dualite',
+    num: '1',
+    title: 'La dualité onde-particule',
+    blocks: [
+      {
+        type: 'para',
+        text: 'La diffraction et les interférences imposent un modèle **ondulatoire** de la lumière. Pourtant, d\'autres expériences ne s\'expliquent que si la lumière est constituée de **grains d\'énergie**.',
+      },
+      {
+        type: 'figure',
+        caption: 'Selon l\'expérience, la lumière se manifeste comme une onde (diffraction, interférences) ou comme un flux de particules — les photons. Les deux modèles sont complémentaires.',
+        src: '/modules/phys-photon/fig-dualite.png',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Le photon',
+        content: 'Le **photon** est la particule associée à la lumière : c\'est un « grain » d\'énergie électromagnétique, de **masse nulle**, se déplaçant à la célérité $c$ dans le vide.',
+      },
+      {
+        type: 'propriete',
+        text: '**Dualité onde-particule** — La lumière possède **simultanément** un caractère ondulatoire ($\\lambda$, $\\nu$) et un caractère corpusculaire (photons d\'énergie $E$). Aucune expérience ne révèle les deux aspects à la fois : ils sont **complémentaires**.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Ni « onde » ni « bille » ne décrivent complètement la lumière : ce sont deux images issues de notre monde macroscopique. La lumière est un objet quantique, qui se comporte selon l\'expérience tantôt comme l\'un, tantôt comme l\'autre.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 2 et 7 : les deux modèles, complémentarité' },
+    ],
+  },
+  {
+    id: 'energie-photon',
+    num: '2',
+    title: 'Énergie d\'un photon',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'RELATION DE PLANCK-EINSTEIN',
+        content: 'L\'énergie transportée par un photon de fréquence $\\nu$ vaut $E=h\\nu=\\dfrac{hc}{\\lambda}$, avec $E$ en joules (J), $\\nu$ en hertz (Hz), $\\lambda$ en mètres (m), $c=3{,}00\\times 10^{8}\\,\\text{m·s}^{-1}$ et $h=6{,}63\\times 10^{-34}\\,\\text{J·s}$ la **constante de Planck**.',
+        formulas: ['E=h\\nu=\\dfrac{hc}{\\lambda}'],
+      },
+      {
+        type: 'propriete',
+        text: '**Conséquence** — L\'énergie d\'un photon est **inversement proportionnelle** à sa longueur d\'onde : les rayonnements de courte longueur d\'onde (UV, X, γ) transportent des photons très énergétiques ; les grandes longueurs d\'onde (IR, ondes radio) des photons peu énergétiques.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Photon rouge',
+        lines: [
+          'Pour $\\lambda=633\\,\\text{nm}$ (laser He-Ne) : $E=\\dfrac{6{,}63\\times 10^{-34}\\times 3{,}00\\times 10^{8}}{633\\times 10^{-9}}\\approx 3{,}14\\times 10^{-19}\\,\\text{J}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Les unités** — Toujours convertir $\\lambda$ en **mètres** avant le calcul ($1\\,\\text{nm}=10^{-9}\\,\\text{m}$). Une erreur de conversion fausse le résultat de plusieurs ordres de grandeur.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 3, 4 : fréquence, énergie d\'un photon' },
+    ],
+  },
+  {
+    id: 'electronvolt',
+    num: '3',
+    title: 'L\'électronvolt',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Électronvolt',
+        content: 'À l\'échelle atomique, le joule est une unité peu commode. On utilise l\'**électronvolt** (eV) : $1\\,\\text{eV}=1{,}60\\times 10^{-19}\\,\\text{J}$. C\'est l\'énergie acquise par un électron accéléré sous une tension de $1\\,\\text{V}$.',
+      },
+      {
+        type: 'methode',
+        title: 'CONVERSIONS',
+        steps: [
+          'Des joules vers les eV : diviser par $1{,}60\\times 10^{-19}$.',
+          'Des eV vers les joules : multiplier par $1{,}60\\times 10^{-19}$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Le photon rouge précédent ($E=3{,}14\\times 10^{-19}\\,\\text{J}$) a pour énergie $E=\\dfrac{3{,}14\\times 10^{-19}}{1{,}60\\times 10^{-19}}\\approx 1{,}96\\,\\text{eV}$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Ordres de grandeur** — Photon visible : de $1{,}8\\,\\text{eV}$ (rouge, $700\\,\\text{nm}$) à $3{,}1\\,\\text{eV}$ (violet, $400\\,\\text{nm}$). Un photon UV ($250\\,\\text{nm}$) vaut environ $5\\,\\text{eV}$ — assez énergétique pour casser des liaisons chimiques, d\'où sa nocivité. Un photon infrarouge ($10\\,\\mu\\text{m}$) ne vaut que $0{,}12\\,\\text{eV}$.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 5, 6, 8, 9, 10 : conversions, UV, domaines spectraux' },
+    ],
+  },
+  {
+    id: 'quantification',
+    num: '4',
+    title: 'Quantification de l\'énergie',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'NIVEAUX D\'ÉNERGIE QUANTIFIÉS',
+        content: 'L\'énergie d\'un atome ne peut prendre que certaines valeurs **discrètes**, appelées **niveaux d\'énergie**. On les représente sur un **diagramme de niveaux**. Le niveau le plus bas est l\'**état fondamental** ; les autres sont des **états excités**.',
+      },
+      {
+        type: 'figure',
+        caption: 'Diagramme des niveaux d\'énergie de l\'atome d\'hydrogène : les niveaux se resserrent en convergeant vers $E=0$, énergie d\'ionisation. Une transition vers le bas émet un photon, vers le haut en absorbe un.',
+        src: '/modules/phys-photon/fig-niveaux.png',
+      },
+      {
+        type: 'definition',
+        badge: 'CAS DE L\'HYDROGÈNE',
+        content: 'Pour l\'atome d\'hydrogène, les niveaux sont donnés par $E_n=-\\dfrac{13{,}6}{n^2}\\,\\text{eV}$ ($n=1,2,3,\\dots$). L\'état fondamental ($n=1$) vaut $-13{,}6\\,\\text{eV}$ ; l\'énergie d\'**ionisation** depuis cet état est donc $13{,}6\\,\\text{eV}$.',
+        formulas: ['E_n=-\\dfrac{13{,}6}{n^2}\\,\\text{eV}'],
+      },
+      {
+        type: 'piege',
+        text: '**Le signe** — Les énergies sont **négatives** : l\'électron est lié à l\'atome. La référence $E=0$ correspond à l\'électron libre (atome ionisé). Plus le niveau est bas (très négatif), plus l\'électron est lié.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 16, 17 : ionisation depuis un état excité, photon insuffisant' },
+    ],
+  },
+  {
+    id: 'absorption-emission',
+    num: '5',
+    title: 'Absorption & émission',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'TRANSITIONS ET PHOTONS',
+        content: 'Un atome ne peut passer d\'un niveau $E_p$ à un niveau $E_n$ qu\'en échangeant un photon dont l\'énergie vaut **exactement** l\'écart entre les niveaux :',
+        formulas: ['|\\Delta E|=|E_n-E_p|=h\\nu=\\dfrac{hc}{\\lambda}'],
+      },
+      {
+        type: 'propriete',
+        text: '**Les deux sens** — **Absorption** : l\'atome monte vers un niveau supérieur en absorbant un photon d\'énergie $|\\Delta E|$. **Émission** : l\'atome redescend vers un niveau inférieur en émettant un photon d\'énergie $|\\Delta E|$.',
+      },
+      {
+        type: 'methode',
+        title: 'LONGUEUR D\'ONDE D\'UNE TRANSITION',
+        steps: [
+          'Calculer $|\\Delta E|=|E_n-E_p|$ en eV.',
+          'Convertir en joules ($\\times 1{,}60\\times 10^{-19}$).',
+          'Appliquer $\\lambda=\\dfrac{hc}{|\\Delta E|}$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — La raie rouge de l\'hydrogène',
+        lines: [
+          'Transition $n=3\\to n=2$ : $|\\Delta E|=|{-3{,}40}-(-1{,}51)|=1{,}89\\,\\text{eV}=3{,}02\\times 10^{-19}\\,\\text{J}$,',
+          'd\'où $\\lambda=\\dfrac{6{,}63\\times 10^{-34}\\times 3{,}00\\times 10^{8}}{3{,}02\\times 10^{-19}}\\approx 6{,}6\\times 10^{-7}\\,\\text{m}=6{,}6\\times 10^{2}\\,\\text{nm}$. C\'est la raie $H_\\alpha$, dans le rouge ($656\\,\\text{nm}$ en valeur tabulée).',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 11, 12, 14 et sujet bac 19 : émission, absorption, raie d\'absorption' },
+    ],
+  },
+  {
+    id: 'spectres',
+    num: '6',
+    title: 'Spectres de raies',
+    blocks: [
+      {
+        type: 'figure',
+        caption: 'Un gaz chaud émet des raies brillantes ; le même gaz, éclairé par une lumière blanche, absorbe exactement les mêmes longueurs d\'onde (raies noires).',
+        src: '/modules/phys-photon/fig-spectres.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Deux types de spectres de raies** — **Spectre d\'émission** : raies colorées sur fond noir, émises par un gaz excité (lampe à vapeur, étoile). **Spectre d\'absorption** : raies noires sur un fond continu, obtenues quand une lumière blanche traverse un gaz froid.',
+      },
+      {
+        type: 'propriete',
+        text: '**Signature d\'un élément** — Les longueurs d\'onde des raies ne dépendent que des niveaux d\'énergie de l\'atome : elles constituent une **signature** propre à chaque élément chimique. Émission et absorption font apparaître les **mêmes** longueurs d\'onde.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Application — l\'astrophysique** — C\'est ainsi qu\'on détermine la composition des étoiles sans jamais s\'y rendre : on identifie leurs raies d\'absorption. Combiné à l\'effet Doppler (décalage des raies), cela donne aussi leur vitesse.',
+      },
+      {
+        type: 'piege',
+        text: '**Pourquoi des raies et non un spectre continu ?** — Parce que les niveaux d\'énergie sont **quantifiés** : seuls certains écarts $|\\Delta E|$ sont possibles, donc seules certaines fréquences $\\nu=|\\Delta E|/h$ peuvent être émises ou absorbées. La quantification de la matière se lit directement dans la lumière.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 13, 15 et sujets bac 18, 20 : nombre de photons, spectres, puissance laser' },
+    ],
+  },
+];
+
 // ── Contenu L'effet Doppler ───────────────────────────────────────────────────
 const DOPPLER_OBJECTIFS = [
   'Décrire le **phénomène Doppler** : décalage de fréquence dû au mouvement relatif source-récepteur.',
@@ -6044,8 +6340,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isOndesCours = module.id === 'phys-ondes';
   const isDiffractionCours = module.id === 'phys-diffraction';
   const isDopplerCours = module.id === 'phys-doppler';
-  const sections = isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isPhotonCours = module.id === 'phys-photon';
+  const sections = isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -6224,8 +6521,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isOndesFiche = module.id === 'phys-ondes';
   const isDiffractionFiche = module.id === 'phys-diffraction';
   const isDopplerFiche = module.id === 'phys-doppler';
-  const ficheData = isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isPhotonFiche = module.id === 'phys-photon';
+  const ficheData = isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
