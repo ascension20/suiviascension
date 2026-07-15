@@ -24,6 +24,7 @@ import { DIFFRACTION_QCM, DIFFRACTION_EXERCISES, DIFFRACTION_CORRECTIONS } from 
 import { DOPPLER_QCM, DOPPLER_EXERCISES, DOPPLER_CORRECTIONS } from '@/lib/doppler-content';
 import { PHOTON_QCM, PHOTON_EXERCISES, PHOTON_CORRECTIONS } from '@/lib/photon-content';
 import { RC_QCM, RC_EXERCISES, RC_CORRECTIONS } from '@/lib/rc-content';
+import { LUNETTE_QCM, LUNETTE_EXERCISES, LUNETTE_CORRECTIONS } from '@/lib/lunette-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -72,14 +73,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isDoppler = module.id === 'phys-doppler';
     const isPhoton = module.id === 'phys-photon';
     const isRC = module.id === 'phys-rc';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm') {
-      const questions = isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isLunette = module.id === 'phys-lunette';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm') {
+      const questions = isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4575,6 +4577,305 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu La lunette astronomique ───────────────────────────────────────────
+const LUNETTE_OBJECTIFS = [
+  'Caractériser une **lentille mince convergente** (centre optique, foyers, vergence).',
+  'Construire une image à l\'aide des **trois rayons particuliers**.',
+  'Localiser l\'**image d\'un objet à l\'infini** dans le plan focal image et exploiter le **diamètre apparent**.',
+  'Modéliser une **lunette astronomique** (objectif + oculaire) et la **condition afocale**.',
+  'Tracer la **marche des rayons** et repérer l\'**image intermédiaire**.',
+  'Calculer le **grossissement** $G=\\dfrac{\\theta\'}{\\theta}=\\dfrac{f_1\'}{f_2\'}$.',
+];
+
+const LUNETTE_FICHE_DATA = [
+  {
+    title: '1  Lentille convergente',
+    rows: [
+      {
+        label: 'Caractéristiques',
+        tex: 'O,\\; F,\\; F\'\\;;\\; f\'=\\overline{OF\'}>0',
+        vars: 'Centre optique $O$, foyers $F$/$F\'$ · distance focale $f\'$ en mètres',
+      },
+      {
+        label: 'Vergence',
+        tex: 'V=\\dfrac{1}{f\'}',
+        vars: 'En dioptries ($\\delta=\\text{m}^{-1}$) · $f\'$ court ⇒ $V$ grande',
+      },
+      {
+        label: 'Trois rayons',
+        tex: 'O\\to\\text{non dévié}\\;;\\;\\parallel\\to F\'\\;;\\;F\\to\\parallel',
+        vars: 'Rayon par $O$ non dévié · rayon parallèle émerge par $F\'$ · rayon par $F$ émerge parallèle',
+      },
+    ],
+  },
+  {
+    title: '2  Objet à l\'infini',
+    rows: [
+      {
+        label: 'Image',
+        tex: '\\text{dans le plan focal image}',
+        vars: 'Les rayons issus d\'un point arrivent parallèles entre eux',
+      },
+      {
+        label: 'Diamètre apparent',
+        tex: '\\theta\\approx\\dfrac{D}{d}\\;(\\text{rad})',
+        vars: 'Angle sous lequel on voit l\'objet · $1\\,\\text{rad}=57{,}3°$',
+      },
+    ],
+  },
+  {
+    title: '3  Modèle de la lunette',
+    rows: [
+      {
+        label: 'Deux lentilles',
+        tex: 'L_1\\;(\\text{objectif}) \\;+\\; L_2\\;(\\text{oculaire})',
+        vars: 'Objectif : $f_1\'$ grande · oculaire : $f_2\'$ courte',
+      },
+      {
+        label: 'Condition afocale',
+        tex: 'F_1\'=F_2 \\;\\Rightarrow\\; O_1O_2=f_1\'+f_2\'',
+        vars: 'Objet à l\'infini ⇒ image à l\'infini · œil sans accommodation',
+      },
+    ],
+  },
+  {
+    title: '4  Image intermédiaire',
+    rows: [
+      {
+        label: 'Nature & position',
+        tex: '\\text{réelle, dans le plan focal commun}',
+        vars: 'Objet réel pour l\'oculaire, situé en son foyer objet',
+      },
+      {
+        label: 'Taille',
+        tex: 'A_1B_1\\approx f_1\'\\theta',
+        vars: '$\\theta$ en radians · $f_1\'$ en mètres',
+      },
+    ],
+  },
+  {
+    title: '5  Grossissement',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'G=\\dfrac{\\theta\'}{\\theta}=\\dfrac{f_1\'}{f_2\'}',
+        vars: 'Rapport des angles = rapport des focales · **sans unité**',
+      },
+      {
+        label: 'Angles',
+        tex: '\\theta\\approx\\dfrac{A_1B_1}{f_1\'}\\;;\\;\\theta\'\\approx\\dfrac{A_1B_1}{f_2\'}',
+        vars: '$\\theta\'=G\\,\\theta$ · pour $G$ grand : $f_1\'$ grande, $f_2\'$ courte',
+      },
+    ],
+  },
+  {
+    title: '6  Réflexes',
+    rows: [
+      {
+        label: 'Pièges',
+        tex: '\\text{angles en rad, focales en m}',
+        vars: 'Image finale à l\'infini, **renversée** · $G$ (angles) ≠ grandissement (tailles)',
+      },
+    ],
+  },
+];
+
+const LUNETTE_COURS: Section[] = [
+  {
+    id: 'lentille',
+    num: '1',
+    title: 'La lentille mince convergente',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Lentille convergente',
+        content: 'Une **lentille mince convergente** fait converger un faisceau de rayons parallèles en un point. On la caractérise par : son **centre optique** $O$ (tout rayon qui le traverse n\'est pas dévié) ; son **foyer image** $F\'$ et son **foyer objet** $F$, symétriques par rapport à $O$ ; sa **distance focale** $f\'=\\overline{OF\'}>0$ (en mètres).',
+      },
+      {
+        type: 'definition',
+        badge: 'VERGENCE',
+        content: 'La **vergence** d\'une lentille est l\'inverse de sa distance focale (en dioptries, $\\delta=\\text{m}^{-1}$). Une lentille très convergente a une **courte** distance focale et une **grande** vergence.',
+        formulas: ['V=\\dfrac{1}{f\'}'],
+      },
+      {
+        type: 'methode',
+        title: 'LES TROIS RAYONS UTILES',
+        steps: [
+          'Un rayon passant par le **centre optique** $O$ n\'est pas dévié.',
+          'Un rayon **parallèle à l\'axe optique** émerge en passant par $F\'$.',
+          'Un rayon passant par $F$ émerge **parallèle à l\'axe optique**.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Une lentille de distance focale $f\'=20\\,\\text{cm}=0{,}20\\,\\text{m}$ a pour vergence $V=\\dfrac{1}{0{,}20}=5{,}0\\,\\delta$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 1, 2, 7, 8 : vergence, focale, comparaison, rayons utiles' },
+    ],
+  },
+  {
+    id: 'objet-infini',
+    num: '2',
+    title: 'Image d\'un objet à l\'infini',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'OBJET À L\'INFINI',
+        content: 'Un objet situé à l\'**infini** (un astre) envoie sur la lentille un faisceau de rayons **parallèles entre eux**. Son image se forme alors dans le **plan focal image** de la lentille (le plan perpendiculaire à l\'axe passant par $F\'$).',
+      },
+      {
+        type: 'figure',
+        caption: 'Les rayons issus d\'un point d\'un objet à l\'infini arrivent parallèles entre eux et convergent en un point $B\'$ du plan focal image. Le rayon passant par $O$ n\'étant pas dévié, il donne directement la position de $B\'$.',
+        src: '/modules/phys-lunette/fig-infini.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Position de l\'image** — Si le faisceau arrive incliné d\'un angle $\\theta$ par rapport à l\'axe optique, l\'image se forme **hors de l\'axe**, à la distance $\\overline{F\'B\'}=f\'\\tan\\theta\\approx f\'\\theta$ ($\\theta$ petit, en radians). Le rayon passant par le centre optique $O$, non dévié, permet de la construire immédiatement.',
+      },
+      {
+        type: 'propriete',
+        text: '**Diamètre apparent** — Le **diamètre apparent** $\\theta$ d\'un objet est l\'angle sous lequel on le voit. C\'est lui, et non la taille réelle, qui détermine la taille de l\'image observée.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — La Lune',
+        lines: [
+          'La Lune a un diamètre $D=3474\\,\\text{km}$ et se trouve à $d=384\\,400\\,\\text{km}$. Son diamètre apparent vaut $\\theta\\approx\\dfrac{D}{d}=\\dfrac{3474}{384\\,400}\\approx 9{,}0\\times 10^{-3}\\,\\text{rad}\\approx 0{,}52°$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 9, 10, 11 : diamètre apparent, objet terrestre, image intermédiaire, position' },
+    ],
+  },
+  {
+    id: 'modele',
+    num: '3',
+    title: 'Le modèle de la lunette',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Lunette astronomique',
+        content: 'Une **lunette astronomique** est modélisée par deux lentilles convergentes de même axe optique : l\'**objectif** $L_1$ (grande distance focale $f_1\'$), tourné vers l\'astre ; l\'**oculaire** $L_2$ (courte distance focale $f_2\'$), côté œil.',
+      },
+      {
+        type: 'definition',
+        badge: 'CONDITION AFOCALE',
+        content: 'Une lunette est dite **afocale** lorsque le foyer image de l\'objectif coïncide avec le foyer objet de l\'oculaire : $F_1\'=F_2$. La distance entre les deux lentilles vaut alors $O_1O_2=f_1\'+f_2\'$.',
+        formulas: ['O_1O_2=f_1\'+f_2\''],
+      },
+      {
+        type: 'propriete',
+        text: '**Pourquoi « afocale » ?** — Dans cette configuration, un objet à l\'infini donne une image **à l\'infini**. L\'œil, qui observe naturellement à l\'infini, n\'a alors **aucun effort d\'accommodation** à fournir : l\'observation est confortable.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'L\'objectif fabrique une petite image réelle de l\'astre à l\'intérieur de l\'instrument ; l\'oculaire sert alors de loupe pour observer cette image. Toute l\'astuce consiste à placer cette image intermédiaire exactement au foyer objet de l\'oculaire.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 6, 14, 17 : distance O₁O₂, intérêt de l\'afocale, focale déduite' },
+    ],
+  },
+  {
+    id: 'marche',
+    num: '4',
+    title: 'Marche des rayons',
+    blocks: [
+      {
+        type: 'figure',
+        caption: 'Lunette afocale : les rayons parallèles inclinés de $\\theta$ convergent en $B_1$ dans le plan focal commun (image intermédiaire), puis ressortent de l\'oculaire parallèles entre eux, inclinés de $\\theta\'>\\theta$.',
+        src: '/modules/phys-lunette/fig-marche.png',
+      },
+      {
+        type: 'methode',
+        title: 'CONSTRUIRE LA MARCHE DES RAYONS',
+        steps: [
+          'Tracer le rayon incident passant par $O_1$ : non dévié, il coupe le plan focal commun en $B_1$ — c\'est l\'image intermédiaire.',
+          'Faire converger en $B_1$ tous les autres rayons parallèles incidents.',
+          'Depuis $B_1$, situé dans le plan focal objet de $L_2$, tous les rayons ressortent parallèles entre eux.',
+          'Leur direction est donnée par le rayon $B_1O_2$, non dévié : il définit l\'angle $\\theta\'$.',
+        ],
+      },
+      {
+        type: 'definition',
+        badge: 'L\'IMAGE INTERMÉDIAIRE',
+        content: 'Elle est **réelle** et se forme dans le plan focal image de l\'objectif. Sa taille vaut $A_1B_1=f_1\'\\tan\\theta\\approx f_1\'\\theta$. C\'est un objet réel pour l\'oculaire, situé exactement en son foyer objet.',
+        formulas: ['A_1B_1\\approx f_1\'\\theta'],
+      },
+      {
+        type: 'piege',
+        text: 'L\'image finale est **à l\'infini** : on ne peut donc pas la « recueillir sur un écran ». Elle est de plus **renversée** par rapport à l\'objet — sans importance en astronomie, mais gênant pour l\'observation terrestre (d\'où les prismes redresseurs des jumelles).',
+      },
+      { type: 'lien_ex', text: '→ Exercices 16, 18 : nature de l\'image, grossissement par deux voies' },
+    ],
+  },
+  {
+    id: 'grossissement',
+    num: '5',
+    title: 'Le grossissement',
+    blocks: [
+      {
+        type: 'figure',
+        caption: 'À l\'œil nu, l\'astre est vu sous l\'angle $\\theta$ ; à travers la lunette, sous l\'angle $\\theta\'$. Le grossissement compare ces deux angles.',
+        src: '/modules/phys-lunette/fig-grossissement.png',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Grossissement',
+        content: 'Le **grossissement** d\'une lunette est le rapport de l\'angle sous lequel on voit l\'objet à travers l\'instrument à l\'angle sous lequel on le voit à l\'œil nu : $G=\\dfrac{\\theta\'}{\\theta}$. C\'est un nombre **sans unité**.',
+      },
+      {
+        type: 'definition',
+        badge: 'EXPRESSION POUR UNE LUNETTE AFOCALE',
+        content: 'Dans les triangles formés par l\'image intermédiaire : $\\theta\\approx\\dfrac{A_1B_1}{f_1\'}$ et $\\theta\'\\approx\\dfrac{A_1B_1}{f_2\'}$, d\'où, en faisant le rapport :',
+        formulas: ['G=\\dfrac{f_1\'}{f_2\'}'],
+      },
+      {
+        type: 'propriete',
+        text: '**Conséquence pratique** — Pour un grand grossissement, il faut un objectif de **grande** distance focale et un oculaire de **courte** distance focale. Changer d\'oculaire suffit à changer le grossissement d\'une même lunette.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE',
+        lines: [
+          'Avec $f_1\'=900\\,\\text{mm}$ et $f_2\'=20\\,\\text{mm}$ : $G=\\dfrac{900}{20}=45$. La Lune ($\\theta\\approx 0{,}52°$) est alors vue sous $\\theta\'=45\\times 0{,}52\\approx 23°$.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 4, 5, 12, 13, 15 et sujets bac 19, 20 : grossissement, oculaire/objectif à choisir, angle image' },
+    ],
+  },
+  {
+    id: 'synthese',
+    num: '6',
+    title: 'Synthèse & méthode',
+    blocks: [
+      {
+        type: 'methode',
+        title: 'RÉSOUDRE UN EXERCICE DE LUNETTE',
+        steps: [
+          'Vérifier (ou imposer) la condition afocale : $F_1\'=F_2$, soit $O_1O_2=f_1\'+f_2\'$.',
+          'Calculer le diamètre apparent $\\theta\\approx\\dfrac{D}{d}$ (en radians) si l\'objet est donné par sa taille et sa distance.',
+          'Calculer la taille de l\'image intermédiaire : $A_1B_1\\approx f_1\'\\theta$.',
+          'Calculer $\\theta\'\\approx\\dfrac{A_1B_1}{f_2\'}$, ou directement $G=\\dfrac{f_1\'}{f_2\'}$ puis $\\theta\'=G\\,\\theta$.',
+        ],
+      },
+      {
+        type: 'piege',
+        text: '**Pièges classiques** — Les angles doivent être en **radians** dans $\\theta\\approx D/d$ et $A_1B_1\\approx f_1\'\\theta$. Convertir les distances focales en **mètres** (attention aux mm !). Ne pas confondre **grossissement** $G$ (rapport d\'angles, sans unité) et **grandissement** (rapport de tailles).',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Deux voies pour $G$** — Le grossissement peut se calculer soit par le rapport des angles $G=\\dfrac{\\theta\'}{\\theta}$, soit par le rapport des focales $G=\\dfrac{f_1\'}{f_2\'}$. Les deux coïncident toujours pour une lunette afocale : c\'est une excellente vérification en fin d\'exercice.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Au-delà du grossissement** — Un fort grossissement ne fait pas tout : le **diamètre de l\'objectif** détermine la quantité de lumière collectée, donc la luminosité et la finesse des détails. C\'est pourquoi les astronomes parlent d\'abord du diamètre d\'un instrument, pas de son grossissement.',
+      },
+      { type: 'lien_ex', text: '→ Sujets bac 19, 20, 21 : observation de la Lune, choix d\'un oculaire, Jupiter' },
+    ],
+  },
+];
+
 // ── Contenu Le circuit RC ─────────────────────────────────────────────────────
 const RC_OBJECTIFS = [
   'Décrire un **condensateur** et exploiter la relation charge-tension $q=C\\,u_C$.',
@@ -6649,8 +6950,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isDopplerCours = module.id === 'phys-doppler';
   const isPhotonCours = module.id === 'phys-photon';
   const isRCCours = module.id === 'phys-rc';
-  const sections = isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isLunetteCours = module.id === 'phys-lunette';
+  const sections = isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -6831,8 +7133,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isDopplerFiche = module.id === 'phys-doppler';
   const isPhotonFiche = module.id === 'phys-photon';
   const isRCFiche = module.id === 'phys-rc';
-  const ficheData = isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isLunetteFiche = module.id === 'phys-lunette';
+  const ficheData = isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
