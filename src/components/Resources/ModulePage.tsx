@@ -28,6 +28,7 @@ import { LUNETTE_QCM, LUNETTE_EXERCISES, LUNETTE_CORRECTIONS } from '@/lib/lunet
 import { ACIDE_QCM, ACIDE_EXERCISES, ACIDE_CORRECTIONS } from '@/lib/acide-content';
 import { TITRAGES_QCM, TITRAGES_EXERCISES, TITRAGES_CORRECTIONS } from '@/lib/titrages-content';
 import { OXYDO_QCM, OXYDO_EXERCISES, OXYDO_CORRECTIONS } from '@/lib/oxydo-content';
+import { CINETIQUE_QCM, CINETIQUE_EXERCISES, CINETIQUE_CORRECTIONS } from '@/lib/cinetique-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -80,14 +81,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isAcide = module.id === 'chim-acide';
     const isTitrages = module.id === 'chim-titrages';
     const isOxydo = module.id === 'chim-oxydo';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm') {
-      const questions = isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isCinetique = module.id === 'chim-cinetique';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm') {
+      const questions = isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4583,6 +4585,354 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu La cinétique chimique (Chimie) ────────────────────────────────────
+const CINETIQUE_OBJECTIFS = [
+  'Définir la **vitesse volumique** de disparition et d\'apparition, et la lire comme la **pente de la tangente**.',
+  'Définir et exploiter le **temps de demi-réaction** $t_{1/2}$.',
+  'Reconnaître une **loi d\'ordre 1** ($v=k\\,[\\text{A}]$) et sa solution en **décroissance exponentielle**.',
+  'Utiliser la relation clé $t_{1/2}=\\dfrac{\\ln 2}{k}$, indépendante de $[\\text{A}]_0$.',
+  'Identifier les **facteurs cinétiques** (température, concentration) et le rôle d\'un **catalyseur**.',
+  'Distinguer **cinétique** (« à quelle vitesse ? ») et **thermodynamique** (« jusqu\'où ? »).',
+];
+
+const CINETIQUE_FICHE_DATA = [
+  {
+    title: '1  Vitesse',
+    rows: [
+      {
+        label: 'Disparition',
+        tex: 'v=-\\dfrac{\\mathrm{d}[\\text{A}]}{\\mathrm{d}t}',
+        vars: 'En $\\text{mol·L}^{-1}\\text{·s}^{-1}$ · le signe $-$ la rend positive',
+      },
+      {
+        label: 'Apparition',
+        tex: 'v=+\\dfrac{\\mathrm{d}[\\text{P}]}{\\mathrm{d}t}',
+        vars: 'Pour un produit : dérivée déjà positive, pas de signe $-$',
+      },
+      {
+        label: 'Lecture graphique',
+        tex: 'v=\\text{pente de la tangente (au signe près)}',
+        vars: '$[\\text{A}]$ décroît : la tangente s\'aplatit, donc $v$ diminue',
+      },
+    ],
+  },
+  {
+    title: '2  Temps de demi-réaction',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '[\\text{A}](t_{1/2})=\\dfrac{[\\text{A}]_0}{2}',
+        vars: 'Durée pour atteindre la moitié de l\'avancement final',
+      },
+      {
+        label: 'Lecture',
+        tex: '\\text{projeter } \\dfrac{[\\text{A}]_0}{2} \\text{ sur la courbe}',
+        vars: 'Donne l\'ordre de grandeur de la durée de la transformation',
+      },
+    ],
+  },
+  {
+    title: '3  Loi d\'ordre 1',
+    rows: [
+      {
+        label: 'Loi de vitesse',
+        tex: 'v=k\\,[\\text{A}]',
+        vars: '$k$ = constante de vitesse, en $\\text{s}^{-1}$ (ordre 1 uniquement)',
+      },
+      {
+        label: 'Équation diff.',
+        tex: '\\dfrac{\\mathrm{d}[\\text{A}]}{\\mathrm{d}t}+k\\,[\\text{A}]=0',
+        vars: 'Même forme que le circuit RC en décharge',
+      },
+      {
+        label: 'Solution',
+        tex: '[\\text{A}]=[\\text{A}]_0\\,\\mathrm{e}^{-kt}',
+        vars: 'Décroissance exponentielle, condition initiale $[\\text{A}]_0$',
+      },
+    ],
+  },
+  {
+    title: '4  Relation clé',
+    rows: [
+      {
+        label: 't½ ↔ k',
+        tex: 't_{1/2}=\\dfrac{\\ln 2}{k}',
+        vars: 'Ordre 1 : $t_{1/2}$ **indépendant** de $[\\text{A}]_0$',
+      },
+      {
+        label: 'Divisions successives',
+        tex: '[\\text{A}]=\\dfrac{[\\text{A}]_0}{2^n} \\text{ après } n\\,t_{1/2}',
+        vars: 'À chaque $t_{1/2}$, la concentration est divisée par 2',
+      },
+      {
+        label: 'Calcul d\'une durée',
+        tex: 't=\\dfrac{1}{k}\\ln\\dfrac{[\\text{A}]_0}{[\\text{A}]}',
+        vars: 'Isoler $t$ par le logarithme',
+      },
+    ],
+  },
+  {
+    title: '5  Facteurs cinétiques',
+    rows: [
+      {
+        label: 'Température',
+        tex: 'T\\nearrow \\;\\Rightarrow\\; v\\nearrow',
+        vars: 'Chocs plus fréquents **et** plus énergétiques',
+      },
+      {
+        label: 'Concentration',
+        tex: '[\\ ]\\nearrow \\;\\Rightarrow\\; v\\nearrow',
+        vars: 'Chocs plus fréquents entre réactifs',
+      },
+      {
+        label: 'Trempe',
+        tex: 'T\\searrow \\;\\Rightarrow\\; \\text{réaction bloquée}',
+        vars: 'Refroidir pour figer la composition avant un titrage',
+      },
+    ],
+  },
+  {
+    title: '6  Catalyseur',
+    rows: [
+      {
+        label: 'Rôle',
+        tex: '\\text{accélère, non consommé, absent du bilan}',
+        vars: 'Consommé puis régénéré au cours du mécanisme',
+      },
+      {
+        label: 'Types',
+        tex: '\\text{homogène / hétérogène / enzymatique}',
+        vars: 'Même phase / phases différentes / enzyme',
+      },
+      {
+        label: 'Piège',
+        tex: '\\text{cinétique} \\neq \\text{thermodynamique}',
+        vars: 'Ne change ni l\'état final ni le sens d\'évolution',
+      },
+    ],
+  },
+];
+
+const CINETIQUE_COURS: Section[] = [
+  {
+    id: 'vitesse',
+    num: '1',
+    title: 'Suivi temporel & vitesse',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'TRANSFORMATION LENTE OU RAPIDE',
+        content: 'Une transformation est dite **rapide** si elle paraît instantanée à l\'échelle de l\'observation, **lente** si son évolution peut être suivie dans le temps. La **cinétique chimique** étudie cette évolution temporelle.',
+      },
+      {
+        type: 'definition',
+        badge: 'VITESSE VOLUMIQUE DE DISPARITION',
+        content: 'Pour un réactif $\\text{A}$, la vitesse volumique de disparition est définie par la relation ci-dessous. Le signe $-$ rend la vitesse positive : la concentration du réactif décroît.',
+        formulas: ['v=-\\dfrac{\\mathrm{d}[\\text{A}]}{\\mathrm{d}t}'],
+      },
+      {
+        type: 'figure',
+        caption: 'La vitesse à une date $t$ se lit comme la pente de la tangente à la courbe $[\\text{A}]=f(t)$, au signe près. Elle est maximale au début, puis diminue à mesure que les réactifs s\'épuisent.',
+        src: '/modules/chim-cinetique/fig-vitesse.png',
+      },
+      {
+        type: 'definition',
+        badge: 'VITESSE D\'APPARITION',
+        content: 'Pour un produit $\\text{P}$, la vitesse volumique d\'apparition s\'écrit avec un signe $+$, cette fois sans le signe $-$, puisque la concentration du produit augmente.',
+        formulas: ['v=+\\dfrac{\\mathrm{d}[\\text{P}]}{\\mathrm{d}t}'],
+      },
+      {
+        type: 'methode',
+        title: 'Déterminer une vitesse graphiquement',
+        steps: [
+          'Tracer la tangente à la courbe $[\\text{A}]=f(t)$ à la date voulue.',
+          'Mesurer son coefficient directeur à l\'aide de deux points bien lisibles.',
+          'Prendre l\'opposé pour un réactif ; conserver le signe pour un produit.',
+        ],
+      },
+      {
+        type: 'piege',
+        content: 'Une vitesse est **toujours positive**. Si vous trouvez une valeur négative pour un réactif, c\'est que le signe $-$ de la définition a été oublié.',
+      },
+    ],
+  },
+  {
+    id: 'demi-reaction',
+    num: '2',
+    title: 'Le temps de demi-réaction',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Le temps de demi-réaction $t_{1/2}$ est la durée au bout de laquelle l\'avancement atteint la **moitié** de sa valeur finale. Lorsque le réactif $\\text{A}$ est limitant, cela revient à $[\\text{A}](t_{1/2})=\\tfrac{[\\text{A}]_0}{2}$.',
+      },
+      {
+        type: 'methode',
+        title: 'Lire $t_{1/2}$ sur un graphe',
+        steps: [
+          'Lire la concentration initiale $[\\text{A}]_0$ (ordonnée à l\'origine).',
+          'Calculer $\\tfrac{[\\text{A}]_0}{2}$ et repérer cette valeur sur l\'axe des ordonnées.',
+          'Projeter horizontalement jusqu\'à la courbe, puis verticalement sur l\'axe des temps : on lit $t_{1/2}$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '$t_{1/2}$ donne l\'ordre de grandeur de la durée d\'une transformation : au bout de quelques $t_{1/2}$, la réaction est pratiquement achevée. C\'est le paramètre le plus commode pour **comparer** deux réactions.',
+      },
+      {
+        type: 'exemple',
+        title: 'Décomposition de l\'eau oxygénée',
+        lines: [
+          'La décomposition de l\'eau oxygénée a un temps de demi-réaction $t_{1/2}$, avec $[\\text{H}_2\\text{O}_2]_0$ donné.',
+          'À $t=t_{1/2}$ : $[\\text{H}_2\\text{O}_2]=\\tfrac{[\\text{H}_2\\text{O}_2]_0}{2}$.',
+          'À $t=2\\,t_{1/2}$ : $[\\text{H}_2\\text{O}_2]=\\tfrac{[\\text{H}_2\\text{O}_2]_0}{4}$.',
+          'À $t=3\\,t_{1/2}$ : $[\\text{H}_2\\text{O}_2]=\\tfrac{[\\text{H}_2\\text{O}_2]_0}{8}$.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'ordre-1',
+    num: '3',
+    title: 'La loi de vitesse d\'ordre 1',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Une réaction suit une loi de vitesse d\'**ordre 1** par rapport à $\\text{A}$ si sa vitesse est proportionnelle à la concentration de $\\text{A}$. $k$ est la **constante de vitesse**, en $\\text{s}^{-1}$ (ordre 1 uniquement).',
+        formulas: ['v=k\\,[\\text{A}]'],
+      },
+      {
+        type: 'formules',
+        label: 'Équation différentielle & solution',
+        rows: [
+          { desc: 'En combinant $v=-\\tfrac{\\mathrm{d}[\\text{A}]}{\\mathrm{d}t}$ et $v=k[\\text{A}]$', tex: '\\dfrac{\\mathrm{d}[\\text{A}]}{\\mathrm{d}t}+k\\,[\\text{A}]=0' },
+          { desc: 'Solution (condition initiale $[\\text{A}]_0$)', tex: '[\\text{A}]=[\\text{A}]_0\\,\\mathrm{e}^{-kt}' },
+        ],
+      },
+      {
+        type: 'reflex',
+        content: '**Une équation déjà rencontrée.** C\'est exactement la même équation différentielle que celle du circuit RC en décharge ($\\tau=RC$) ou de la décroissance radioactive. Même forme mathématique, mêmes réflexes : le rôle de $\\tau$ est ici joué par $\\tfrac{1}{k}$.',
+      },
+      {
+        type: 'methode',
+        title: 'Vérifier une solution',
+        steps: [
+          'Dériver $[\\text{A}]=[\\text{A}]_0\\,\\mathrm{e}^{-kt}$ : $\\tfrac{\\mathrm{d}[\\text{A}]}{\\mathrm{d}t}=-k\\,[\\text{A}]_0\\,\\mathrm{e}^{-kt}=-k\\,[\\text{A}]$.',
+          'On a bien $\\tfrac{\\mathrm{d}[\\text{A}]}{\\mathrm{d}t}+k\\,[\\text{A}]=0$.',
+          'À $t=0$, $[\\text{A}]=[\\text{A}]_0\\,\\mathrm{e}^0=[\\text{A}]_0$. ✓',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'relation',
+    num: '4',
+    title: 'Relation entre $t_{1/2}$ et $k$',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'LA RELATION À CONNAÎTRE',
+        content: 'En écrivant $[\\text{A}](t_{1/2})=\\tfrac{[\\text{A}]_0}{2}$ dans la solution $[\\text{A}]=[\\text{A}]_0\\,\\mathrm{e}^{-kt}$, on obtient :',
+        formulas: ['t_{1/2}=\\dfrac{\\ln 2}{k}'],
+      },
+      {
+        type: 'figure',
+        caption: 'Décroissance exponentielle : à chaque intervalle de durée $t_{1/2}$, la concentration est divisée par 2, quelle que soit la date de départ. C\'est la signature d\'une loi d\'ordre 1.',
+        src: '/modules/chim-cinetique/fig-demivie.png',
+      },
+      {
+        type: 'propriete',
+        content: '**Propriété caractéristique.** Pour une loi d\'ordre 1, $t_{1/2}$ est **indépendant de la concentration initiale** : il ne dépend que de $k$. Chaque durée $t_{1/2}$ écoulée divise la concentration par 2, quel que soit le point de départ.',
+      },
+      {
+        type: 'exemple',
+        title: 'Divisions successives',
+        lines: [
+          'Si $[\\text{A}]_0=0{,}40\\,\\text{mol·L}^{-1}$ et $t_{1/2}=5{,}0\\,\\text{min}$ :',
+          'après $t_{1/2}$, il reste $0{,}20\\,\\text{mol·L}^{-1}$ ; après $2\\,t_{1/2}$, il reste $0{,}10\\,\\text{mol·L}^{-1}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        content: 'Après $n\\,t_{1/2}$, il reste $\\tfrac{[\\text{A}]_0}{2^n}$ — et **non** $0$ ! La réaction n\'est jamais « terminée » mathématiquement : l\'exponentielle tend vers zéro sans jamais l\'atteindre.',
+      },
+    ],
+  },
+  {
+    id: 'facteurs',
+    num: '5',
+    title: 'Les facteurs cinétiques',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Un **facteur cinétique** est une grandeur dont la variation modifie la vitesse d\'une transformation. Les deux principaux sont la **température** et les **concentrations** des réactifs.',
+      },
+      {
+        type: 'figure',
+        caption: 'Une température plus élevée ou la présence d\'un catalyseur accélèrent la transformation : la courbe décroît plus vite. Mais l\'état final atteint est le même — seule la durée change.',
+        src: '/modules/chim-cinetique/fig-facteurs.png',
+      },
+      {
+        type: 'propriete',
+        content: '**Les deux facteurs principaux.** **Température** : une élévation de $T$ augmente la vitesse — les entités sont plus agitées, les chocs sont plus fréquents et surtout plus énergétiques, donc plus souvent efficaces. **Concentration** : une concentration plus élevée augmente la vitesse, car les chocs entre réactifs sont plus fréquents.',
+      },
+      {
+        type: 'exemple',
+        title: 'Applications de la température',
+        lines: [
+          'Chauffer pour accélérer une synthèse (chauffage à reflux).',
+          'Refroidir pour ralentir, voire bloquer : c\'est la **trempe**, utilisée pour figer un système avant de le titrer, ou la réfrigération des aliments.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '**L\'essentiel en une phrase.** Les facteurs cinétiques agissent sur la **durée du trajet**, jamais sur la destination : l\'état final d\'un système est fixé par la thermodynamique, pas par la cinétique.',
+      },
+    ],
+  },
+  {
+    id: 'catalyse',
+    num: '6',
+    title: 'La catalyse',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'CATALYSEUR',
+        content: 'Un **catalyseur** est une espèce qui augmente la vitesse d\'une réaction sans figurer dans le bilan : il est consommé puis **régénéré** au cours du mécanisme. Il n\'apparaît donc pas dans l\'équation, et sa quantité est inchangée à la fin.',
+      },
+      {
+        type: 'propriete',
+        content: '**Propriétés essentielles.** Le catalyseur agit en **petite quantité**. Il ne modifie ni l\'état final, ni le sens d\'évolution : il n\'accélère que l\'atteinte de cet état. Il est **sélectif** : un catalyseur donné n\'agit que sur certaines réactions.',
+      },
+      {
+        type: 'formules',
+        label: 'Les types de catalyse',
+        rows: [
+          { desc: 'Homogène', tex: '\\text{catalyseur et réactifs dans la même phase (ex. : ions en solution)}' },
+          { desc: 'Hétérogène', tex: '\\text{phases différentes — souvent un solide (ex. : platine, pot catalytique)}' },
+          { desc: 'Enzymatique', tex: '\\text{le catalyseur est une enzyme (ex. : la catalase)}' },
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'Résoudre un exercice de cinétique',
+        steps: [
+          'Identifier ce qui est demandé : vitesse (tangente), $t_{1/2}$ (lecture), ou concentration (calcul).',
+          'Si loi d\'ordre 1 : utiliser $[\\text{A}]=[\\text{A}]_0\\,\\mathrm{e}^{-kt}$ et $t_{1/2}=\\tfrac{\\ln 2}{k}$.',
+          'Pour un temps : isoler par le logarithme, $t=\\tfrac{1}{k}\\ln\\tfrac{[\\text{A}]_0}{[\\text{A}]}$.',
+          'Vérifier l\'homogénéité : $k$ en $\\text{s}^{-1}$, donc $kt$ sans dimension.',
+        ],
+      },
+      {
+        type: 'piege',
+        content: '**Piège fréquent.** Ne pas confondre **cinétique** (« à quelle vitesse ? ») et **thermodynamique** (« jusqu\'où ? »). Une réaction peut être totale mais infiniment lente, ou très rapide mais très limitée. Un catalyseur ne rend jamais possible une réaction qui ne l\'était pas.',
+      },
+    ],
+  },
+];
+
 // ── Contenu L'oxydoréduction (Chimie) ─────────────────────────────────────────
 const OXYDO_OBJECTIFS = [
   'Définir un **oxydant**, un **réducteur** et un **couple Ox/Red** ($\\text{Ox} + n\\,e^- = \\text{Red}$).',
@@ -7939,8 +8289,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isAcideCours = module.id === 'chim-acide';
   const isTitragesCours = module.id === 'chim-titrages';
   const isOxydoCours = module.id === 'chim-oxydo';
-  const sections = isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isCinetiqueCours = module.id === 'chim-cinetique';
+  const sections = isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -8125,8 +8476,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isAcideFiche = module.id === 'chim-acide';
   const isTitragesFiche = module.id === 'chim-titrages';
   const isOxydoFiche = module.id === 'chim-oxydo';
-  const ficheData = isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isCinetiqueFiche = module.id === 'chim-cinetique';
+  const ficheData = isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
