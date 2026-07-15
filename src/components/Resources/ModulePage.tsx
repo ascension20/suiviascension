@@ -21,6 +21,7 @@ import { ENERGIE_QCM, ENERGIE_EXERCISES, ENERGIE_CORRECTIONS } from '@/lib/energ
 import { BILANS_QCM, BILANS_EXERCISES, BILANS_CORRECTIONS } from '@/lib/bilans-content';
 import { ONDES_QCM, ONDES_EXERCISES, ONDES_CORRECTIONS } from '@/lib/ondes-content';
 import { DIFFRACTION_QCM, DIFFRACTION_EXERCISES, DIFFRACTION_CORRECTIONS } from '@/lib/diffraction-content';
+import { DOPPLER_QCM, DOPPLER_EXERCISES, DOPPLER_CORRECTIONS } from '@/lib/doppler-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -66,14 +67,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isBilans = module.id === 'phys-bilans';
     const isOndes = module.id === 'phys-ondes';
     const isDiffraction = module.id === 'phys-diffraction';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm') {
-      const questions = isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isDoppler = module.id === 'phys-doppler';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm') {
+      const questions = isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4569,6 +4571,279 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu L'effet Doppler ───────────────────────────────────────────────────
+const DOPPLER_OBJECTIFS = [
+  'Décrire le **phénomène Doppler** : décalage de fréquence dû au mouvement relatif source-récepteur.',
+  'Distinguer **approche** (son aigu, vers le bleu) et **éloignement** (son grave, vers le rouge).',
+  'Établir l\'**expression du décalage** : $f_R=f_E\\dfrac{v}{v\\mp v_S}$ et $\\lambda_R=\\lambda_E\\left(1\\mp\\dfrac{v_S}{v}\\right)$.',
+  'Exploiter le **décalage Doppler** $\\Delta f=f_R-f_E$ pour mesurer une vitesse.',
+  'Appliquer la relation astrophysique $\\dfrac{\\Delta\\lambda}{\\lambda}=\\dfrac{v}{c}$ (décalage vers le rouge).',
+  'Relier le **redshift** des galaxies à l\'**expansion de l\'Univers** (loi de Hubble).',
+];
+
+const DOPPLER_FICHE_DATA = [
+  {
+    title: '1  Effet Doppler',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\text{décalage de } f \\text{ perçue}',
+        vars: 'Dû au **mouvement relatif** source-récepteur · fronts d\'onde resserrés vers l\'avant, espacés vers l\'arrière',
+      },
+      {
+        label: 'Approche',
+        tex: 'f_R>f_E \\;,\\; \\lambda \\text{ raccourcie}',
+        vars: 'Son **aigu** / lumière vers le **bleu**',
+      },
+      {
+        label: 'Éloignement',
+        tex: 'f_R<f_E \\;,\\; \\lambda \\text{ allongée}',
+        vars: 'Son **grave** / lumière vers le **rouge**',
+      },
+    ],
+  },
+  {
+    title: '2  Expression du décalage',
+    rows: [
+      {
+        label: 'Fréquence perçue',
+        tex: 'f_R=f_E\\dfrac{v}{v\\mp v_S}',
+        vars: '$-$ à l\'approche ($f_R>f_E$), $+$ à l\'éloignement ($f_R<f_E$)',
+      },
+      {
+        label: 'Longueur d\'onde perçue',
+        tex: '\\lambda_R=\\lambda_E\\left(1\\mp\\dfrac{v_S}{v}\\right)',
+        vars: '$-$ approche (raccourcie), $+$ éloignement (allongée)',
+      },
+      {
+        label: 'Décalage Doppler',
+        tex: '\\Delta f=f_R-f_E',
+        vars: '$>0$ à l\'approche, $<0$ à l\'éloignement · sa mesure donne la vitesse',
+      },
+    ],
+  },
+  {
+    title: '3  Mesure de vitesse',
+    rows: [
+      {
+        label: 'Applications',
+        tex: '\\text{radar, échographie Doppler, sonar}',
+        vars: 'On mesure $f_R$ (ou $\\Delta f$, ou $\\lambda_R$) puis on isole $v_S$',
+      },
+      {
+        label: 'Cas de l\'écho',
+        tex: '\\text{décalage doublé}',
+        vars: 'L\'onde réfléchie subit deux décalages : mesure plus sensible (radar)',
+      },
+    ],
+  },
+  {
+    title: '4  Astrophysique',
+    rows: [
+      {
+        label: 'Décalage relatif',
+        tex: '\\dfrac{\\Delta\\lambda}{\\lambda}=\\dfrac{v}{c} \\quad (v\\ll c)',
+        vars: '$v$ = vitesse radiale · $c=3{,}00\\times 10^{8}\\,\\text{m·s}^{-1}$',
+      },
+      {
+        label: 'Décalage vers le rouge',
+        tex: '\\Delta\\lambda>0 \\Rightarrow \\text{éloignement}',
+        vars: 'Redshift · preuve de l\'**expansion de l\'Univers** (Hubble)',
+      },
+    ],
+  },
+  {
+    title: '5  À ne pas confondre',
+    rows: [
+      {
+        label: 'Célérité vs vitesse source',
+        tex: 'v \\ne v_S',
+        vars: '$v$ = célérité de l\'onde (**fixe**) · $v_S$ = vitesse de la source',
+      },
+      {
+        label: 'Ce qui change',
+        tex: 'f_E, v \\text{ inchangées} \\;;\\; f_R \\text{ change}',
+        vars: 'Seule la fréquence **perçue** est décalée · seule la vitesse **radiale** compte',
+      },
+    ],
+  },
+];
+
+const DOPPLER_COURS: Section[] = [
+  {
+    id: 'phenomene-doppler',
+    num: '1',
+    title: 'Le phénomène Doppler',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION — Effet Doppler',
+        content: 'L\'**effet Doppler** est la modification de la fréquence (donc de la longueur d\'onde) perçue par un récepteur lorsqu\'il existe un **mouvement relatif** entre la source et le récepteur.',
+      },
+      {
+        type: 'figure',
+        caption: 'Une source en mouvement « rattrape » les fronts d\'onde qu\'elle émet vers l\'avant (resserrés) et les distance vers l\'arrière (espacés).',
+        src: '/modules/phys-doppler/fig-fronts.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Origine** — Lorsque la source se déplace, chaque front d\'onde est émis depuis une position légèrement différente. Vers l\'**avant**, les fronts se resserrent (longueur d\'onde plus courte) ; vers l\'**arrière**, ils s\'espacent (longueur d\'onde plus grande).',
+      },
+      {
+        type: 'idee_cle',
+        text: '**La sirène** — Une ambulance qui approche a un son plus aigu ; dès qu\'elle nous dépasse et s\'éloigne, le son devient plus grave. La vitesse du son n\'a pas changé : c\'est la fréquence perçue qui a été décalée.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 1 et 2 : la sirène de l\'ambulance, source qui s\'éloigne' },
+    ],
+  },
+  {
+    id: 'approche-eloignement',
+    num: '2',
+    title: 'Approche & éloignement',
+    blocks: [
+      {
+        type: 'figure',
+        caption: 'Vers l\'avant, la longueur d\'onde est raccourcie (fréquence augmentée, son aigu) ; vers l\'arrière, elle est allongée (fréquence diminuée, son grave).',
+        src: '/modules/phys-doppler/fig-approche.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Sens du décalage** — **Source qui s\'approche** : longueur d\'onde raccourcie, fréquence perçue **augmentée** ($f_R>f_E$) — son plus aigu, lumière décalée vers le bleu. **Source qui s\'éloigne** : longueur d\'onde allongée, fréquence perçue **diminuée** ($f_R<f_E$) — son plus grave, lumière décalée vers le rouge.',
+      },
+      {
+        type: 'piege',
+        text: '**Mouvement radial seulement** — L\'effet ne dépend que du mouvement relatif le long de la ligne source-récepteur : seule compte la composante de vitesse qui rapproche ou éloigne (vitesse **radiale**). Un mouvement purement transversal ne produit pas de décalage (au 1ᵉʳ ordre).',
+      },
+      { type: 'lien_ex', text: '→ Exercice 6 : mouvement transversal' },
+    ],
+  },
+  {
+    id: 'expression',
+    num: '3',
+    title: 'Expression du décalage',
+    blocks: [
+      {
+        type: 'para',
+        text: 'On considère une source émettant à la fréquence $f_E$ (longueur d\'onde $\\lambda_E$), se déplaçant à la vitesse $v_S$ vers un récepteur fixe, l\'onde ayant la célérité $v$.',
+      },
+      {
+        type: 'definition',
+        badge: 'LONGUEUR D\'ONDE PERÇUE',
+        content: 'Pendant une période $T_E$, la source avance de $v_S T_E$. La longueur d\'onde perçue vaut donc $\\lambda_R=(v\\mp v_S)T_E=\\lambda_E\\left(1\\mp\\dfrac{v_S}{v}\\right)$, le signe $-$ pour l\'**approche** ($\\lambda$ raccourcie), $+$ pour l\'**éloignement**.',
+        formulas: ['\\lambda_R=\\lambda_E\\left(1\\mp\\dfrac{v_S}{v}\\right)'],
+      },
+      {
+        type: 'definition',
+        badge: 'FRÉQUENCE PERÇUE',
+        content: 'Comme $f_R=\\dfrac{v}{\\lambda_R}$ : $f_R=f_E\\dfrac{v}{v\\mp v_S}$, avec $-$ pour l\'approche ($f_R>f_E$) et $+$ pour l\'éloignement ($f_R<f_E$).',
+        formulas: ['f_R=f_E\\dfrac{v}{v\\mp v_S}'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Sirène',
+        lines: [
+          'Une sirène émet $f_E=680\\,\\text{Hz}$ ; le véhicule approche à $v_S=30\\,\\text{m·s}^{-1}$ ($v=340\\,\\text{m·s}^{-1}$) : $f_R=680\\times\\dfrac{340}{340-30}\\approx 746\\,\\text{Hz}$ (plus aigu).',
+          'En s\'éloignant : $f_R=680\\times\\dfrac{340}{370}\\approx 625\\,\\text{Hz}$ (plus grave).',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Exercices 3, 4, 5, 7, 8 : fréquence perçue, longueur d\'onde perçue, décalage' },
+    ],
+  },
+  {
+    id: 'mesure-vitesse',
+    num: '4',
+    title: 'Décalage & mesure de vitesse',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉCALAGE DOPPLER',
+        content: 'On appelle **décalage Doppler** l\'écart de fréquence $\\Delta f=f_R-f_E$. Il est positif à l\'approche, négatif à l\'éloignement. Sa mesure permet de remonter à la **vitesse** de la source.',
+      },
+      {
+        type: 'methode',
+        title: 'DÉTERMINER UNE VITESSE',
+        steps: [
+          'Mesurer $f_R$ (ou $\\Delta f$, ou $\\lambda_R$).',
+          'Écrire $f_R=f_E\\dfrac{v}{v\\mp v_S}$ et isoler $v_S$.',
+          'Le signe du décalage indique le sens (approche ou éloignement).',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Applications** — Le principe est utilisé par les **radars** de vitesse (ondes électromagnétiques réfléchies sur un véhicule), l\'**échographie Doppler** (mesure de la vitesse du sang) ou encore les sonars pour suivre une cible mobile.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Cas de l\'écho (radar)** — Lorsqu\'une onde est émise puis réfléchie par une cible mobile, le décalage se produit deux fois (à la réception par la cible, puis à la ré-émission) : le décalage total est **doublé**, ce qui augmente la sensibilité de la mesure.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 9, 10, 13 et sujet bac 16 : radar, raccourcissement, vitesse inconnue' },
+    ],
+  },
+  {
+    id: 'astrophysique',
+    num: '5',
+    title: 'Applications astrophysiques',
+    blocks: [
+      {
+        type: 'figure',
+        caption: 'La raie d\'un élément, observée dans le spectre d\'une galaxie qui s\'éloigne, est décalée vers les grandes longueurs d\'onde : c\'est le décalage vers le rouge.',
+        src: '/modules/phys-doppler/fig-redshift.png',
+      },
+      {
+        type: 'definition',
+        badge: 'DÉCALAGE VERS LE ROUGE (REDSHIFT)',
+        content: 'Pour une source lumineuse s\'éloignant à une vitesse radiale $v$ petite devant $c$, le décalage relatif en longueur d\'onde vaut $\\dfrac{\\Delta\\lambda}{\\lambda}=\\dfrac{\\lambda_R-\\lambda_E}{\\lambda_E}=\\dfrac{v}{c}$. Un décalage vers le rouge ($\\Delta\\lambda>0$) signale un **éloignement**.',
+        formulas: ['\\dfrac{\\Delta\\lambda}{\\lambda_E}=\\dfrac{v}{c}'],
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE — Vitesse d\'une galaxie',
+        lines: [
+          'Une raie de l\'hydrogène, émise à $\\lambda_E=656{,}3\\,\\text{nm}$, est observée à $\\lambda_R=670\\,\\text{nm}$. Alors $\\Delta\\lambda=13{,}7\\,\\text{nm}$,',
+          'et $v=c\\dfrac{\\Delta\\lambda}{\\lambda_E}=3{,}0\\times 10^{8}\\times\\dfrac{13{,}7}{656{,}3}\\approx 6{,}3\\times 10^{6}\\,\\text{m·s}^{-1}$ : la galaxie s\'éloigne à environ $6\\,300\\,\\text{km·s}^{-1}$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**L\'expansion de l\'Univers** — Hubble a observé que toutes les galaxies lointaines présentent un décalage vers le rouge, d\'autant plus grand qu\'elles sont éloignées : c\'est l\'une des preuves de l\'expansion de l\'Univers.',
+      },
+      { type: 'lien_ex', text: '→ Exercices 11, 12, 14 et sujet bac 17 : galaxie, quasar, étoile' },
+    ],
+  },
+  {
+    id: 'synthese',
+    num: '6',
+    title: 'Synthèse & méthode',
+    blocks: [
+      {
+        type: 'propriete',
+        text: '**Réflexe — sens du décalage** — Approche ⇒ $f\\nearrow$, $\\lambda\\searrow$ (aigu / vers le bleu). Éloignement ⇒ $f\\searrow$, $\\lambda\\nearrow$ (grave / vers le rouge).',
+      },
+      {
+        type: 'formules',
+        label: 'Deux régimes de formules',
+        rows: [
+          { desc: 'Ondes sonores (source à $v_S$, célérité $v$)', tex: 'f_R=f_E\\dfrac{v}{v\\mp v_S}' },
+          { desc: 'Ondes lumineuses (astrophysique, $v\\ll c$)', tex: '\\dfrac{\\Delta\\lambda}{\\lambda}=\\dfrac{v}{c}' },
+        ],
+      },
+      {
+        type: 'piege',
+        text: 'Ne pas confondre la **célérité de l\'onde** $v$ (qui ne change pas) et la **vitesse de la source** $v_S$. L\'effet Doppler ne modifie ni la vitesse de propagation ni la fréquence émise : seule la fréquence **perçue** change.',
+      },
+      {
+        type: 'exemple',
+        title: 'EXEMPLE RÉCAPITULATIF',
+        lines: [
+          'Un train émet un signal à $f_E=800\\,\\text{Hz}$ et approche à $v_S=25\\,\\text{m·s}^{-1}$ : $f_R=800\\times\\dfrac{340}{315}\\approx 863\\,\\text{Hz}$.',
+          'Après passage : $f_R=800\\times\\dfrac{340}{365}\\approx 745\\,\\text{Hz}$. L\'auditeur perçoit une chute nette de hauteur au passage.',
+        ],
+      },
+      { type: 'lien_ex', text: '→ Sujet bac 15 : sirène au passage (approche puis éloignement)' },
+    ],
+  },
+];
+
 // ── Contenu Diffraction & interférences ───────────────────────────────────────
 const DIFFRACTION_OBJECTIFS = [
   'Reconnaître le phénomène de **diffraction** et sa condition d\'observation ($a$ de l\'ordre de $\\lambda$).',
@@ -5768,8 +6043,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isBilansCours = module.id === 'phys-bilans';
   const isOndesCours = module.id === 'phys-ondes';
   const isDiffractionCours = module.id === 'phys-diffraction';
-  const sections = isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isDopplerCours = module.id === 'phys-doppler';
+  const sections = isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -5947,8 +6223,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isBilansFiche = module.id === 'phys-bilans';
   const isOndesFiche = module.id === 'phys-ondes';
   const isDiffractionFiche = module.id === 'phys-diffraction';
-  const ficheData = isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isDopplerFiche = module.id === 'phys-doppler';
+  const ficheData = isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
