@@ -29,6 +29,7 @@ import { ACIDE_QCM, ACIDE_EXERCISES, ACIDE_CORRECTIONS } from '@/lib/acide-conte
 import { TITRAGES_QCM, TITRAGES_EXERCISES, TITRAGES_CORRECTIONS } from '@/lib/titrages-content';
 import { OXYDO_QCM, OXYDO_EXERCISES, OXYDO_CORRECTIONS } from '@/lib/oxydo-content';
 import { CINETIQUE_QCM, CINETIQUE_EXERCISES, CINETIQUE_CORRECTIONS } from '@/lib/cinetique-content';
+import { EQUILIBRE_QCM, EQUILIBRE_EXERCISES, EQUILIBRE_CORRECTIONS } from '@/lib/equilibre-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -82,14 +83,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isTitrages = module.id === 'chim-titrages';
     const isOxydo = module.id === 'chim-oxydo';
     const isCinetique = module.id === 'chim-cinetique';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm') {
-      const questions = isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isEquilibre = module.id === 'chim-equilibre';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm') {
+      const questions = isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4585,6 +4587,325 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu L'équilibre chimique (Chimie) ─────────────────────────────────────
+const EQUILIBRE_OBJECTIFS = [
+  'Distinguer une transformation **totale** ($\\tau=1$) d\'une transformation **limitée** ($\\tau<1$).',
+  'Définir le **taux d\'avancement final** $\\tau=\\dfrac{x_f}{x_{\\max}}$ et comprendre l\'**équilibre dynamique**.',
+  'Écrire un **quotient de réaction** $Q_r$ (exposants, solides et solvant exclus).',
+  'Définir la **constante d\'équilibre** $K=Q_{r,\\text{éq}}$ et exploiter son ordre de grandeur.',
+  'Appliquer le **critère d\'évolution** : $Q_{r,i}<K$ → sens direct ; $Q_{r,i}>K$ → sens inverse.',
+  'Déterminer un **état final** à partir de $K$ et interpréter l\'effet de la **dilution**.',
+];
+
+const EQUILIBRE_FICHE_DATA = [
+  {
+    title: '1  Totale ou limitée',
+    rows: [
+      {
+        label: 'Totale',
+        tex: 'x_f = x_{\\max} \\;\\Rightarrow\\; \\tau = 1',
+        vars: 'Le réactif limitant est entièrement consommé',
+      },
+      {
+        label: 'Limitée',
+        tex: 'x_f < x_{\\max} \\;\\Rightarrow\\; \\tau < 1',
+        vars: 'Il reste **tous** les réactifs → état d\'équilibre',
+      },
+      {
+        label: 'Équilibre dynamique',
+        tex: '\\text{A} + \\text{B} \\rightleftharpoons \\text{C} + \\text{D}',
+        vars: 'Concentrations constantes, mais réactions directe et inverse à la même vitesse',
+      },
+    ],
+  },
+  {
+    title: '2  Quotient de réaction',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'Q_r = \\dfrac{[\\text{C}]^c[\\text{D}]^d}{[\\text{A}]^a[\\text{B}]^b}',
+        vars: 'Concentrations rapportées à $c^\\circ=1\\,\\text{mol·L}^{-1}$ : $Q_r$ est **sans unité**',
+      },
+      {
+        label: 'Règles d\'écriture',
+        tex: '\\text{produits en haut · exposants = coeff.}',
+        vars: '**Solides et solvant exclus** — l\'erreur la plus fréquente',
+      },
+    ],
+  },
+  {
+    title: '3  Constante d\'équilibre',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'K = Q_{r,\\text{éq}}',
+        vars: 'Dépend **seulement** de la réaction et de la température',
+      },
+      {
+        label: 'Ce que K indique',
+        tex: 'K \\ggg 1 : \\text{quasi totale} \\;\\;/\\;\\; K \\lll 1 : \\text{très limitée}',
+        vars: '$K>10^4$ : $\\tau\\approx 1$ · $K<10^{-4}$ : $\\tau\\ll 1$',
+      },
+      {
+        label: 'Ka et Ke sont des K',
+        tex: 'K_a = \\dfrac{[\\text{A}^-][\\text{H}_3\\text{O}^+]}{[\\text{AH}]} \\;;\\; K_e = [\\text{H}_3\\text{O}^+][\\text{OH}^-]',
+        vars: 'Un $K_a$ petit = acide faible = réaction très limitée',
+      },
+    ],
+  },
+  {
+    title: '4  Critère d\'évolution',
+    rows: [
+      {
+        label: 'Le critère',
+        tex: 'Q_{r,i} < K \\to \\text{direct} \\;;\\; Q_{r,i} > K \\to \\text{inverse}',
+        vars: 'Le système évolue **toujours** de façon à rapprocher $Q_r$ de $K$',
+      },
+      {
+        label: 'Équilibre',
+        tex: 'Q_{r,i} = K \\;\\Rightarrow\\; \\text{pas d\'évolution}',
+        vars: 'Le système est déjà à l\'équilibre',
+      },
+      {
+        label: 'Cas simple',
+        tex: '\\text{que des réactifs} \\;\\Rightarrow\\; Q_{r,i} = 0 < K',
+        vars: 'Toujours le sens direct — aucun calcul nécessaire',
+      },
+    ],
+  },
+  {
+    title: '5  Méthode état final',
+    rows: [
+      {
+        label: 'Les 4 étapes',
+        tex: '\\text{tableau} \\to Q_{r,\\text{éq}}(x_f) \\to Q_{r,\\text{éq}} = K \\to x_f',
+        vars: 'Puis $\\tau=\\dfrac{x_f}{x_{\\max}}$ · racine acceptable : $0\\leqslant x_f\\leqslant x_{\\max}$',
+      },
+      {
+        label: 'Vérification',
+        tex: '\\text{reporter } x_f \\text{ dans } Q_r \\;\\Rightarrow\\; \\text{on doit retrouver } K',
+        vars: 'Le meilleur contrôle en fin d\'exercice',
+      },
+    ],
+  },
+  {
+    title: '6  Dilution — le piège',
+    rows: [
+      {
+        label: 'Acide faible',
+        tex: '\\tau \\approx \\sqrt{\\dfrac{K_a}{c}}',
+        vars: 'Diluer ($c\\searrow$) fait **augmenter** $\\tau$ · mais $K$ reste inchangée',
+      },
+      {
+        label: 'Le paradoxe',
+        tex: '\\tau \\nearrow \\text{ et pH} \\nearrow',
+        vars: '$\\tau$ est une **proportion**, le pH une **concentration** : aucune contradiction',
+      },
+      {
+        label: 'K ou τ ?',
+        tex: 'K = \\text{la réaction} \\;;\\; \\tau = \\text{l\'expérience}',
+        vars: '$K$ ne dépend que de $T$ · $\\tau$ dépend des conditions initiales',
+      },
+    ],
+  },
+];
+
+const EQUILIBRE_COURS: Section[] = [
+  {
+    id: 'totale-limitee',
+    num: '1',
+    title: 'Transformation totale ou limitée',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITIONS',
+        content: 'Une transformation est **totale** si le réactif limitant est entièrement consommé : $x_f=x_{\\max}$. Elle est **limitée** (ou non totale) si elle s\'arrête avant : $x_f<x_{\\max}$. Il reste alors tous les réactifs, et le système atteint un **état d\'équilibre**.',
+      },
+      {
+        type: 'definition',
+        badge: 'TAUX D\'AVANCEMENT FINAL',
+        content: 'Le **taux d\'avancement final** mesure l\'écart à la transformation totale. $\\tau=1$ : transformation totale. $\\tau<1$ : transformation limitée.',
+        formulas: ['\\tau = \\dfrac{x_f}{x_{\\max}}'],
+      },
+      {
+        type: 'figure',
+        caption: 'Évolution des concentrations vers l\'état d\'équilibre : elles se stabilisent à des valeurs non nulles. Il reste du réactif — la transformation est limitée.',
+        src: '/modules/chim-equilibre/fig-equilibre.png',
+      },
+      {
+        type: 'propriete',
+        content: '**L\'équilibre est dynamique.** À l\'équilibre, les concentrations ne varient plus, mais la réaction ne s\'est pas arrêtée : les transformations **directe et inverse se produisent à la même vitesse**. On note l\'équation avec une double flèche $\\rightleftharpoons$.',
+      },
+      {
+        type: 'exemple',
+        title: 'Acide éthanoïque',
+        lines: [
+          'L\'acide éthanoïque à $c=1{,}0\\times 10^{-2}\\,\\text{mol·L}^{-1}$ a un pH de $3{,}4$, soit $\\tau\\approx 4\\,\\%$.',
+          'Seule une molécule sur $25$ environ a réagi : la transformation est **très limitée**.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'quotient',
+    num: '2',
+    title: 'Le quotient de réaction',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Pour une équation $a\\,\\text{A}+b\\,\\text{B}\\rightleftharpoons c\\,\\text{C}+d\\,\\text{D}$, le **quotient de réaction** à une date quelconque vaut la relation ci-dessous. Les concentrations sont exprimées en $\\text{mol·L}^{-1}$ (rapportées à $c^\\circ=1\\,\\text{mol·L}^{-1}$) : $Q_r$ est **sans unité**.',
+        formulas: ['Q_r = \\dfrac{[\\text{C}]^c\\,[\\text{D}]^d}{[\\text{A}]^a\\,[\\text{B}]^b}'],
+      },
+      {
+        type: 'propriete',
+        content: '**Les trois règles d\'écriture.** Les **produits** vont au numérateur, les **réactifs** au dénominateur. Chaque concentration est élevée à la puissance de son **coefficient stœchiométrique**. Les **solides** et le **solvant** (l\'eau, en solution aqueuse) n\'apparaissent pas.',
+      },
+      {
+        type: 'formules',
+        label: 'Exemples',
+        rows: [
+          { desc: 'Acide sur l\'eau (le solvant est omis)', tex: '\\text{CH}_3\\text{COOH} + \\text{H}_2\\text{O} \\rightleftharpoons \\text{CH}_3\\text{COO}^- + \\text{H}_3\\text{O}^+ \\;:\\; Q_r = \\dfrac{[\\text{CH}_3\\text{COO}^-][\\text{H}_3\\text{O}^+]}{[\\text{CH}_3\\text{COOH}]}' },
+          { desc: 'Zinc / cuivre (les solides sont omis)', tex: '\\text{Zn}_{(s)} + \\text{Cu}^{2+} \\rightleftharpoons \\text{Zn}^{2+} + \\text{Cu}_{(s)} \\;:\\; Q_r = \\dfrac{[\\text{Zn}^{2+}]}{[\\text{Cu}^{2+}]}' },
+        ],
+      },
+      {
+        type: 'piege',
+        content: 'Oublier d\'exclure les **solides** et le **solvant** est l\'erreur la plus fréquente. Une concentration de solide n\'a pas de sens, et celle du solvant est quasi constante : ni l\'une ni l\'autre ne figurent dans $Q_r$.',
+      },
+    ],
+  },
+  {
+    id: 'constante',
+    num: '3',
+    title: 'La constante d\'équilibre',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'La **constante d\'équilibre** $K$ est la valeur que prend le quotient de réaction lorsque le système a atteint l\'équilibre. Elle ne dépend que de la **réaction** et de la **température** — pas des conditions initiales.',
+        formulas: ['K = Q_{r,\\text{éq}}'],
+      },
+      {
+        type: 'propriete',
+        content: '**Ce que $K$ indique.** $K$ très grand ($>10^4$) : l\'équilibre est très déplacé vers les produits, la transformation est **quasi totale** ($\\tau\\approx 1$). $K$ très petit ($<10^{-4}$) : la transformation est **très limitée** ($\\tau\\ll 1$). $K$ intermédiaire : équilibre avec des quantités comparables de réactifs et de produits.',
+      },
+      {
+        type: 'figure',
+        caption: 'Plus $K$ est grand, plus l\'avancement final $x_f$ s\'approche de $x_{\\max}$, donc plus $\\tau$ est proche de $1$.',
+        src: '/modules/chim-equilibre/fig-tau.png',
+      },
+      {
+        type: 'reflex',
+        content: '**Des constantes déjà rencontrées.** $K_a$ et $K_e$ sont des constantes d\'équilibre comme les autres ! $K_a$ est le $K$ de la réaction de l\'acide sur l\'eau ; $K_e$ est celui de l\'autoprotolyse de l\'eau. Un $K_a$ petit ($\\ll 1$) signale donc une réaction très limitée : c\'est exactement ce qu\'est un **acide faible**.',
+      },
+    ],
+  },
+  {
+    id: 'critere',
+    num: '4',
+    title: 'Le critère d\'évolution',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'LE CRITÈRE À CONNAÎTRE',
+        content: 'On calcule $Q_{r,i}$ dans l\'état initial, puis on le compare à $K$. $Q_{r,i}<K$ : évolution dans le **sens direct** ($\\to$), formation de produits. $Q_{r,i}>K$ : évolution dans le **sens inverse** ($\\leftarrow$), formation de réactifs. $Q_{r,i}=K$ : le système est déjà à l\'équilibre, il n\'évolue pas.',
+      },
+      {
+        type: 'figure',
+        caption: 'Le système évolue toujours de façon à rapprocher $Q_r$ de $K$ : $Q_r$ augmente si l\'on part à gauche, diminue si l\'on part à droite.',
+        src: '/modules/chim-equilibre/fig-critere.png',
+      },
+      {
+        type: 'methode',
+        title: 'Prévoir le sens d\'évolution',
+        steps: [
+          'Écrire l\'équation de la réaction.',
+          'Écrire l\'expression de $Q_r$ (produits/réactifs, exposants, sans solides ni solvant).',
+          'Calculer $Q_{r,i}$ avec les concentrations initiales.',
+          'Comparer à $K$ et conclure.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '**Le cas le plus simple.** Si l\'on part uniquement de réactifs, il n\'y a pas de produits : $Q_{r,i}=0$. L\'évolution se fait donc **toujours** dans le sens direct. C\'est rassurant — et cela évite un calcul inutile.',
+      },
+      {
+        type: 'exemple',
+        title: 'Évolution en sens inverse',
+        lines: [
+          'Pour une réaction de $K=1{,}0\\times 10^{-3}$, un mélange donne $Q_{r,i}=5{,}0\\times 10^{-2}$.',
+          'Comme $Q_{r,i}>K$, le système évolue dans le **sens inverse** : il consomme des produits jusqu\'à ce que $Q_r$ redescende à $K$.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'exploiter',
+    num: '5',
+    title: 'Exploiter un équilibre',
+    blocks: [
+      {
+        type: 'methode',
+        title: 'Déterminer l\'état final',
+        steps: [
+          'Dresser le tableau d\'avancement et exprimer chaque concentration en fonction de $x_f$.',
+          'Écrire $Q_{r,\\text{éq}}$ en remplaçant par ces expressions.',
+          'Poser $Q_{r,\\text{éq}}=K$ et résoudre l\'équation obtenue pour trouver $x_f$.',
+          'Calculer $x_{\\max}$ (en supposant la réaction totale), puis $\\tau=\\tfrac{x_f}{x_{\\max}}$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'Estérification',
+        lines: [
+          'Un mélange équimolaire de $2{,}0\\,\\text{mol}$ d\'acide et $2{,}0\\,\\text{mol}$ d\'alcool, avec $K=4{,}0$.',
+          'À l\'équilibre, avec un avancement $x_f$ : il reste $2-x_f$ de chaque réactif et il s\'est formé $x_f$ de chaque produit. Le volume se simplifie ici (autant de moles de part et d\'autre) :',
+          '$Q_{r,\\text{éq}}=\\dfrac{x_f^2}{(2-x_f)^2}=K=4{,}0$',
+          'Comme $\\dfrac{x_f}{2-x_f}=2$, on obtient $x_f=\\dfrac{4}{3}\\approx 1{,}33\\,\\text{mol}$, soit $\\tau\\approx 67\\,\\%$ : la transformation est **limitée**.',
+        ],
+      },
+      {
+        type: 'reflex',
+        content: '**Vérification.** Reportez toujours $x_f$ dans $Q_r$ : on doit retrouver $K$. Ici $\\dfrac{(1{,}333)^2}{(0{,}667)^2}=4{,}0$ ✓. C\'est le meilleur contrôle en fin d\'exercice.',
+      },
+    ],
+  },
+  {
+    id: 'dilution',
+    num: '6',
+    title: 'Dilution & synthèse',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'EFFET DE LA DILUTION',
+        content: 'Pour un acide faible, on montre que $\\tau\\approx\\sqrt{\\tfrac{K_a}{c}}$ (tant que $\\tau$ reste petit). Donc : **diluer** ($c$ diminue) **augmente** le taux d\'avancement $\\tau$. Mais $K_a$ reste **inchangé** : la constante ne dépend que de la température.',
+        formulas: ['\\tau \\approx \\sqrt{\\dfrac{K_a}{c}}'],
+      },
+      {
+        type: 'formules',
+        label: 'Exemple — acide éthanoïque ($\\text{p}K_a=4{,}8$)',
+        rows: [
+          { desc: '$c=5{,}0\\times 10^{-2}\\,\\text{mol·L}^{-1}$', tex: '\\tau \\approx 1{,}8\\,\\% \\;,\\; \\text{pH} \\approx 3{,}0' },
+          { desc: '$c=1{,}0\\times 10^{-3}\\,\\text{mol·L}^{-1}$', tex: '\\tau \\approx 13\\,\\% \\;,\\; \\text{pH} \\approx 3{,}9' },
+        ],
+      },
+      {
+        type: 'propriete',
+        content: 'La dilution rend l\'acide **plus dissocié** ($\\tau$ augmente), tout en rendant la solution **moins acide** (pH augmente). Les deux ne sont pas contradictoires : $\\tau$ est une **proportion**, le pH dépend de la **quantité**.',
+      },
+      {
+        type: 'piege',
+        content: '**Le piège central du chapitre.** Ne pas confondre $K$ et $\\tau$ : $K$ caractérise la **réaction** — il ne dépend que de $T$. $\\tau$ caractérise une **expérience donnée** — il dépend des conditions initiales (concentrations, dilution). Deux expériences sur la même réaction ont le même $K$ mais peuvent avoir des $\\tau$ très différents.',
+      },
+      {
+        type: 'idee_cle',
+        content: '**La vue d\'ensemble.** Ce chapitre unifie toute la chimie de terminale : $K_a$ et $K_e$ sont des constantes d\'équilibre, le sens spontané d\'une pile obéit au critère $Q_r$ vs $K$, et une électrolyse n\'est rien d\'autre qu\'une évolution forcée à contre-sens de ce critère.',
+      },
+    ],
+  },
+];
+
 // ── Contenu La cinétique chimique (Chimie) ────────────────────────────────────
 const CINETIQUE_OBJECTIFS = [
   'Définir la **vitesse volumique** de disparition et d\'apparition, et la lire comme la **pente de la tangente**.',
@@ -8290,8 +8611,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isTitragesCours = module.id === 'chim-titrages';
   const isOxydoCours = module.id === 'chim-oxydo';
   const isCinetiqueCours = module.id === 'chim-cinetique';
-  const sections = isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isEquilibreCours = module.id === 'chim-equilibre';
+  const sections = isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -8477,8 +8799,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isTitragesFiche = module.id === 'chim-titrages';
   const isOxydoFiche = module.id === 'chim-oxydo';
   const isCinetiqueFiche = module.id === 'chim-cinetique';
-  const ficheData = isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isEquilibreFiche = module.id === 'chim-equilibre';
+  const ficheData = isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
