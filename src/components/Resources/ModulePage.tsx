@@ -31,6 +31,7 @@ import { OXYDO_QCM, OXYDO_EXERCISES, OXYDO_CORRECTIONS } from '@/lib/oxydo-conte
 import { CINETIQUE_QCM, CINETIQUE_EXERCISES, CINETIQUE_CORRECTIONS } from '@/lib/cinetique-content';
 import { EQUILIBRE_QCM, EQUILIBRE_EXERCISES, EQUILIBRE_CORRECTIONS } from '@/lib/equilibre-content';
 import { SPECTRO_QCM, SPECTRO_EXERCISES, SPECTRO_CORRECTIONS } from '@/lib/spectro-content';
+import { MECA_QCM, MECA_EXERCISES, MECA_CORRECTIONS } from '@/lib/meca-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -86,14 +87,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isCinetique = module.id === 'chim-cinetique';
     const isEquilibre = module.id === 'chim-equilibre';
     const isSpectro = module.id === 'chim-spectro';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm') {
-      const questions = isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isMeca = module.id === 'chim-meca';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm') {
+      const questions = isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4589,6 +4591,361 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Mécanismes & synthèse (Chimie) ────────────────────────────────────
+const MECA_OBJECTIFS = [
+  'Définir l\'**électronégativité** $\\chi$ et repérer une **liaison polarisée** ($\\Delta\\chi>0{,}4$).',
+  'Identifier les **sites donneurs** (riches) et **accepteurs** (pauvres) de doublet d\'électrons.',
+  'Tracer une **flèche courbe** : du donneur vers l\'accepteur, en suivant les **électrons**.',
+  'Analyser une étape d\'un **mécanisme réactionnel** et distinguer **intermédiaire** et **catalyseur**.',
+  'Décrire les quatre étapes d\'un **protocole de synthèse** et les leviers de l\'étape 1.',
+  'Calculer un **rendement** $\\eta$ et une **économie d\'atomes** — et ne pas les confondre.',
+];
+
+const MECA_FICHE_DATA = [
+  {
+    title: '1  Électronégativité',
+    rows: [
+      {
+        label: 'Valeurs (Pauling)',
+        tex: '\\text{H}\\ 2{,}20 \\;;\\; \\text{C}\\ 2{,}55 \\;;\\; \\text{N}\\ 3{,}04 \\;;\\; \\text{Cl}\\ 3{,}16 \\;;\\; \\text{O}\\ 3{,}44 \\;;\\; \\text{F}\\ 3{,}98',
+        vars: 'Ordre : $\\text{F}>\\text{O}>\\text{N}>\\text{C}>\\text{H}$ · le fluor est le plus électronégatif',
+      },
+      {
+        label: 'Polarisation',
+        tex: '\\Delta\\chi < 0{,}4 \\to \\text{apolaire} \\;;\\; \\Delta\\chi > 0{,}4 \\to \\text{polarisée}',
+        vars: 'Le plus électronégatif porte $\\delta-$, l\'autre $\\delta+$',
+      },
+      {
+        label: 'La liaison C–H',
+        tex: '\\Delta\\chi(\\text{C}-\\text{H}) = 0{,}35 \\;\\Rightarrow\\; \\text{apolaire}',
+        vars: '⚠ Un C entouré de C et H seuls n\'est **pas** accepteur — on ignore le squelette',
+      },
+    ],
+  },
+  {
+    title: '2  Sites donneurs & accepteurs',
+    rows: [
+      {
+        label: 'Donneur (riche)',
+        tex: '\\text{doublet non liant} \\;;\\; \\text{charge } - \\;;\\; \\text{liaison multiple C}=\\text{C}',
+        vars: 'Capable de **céder** un doublet',
+      },
+      {
+        label: 'Accepteur (pauvre)',
+        tex: '\\text{atome portant } \\delta+ \\;;\\; \\text{charge } + \\;(\\text{H}^+,\\ \\text{carbocation})',
+        vars: 'Capable de **capter** un doublet',
+      },
+      {
+        label: 'La règle',
+        tex: '\\text{les électrons vont là où ils manquent}',
+        vars: 'Une liaison polarisée crée **simultanément** un donneur et un accepteur',
+      },
+    ],
+  },
+  {
+    title: '3  Flèches courbes',
+    rows: [
+      {
+        label: 'Convention',
+        tex: '\\text{donneur} \\longrightarrow \\text{accepteur}',
+        vars: 'Représente le mouvement d\'un **doublet** · riche → pauvre',
+      },
+      {
+        label: 'Formation / rupture',
+        tex: '\\text{formation : doublet du donneur} \\to \\text{accepteur}',
+        vars: 'Rupture : du **doublet liant** vers l\'atome le plus électronégatif',
+      },
+      {
+        label: 'Les trois pièges',
+        tex: '\\text{suit les électrons, jamais les atomes ni les charges}',
+        vars: 'Jamais depuis un $\\delta+$ · toujours depuis un **doublet** précis',
+      },
+    ],
+  },
+  {
+    title: '4  Mécanisme',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\sum \\text{étapes élémentaires} = \\text{équation bilan}',
+        vars: 'En sommant, les intermédiaires se simplifient',
+      },
+      {
+        label: 'Intermédiaire vs catalyseur',
+        tex: '\\text{formé} \\to \\text{consommé} \\;\\;/\\;\\; \\text{consommé} \\to \\text{régénéré}',
+        vars: 'Tous deux absents du bilan, mais pour des raisons **opposées**',
+      },
+      {
+        label: 'Ce qu\'il ne dit pas',
+        tex: '\\text{le mécanisme} \\neq \\text{le sens d\'évolution}',
+        vars: 'C\'est $K$ (et $Q_r$ vs $K$) qui décide de la destination',
+      },
+    ],
+  },
+  {
+    title: '5  Protocole & rendement',
+    rows: [
+      {
+        label: 'Les 4 étapes',
+        tex: '\\text{transformation} \\to \\text{isolement} \\to \\text{purification} \\to \\text{identification}',
+        vars: 'Reflux/catalyseur/excès · extraction · recristallisation · CCM, IR, RMN, $T_{\\text{fusion}}$',
+      },
+      {
+        label: 'Rendement',
+        tex: '\\eta = \\dfrac{n_{\\text{obtenu}}}{n_{\\max}}',
+        vars: '$n_{\\max}$ via le **réactif limitant** · toujours $<100\\,\\%$ : équilibre, pertes, réactions parasites',
+      },
+      {
+        label: 'Leviers de l\'étape 1',
+        tex: '\\text{reflux} \\;;\\; \\text{catalyseur} \\;;\\; \\text{excès} \\;;\\; \\text{éliminer un produit}',
+        vars: 'Les deux derniers font $Q_r<K$ ⟹ sens direct',
+      },
+    ],
+  },
+  {
+    title: '6  Économie d\'atomes & chimie verte',
+    rows: [
+      {
+        label: 'Économie d\'atomes',
+        tex: '\\text{EA} = \\dfrac{M(\\text{produit désiré})}{\\sum M(\\text{réactifs})} \\times 100',
+        vars: '**Théorique** : se calcule sur la seule équation · addition ⟹ $\\text{EA}=100\\,\\%$',
+      },
+      {
+        label: 'Le piège majeur',
+        tex: '\\text{EA : l\'équation} \\;\\;/\\;\\; \\eta : \\text{la manipulation}',
+        vars: 'L\'EA est théorique, le rendement expérimental — aucune contradiction possible',
+      },
+      {
+        label: 'Chimie verte',
+        tex: '\\text{EA max · déchets à la source · catalyse · énergie}',
+        vars: 'Privilégier les additions · solvants moins nocifs · matières renouvelables',
+      },
+    ],
+  },
+];
+
+const MECA_COURS: Section[] = [
+  {
+    id: 'polarisation',
+    num: '1',
+    title: 'Électronégativité & polarisation',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'ÉLECTRONÉGATIVITÉ',
+        content: 'L\'**électronégativité** $\\chi$ d\'un atome mesure sa tendance à **attirer à lui** les électrons d\'une liaison covalente qu\'il forme. Elle augmente de la gauche vers la droite d\'une période, et du bas vers le haut d\'une colonne.',
+      },
+      {
+        type: 'formules',
+        label: 'Valeurs à connaître (échelle de Pauling)',
+        rows: [
+          { desc: 'Hydrogène · carbone', tex: '\\chi(\\text{H}) = 2{,}20 \\;;\\; \\chi(\\text{C}) = 2{,}55' },
+          { desc: 'Brome · azote · chlore', tex: '\\chi(\\text{Br}) = 2{,}96 \\;;\\; \\chi(\\text{N}) = 3{,}04 \\;;\\; \\chi(\\text{Cl}) = 3{,}16' },
+          { desc: 'Oxygène · fluor', tex: '\\chi(\\text{O}) = 3{,}44 \\;;\\; \\chi(\\text{F}) = 3{,}98' },
+          { desc: 'À retenir', tex: '\\text{F} > \\text{O} > \\text{N} > \\text{C} > \\text{H}' },
+        ],
+      },
+      {
+        type: 'definition',
+        badge: 'LIAISON POLARISÉE',
+        content: 'Une liaison $\\text{A}-\\text{B}$ est **polarisée** si $\\chi(\\text{A})\\neq\\chi(\\text{B})$. L\'atome le plus électronégatif attire le doublet liant : il porte une charge partielle **négative** $\\delta-$, l\'autre une charge partielle **positive** $\\delta+$.',
+      },
+      {
+        type: 'figure',
+        caption: 'La liaison $\\text{C}-\\text{O}$ est polarisée : $\\Delta\\chi=3{,}44-2{,}55=0{,}89$. L\'oxygène attire le doublet et porte $\\delta-$ ; le carbone, appauvri en électrons, porte $\\delta+$. En dessous de $\\Delta\\chi=0{,}4$, la liaison est considérée apolaire.',
+        src: '/modules/chim-meca/fig-polarisation.png',
+      },
+      {
+        type: 'propriete',
+        content: '**Critère pratique.** On compare $\\Delta\\chi=|\\chi(\\text{A})-\\chi(\\text{B})|$. $\\Delta\\chi<0{,}4$ : liaison considérée **apolaire**. $\\Delta\\chi>0{,}4$ : liaison **polarisée** — d\'autant plus que $\\Delta\\chi$ est grand.',
+      },
+      {
+        type: 'piege',
+        content: '**La liaison $\\text{C}-\\text{H}$.** $\\Delta\\chi=2{,}55-2{,}20=0{,}35<0{,}4$ : la liaison $\\text{C}-\\text{H}$ est considérée **apolaire**. C\'est capital : un carbone entouré uniquement de $\\text{C}$ et de $\\text{H}$ ne porte aucun $\\delta+$ et n\'est donc **pas** un site accepteur.',
+      },
+    ],
+  },
+  {
+    id: 'sites',
+    num: '2',
+    title: 'Sites donneurs & accepteurs',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'SITE DONNEUR DE DOUBLET',
+        content: 'Un **site donneur** est une zone **riche** en électrons, capable de céder un doublet. On le reconnaît à : un **doublet non liant** (sur $\\text{O}$, $\\text{N}$, un halogène…) ; une **charge négative** ($\\text{HO}^-$, $\\text{RO}^-$…) ; une **liaison multiple** $\\text{C}=\\text{C}$ (doublet $\\pi$, plus disponible).',
+      },
+      {
+        type: 'definition',
+        badge: 'SITE ACCEPTEUR DE DOUBLET',
+        content: 'Un **site accepteur** est une zone **pauvre** en électrons, capable de capter un doublet. On le reconnaît à : un atome portant une charge partielle $\\delta+$ (typiquement le carbone d\'une liaison $\\text{C}-\\text{O}$, $\\text{C}=\\text{O}$, $\\text{C}-\\text{Cl}$) ; une **charge positive** ($\\text{H}^+$, un carbocation).',
+      },
+      {
+        type: 'methode',
+        title: 'Repérer les sites sur une molécule',
+        steps: [
+          'Repérer les atomes électronégatifs ($\\text{O}$, $\\text{N}$, halogènes) et placer les $\\delta-$.',
+          'Le partenaire de chaque liaison polarisée porte $\\delta+$ : ce sont les sites accepteurs.',
+          'Repérer les doublets non liants, les charges négatives et les liaisons multiples : ce sont les sites donneurs.',
+          'Ignorer les liaisons $\\text{C}-\\text{H}$ et $\\text{C}-\\text{C}$ : apolaires.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '**La règle qui gouverne tout.** La chimie organique tient en une phrase : **les électrons vont là où ils manquent**. Un site riche cède à un site pauvre. Tout mécanisme n\'est que l\'application répétée de ce principe.',
+      },
+      {
+        type: 'reflex',
+        content: '**Un atome peut être les deux.** Dans un $\\text{C}=\\text{O}$, l\'oxygène est donneur (il porte des doublets non liants et $\\delta-$) tandis que le carbone est accepteur ($\\delta+$). Une même molécule contient donc souvent les deux types de sites.',
+      },
+    ],
+  },
+  {
+    id: 'fleches',
+    num: '3',
+    title: 'Les flèches courbes',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'CONVENTION',
+        content: 'Une **flèche courbe** représente le mouvement d\'un **doublet d\'électrons**. Elle part toujours du site **donneur** et pointe toujours vers le site **accepteur**.',
+      },
+      {
+        type: 'figure',
+        caption: 'Substitution : l\'ion $\\text{HO}^-$ (site donneur, doublet non liant et charge négative) cède un doublet au carbone $\\delta+$ de $\\text{CH}_3-\\text{Br}$ (site accepteur). Une seconde flèche traduit la rupture de $\\text{C}-\\text{Br}$, dont le doublet part sur le brome. Bilan : $\\text{HO}^-+\\text{CH}_3\\text{Br}\\to\\text{CH}_3\\text{OH}+\\text{Br}^-$.',
+        src: '/modules/chim-meca/fig-fleche.png',
+      },
+      {
+        type: 'propriete',
+        content: '**Ce que traduit chaque flèche.** **Formation** d\'une liaison : la flèche part du doublet du donneur vers l\'atome accepteur. **Rupture** d\'une liaison : la flèche part du doublet liant et pointe vers l\'atome le plus électronégatif, qui le récupère.',
+      },
+      {
+        type: 'piege',
+        content: '**Les trois pièges classiques.** La flèche suit les **électrons**, jamais les atomes ni les charges. Elle va du **riche vers le pauvre** — jamais l\'inverse : une flèche partant d\'un $\\delta+$ est toujours fausse. Elle part d\'un **doublet** (non liant ou liant), jamais d\'un atome « en général ».',
+      },
+      {
+        type: 'exemple',
+        title: 'Protonation',
+        lines: [
+          'Dans $\\text{H}_2\\text{O}+\\text{H}^+\\to\\text{H}_3\\text{O}^+$ : l\'oxygène de l\'eau porte des doublets non liants (site donneur) et $\\text{H}^+$ porte une charge positive (site accepteur).',
+          'Une flèche courbe part d\'un doublet non liant de l\'oxygène vers $\\text{H}^+$ : la liaison $\\text{O}-\\text{H}$ se forme.',
+          'C\'est exactement la réaction acide-base vue précédemment, relue à l\'échelle des électrons.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'mecanisme',
+    num: '4',
+    title: 'Le mécanisme réactionnel',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉFINITION',
+        content: 'Un **mécanisme réactionnel** est la suite d\'**étapes élémentaires** par lesquelles les réactifs se transforment en produits. Chaque étape met en jeu un petit nombre de flèches courbes.',
+      },
+      {
+        type: 'definition',
+        badge: 'INTERMÉDIAIRE RÉACTIONNEL',
+        content: 'Un **intermédiaire réactionnel** est une espèce formée puis consommée au cours du mécanisme. Il n\'apparaît donc pas dans l\'équation bilan.',
+      },
+      {
+        type: 'propriete',
+        content: '**Équation bilan & mécanisme.** L\'équation bilan décrit le **résultat global** : réactifs → produits. Le mécanisme décrit le **chemin suivi**, étape par étape. En additionnant toutes les étapes d\'un mécanisme, les intermédiaires se simplifient et l\'on retrouve exactement l\'équation bilan.',
+      },
+      {
+        type: 'reflex',
+        content: '**Ne pas confondre avec le catalyseur.** Comme l\'intermédiaire réactionnel, le catalyseur n\'apparaît pas dans le bilan — mais pour la raison **inverse** : l\'intermédiaire est **formé puis consommé**, le catalyseur est **consommé puis régénéré**. Le catalyseur est présent au début et à la fin ; l\'intermédiaire, ni l\'un ni l\'autre.',
+      },
+      {
+        type: 'methode',
+        title: 'Analyser une étape d\'un mécanisme',
+        steps: [
+          'Repérer les sites donneurs et accepteurs des espèces en présence.',
+          'Tracer la ou les flèches courbes, du donneur vers l\'accepteur.',
+          'En déduire les liaisons formées et rompues.',
+          'Écrire l\'espèce obtenue, en vérifiant les charges (leur somme se conserve).',
+        ],
+      },
+      {
+        type: 'piege',
+        content: 'Le mécanisme ne dit **rien** sur le sens d\'évolution ni sur l\'état final : ceux-ci relèvent de $K$ et du critère $Q_r$ vs $K$. Un mécanisme explique **comment**, la thermodynamique décide **jusqu\'où**.',
+      },
+    ],
+  },
+  {
+    id: 'strategie',
+    num: '5',
+    title: 'La stratégie de synthèse',
+    blocks: [
+      {
+        type: 'methode',
+        title: 'Les quatre étapes d\'un protocole',
+        steps: [
+          '**Transformation** : réaliser la réaction (chauffage à reflux, catalyseur, réactif en excès).',
+          '**Isolement** : séparer le produit du mélange (extraction, décantation, filtration).',
+          '**Purification** : éliminer les impuretés (recristallisation, distillation).',
+          '**Identification** : vérifier la nature et la pureté (CCM, IR, RMN, température de fusion).',
+        ],
+      },
+      {
+        type: 'figure',
+        caption: 'L\'étape 1 fixe la quantité maximale de produit possible. Les étapes 2 et 3, indispensables, en font inévitablement perdre une partie : c\'est l\'une des raisons pour lesquelles le rendement est toujours inférieur à $100\\,\\%$.',
+        src: '/modules/chim-meca/fig-protocole.png',
+      },
+      {
+        type: 'propriete',
+        content: '**Les leviers de l\'étape 1.** **Chauffage à reflux** : accélère la réaction (facteur cinétique) sans perte de matière — les vapeurs se condensent et retombent. **Catalyseur** : accélère sans modifier l\'état final. **Réactif en excès** : déplace l\'équilibre dans le sens direct et augmente $\\tau$ du réactif limitant. **Élimination d\'un produit** au fur et à mesure : fait chuter $Q_r$ sous $K$, le système continue d\'évoluer dans le sens direct.',
+      },
+      {
+        type: 'idee_cle',
+        content: '**Chauffer à reflux, deux effets d\'un coup.** Le reflux résout une tension : on veut chauffer (pour aller vite) sans perdre les réactifs volatils. Le réfrigérant condense les vapeurs qui retombent dans le ballon — on gagne en vitesse sans rien perdre en matière.',
+      },
+    ],
+  },
+  {
+    id: 'rendement',
+    num: '6',
+    title: 'Rendement & chimie verte',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'RENDEMENT',
+        content: 'Le **rendement** $\\eta$ compare la quantité de produit réellement obtenue à la quantité maximale attendue, souvent exprimé en pourcentage. $n_{\\max}$ se calcule à partir du **réactif limitant**.',
+        formulas: ['\\eta = \\dfrac{n_{\\text{obtenu}}}{n_{\\max}}'],
+      },
+      {
+        type: 'propriete',
+        content: '**Pourquoi $\\eta<100\\,\\%$ ?** La transformation peut être **limitée** ($\\tau<1$) : l\'équilibre borne le rendement. Des **pertes** surviennent à l\'isolement et à la purification. Des **réactions parasites** consomment une partie des réactifs.',
+      },
+      {
+        type: 'definition',
+        badge: 'ÉCONOMIE D\'ATOMES',
+        content: 'L\'**économie d\'atomes** mesure la proportion de la masse des réactifs qui se retrouve dans le produit désiré. C\'est une caractéristique **théorique** de l\'équation : elle ne dépend ni du protocole, ni du rendement.',
+        formulas: ['\\text{EA} = \\dfrac{M(\\text{produit désiré})}{\\sum M(\\text{réactifs})} \\times 100'],
+      },
+      {
+        type: 'exemple',
+        title: 'L\'estérification',
+        lines: [
+          '$\\text{CH}_3\\text{COOH}+\\text{C}_2\\text{H}_5\\text{OH}\\to\\text{CH}_3\\text{COOC}_2\\text{H}_5+\\text{H}_2\\text{O}$',
+          '$M(\\text{acide})=60{,}0$ ; $M(\\text{alcool})=46{,}0$ ; $M(\\text{ester})=88{,}0\\,\\text{g·mol}^{-1}$.',
+          '$\\text{EA}=\\dfrac{88{,}0}{60{,}0+46{,}0}=\\dfrac{88{,}0}{106{,}0}\\approx 83{,}0\\,\\%$.',
+          'Les $17\\,\\%$ restants partent inévitablement en eau : c\'est le prix structurel de cette équation, même avec un rendement parfait.',
+        ],
+      },
+      {
+        type: 'piege',
+        content: '**Piège majeur — deux notions distinctes.** Le **rendement** est **expérimental** : il dépend du protocole, des pertes, de l\'équilibre. L\'**économie d\'atomes** est **théorique** : elle se calcule sur la seule équation, avant toute manipulation. Une réaction peut avoir $\\text{EA}=100\\,\\%$ (aucun sous-produit) et un rendement médiocre — ou l\'inverse.',
+      },
+      {
+        type: 'propriete',
+        content: '**Les principes de la chimie verte.** Maximiser l\'économie d\'atomes : privilégier les **additions** ($\\text{EA}=100\\,\\%$) aux substitutions. Limiter les déchets plutôt que les traiter après coup. Solvants moins nocifs, voire absence de solvant. Économiser l\'énergie : travailler si possible à température ambiante. Catalyse plutôt que réactifs stœchiométriques. Matières premières renouvelables.',
+      },
+    ],
+  },
+];
+
 // ── Contenu Analyse spectroscopique (Chimie) ──────────────────────────────────
 const SPECTRO_OBJECTIFS = [
   'Associer un **groupe caractéristique** à sa **famille fonctionnelle** et à la terminaison du nom.',
@@ -8991,8 +9348,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isCinetiqueCours = module.id === 'chim-cinetique';
   const isEquilibreCours = module.id === 'chim-equilibre';
   const isSpectroCours = module.id === 'chim-spectro';
-  const sections = isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isMecaCours = module.id === 'chim-meca';
+  const sections = isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -9180,8 +9538,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isCinetiqueFiche = module.id === 'chim-cinetique';
   const isEquilibreFiche = module.id === 'chim-equilibre';
   const isSpectroFiche = module.id === 'chim-spectro';
-  const ficheData = isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isMecaFiche = module.id === 'chim-meca';
+  const ficheData = isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
