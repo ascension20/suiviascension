@@ -30,6 +30,7 @@ import { TITRAGES_QCM, TITRAGES_EXERCISES, TITRAGES_CORRECTIONS } from '@/lib/ti
 import { OXYDO_QCM, OXYDO_EXERCISES, OXYDO_CORRECTIONS } from '@/lib/oxydo-content';
 import { CINETIQUE_QCM, CINETIQUE_EXERCISES, CINETIQUE_CORRECTIONS } from '@/lib/cinetique-content';
 import { EQUILIBRE_QCM, EQUILIBRE_EXERCISES, EQUILIBRE_CORRECTIONS } from '@/lib/equilibre-content';
+import { SPECTRO_QCM, SPECTRO_EXERCISES, SPECTRO_CORRECTIONS } from '@/lib/spectro-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -84,14 +85,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isOxydo = module.id === 'chim-oxydo';
     const isCinetique = module.id === 'chim-cinetique';
     const isEquilibre = module.id === 'chim-equilibre';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm') {
-      const questions = isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isSpectro = module.id === 'chim-spectro';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm') {
+      const questions = isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4587,6 +4589,382 @@ const ENERGIE_COURS: Section[] = [
   },
 ];
 
+// ── Contenu Analyse spectroscopique (Chimie) ──────────────────────────────────
+const SPECTRO_OBJECTIFS = [
+  'Associer un **groupe caractéristique** à sa **famille fonctionnelle** et à la terminaison du nom.',
+  'Lire un **spectre IR** (axe inversé, transmittance) et identifier les **bandes** $\\text{O}-\\text{H}$, $\\text{C}=\\text{O}$, $\\text{N}-\\text{H}$…',
+  'Mener le **raisonnement croisé** $\\text{C}=\\text{O}$ / $\\text{O}-\\text{H}$ — et exploiter les **absences**.',
+  'Définir le **déplacement chimique** $\\delta$ (ppm, TMS) et interpréter le **déblindage**.',
+  'Reconnaître des **protons équivalents** et exploiter la **courbe d\'intégration**.',
+  'Appliquer la **règle des $(n+1)$-uplets** et identifier une molécule en croisant les trois sources.',
+];
+
+const SPECTRO_FICHE_DATA = [
+  {
+    title: '1  Groupes caractéristiques',
+    rows: [
+      {
+        label: 'Alcool / aldéhyde',
+        tex: '-\\text{OH} \\;\\text{(-ol)} \\;\\;/\\;\\; -\\text{CHO} \\;\\text{(-al)}',
+        vars: '$-\\text{OH}$ sur un carbone saturé',
+      },
+      {
+        label: 'Cétone / acide',
+        tex: '-\\text{CO}- \\;\\text{(-one)} \\;\\;/\\;\\; -\\text{COOH} \\;\\text{(acide -oïque)}',
+        vars: 'Deux familles très proches en IR — la RMN tranche',
+      },
+      {
+        label: 'Ester / amine / amide',
+        tex: '-\\text{COO}- \\;\\;/\\;\\; -\\text{NH}_2 \\;\\;/\\;\\; -\\text{CONH}_2',
+        vars: '-oate de -yle · -amine · -amide',
+      },
+    ],
+  },
+  {
+    title: '2  Bandes IR à connaître',
+    rows: [
+      {
+        label: 'O—H',
+        tex: '\\text{alcool} : 3200-3400 \\;\\;/\\;\\; \\text{acide} : 2500-3200',
+        vars: 'Alcool : **large** · acide : **très large**, étalée (signature)',
+      },
+      {
+        label: 'C=O',
+        tex: '1650-1750\\ \\text{cm}^{-1}',
+        vars: '**Fine et intense** · ester $\\approx 1735$ · aldéhyde $\\approx 1725$ · cétone $\\approx 1715$ · acide $\\approx 1710$ · amide $\\approx 1650$',
+      },
+      {
+        label: 'Autres',
+        tex: '\\text{N}-\\text{H} : 3300-3500 \\;;\\; \\text{C}-\\text{H} : 2800-3000 \\;;\\; \\text{C}-\\text{O} : 1050-1450',
+        vars: '$\\text{N}-\\text{H}$ moyenne et fine · $\\text{C}-\\text{H}$ et $\\text{C}-\\text{O}$ fortes',
+      },
+    ],
+  },
+  {
+    title: '3  Lire un spectre IR',
+    rows: [
+      {
+        label: 'Deux pièges',
+        tex: '\\text{axe inversé } (4000 \\to 500) \\;;\\; \\text{bandes vers le bas}',
+        vars: 'L\'ordonnée est la **transmittance** : un « pic » est un creux',
+      },
+      {
+        label: 'Raisonnement croisé',
+        tex: '\\text{C}=\\text{O ? } \\;\\;\\text{puis}\\;\\; \\text{O}-\\text{H ?}',
+        vars: 'non/large : **alcool** · oui/non : **cétone, aldéhyde ou ester** · oui/très large : **acide** · non/non : alcane, alcène…',
+      },
+      {
+        label: 'Empreinte digitale',
+        tex: '\\sigma < 1500\\ \\text{cm}^{-1}',
+        vars: 'Non interprétée bande par bande, mais identifie par **comparaison**',
+      },
+    ],
+  },
+  {
+    title: '4  RMN — déplacement chimique',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '\\delta \\text{ en ppm, référence TMS } (\\delta = 0)',
+        vars: 'C\'est un **rapport** de fréquences ⇒ indépendant du spectromètre · axe **inversé**',
+      },
+      {
+        label: 'Table des δ',
+        tex: '\\text{CH}_3/\\text{CH}_2 : 0{,}8-1{,}5 \\;;\\; \\text{CH en }\\alpha\\text{ de C}=\\text{O} : 2{,}0-2{,}6 \\;;\\; \\text{CH}-\\text{O} : 3{,}3-4{,}5',
+        vars: 'H aromatique $6{,}5-8{,}0$ · CHO $9{,}0-10{,}0$ · COOH $10-13$',
+      },
+      {
+        label: 'Déblindage',
+        tex: '\\text{proche de O, N ou C}=\\text{O} \\;\\Rightarrow\\; \\delta \\nearrow',
+        vars: 'Le signal se déplace vers la **gauche**',
+      },
+    ],
+  },
+  {
+    title: '5  Équivalence & intégration',
+    rows: [
+      {
+        label: 'Protons équivalents',
+        tex: '\\text{même environnement} \\;\\Rightarrow\\; \\text{un seul signal}',
+        vars: 'Nombre de signaux = nombre de **groupes équivalents**',
+      },
+      {
+        label: 'Courbe d\'intégration',
+        tex: '\\text{hauteur du palier} \\;\\propto\\; \\text{nombre de H}',
+        vars: '⚠ Donne un **rapport**, pas un absolu : croiser avec la **formule brute**',
+      },
+    ],
+  },
+  {
+    title: '6  Multiplicité & pièges',
+    rows: [
+      {
+        label: 'Règle des (n+1)-uplets',
+        tex: 'n \\text{ voisins} \\;\\Rightarrow\\; n+1 \\text{ pics}',
+        vars: '$0\\to$singulet · $1\\to$doublet · $2\\to$triplet · $3\\to$quadruplet · intensités = triangle de Pascal',
+      },
+      {
+        label: 'Le piège le plus coûteux',
+        tex: 'n = \\text{H des VOISINS, jamais du groupe lui-même}',
+        vars: 'Un $\\text{CH}_3$ ne se couple pas avec lui-même',
+      },
+      {
+        label: 'Deux réflexes',
+        tex: '\\text{OH : singulet, } \\delta \\text{ variable} \\;;\\; \\text{CH}_3 \\text{ singulet} \\Rightarrow \\text{voisin sans H}',
+        vars: '$\\text{CH}_3$ en singulet : souvent $\\text{CH}_3-\\text{CO}-$ ou un carbone quaternaire',
+      },
+    ],
+  },
+];
+
+const SPECTRO_COURS: Section[] = [
+  {
+    id: 'groupes',
+    num: '1',
+    title: 'Groupes caractéristiques',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'GROUPE CARACTÉRISTIQUE & FAMILLE',
+        content: 'Un **groupe caractéristique** est un groupe d\'atomes qui confère à une molécule des propriétés spécifiques. Il définit la **famille fonctionnelle** à laquelle elle appartient.',
+      },
+      {
+        type: 'formules',
+        label: 'Les familles au programme',
+        rows: [
+          { desc: 'Alcool', tex: '-\\text{OH}\\ \\text{(sur C saturé)} \\;\\longrightarrow\\; \\text{terminaison -ol}' },
+          { desc: 'Aldéhyde', tex: '-\\text{CHO} \\;\\longrightarrow\\; \\text{terminaison -al}' },
+          { desc: 'Cétone', tex: '-\\text{CO}- \\;\\longrightarrow\\; \\text{terminaison -one}' },
+          { desc: 'Acide carboxylique', tex: '-\\text{COOH} \\;\\longrightarrow\\; \\text{acide -oïque}' },
+          { desc: 'Ester', tex: '-\\text{COO}- \\;\\longrightarrow\\; \\text{-oate de -yle}' },
+          { desc: 'Amine', tex: '-\\text{NH}_2 \\;\\longrightarrow\\; \\text{terminaison -amine}' },
+          { desc: 'Amide', tex: '-\\text{CONH}_2 \\;\\longrightarrow\\; \\text{terminaison -amide}' },
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '**Pourquoi deux spectroscopies ?** Elles ne répondent pas à la même question. L\'**IR** dit *quels groupes* sont présents (le squelette fonctionnel). La **RMN** dit *comment les hydrogènes sont agencés* (le squelette carboné). Ensemble, elles identifient une molécule.',
+      },
+      {
+        type: 'methode',
+        title: 'La démarche d\'identification',
+        steps: [
+          '**Formule brute** : elle donne le nombre total d\'hydrogènes — indispensable pour exploiter l\'intégration.',
+          '**IR** : repérer les groupes présents… et surtout les groupes **absents**.',
+          '**RMN** : compter les signaux, lire les intégrations, analyser les multiplicités.',
+          '**Conclure** en confrontant les trois sources — jamais une seule.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'infrarouge',
+    num: '2',
+    title: 'La spectroscopie infrarouge',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'PRINCIPE',
+        content: 'Une liaison chimique vibre à une fréquence propre. Lorsqu\'elle est irradiée par un rayonnement infrarouge de fréquence adaptée, elle **absorbe** ce rayonnement. Chaque type de liaison absorbe dans un domaine caractéristique.',
+      },
+      {
+        type: 'definition',
+        badge: 'LE NOMBRE D\'ONDE',
+        content: 'On repère les absorptions par le **nombre d\'onde** $\\sigma$, en $\\text{cm}^{-1}$, relié à la longueur d\'onde par la relation ci-dessous. Un spectre IR représente la **transmittance** (en %) en fonction de $\\sigma$.',
+        formulas: ['\\sigma = \\dfrac{1}{\\lambda}'],
+      },
+      {
+        type: 'piege',
+        content: '**Deux pièges de lecture.** L\'axe des $\\sigma$ est **inversé** : $4000\\,\\text{cm}^{-1}$ à gauche, $500\\,\\text{cm}^{-1}$ à droite. Les bandes pointent vers le **bas** : une forte absorption correspond à une transmittance faible. Un « pic » est un creux.',
+      },
+      {
+        type: 'formules',
+        label: 'Les bandes à connaître',
+        rows: [
+          { desc: '$\\text{O}-\\text{H}$ alcool — forte, **large**', tex: '3200 - 3400\\ \\text{cm}^{-1}' },
+          { desc: '$\\text{O}-\\text{H}$ acide — **très large**, étalée', tex: '2500 - 3200\\ \\text{cm}^{-1}' },
+          { desc: '$\\text{N}-\\text{H}$ amine — moyenne, fine', tex: '3300 - 3500\\ \\text{cm}^{-1}' },
+          { desc: '$\\text{C}-\\text{H}$ — forte', tex: '2800 - 3000\\ \\text{cm}^{-1}' },
+          { desc: '$\\text{C}=\\text{O}$ — forte, **fine et intense**', tex: '1650 - 1750\\ \\text{cm}^{-1}' },
+          { desc: '$\\text{C}=\\text{C}$ — moyenne', tex: '1625 - 1685\\ \\text{cm}^{-1}' },
+          { desc: '$\\text{C}-\\text{O}$ — forte', tex: '1050 - 1450\\ \\text{cm}^{-1}' },
+        ],
+      },
+      {
+        type: 'reflex',
+        content: '**L\'empreinte digitale.** En dessous de $1500\\,\\text{cm}^{-1}$, le spectre est complexe et propre à chaque molécule : c\'est la zone des **empreintes digitales**. On ne l\'interprète pas bande par bande, mais elle permet une identification par comparaison avec un spectre de référence.',
+      },
+    ],
+  },
+  {
+    id: 'lire-ir',
+    num: '3',
+    title: 'Lire un spectre IR',
+    blocks: [
+      {
+        type: 'figure',
+        caption: 'Deux spectres révélateurs. En haut, un alcool : bande $\\text{O}-\\text{H}$ large vers $3300\\,\\text{cm}^{-1}$, et aucune bande $\\text{C}=\\text{O}$. En bas, un acide carboxylique : $\\text{O}-\\text{H}$ très large étalée de $2500$ à $3200\\,\\text{cm}^{-1}$, et une bande $\\text{C}=\\text{O}$ fine et intense vers $1710\\,\\text{cm}^{-1}$.',
+        src: '/modules/chim-spectro/fig-ir.png',
+      },
+      {
+        type: 'methode',
+        title: 'Exploiter un spectre IR',
+        steps: [
+          'Regarder d\'abord vers $1700\\,\\text{cm}^{-1}$ : y a-t-il une bande $\\text{C}=\\text{O}$ ? Fine et intense, elle est facile à repérer.',
+          'Regarder ensuite vers $3000-3400\\,\\text{cm}^{-1}$ : y a-t-il un $\\text{O}-\\text{H}$ ? large (alcool) ou très large (acide) ?',
+          'Croiser les deux réponses avec le tableau ci-dessous.',
+        ],
+      },
+      {
+        type: 'formules',
+        label: 'Le raisonnement croisé $\\text{C}=\\text{O}$ / $\\text{O}-\\text{H}$',
+        rows: [
+          { desc: 'pas de $\\text{C}=\\text{O}$ · $\\text{O}-\\text{H}$ large', tex: '\\longrightarrow\\; \\textbf{alcool}' },
+          { desc: '$\\text{C}=\\text{O}$ · pas de $\\text{O}-\\text{H}$', tex: '\\longrightarrow\\; \\textbf{cétone, aldéhyde ou ester}' },
+          { desc: '$\\text{C}=\\text{O}$ · $\\text{O}-\\text{H}$ très large', tex: '\\longrightarrow\\; \\textbf{acide carboxylique}' },
+          { desc: 'ni l\'un ni l\'autre', tex: '\\longrightarrow\\; \\text{alcane, alcène…}' },
+        ],
+      },
+      {
+        type: 'propriete',
+        content: '**Affiner grâce à la position du $\\text{C}=\\text{O}$.** Les valeurs sont proches, mais exploitables : ester $\\approx 1735$, aldéhyde $\\approx 1725$, cétone $\\approx 1715$, acide $\\approx 1710$, amide $\\approx 1650\\,\\text{cm}^{-1}$.',
+      },
+      {
+        type: 'idee_cle',
+        content: '**L\'absence est une information.** Le réflexe le plus rentable en IR : ne pas seulement chercher ce qui est présent, mais conclure de ce qui **manque**. L\'absence de $\\text{C}=\\text{O}$ élimine d\'un coup cinq familles.',
+      },
+    ],
+  },
+  {
+    id: 'rmn',
+    num: '4',
+    title: 'RMN : principe & déplacement chimique',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'PRINCIPE',
+        content: 'Placé dans un champ magnétique intense, le noyau d\'hydrogène (le **proton**) peut absorber une onde radio. La fréquence absorbée dépend très finement de l\'**environnement chimique** du proton : la RMN sonde donc chaque hydrogène dans son voisinage.',
+      },
+      {
+        type: 'definition',
+        badge: 'LE DÉPLACEMENT CHIMIQUE',
+        content: 'On repère chaque signal par son **déplacement chimique** $\\delta$, exprimé en **ppm** (partie par million). La référence est le **TMS**, pour lequel $\\delta=0$ par convention. Avantage décisif : $\\delta$ ne dépend **pas** du spectromètre utilisé. Un même proton donne le même $\\delta$ partout.',
+      },
+      {
+        type: 'piege',
+        content: 'Comme en IR, l\'axe est **inversé** : $\\delta$ décroît de gauche à droite, le TMS ($\\delta=0$) étant à l\'extrême droite.',
+      },
+      {
+        type: 'formules',
+        label: 'Table des déplacements chimiques',
+        rows: [
+          { desc: '$\\text{CH}_3$, $\\text{CH}_2$ (alcane)', tex: '\\delta = 0{,}8 - 1{,}5\\ \\text{ppm}' },
+          { desc: '$\\text{CH}$ en $\\alpha$ d\'un $\\text{C}=\\text{O}$', tex: '\\delta = 2{,}0 - 2{,}6\\ \\text{ppm}' },
+          { desc: '$\\text{CH}$ lié à $\\text{O}$', tex: '\\delta = 3{,}3 - 4{,}5\\ \\text{ppm}' },
+          { desc: '$\\text{H}$ aromatique', tex: '\\delta = 6{,}5 - 8{,}0\\ \\text{ppm}' },
+          { desc: '$\\text{H}$ d\'aldéhyde ($\\text{CHO}$)', tex: '\\delta = 9{,}0 - 10{,}0\\ \\text{ppm}' },
+          { desc: '$\\text{H}$ d\'acide ($\\text{COOH}$)', tex: '\\delta = 10 - 13\\ \\text{ppm}' },
+        ],
+      },
+      {
+        type: 'propriete',
+        content: '**Ce qui déblinde.** Plus un proton est proche d\'un atome électronégatif ($\\text{O}$, $\\text{N}$) ou d\'un $\\text{C}=\\text{O}$, plus il est **déblindé** : son $\\delta$ augmente, son signal se déplace vers la gauche.',
+      },
+      {
+        type: 'reflex',
+        content: '**Le cas du OH.** Le proton d\'un $\\text{OH}$ d\'alcool a un $\\delta$ très variable (il dépend du solvant et de la concentration) et apparaît en **singulet** : il échange trop vite pour se coupler à ses voisins. On ne l\'utilise donc jamais pour identifier une molécule — mais son **intégration** compte.',
+      },
+    ],
+  },
+  {
+    id: 'integration',
+    num: '5',
+    title: 'Protons équivalents & intégration',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'PROTONS ÉQUIVALENTS',
+        content: 'Des protons sont **équivalents** s\'ils occupent le même environnement chimique (souvent par symétrie). Ils donnent un **seul signal**. Conséquence directe : le nombre de signaux = le nombre de groupes de protons équivalents.',
+      },
+      {
+        type: 'exemple',
+        title: 'Le propan-2-ol',
+        lines: [
+          'Dans le propan-2-ol $(\\text{CH}_3)_2\\text{CH}-\\text{OH}$, les deux $\\text{CH}_3$ sont équivalents par symétrie : ils donnent un seul signal intégrant pour $6\\,\\text{H}$ — et non deux signaux de $3\\,\\text{H}$.',
+          'Le spectre comporte donc **3 signaux** ($\\text{CH}_3$, $\\text{CH}$, $\\text{OH}$), et non $4$.',
+        ],
+      },
+      {
+        type: 'definition',
+        badge: 'LA COURBE D\'INTÉGRATION',
+        content: 'La **courbe d\'intégration** est une courbe en escalier superposée au spectre. La **hauteur de chaque palier** est proportionnelle au nombre de protons du signal correspondant.',
+      },
+      {
+        type: 'figure',
+        caption: 'Spectre de l\'éthanol. Trois signaux, donc trois groupes de protons équivalents. Les paliers d\'intégration sont dans le rapport $3:2:1$ — et comme la formule brute $\\text{C}_2\\text{H}_6\\text{O}$ impose $6\\,\\text{H}$, on attribue directement $3\\,\\text{H}$, $2\\,\\text{H}$ et $1\\,\\text{H}$.',
+        src: '/modules/chim-spectro/fig-rmn.png',
+      },
+      {
+        type: 'piege',
+        content: '**Piège majeur.** L\'intégration ne donne qu\'un **rapport**, jamais un nombre absolu. Un rapport $3:2:1$ pourrait tout aussi bien correspondre à $6:4:2$. C\'est la **formule brute** qui tranche — d\'où l\'étape 1 de la méthode.',
+      },
+      {
+        type: 'methode',
+        title: 'Exploiter l\'intégration',
+        steps: [
+          'Mesurer les hauteurs des paliers et former le rapport le plus simple.',
+          'Additionner les termes de ce rapport.',
+          'Comparer au nombre total de $\\text{H}$ de la formule brute : si les deux coïncident, le rapport est le nombre de protons ; sinon, multiplier par le facteur adéquat.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'multiplicite',
+    num: '6',
+    title: 'La multiplicité des signaux',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'LA RÈGLE DES (N+1)-UPLETS',
+        content: 'Un signal dû à des protons ayant $n$ protons **voisins équivalents** est un multiplet à $n+1$ **pics**. Les protons voisins sont ceux portés par les atomes **directement liés** à l\'atome porteur.',
+      },
+      {
+        type: 'figure',
+        caption: 'La règle en images : $0$ voisin donne un singulet, $1$ un doublet, $2$ un triplet, $3$ un quadruplet. Les intensités relatives des pics suivent le triangle de Pascal.',
+        src: '/modules/chim-spectro/fig-multiplicite.png',
+      },
+      {
+        type: 'piege',
+        content: '**Le piège le plus coûteux.** $n$ est le nombre de protons portés par les atomes **voisins** — jamais ceux du groupe lui-même. Un $\\text{CH}_3$ ne se couple pas avec lui-même : ses trois protons sont équivalents entre eux.',
+      },
+      {
+        type: 'exemple',
+        title: 'Exemple complet — l\'éthanol $\\text{CH}_3-\\text{CH}_2-\\text{OH}$',
+        lines: [
+          '$\\text{CH}_3$ ($3\\,\\text{H}$, $\\delta\\approx 1{,}2$) : voisins = les $2\\,\\text{H}$ du $\\text{CH}_2$ → $2+1=3$ pics : **triplet**.',
+          '$\\text{CH}_2$ ($2\\,\\text{H}$, $\\delta\\approx 3{,}7$) : voisins = les $3\\,\\text{H}$ du $\\text{CH}_3$ → $3+1=4$ pics : **quadruplet**. Son $\\delta$ élevé s\'explique par la proximité de l\'oxygène (déblindage).',
+          '$\\text{OH}$ ($1\\,\\text{H}$) : **singulet** (échange rapide).',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'Exemple — l\'éthanoate d\'éthyle $\\text{CH}_3-\\text{CO}-\\text{O}-\\text{CH}_2-\\text{CH}_3$',
+        lines: [
+          '$\\text{CH}_3-\\text{CO}$ ($3\\,\\text{H}$, $\\delta\\approx 2{,}0$) : **singulet** — le carbone voisin est celui du $\\text{C}=\\text{O}$, qui ne porte aucun $\\text{H}$.',
+          '$\\text{O}-\\text{CH}_2$ ($2\\,\\text{H}$, $\\delta\\approx 4{,}1$) : **quadruplet**, fortement déblindé par l\'oxygène.',
+          '$\\text{CH}_2-\\text{CH}_3$ ($3\\,\\text{H}$, $\\delta\\approx 1{,}3$) : **triplet**.',
+          'Intégration $3:2:3$, soit $8\\,\\text{H}$ : cohérent avec $\\text{C}_4\\text{H}_8\\text{O}_2$ ✓.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '**Le singulet est un indice précieux.** Un $\\text{CH}_3$ en singulet signale un groupe isolé : son voisin ne porte pas d\'hydrogène. C\'est presque toujours un $\\text{CH}_3$ accroché à un $\\text{C}=\\text{O}$ ou à un carbone quaternaire — une information structurale immédiate.',
+      },
+    ],
+  },
+];
+
 // ── Contenu L'équilibre chimique (Chimie) ─────────────────────────────────────
 const EQUILIBRE_OBJECTIFS = [
   'Distinguer une transformation **totale** ($\\tau=1$) d\'une transformation **limitée** ($\\tau<1$).',
@@ -8612,8 +8990,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isOxydoCours = module.id === 'chim-oxydo';
   const isCinetiqueCours = module.id === 'chim-cinetique';
   const isEquilibreCours = module.id === 'chim-equilibre';
-  const sections = isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isSpectroCours = module.id === 'chim-spectro';
+  const sections = isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -8800,8 +9179,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isOxydoFiche = module.id === 'chim-oxydo';
   const isCinetiqueFiche = module.id === 'chim-cinetique';
   const isEquilibreFiche = module.id === 'chim-equilibre';
-  const ficheData = isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isSpectroFiche = module.id === 'chim-spectro';
+  const ficheData = isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
