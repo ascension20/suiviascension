@@ -32,6 +32,7 @@ import { CINETIQUE_QCM, CINETIQUE_EXERCISES, CINETIQUE_CORRECTIONS } from '@/lib
 import { EQUILIBRE_QCM, EQUILIBRE_EXERCISES, EQUILIBRE_CORRECTIONS } from '@/lib/equilibre-content';
 import { SPECTRO_QCM, SPECTRO_EXERCISES, SPECTRO_CORRECTIONS } from '@/lib/spectro-content';
 import { MECA_QCM, MECA_EXERCISES, MECA_CORRECTIONS } from '@/lib/meca-content';
+import { FLUIDES_QCM, FLUIDES_EXERCISES, FLUIDES_CORRECTIONS } from '@/lib/fluides-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -88,14 +89,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isEquilibre = module.id === 'chim-equilibre';
     const isSpectro = module.id === 'chim-spectro';
     const isMeca = module.id === 'chim-meca';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm') {
-      const questions = isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isFluides = module.id === 'phys-fluides';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm') {
+      const questions = isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4587,6 +4589,361 @@ const ENERGIE_COURS: Section[] = [
         ],
       },
       { type: 'lien_ex', text: '→ Exercices 14, 15 : descente avec frottements, énergie dissipée — puis sujets bac 16, 17' },
+    ],
+  },
+];
+
+// ── Contenu La mécanique des fluides (Physique) ───────────────────────────────
+const FLUIDES_OBJECTIFS = [
+  'Définir la **pression** $p=\\dfrac{F}{S}$ et calculer une **force pressante** (conversions !).',
+  'Appliquer la **loi fondamentale de la statique** $p=p_0+\\rho g h$ et la règle des $+1$ bar / $10\\,\\text{m}$.',
+  'Énoncer et exploiter le **théorème d\'Archimède** $\\Pi=\\rho_{\\text{fluide}}V_{\\text{immergé}}\\,g$.',
+  'Établir une **condition de flottaison** et calculer une **fraction immergée**.',
+  'Utiliser le **débit volumique** $D_v=Sv$ et sa **conservation** $S_1v_1=S_2v_2$.',
+  'Appliquer la **relation de Bernoulli** : Torricelli, effet **Venturi** et débitmètre.',
+];
+
+const FLUIDES_FICHE_DATA = [
+  {
+    title: '1  Pression',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'p = \\dfrac{F}{S}',
+        vars: '$F$ en N, $S$ en $\\text{m}^2$, $p$ en Pa · $1\\,\\text{Pa}=1\\,\\text{N·m}^{-2}$ · force pressante ⊥ à la surface',
+      },
+      {
+        label: 'Unités',
+        tex: '1\\ \\text{bar} = 10^{5}\\ \\text{Pa} \\;;\\; p_0 = 1{,}013\\times 10^{5}\\ \\text{Pa}',
+        vars: '$p_0$ = pression atmosphérique normale',
+      },
+      {
+        label: '⚠ Conversions',
+        tex: '1\\ \\text{cm}^2 = 10^{-4}\\ \\text{m}^2 \\;;\\; 1\\ \\text{L} = 10^{-3}\\ \\text{m}^3',
+        vars: 'La conversion des surfaces est **quadratique** — erreur n°1 du chapitre',
+      },
+    ],
+  },
+  {
+    title: '2  Statique des fluides',
+    rows: [
+      {
+        label: 'Loi fondamentale',
+        tex: 'p = p_0 + \\rho g h',
+        vars: '$h$ = **profondeur** comptée vers le bas · fluide au repos et incompressible',
+      },
+      {
+        label: 'Conséquences',
+        tex: 'p \\text{ ne dépend QUE de } h',
+        vars: 'Ni la forme, ni le volume du récipient · même profondeur ⟹ même pression',
+      },
+      {
+        label: 'Règle pratique',
+        tex: '\\approx +1\\ \\text{bar tous les } 10\\ \\text{m d\'eau}',
+        vars: '$10\\,\\text{m}\\to 2$ bar · $20\\,\\text{m}\\to 3$ bar · $30\\,\\text{m}\\to 4$ bar',
+      },
+    ],
+  },
+  {
+    title: '3  Poussée d\'Archimède',
+    rows: [
+      {
+        label: 'Théorème',
+        tex: '\\Pi = \\rho_{\\text{fluide}} \\times V_{\\text{immergé}} \\times g',
+        vars: 'Verticale, vers le haut = **poids du fluide déplacé**',
+      },
+      {
+        label: '⚠ Le piège',
+        tex: '\\rho = \\text{celle du FLUIDE} \\;;\\; V = \\text{volume IMMERGÉ}',
+        vars: 'Jamais celle du corps · jamais le volume total',
+      },
+      {
+        label: 'Flottaison',
+        tex: '\\dfrac{V_{\\text{imm}}}{V_{\\text{tot}}} = \\dfrac{\\rho_{\\text{corps}}}{\\rho_{\\text{fluide}}}',
+        vars: 'Flotte si $\\rho_{\\text{corps}}<\\rho_{\\text{fluide}}$ · équilibre $\\Pi=P$ · iceberg : $\\approx 90\\,\\%$ immergé',
+      },
+    ],
+  },
+  {
+    title: '4  Débit & conservation',
+    rows: [
+      {
+        label: 'Débit volumique',
+        tex: 'D_v = S \\, v',
+        vars: 'En $\\text{m}^3\\text{·s}^{-1}$ · $S$ section, $v$ vitesse moyenne',
+      },
+      {
+        label: 'Conservation',
+        tex: 'D_v = S_1 v_1 = S_2 v_2',
+        vars: 'Fluide incompressible, écoulement stationnaire · $S\\div 4 \\Rightarrow v\\times 4$',
+      },
+    ],
+  },
+  {
+    title: '5  Relation de Bernoulli',
+    rows: [
+      {
+        label: 'Relation',
+        tex: 'p + \\tfrac{1}{2}\\rho v^2 + \\rho g z = \\text{cste}',
+        vars: 'Conservation de l\'énergie **par unité de volume** ($\\text{J·m}^{-3}$)',
+      },
+      {
+        label: 'Hypothèses',
+        tex: '\\text{parfait · incompressible · stationnaire}',
+        vars: 'Le long d\'une ligne de courant · si viscosité mentionnée : plus valable',
+      },
+      {
+        label: 'Torricelli (vidange)',
+        tex: 'v = \\sqrt{2gh}',
+        vars: '**Indépendant de $\\rho$** — même formule que la chute libre',
+      },
+    ],
+  },
+  {
+    title: '6  Effet Venturi',
+    rows: [
+      {
+        label: 'Conduite horizontale',
+        tex: 'S \\searrow \\;\\Rightarrow\\; v \\nearrow \\;\\Rightarrow\\; p \\searrow',
+        vars: '$z_1=z_2$ : le terme $\\rho gz$ se simplifie',
+      },
+      {
+        label: 'Différence de pression',
+        tex: 'p_1 - p_2 = \\tfrac{1}{2}\\rho\\left(v_2^2 - v_1^2\\right)',
+        vars: 'Le fluide paie son accélération sur son terme de pression',
+      },
+      {
+        label: 'Sens du raisonnement',
+        tex: 'S \\to v \\;(\\text{débit}) \\to p \\;(\\text{Bernoulli})',
+        vars: '**Jamais l\'inverse** · applications : trompe à eau, débitmètre, portance d\'une aile',
+      },
+    ],
+  },
+];
+
+const FLUIDES_COURS: Section[] = [
+  {
+    id: 'pression',
+    num: '1',
+    title: 'Pression & force pressante',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'PRESSION',
+        content: 'Un fluide exerce sur toute surface $S$ en contact une **force pressante** $\\vec{F}$, **perpendiculaire** à cette surface et dirigée vers elle. La pression est le quotient ci-dessous, avec $F$ en newtons, $S$ en $\\text{m}^2$ et $p$ en pascals (Pa). Un pascal vaut donc $1\\,\\text{N·m}^{-2}$.',
+        formulas: ['p = \\dfrac{F}{S}'],
+      },
+      {
+        type: 'formules',
+        label: 'Unités usuelles & masses volumiques',
+        rows: [
+          { desc: 'Bar', tex: '1\\ \\text{bar} = 10^{5}\\ \\text{Pa}' },
+          { desc: 'Pression atmosphérique normale', tex: 'p_0 = 1{,}013\\times 10^{5}\\ \\text{Pa}' },
+          { desc: 'Masse volumique', tex: '\\rho = \\dfrac{m}{V}\\ \\text{en kg·m}^{-3}' },
+          { desc: 'Valeurs à connaître', tex: '\\text{eau douce } 1{,}0\\times 10^{3} \\;;\\; \\text{eau de mer } 1{,}025\\times 10^{3} \\;;\\; \\text{air } 1{,}2' },
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'Calculer une force pressante',
+        steps: [
+          'Convertir la surface en $\\text{m}^2$ (attention : $1\\,\\text{cm}^2=10^{-4}\\,\\text{m}^2$).',
+          'Déterminer la pression en $\\text{Pa}$ (convertir les bars si besoin).',
+          'Appliquer $F=p\\times S$.',
+        ],
+      },
+      {
+        type: 'piege',
+        content: '**La conversion des surfaces.** $1\\,\\text{cm}^2=10^{-4}\\,\\text{m}^2$, et non $10^{-2}$ : la conversion est **quadratique**. De même $1\\,\\text{mm}^2=10^{-6}\\,\\text{m}^2$ et $1\\,\\text{cm}^3=10^{-6}\\,\\text{m}^3$. C\'est la source d\'erreur numéro un du chapitre.',
+      },
+      {
+        type: 'idee_cle',
+        content: '**Pourquoi une punaise s\'enfonce.** La pression est une force ramenée à une surface. Une même force appliquée sur une pointe minuscule produit une pression énorme : c\'est tout le principe de la punaise, du couteau, et — à l\'inverse — des raquettes à neige, qui répartissent le poids sur une grande surface.',
+      },
+    ],
+  },
+  {
+    id: 'statique',
+    num: '2',
+    title: 'La statique des fluides',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'LOI FONDAMENTALE DE LA STATIQUE DES FLUIDES',
+        content: 'Dans un fluide **incompressible au repos**, la pression à la profondeur $h$ sous la surface libre vaut la relation ci-dessous, où $p_0$ est la pression à la surface, $\\rho$ la masse volumique du fluide et $g$ l\'intensité de pesanteur.',
+        formulas: ['p = p_0 + \\rho\\,g\\,h'],
+      },
+      {
+        type: 'figure',
+        caption: 'La pression croît linéairement avec la profondeur. Dans l\'eau, $\\rho g\\times 10=9{,}81\\times 10^{4}\\,\\text{Pa}$ : on gagne environ $1$ bar tous les $10$ mètres. À $20\\,\\text{m}$, la pression est déjà de $\\approx 3$ bar, soit le triple de la pression atmosphérique.',
+        src: '/modules/phys-fluides/fig-statique.png',
+      },
+      {
+        type: 'propriete',
+        content: '**Conséquences essentielles.** La pression ne dépend que de la **profondeur** : deux points d\'un même fluide situés à la même profondeur sont à la même pression. Elle ne dépend **ni de la forme, ni du volume** du récipient — seulement de $h$, $\\rho$ et $g$. Elle croît **linéairement** avec $h$.',
+      },
+      {
+        type: 'exemple',
+        title: 'Plongée',
+        lines: [
+          'À $30\\,\\text{m}$ dans l\'eau : $p=1{,}013\\times 10^{5}+1{,}0\\times 10^{3}\\times 9{,}81\\times 30\\approx 3{,}95\\times 10^{5}\\,\\text{Pa}\\approx 4\\,\\text{bar}$.',
+          'La pression a quadruplé par rapport à la surface : le volume d\'une bulle d\'air y est divisé par environ $4$.',
+        ],
+      },
+      {
+        type: 'piege',
+        content: '**$h$ est une profondeur.** $h$ se compte vers le **bas**, depuis la surface libre. Si l\'énoncé fournit une altitude $z$ orientée vers le haut, il faut adapter : $h$ augmente quand on descend.',
+      },
+    ],
+  },
+  {
+    id: 'archimede',
+    num: '3',
+    title: 'La poussée d\'Archimède',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'THÉORÈME D\'ARCHIMÈDE',
+        content: 'Tout corps plongé dans un fluide subit de sa part une force **verticale**, dirigée **vers le haut**, appelée **poussée d\'Archimède**, dont la valeur égale le **poids du fluide déplacé** :',
+        formulas: ['\\Pi = \\rho_{\\text{fluide}} \\times V_{\\text{immergé}} \\times g'],
+      },
+      {
+        type: 'figure',
+        caption: 'À gauche, le corps flotte : il s\'est enfoncé jusqu\'à ce que $\\Pi=P$, le volume immergé s\'ajustant de lui-même. À droite, le corps coule : même totalement immergé ($V_{\\text{immergé}}=V_{\\text{total}}$, donc $\\Pi$ maximale), son poids l\'emporte encore.',
+        src: '/modules/phys-fluides/fig-archimede.png',
+      },
+      {
+        type: 'piege',
+        content: '**Le piège central.** Dans $\\Pi=\\rho_{\\text{fluide}}V_{\\text{immergé}}\\,g$, $\\rho$ est celle du **fluide**, jamais celle du corps. Et $V_{\\text{immergé}}$ est le volume **immergé**, pas le volume total — les deux ne coïncident que si le corps est entièrement sous la surface.',
+      },
+      {
+        type: 'propriete',
+        content: '**Condition de flottaison.** Un corps homogène de masse volumique $\\rho_{\\text{corps}}$ **flotte** si $\\rho_{\\text{corps}}<\\rho_{\\text{fluide}}$ ; il **coule** si $\\rho_{\\text{corps}}>\\rho_{\\text{fluide}}$. À l\'équilibre d\'un corps qui flotte, $\\Pi=P$ donne $\\rho_{\\text{fluide}}V_{\\text{imm}}\\,g=\\rho_{\\text{corps}}V_{\\text{tot}}\\,g$, d\'où la fraction immergée $\\dfrac{V_{\\text{imm}}}{V_{\\text{tot}}}=\\dfrac{\\rho_{\\text{corps}}}{\\rho_{\\text{fluide}}}$.',
+      },
+      {
+        type: 'exemple',
+        title: 'L\'iceberg',
+        lines: [
+          '$\\rho_{\\text{glace}}=917\\,\\text{kg·m}^{-3}$ et $\\rho_{\\text{mer}}=1025\\,\\text{kg·m}^{-3}$, d\'où $\\dfrac{V_{\\text{imm}}}{V_{\\text{tot}}}=\\dfrac{917}{1025}\\approx 0{,}895$.',
+          '$89{,}5\\,\\%$ du volume est immergé : seuls $10{,}5\\,\\%$ émergent. D\'où l\'expression « la partie émergée de l\'iceberg ».',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '**Pourquoi un bateau en acier flotte.** L\'acier a $\\rho=7{,}8\\times 10^{3}\\,\\text{kg·m}^{-3}$ : il coule. Mais la condition porte sur la masse volumique **moyenne** du bateau, coque et air intérieur compris — largement inférieure à celle de l\'eau. La coque déplace beaucoup d\'eau pour peu de masse.',
+      },
+    ],
+  },
+  {
+    id: 'debit',
+    num: '4',
+    title: 'Débit & conservation',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉBIT VOLUMIQUE',
+        content: 'Le **débit volumique** $D_v$ est le volume de fluide traversant une section par unité de temps, en $\\text{m}^3\\text{·s}^{-1}$, avec $S$ la section et $v$ la vitesse moyenne d\'écoulement.',
+        formulas: ['D_v = S \\, v'],
+      },
+      {
+        type: 'definition',
+        badge: 'CONSERVATION DU DÉBIT',
+        content: 'Pour un fluide **incompressible** en écoulement **stationnaire**, le débit volumique se conserve le long de l\'écoulement. Le fluide ne pouvant ni s\'accumuler ni disparaître, tout ce qui entre par une section ressort par la suivante.',
+        formulas: ['D_v = S_1 v_1 = S_2 v_2 = \\text{constante}'],
+      },
+      {
+        type: 'propriete',
+        content: '**Conséquence — le rétrécissement accélère.** $S$ et $v$ sont **inversement proportionnelles** : si la section est divisée par $4$, la vitesse est multipliée par $4$.',
+      },
+      {
+        type: 'exemple',
+        title: 'Application numérique',
+        lines: [
+          '$S_1=20\\,\\text{cm}^2=2{,}0\\times 10^{-3}\\,\\text{m}^2$ et $v_1=1{,}5\\,\\text{m·s}^{-1}$ donnent $D_v=3{,}0\\times 10^{-3}\\,\\text{m}^3\\text{·s}^{-1}=3{,}0\\,\\text{L·s}^{-1}$.',
+          'Dans un rétrécissement $S_2=5{,}0\\,\\text{cm}^2$ : $v_2=\\dfrac{D_v}{S_2}=6{,}0\\,\\text{m·s}^{-1}$ — la section a été divisée par $4$, la vitesse est multipliée par $4$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        content: '**Le tuyau d\'arrosage.** En pinçant l\'extrémité d\'un tuyau, on réduit $S$ : le débit imposé restant le même, $v$ augmente et le jet porte plus loin. C\'est la conservation du débit, à main nue.',
+      },
+    ],
+  },
+  {
+    id: 'bernoulli',
+    num: '5',
+    title: 'La relation de Bernoulli',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'RELATION DE BERNOULLI',
+        content: 'Pour un fluide **parfait incompressible** en écoulement **stationnaire**, le long d\'une ligne de courant :',
+        formulas: ['p + \\tfrac{1}{2}\\rho v^2 + \\rho g z = \\text{constante}'],
+      },
+      {
+        type: 'reflex',
+        content: '**Une conservation de l\'énergie.** Chaque terme est une **énergie volumique** (en $\\text{J·m}^{-3}$) : $p$ est le travail des forces pressantes, $\\tfrac{1}{2}\\rho v^2$ l\'énergie cinétique volumique, $\\rho g z$ l\'énergie potentielle de pesanteur volumique. Bernoulli n\'est donc rien d\'autre que la **conservation de l\'énergie mécanique**, exprimée par unité de volume. C\'est exactement le $E_m=\\text{cste}$ du module d\'énergie, appliqué à un fluide.',
+      },
+      {
+        type: 'propriete',
+        content: '**Les conditions d\'application.** La relation suppose un fluide **parfait** (sans viscosité, donc sans frottement), **incompressible**, en écoulement **stationnaire**, et s\'applique **le long d\'une ligne de courant**. Si l\'énoncé mentionne des frottements ou de la viscosité, elle n\'est plus valable.',
+      },
+      {
+        type: 'exemple',
+        title: 'Application — la vidange (formule de Torricelli)',
+        lines: [
+          'Un réservoir ouvert, percé à la profondeur $h$. Entre la surface ($p_0$, $v\\approx 0$, $z=h$) et l\'orifice ($p_0$, $v$, $z=0$) :',
+          '$p_0+0+\\rho g h=p_0+\\tfrac{1}{2}\\rho v^2+0$, d\'où $\\rho g h=\\tfrac{1}{2}\\rho v^2$ et $v=\\sqrt{2gh}$.',
+          'Pour $h=2{,}0\\,\\text{m}$ : $v=\\sqrt{2\\times 9{,}81\\times 2{,}0}\\approx 6{,}3\\,\\text{m·s}^{-1}$.',
+          'Remarquable : $\\rho$ a disparu. La vitesse de vidange ne dépend pas du fluide — c\'est la même formule que la vitesse d\'un corps en chute libre d\'une hauteur $h$.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'venturi',
+    num: '6',
+    title: 'L\'effet Venturi',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'L\'EFFET VENTURI',
+        content: 'Dans une conduite **horizontale**, un rétrécissement provoque une **augmentation de la vitesse** et, par conséquent, une **diminution de la pression**.',
+      },
+      {
+        type: 'figure',
+        caption: 'Les deux lois s\'enchaînent : la conservation du débit impose $v_2>v_1$ dans le rétrécissement ; Bernoulli impose alors $p_2<p_1$. Les tubes manométriques rendent la dépression visible.',
+        src: '/modules/phys-fluides/fig-venturi.png',
+      },
+      {
+        type: 'methode',
+        title: 'Démonstration',
+        steps: [
+          'Conduite horizontale : $z_1=z_2$, le terme $\\rho g z$ se simplifie.',
+          'Bernoulli devient $p_1+\\tfrac{1}{2}\\rho v_1^2=p_2+\\tfrac{1}{2}\\rho v_2^2$, d\'où $p_1-p_2=\\tfrac{1}{2}\\rho\\left(v_2^2-v_1^2\\right)$.',
+          'Or la conservation du débit donne $v_2>v_1$ puisque $S_2<S_1$. Donc $p_1-p_2>0$ et $p_2<p_1$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'Exemple chiffré',
+        lines: [
+          'Avec $v_1=1{,}5\\,\\text{m·s}^{-1}$ et $v_2=6{,}0\\,\\text{m·s}^{-1}$ dans l\'eau :',
+          '$p_1-p_2=\\tfrac{1}{2}\\times 1{,}0\\times 10^{3}\\times(6{,}0^2-1{,}5^2)=1{,}7\\times 10^{4}\\,\\text{Pa}$, soit environ $0{,}17$ bar de dépression.',
+        ],
+      },
+      {
+        type: 'piege',
+        content: '**Le sens du raisonnement.** L\'ordre est imposé : c\'est la **géométrie** ($S$) qui fixe la **vitesse** (conservation du débit), et la vitesse qui fixe la **pression** (Bernoulli). Jamais l\'inverse. On ne peut pas « choisir » la pression.',
+      },
+      {
+        type: 'propriete',
+        content: '**Applications.** Trompe à eau, pulvérisateur, carburateur : la dépression aspire un second fluide. **Débitmètre Venturi** : mesurer $p_1-p_2$ permet de remonter au débit. **Portance d\'une aile** : l\'air accélère sur l\'extrados, la pression y chute, l\'aile est aspirée vers le haut.',
+      },
+      {
+        type: 'idee_cle',
+        content: '**Contre-intuitif, mais logique.** On s\'attend à ce qu\'un fluide « comprimé » dans un rétrécissement voie sa pression augmenter. C\'est l\'inverse : pour accélérer, le fluide doit puiser de l\'énergie quelque part — et il la prend sur son terme de pression. L\'énergie totale, elle, se conserve.',
+      },
     ],
   },
 ];
@@ -9349,8 +9706,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isEquilibreCours = module.id === 'chim-equilibre';
   const isSpectroCours = module.id === 'chim-spectro';
   const isMecaCours = module.id === 'chim-meca';
-  const sections = isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isFluidesCours = module.id === 'phys-fluides';
+  const sections = isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -9539,8 +9897,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isEquilibreFiche = module.id === 'chim-equilibre';
   const isSpectroFiche = module.id === 'chim-spectro';
   const isMecaFiche = module.id === 'chim-meca';
-  const ficheData = isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isFluidesFiche = module.id === 'phys-fluides';
+  const ficheData = isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
