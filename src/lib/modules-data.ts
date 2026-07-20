@@ -12,7 +12,7 @@ export interface ModuleLevel {
 
 export interface PhysicsModule {
   id: string;
-  subject: 'Physique' | 'Maths';
+  subject: 'Physique' | 'Chimie' | 'Maths';
   level: string;            // e.g. "Terminale"
   title: string;
   subtitle: string;

@@ -4754,11 +4754,11 @@ const FLUIDES_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**La conversion des surfaces.** $1\\,\\text{cm}^2=10^{-4}\\,\\text{m}^2$, et non $10^{-2}$ : la conversion est **quadratique**. De même $1\\,\\text{mm}^2=10^{-6}\\,\\text{m}^2$ et $1\\,\\text{cm}^3=10^{-6}\\,\\text{m}^3$. C\'est la source d\'erreur numéro un du chapitre.',
+        text: '**La conversion des surfaces.** $1\\,\\text{cm}^2=10^{-4}\\,\\text{m}^2$, et non $10^{-2}$ : la conversion est **quadratique**. De même $1\\,\\text{mm}^2=10^{-6}\\,\\text{m}^2$ et $1\\,\\text{cm}^3=10^{-6}\\,\\text{m}^3$. C\'est la source d\'erreur numéro un du chapitre.',
       },
       {
         type: 'idee_cle',
-        content: '**Pourquoi une punaise s\'enfonce.** La pression est une force ramenée à une surface. Une même force appliquée sur une pointe minuscule produit une pression énorme : c\'est tout le principe de la punaise, du couteau, et — à l\'inverse — des raquettes à neige, qui répartissent le poids sur une grande surface.',
+        text: '**Pourquoi une punaise s\'enfonce.** La pression est une force ramenée à une surface. Une même force appliquée sur une pointe minuscule produit une pression énorme : c\'est tout le principe de la punaise, du couteau, et — à l\'inverse — des raquettes à neige, qui répartissent le poids sur une grande surface.',
       },
     ],
   },
@@ -4780,7 +4780,7 @@ const FLUIDES_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Conséquences essentielles.** La pression ne dépend que de la **profondeur** : deux points d\'un même fluide situés à la même profondeur sont à la même pression. Elle ne dépend **ni de la forme, ni du volume** du récipient — seulement de $h$, $\\rho$ et $g$. Elle croît **linéairement** avec $h$.',
+        text: '**Conséquences essentielles.** La pression ne dépend que de la **profondeur** : deux points d\'un même fluide situés à la même profondeur sont à la même pression. Elle ne dépend **ni de la forme, ni du volume** du récipient — seulement de $h$, $\\rho$ et $g$. Elle croît **linéairement** avec $h$.',
       },
       {
         type: 'exemple',
@@ -4792,7 +4792,7 @@ const FLUIDES_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**$h$ est une profondeur.** $h$ se compte vers le **bas**, depuis la surface libre. Si l\'énoncé fournit une altitude $z$ orientée vers le haut, il faut adapter : $h$ augmente quand on descend.',
+        text: '**$h$ est une profondeur.** $h$ se compte vers le **bas**, depuis la surface libre. Si l\'énoncé fournit une altitude $z$ orientée vers le haut, il faut adapter : $h$ augmente quand on descend.',
       },
     ],
   },
@@ -4814,11 +4814,11 @@ const FLUIDES_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**Le piège central.** Dans $\\Pi=\\rho_{\\text{fluide}}V_{\\text{immergé}}\\,g$, $\\rho$ est celle du **fluide**, jamais celle du corps. Et $V_{\\text{immergé}}$ est le volume **immergé**, pas le volume total — les deux ne coïncident que si le corps est entièrement sous la surface.',
+        text: '**Le piège central.** Dans $\\Pi=\\rho_{\\text{fluide}}V_{\\text{immergé}}\\,g$, $\\rho$ est celle du **fluide**, jamais celle du corps. Et $V_{\\text{immergé}}$ est le volume **immergé**, pas le volume total — les deux ne coïncident que si le corps est entièrement sous la surface.',
       },
       {
         type: 'propriete',
-        content: '**Condition de flottaison.** Un corps homogène de masse volumique $\\rho_{\\text{corps}}$ **flotte** si $\\rho_{\\text{corps}}<\\rho_{\\text{fluide}}$ ; il **coule** si $\\rho_{\\text{corps}}>\\rho_{\\text{fluide}}$. À l\'équilibre d\'un corps qui flotte, $\\Pi=P$ donne $\\rho_{\\text{fluide}}V_{\\text{imm}}\\,g=\\rho_{\\text{corps}}V_{\\text{tot}}\\,g$, d\'où la fraction immergée $\\dfrac{V_{\\text{imm}}}{V_{\\text{tot}}}=\\dfrac{\\rho_{\\text{corps}}}{\\rho_{\\text{fluide}}}$.',
+        text: '**Condition de flottaison.** Un corps homogène de masse volumique $\\rho_{\\text{corps}}$ **flotte** si $\\rho_{\\text{corps}}<\\rho_{\\text{fluide}}$ ; il **coule** si $\\rho_{\\text{corps}}>\\rho_{\\text{fluide}}$. À l\'équilibre d\'un corps qui flotte, $\\Pi=P$ donne $\\rho_{\\text{fluide}}V_{\\text{imm}}\\,g=\\rho_{\\text{corps}}V_{\\text{tot}}\\,g$, d\'où la fraction immergée $\\dfrac{V_{\\text{imm}}}{V_{\\text{tot}}}=\\dfrac{\\rho_{\\text{corps}}}{\\rho_{\\text{fluide}}}$.',
       },
       {
         type: 'exemple',
@@ -4830,7 +4830,7 @@ const FLUIDES_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '**Pourquoi un bateau en acier flotte.** L\'acier a $\\rho=7{,}8\\times 10^{3}\\,\\text{kg·m}^{-3}$ : il coule. Mais la condition porte sur la masse volumique **moyenne** du bateau, coque et air intérieur compris — largement inférieure à celle de l\'eau. La coque déplace beaucoup d\'eau pour peu de masse.',
+        text: '**Pourquoi un bateau en acier flotte.** L\'acier a $\\rho=7{,}8\\times 10^{3}\\,\\text{kg·m}^{-3}$ : il coule. Mais la condition porte sur la masse volumique **moyenne** du bateau, coque et air intérieur compris — largement inférieure à celle de l\'eau. La coque déplace beaucoup d\'eau pour peu de masse.',
       },
     ],
   },
@@ -4853,7 +4853,7 @@ const FLUIDES_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Conséquence — le rétrécissement accélère.** $S$ et $v$ sont **inversement proportionnelles** : si la section est divisée par $4$, la vitesse est multipliée par $4$.',
+        text: '**Conséquence — le rétrécissement accélère.** $S$ et $v$ sont **inversement proportionnelles** : si la section est divisée par $4$, la vitesse est multipliée par $4$.',
       },
       {
         type: 'exemple',
@@ -4865,7 +4865,7 @@ const FLUIDES_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '**Le tuyau d\'arrosage.** En pinçant l\'extrémité d\'un tuyau, on réduit $S$ : le débit imposé restant le même, $v$ augmente et le jet porte plus loin. C\'est la conservation du débit, à main nue.',
+        text: '**Le tuyau d\'arrosage.** En pinçant l\'extrémité d\'un tuyau, on réduit $S$ : le débit imposé restant le même, $v$ augmente et le jet porte plus loin. C\'est la conservation du débit, à main nue.',
       },
     ],
   },
@@ -4882,11 +4882,11 @@ const FLUIDES_COURS: Section[] = [
       },
       {
         type: 'reflex',
-        content: '**Une conservation de l\'énergie.** Chaque terme est une **énergie volumique** (en $\\text{J·m}^{-3}$) : $p$ est le travail des forces pressantes, $\\tfrac{1}{2}\\rho v^2$ l\'énergie cinétique volumique, $\\rho g z$ l\'énergie potentielle de pesanteur volumique. Bernoulli n\'est donc rien d\'autre que la **conservation de l\'énergie mécanique**, exprimée par unité de volume. C\'est exactement le $E_m=\\text{cste}$ du module d\'énergie, appliqué à un fluide.',
+        text: '**Une conservation de l\'énergie.** Chaque terme est une **énergie volumique** (en $\\text{J·m}^{-3}$) : $p$ est le travail des forces pressantes, $\\tfrac{1}{2}\\rho v^2$ l\'énergie cinétique volumique, $\\rho g z$ l\'énergie potentielle de pesanteur volumique. Bernoulli n\'est donc rien d\'autre que la **conservation de l\'énergie mécanique**, exprimée par unité de volume. C\'est exactement le $E_m=\\text{cste}$ du module d\'énergie, appliqué à un fluide.',
       },
       {
         type: 'propriete',
-        content: '**Les conditions d\'application.** La relation suppose un fluide **parfait** (sans viscosité, donc sans frottement), **incompressible**, en écoulement **stationnaire**, et s\'applique **le long d\'une ligne de courant**. Si l\'énoncé mentionne des frottements ou de la viscosité, elle n\'est plus valable.',
+        text: '**Les conditions d\'application.** La relation suppose un fluide **parfait** (sans viscosité, donc sans frottement), **incompressible**, en écoulement **stationnaire**, et s\'applique **le long d\'une ligne de courant**. Si l\'énoncé mentionne des frottements ou de la viscosité, elle n\'est plus valable.',
       },
       {
         type: 'exemple',
@@ -4934,15 +4934,15 @@ const FLUIDES_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**Le sens du raisonnement.** L\'ordre est imposé : c\'est la **géométrie** ($S$) qui fixe la **vitesse** (conservation du débit), et la vitesse qui fixe la **pression** (Bernoulli). Jamais l\'inverse. On ne peut pas « choisir » la pression.',
+        text: '**Le sens du raisonnement.** L\'ordre est imposé : c\'est la **géométrie** ($S$) qui fixe la **vitesse** (conservation du débit), et la vitesse qui fixe la **pression** (Bernoulli). Jamais l\'inverse. On ne peut pas « choisir » la pression.',
       },
       {
         type: 'propriete',
-        content: '**Applications.** Trompe à eau, pulvérisateur, carburateur : la dépression aspire un second fluide. **Débitmètre Venturi** : mesurer $p_1-p_2$ permet de remonter au débit. **Portance d\'une aile** : l\'air accélère sur l\'extrados, la pression y chute, l\'aile est aspirée vers le haut.',
+        text: '**Applications.** Trompe à eau, pulvérisateur, carburateur : la dépression aspire un second fluide. **Débitmètre Venturi** : mesurer $p_1-p_2$ permet de remonter au débit. **Portance d\'une aile** : l\'air accélère sur l\'extrados, la pression y chute, l\'aile est aspirée vers le haut.',
       },
       {
         type: 'idee_cle',
-        content: '**Contre-intuitif, mais logique.** On s\'attend à ce qu\'un fluide « comprimé » dans un rétrécissement voie sa pression augmenter. C\'est l\'inverse : pour accélérer, le fluide doit puiser de l\'énergie quelque part — et il la prend sur son terme de pression. L\'énergie totale, elle, se conserve.',
+        text: '**Contre-intuitif, mais logique.** On s\'attend à ce qu\'un fluide « comprimé » dans un rétrécissement voie sa pression augmenter. C\'est l\'inverse : pour accélérer, le fluide doit puiser de l\'énergie quelque part — et il la prend sur son terme de pression. L\'énergie totale, elle, se conserve.',
       },
     ],
   },
@@ -5114,11 +5114,11 @@ const MECA_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Critère pratique.** On compare $\\Delta\\chi=|\\chi(\\text{A})-\\chi(\\text{B})|$. $\\Delta\\chi<0{,}4$ : liaison considérée **apolaire**. $\\Delta\\chi>0{,}4$ : liaison **polarisée** — d\'autant plus que $\\Delta\\chi$ est grand.',
+        text: '**Critère pratique.** On compare $\\Delta\\chi=|\\chi(\\text{A})-\\chi(\\text{B})|$. $\\Delta\\chi<0{,}4$ : liaison considérée **apolaire**. $\\Delta\\chi>0{,}4$ : liaison **polarisée** — d\'autant plus que $\\Delta\\chi$ est grand.',
       },
       {
         type: 'piege',
-        content: '**La liaison $\\text{C}-\\text{H}$.** $\\Delta\\chi=2{,}55-2{,}20=0{,}35<0{,}4$ : la liaison $\\text{C}-\\text{H}$ est considérée **apolaire**. C\'est capital : un carbone entouré uniquement de $\\text{C}$ et de $\\text{H}$ ne porte aucun $\\delta+$ et n\'est donc **pas** un site accepteur.',
+        text: '**La liaison $\\text{C}-\\text{H}$.** $\\Delta\\chi=2{,}55-2{,}20=0{,}35<0{,}4$ : la liaison $\\text{C}-\\text{H}$ est considérée **apolaire**. C\'est capital : un carbone entouré uniquement de $\\text{C}$ et de $\\text{H}$ ne porte aucun $\\delta+$ et n\'est donc **pas** un site accepteur.',
       },
     ],
   },
@@ -5149,11 +5149,11 @@ const MECA_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '**La règle qui gouverne tout.** La chimie organique tient en une phrase : **les électrons vont là où ils manquent**. Un site riche cède à un site pauvre. Tout mécanisme n\'est que l\'application répétée de ce principe.',
+        text: '**La règle qui gouverne tout.** La chimie organique tient en une phrase : **les électrons vont là où ils manquent**. Un site riche cède à un site pauvre. Tout mécanisme n\'est que l\'application répétée de ce principe.',
       },
       {
         type: 'reflex',
-        content: '**Un atome peut être les deux.** Dans un $\\text{C}=\\text{O}$, l\'oxygène est donneur (il porte des doublets non liants et $\\delta-$) tandis que le carbone est accepteur ($\\delta+$). Une même molécule contient donc souvent les deux types de sites.',
+        text: '**Un atome peut être les deux.** Dans un $\\text{C}=\\text{O}$, l\'oxygène est donneur (il porte des doublets non liants et $\\delta-$) tandis que le carbone est accepteur ($\\delta+$). Une même molécule contient donc souvent les deux types de sites.',
       },
     ],
   },
@@ -5174,11 +5174,11 @@ const MECA_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Ce que traduit chaque flèche.** **Formation** d\'une liaison : la flèche part du doublet du donneur vers l\'atome accepteur. **Rupture** d\'une liaison : la flèche part du doublet liant et pointe vers l\'atome le plus électronégatif, qui le récupère.',
+        text: '**Ce que traduit chaque flèche.** **Formation** d\'une liaison : la flèche part du doublet du donneur vers l\'atome accepteur. **Rupture** d\'une liaison : la flèche part du doublet liant et pointe vers l\'atome le plus électronégatif, qui le récupère.',
       },
       {
         type: 'piege',
-        content: '**Les trois pièges classiques.** La flèche suit les **électrons**, jamais les atomes ni les charges. Elle va du **riche vers le pauvre** — jamais l\'inverse : une flèche partant d\'un $\\delta+$ est toujours fausse. Elle part d\'un **doublet** (non liant ou liant), jamais d\'un atome « en général ».',
+        text: '**Les trois pièges classiques.** La flèche suit les **électrons**, jamais les atomes ni les charges. Elle va du **riche vers le pauvre** — jamais l\'inverse : une flèche partant d\'un $\\delta+$ est toujours fausse. Elle part d\'un **doublet** (non liant ou liant), jamais d\'un atome « en général ».',
       },
       {
         type: 'exemple',
@@ -5208,11 +5208,11 @@ const MECA_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Équation bilan & mécanisme.** L\'équation bilan décrit le **résultat global** : réactifs → produits. Le mécanisme décrit le **chemin suivi**, étape par étape. En additionnant toutes les étapes d\'un mécanisme, les intermédiaires se simplifient et l\'on retrouve exactement l\'équation bilan.',
+        text: '**Équation bilan & mécanisme.** L\'équation bilan décrit le **résultat global** : réactifs → produits. Le mécanisme décrit le **chemin suivi**, étape par étape. En additionnant toutes les étapes d\'un mécanisme, les intermédiaires se simplifient et l\'on retrouve exactement l\'équation bilan.',
       },
       {
         type: 'reflex',
-        content: '**Ne pas confondre avec le catalyseur.** Comme l\'intermédiaire réactionnel, le catalyseur n\'apparaît pas dans le bilan — mais pour la raison **inverse** : l\'intermédiaire est **formé puis consommé**, le catalyseur est **consommé puis régénéré**. Le catalyseur est présent au début et à la fin ; l\'intermédiaire, ni l\'un ni l\'autre.',
+        text: '**Ne pas confondre avec le catalyseur.** Comme l\'intermédiaire réactionnel, le catalyseur n\'apparaît pas dans le bilan — mais pour la raison **inverse** : l\'intermédiaire est **formé puis consommé**, le catalyseur est **consommé puis régénéré**. Le catalyseur est présent au début et à la fin ; l\'intermédiaire, ni l\'un ni l\'autre.',
       },
       {
         type: 'methode',
@@ -5226,7 +5226,7 @@ const MECA_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: 'Le mécanisme ne dit **rien** sur le sens d\'évolution ni sur l\'état final : ceux-ci relèvent de $K$ et du critère $Q_r$ vs $K$. Un mécanisme explique **comment**, la thermodynamique décide **jusqu\'où**.',
+        text: 'Le mécanisme ne dit **rien** sur le sens d\'évolution ni sur l\'état final : ceux-ci relèvent de $K$ et du critère $Q_r$ vs $K$. Un mécanisme explique **comment**, la thermodynamique décide **jusqu\'où**.',
       },
     ],
   },
@@ -5252,11 +5252,11 @@ const MECA_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Les leviers de l\'étape 1.** **Chauffage à reflux** : accélère la réaction (facteur cinétique) sans perte de matière — les vapeurs se condensent et retombent. **Catalyseur** : accélère sans modifier l\'état final. **Réactif en excès** : déplace l\'équilibre dans le sens direct et augmente $\\tau$ du réactif limitant. **Élimination d\'un produit** au fur et à mesure : fait chuter $Q_r$ sous $K$, le système continue d\'évoluer dans le sens direct.',
+        text: '**Les leviers de l\'étape 1.** **Chauffage à reflux** : accélère la réaction (facteur cinétique) sans perte de matière — les vapeurs se condensent et retombent. **Catalyseur** : accélère sans modifier l\'état final. **Réactif en excès** : déplace l\'équilibre dans le sens direct et augmente $\\tau$ du réactif limitant. **Élimination d\'un produit** au fur et à mesure : fait chuter $Q_r$ sous $K$, le système continue d\'évoluer dans le sens direct.',
       },
       {
         type: 'idee_cle',
-        content: '**Chauffer à reflux, deux effets d\'un coup.** Le reflux résout une tension : on veut chauffer (pour aller vite) sans perdre les réactifs volatils. Le réfrigérant condense les vapeurs qui retombent dans le ballon — on gagne en vitesse sans rien perdre en matière.',
+        text: '**Chauffer à reflux, deux effets d\'un coup.** Le reflux résout une tension : on veut chauffer (pour aller vite) sans perdre les réactifs volatils. Le réfrigérant condense les vapeurs qui retombent dans le ballon — on gagne en vitesse sans rien perdre en matière.',
       },
     ],
   },
@@ -5273,7 +5273,7 @@ const MECA_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Pourquoi $\\eta<100\\,\\%$ ?** La transformation peut être **limitée** ($\\tau<1$) : l\'équilibre borne le rendement. Des **pertes** surviennent à l\'isolement et à la purification. Des **réactions parasites** consomment une partie des réactifs.',
+        text: '**Pourquoi $\\eta<100\\,\\%$ ?** La transformation peut être **limitée** ($\\tau<1$) : l\'équilibre borne le rendement. Des **pertes** surviennent à l\'isolement et à la purification. Des **réactions parasites** consomment une partie des réactifs.',
       },
       {
         type: 'definition',
@@ -5293,11 +5293,11 @@ const MECA_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**Piège majeur — deux notions distinctes.** Le **rendement** est **expérimental** : il dépend du protocole, des pertes, de l\'équilibre. L\'**économie d\'atomes** est **théorique** : elle se calcule sur la seule équation, avant toute manipulation. Une réaction peut avoir $\\text{EA}=100\\,\\%$ (aucun sous-produit) et un rendement médiocre — ou l\'inverse.',
+        text: '**Piège majeur — deux notions distinctes.** Le **rendement** est **expérimental** : il dépend du protocole, des pertes, de l\'équilibre. L\'**économie d\'atomes** est **théorique** : elle se calcule sur la seule équation, avant toute manipulation. Une réaction peut avoir $\\text{EA}=100\\,\\%$ (aucun sous-produit) et un rendement médiocre — ou l\'inverse.',
       },
       {
         type: 'propriete',
-        content: '**Les principes de la chimie verte.** Maximiser l\'économie d\'atomes : privilégier les **additions** ($\\text{EA}=100\\,\\%$) aux substitutions. Limiter les déchets plutôt que les traiter après coup. Solvants moins nocifs, voire absence de solvant. Économiser l\'énergie : travailler si possible à température ambiante. Catalyse plutôt que réactifs stœchiométriques. Matières premières renouvelables.',
+        text: '**Les principes de la chimie verte.** Maximiser l\'économie d\'atomes : privilégier les **additions** ($\\text{EA}=100\\,\\%$) aux substitutions. Limiter les déchets plutôt que les traiter après coup. Solvants moins nocifs, voire absence de solvant. Économiser l\'énergie : travailler si possible à température ambiante. Catalyse plutôt que réactifs stœchiométriques. Matières premières renouvelables.',
       },
     ],
   },
@@ -5457,7 +5457,7 @@ const SPECTRO_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '**Pourquoi deux spectroscopies ?** Elles ne répondent pas à la même question. L\'**IR** dit *quels groupes* sont présents (le squelette fonctionnel). La **RMN** dit *comment les hydrogènes sont agencés* (le squelette carboné). Ensemble, elles identifient une molécule.',
+        text: '**Pourquoi deux spectroscopies ?** Elles ne répondent pas à la même question. L\'**IR** dit *quels groupes* sont présents (le squelette fonctionnel). La **RMN** dit *comment les hydrogènes sont agencés* (le squelette carboné). Ensemble, elles identifient une molécule.',
       },
       {
         type: 'methode',
@@ -5489,7 +5489,7 @@ const SPECTRO_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**Deux pièges de lecture.** L\'axe des $\\sigma$ est **inversé** : $4000\\,\\text{cm}^{-1}$ à gauche, $500\\,\\text{cm}^{-1}$ à droite. Les bandes pointent vers le **bas** : une forte absorption correspond à une transmittance faible. Un « pic » est un creux.',
+        text: '**Deux pièges de lecture.** L\'axe des $\\sigma$ est **inversé** : $4000\\,\\text{cm}^{-1}$ à gauche, $500\\,\\text{cm}^{-1}$ à droite. Les bandes pointent vers le **bas** : une forte absorption correspond à une transmittance faible. Un « pic » est un creux.',
       },
       {
         type: 'formules',
@@ -5506,7 +5506,7 @@ const SPECTRO_COURS: Section[] = [
       },
       {
         type: 'reflex',
-        content: '**L\'empreinte digitale.** En dessous de $1500\\,\\text{cm}^{-1}$, le spectre est complexe et propre à chaque molécule : c\'est la zone des **empreintes digitales**. On ne l\'interprète pas bande par bande, mais elle permet une identification par comparaison avec un spectre de référence.',
+        text: '**L\'empreinte digitale.** En dessous de $1500\\,\\text{cm}^{-1}$, le spectre est complexe et propre à chaque molécule : c\'est la zone des **empreintes digitales**. On ne l\'interprète pas bande par bande, mais elle permet une identification par comparaison avec un spectre de référence.',
       },
     ],
   },
@@ -5541,11 +5541,11 @@ const SPECTRO_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Affiner grâce à la position du $\\text{C}=\\text{O}$.** Les valeurs sont proches, mais exploitables : ester $\\approx 1735$, aldéhyde $\\approx 1725$, cétone $\\approx 1715$, acide $\\approx 1710$, amide $\\approx 1650\\,\\text{cm}^{-1}$.',
+        text: '**Affiner grâce à la position du $\\text{C}=\\text{O}$.** Les valeurs sont proches, mais exploitables : ester $\\approx 1735$, aldéhyde $\\approx 1725$, cétone $\\approx 1715$, acide $\\approx 1710$, amide $\\approx 1650\\,\\text{cm}^{-1}$.',
       },
       {
         type: 'idee_cle',
-        content: '**L\'absence est une information.** Le réflexe le plus rentable en IR : ne pas seulement chercher ce qui est présent, mais conclure de ce qui **manque**. L\'absence de $\\text{C}=\\text{O}$ élimine d\'un coup cinq familles.',
+        text: '**L\'absence est une information.** Le réflexe le plus rentable en IR : ne pas seulement chercher ce qui est présent, mais conclure de ce qui **manque**. L\'absence de $\\text{C}=\\text{O}$ élimine d\'un coup cinq familles.',
       },
     ],
   },
@@ -5566,7 +5566,7 @@ const SPECTRO_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: 'Comme en IR, l\'axe est **inversé** : $\\delta$ décroît de gauche à droite, le TMS ($\\delta=0$) étant à l\'extrême droite.',
+        text: 'Comme en IR, l\'axe est **inversé** : $\\delta$ décroît de gauche à droite, le TMS ($\\delta=0$) étant à l\'extrême droite.',
       },
       {
         type: 'formules',
@@ -5582,11 +5582,11 @@ const SPECTRO_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Ce qui déblinde.** Plus un proton est proche d\'un atome électronégatif ($\\text{O}$, $\\text{N}$) ou d\'un $\\text{C}=\\text{O}$, plus il est **déblindé** : son $\\delta$ augmente, son signal se déplace vers la gauche.',
+        text: '**Ce qui déblinde.** Plus un proton est proche d\'un atome électronégatif ($\\text{O}$, $\\text{N}$) ou d\'un $\\text{C}=\\text{O}$, plus il est **déblindé** : son $\\delta$ augmente, son signal se déplace vers la gauche.',
       },
       {
         type: 'reflex',
-        content: '**Le cas du OH.** Le proton d\'un $\\text{OH}$ d\'alcool a un $\\delta$ très variable (il dépend du solvant et de la concentration) et apparaît en **singulet** : il échange trop vite pour se coupler à ses voisins. On ne l\'utilise donc jamais pour identifier une molécule — mais son **intégration** compte.',
+        text: '**Le cas du OH.** Le proton d\'un $\\text{OH}$ d\'alcool a un $\\delta$ très variable (il dépend du solvant et de la concentration) et apparaît en **singulet** : il échange trop vite pour se coupler à ses voisins. On ne l\'utilise donc jamais pour identifier une molécule — mais son **intégration** compte.',
       },
     ],
   },
@@ -5620,7 +5620,7 @@ const SPECTRO_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**Piège majeur.** L\'intégration ne donne qu\'un **rapport**, jamais un nombre absolu. Un rapport $3:2:1$ pourrait tout aussi bien correspondre à $6:4:2$. C\'est la **formule brute** qui tranche — d\'où l\'étape 1 de la méthode.',
+        text: '**Piège majeur.** L\'intégration ne donne qu\'un **rapport**, jamais un nombre absolu. Un rapport $3:2:1$ pourrait tout aussi bien correspondre à $6:4:2$. C\'est la **formule brute** qui tranche — d\'où l\'étape 1 de la méthode.',
       },
       {
         type: 'methode',
@@ -5650,7 +5650,7 @@ const SPECTRO_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**Le piège le plus coûteux.** $n$ est le nombre de protons portés par les atomes **voisins** — jamais ceux du groupe lui-même. Un $\\text{CH}_3$ ne se couple pas avec lui-même : ses trois protons sont équivalents entre eux.',
+        text: '**Le piège le plus coûteux.** $n$ est le nombre de protons portés par les atomes **voisins** — jamais ceux du groupe lui-même. Un $\\text{CH}_3$ ne se couple pas avec lui-même : ses trois protons sont équivalents entre eux.',
       },
       {
         type: 'exemple',
@@ -5673,7 +5673,7 @@ const SPECTRO_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '**Le singulet est un indice précieux.** Un $\\text{CH}_3$ en singulet signale un groupe isolé : son voisin ne porte pas d\'hydrogène. C\'est presque toujours un $\\text{CH}_3$ accroché à un $\\text{C}=\\text{O}$ ou à un carbone quaternaire — une information structurale immédiate.',
+        text: '**Le singulet est un indice précieux.** Un $\\text{CH}_3$ en singulet signale un groupe isolé : son voisin ne porte pas d\'hydrogène. C\'est presque toujours un $\\text{CH}_3$ accroché à un $\\text{C}=\\text{O}$ ou à un carbone quaternaire — une information structurale immédiate.',
       },
     ],
   },
@@ -5826,7 +5826,7 @@ const EQUILIBRE_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**L\'équilibre est dynamique.** À l\'équilibre, les concentrations ne varient plus, mais la réaction ne s\'est pas arrêtée : les transformations **directe et inverse se produisent à la même vitesse**. On note l\'équation avec une double flèche $\\rightleftharpoons$.',
+        text: '**L\'équilibre est dynamique.** À l\'équilibre, les concentrations ne varient plus, mais la réaction ne s\'est pas arrêtée : les transformations **directe et inverse se produisent à la même vitesse**. On note l\'équation avec une double flèche $\\rightleftharpoons$.',
       },
       {
         type: 'exemple',
@@ -5851,7 +5851,7 @@ const EQUILIBRE_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Les trois règles d\'écriture.** Les **produits** vont au numérateur, les **réactifs** au dénominateur. Chaque concentration est élevée à la puissance de son **coefficient stœchiométrique**. Les **solides** et le **solvant** (l\'eau, en solution aqueuse) n\'apparaissent pas.',
+        text: '**Les trois règles d\'écriture.** Les **produits** vont au numérateur, les **réactifs** au dénominateur. Chaque concentration est élevée à la puissance de son **coefficient stœchiométrique**. Les **solides** et le **solvant** (l\'eau, en solution aqueuse) n\'apparaissent pas.',
       },
       {
         type: 'formules',
@@ -5863,7 +5863,7 @@ const EQUILIBRE_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: 'Oublier d\'exclure les **solides** et le **solvant** est l\'erreur la plus fréquente. Une concentration de solide n\'a pas de sens, et celle du solvant est quasi constante : ni l\'une ni l\'autre ne figurent dans $Q_r$.',
+        text: 'Oublier d\'exclure les **solides** et le **solvant** est l\'erreur la plus fréquente. Une concentration de solide n\'a pas de sens, et celle du solvant est quasi constante : ni l\'une ni l\'autre ne figurent dans $Q_r$.',
       },
     ],
   },
@@ -5880,7 +5880,7 @@ const EQUILIBRE_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Ce que $K$ indique.** $K$ très grand ($>10^4$) : l\'équilibre est très déplacé vers les produits, la transformation est **quasi totale** ($\\tau\\approx 1$). $K$ très petit ($<10^{-4}$) : la transformation est **très limitée** ($\\tau\\ll 1$). $K$ intermédiaire : équilibre avec des quantités comparables de réactifs et de produits.',
+        text: '**Ce que $K$ indique.** $K$ très grand ($>10^4$) : l\'équilibre est très déplacé vers les produits, la transformation est **quasi totale** ($\\tau\\approx 1$). $K$ très petit ($<10^{-4}$) : la transformation est **très limitée** ($\\tau\\ll 1$). $K$ intermédiaire : équilibre avec des quantités comparables de réactifs et de produits.',
       },
       {
         type: 'figure',
@@ -5889,7 +5889,7 @@ const EQUILIBRE_COURS: Section[] = [
       },
       {
         type: 'reflex',
-        content: '**Des constantes déjà rencontrées.** $K_a$ et $K_e$ sont des constantes d\'équilibre comme les autres ! $K_a$ est le $K$ de la réaction de l\'acide sur l\'eau ; $K_e$ est celui de l\'autoprotolyse de l\'eau. Un $K_a$ petit ($\\ll 1$) signale donc une réaction très limitée : c\'est exactement ce qu\'est un **acide faible**.',
+        text: '**Des constantes déjà rencontrées.** $K_a$ et $K_e$ sont des constantes d\'équilibre comme les autres ! $K_a$ est le $K$ de la réaction de l\'acide sur l\'eau ; $K_e$ est celui de l\'autoprotolyse de l\'eau. Un $K_a$ petit ($\\ll 1$) signale donc une réaction très limitée : c\'est exactement ce qu\'est un **acide faible**.',
       },
     ],
   },
@@ -5920,7 +5920,7 @@ const EQUILIBRE_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '**Le cas le plus simple.** Si l\'on part uniquement de réactifs, il n\'y a pas de produits : $Q_{r,i}=0$. L\'évolution se fait donc **toujours** dans le sens direct. C\'est rassurant — et cela évite un calcul inutile.',
+        text: '**Le cas le plus simple.** Si l\'on part uniquement de réactifs, il n\'y a pas de produits : $Q_{r,i}=0$. L\'évolution se fait donc **toujours** dans le sens direct. C\'est rassurant — et cela évite un calcul inutile.',
       },
       {
         type: 'exemple',
@@ -5959,7 +5959,7 @@ const EQUILIBRE_COURS: Section[] = [
       },
       {
         type: 'reflex',
-        content: '**Vérification.** Reportez toujours $x_f$ dans $Q_r$ : on doit retrouver $K$. Ici $\\dfrac{(1{,}333)^2}{(0{,}667)^2}=4{,}0$ ✓. C\'est le meilleur contrôle en fin d\'exercice.',
+        text: '**Vérification.** Reportez toujours $x_f$ dans $Q_r$ : on doit retrouver $K$. Ici $\\dfrac{(1{,}333)^2}{(0{,}667)^2}=4{,}0$ ✓. C\'est le meilleur contrôle en fin d\'exercice.',
       },
     ],
   },
@@ -5984,15 +5984,15 @@ const EQUILIBRE_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: 'La dilution rend l\'acide **plus dissocié** ($\\tau$ augmente), tout en rendant la solution **moins acide** (pH augmente). Les deux ne sont pas contradictoires : $\\tau$ est une **proportion**, le pH dépend de la **quantité**.',
+        text: 'La dilution rend l\'acide **plus dissocié** ($\\tau$ augmente), tout en rendant la solution **moins acide** (pH augmente). Les deux ne sont pas contradictoires : $\\tau$ est une **proportion**, le pH dépend de la **quantité**.',
       },
       {
         type: 'piege',
-        content: '**Le piège central du chapitre.** Ne pas confondre $K$ et $\\tau$ : $K$ caractérise la **réaction** — il ne dépend que de $T$. $\\tau$ caractérise une **expérience donnée** — il dépend des conditions initiales (concentrations, dilution). Deux expériences sur la même réaction ont le même $K$ mais peuvent avoir des $\\tau$ très différents.',
+        text: '**Le piège central du chapitre.** Ne pas confondre $K$ et $\\tau$ : $K$ caractérise la **réaction** — il ne dépend que de $T$. $\\tau$ caractérise une **expérience donnée** — il dépend des conditions initiales (concentrations, dilution). Deux expériences sur la même réaction ont le même $K$ mais peuvent avoir des $\\tau$ très différents.',
       },
       {
         type: 'idee_cle',
-        content: '**La vue d\'ensemble.** Ce chapitre unifie toute la chimie de terminale : $K_a$ et $K_e$ sont des constantes d\'équilibre, le sens spontané d\'une pile obéit au critère $Q_r$ vs $K$, et une électrolyse n\'est rien d\'autre qu\'une évolution forcée à contre-sens de ce critère.',
+        text: '**La vue d\'ensemble.** Ce chapitre unifie toute la chimie de terminale : $K_a$ et $K_e$ sont des constantes d\'équilibre, le sens spontané d\'une pile obéit au critère $Q_r$ vs $K$, et une électrolyse n\'est rien d\'autre qu\'une évolution forcée à contre-sens de ce critère.',
       },
     ],
   },
@@ -6165,7 +6165,7 @@ const CINETIQUE_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: 'Une vitesse est **toujours positive**. Si vous trouvez une valeur négative pour un réactif, c\'est que le signe $-$ de la définition a été oublié.',
+        text: 'Une vitesse est **toujours positive**. Si vous trouvez une valeur négative pour un réactif, c\'est que le signe $-$ de la définition a été oublié.',
       },
     ],
   },
@@ -6190,7 +6190,7 @@ const CINETIQUE_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '$t_{1/2}$ donne l\'ordre de grandeur de la durée d\'une transformation : au bout de quelques $t_{1/2}$, la réaction est pratiquement achevée. C\'est le paramètre le plus commode pour **comparer** deux réactions.',
+        text: '$t_{1/2}$ donne l\'ordre de grandeur de la durée d\'une transformation : au bout de quelques $t_{1/2}$, la réaction est pratiquement achevée. C\'est le paramètre le plus commode pour **comparer** deux réactions.',
       },
       {
         type: 'exemple',
@@ -6225,7 +6225,7 @@ const CINETIQUE_COURS: Section[] = [
       },
       {
         type: 'reflex',
-        content: '**Une équation déjà rencontrée.** C\'est exactement la même équation différentielle que celle du circuit RC en décharge ($\\tau=RC$) ou de la décroissance radioactive. Même forme mathématique, mêmes réflexes : le rôle de $\\tau$ est ici joué par $\\tfrac{1}{k}$.',
+        text: '**Une équation déjà rencontrée.** C\'est exactement la même équation différentielle que celle du circuit RC en décharge ($\\tau=RC$) ou de la décroissance radioactive. Même forme mathématique, mêmes réflexes : le rôle de $\\tau$ est ici joué par $\\tfrac{1}{k}$.',
       },
       {
         type: 'methode',
@@ -6256,7 +6256,7 @@ const CINETIQUE_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Propriété caractéristique.** Pour une loi d\'ordre 1, $t_{1/2}$ est **indépendant de la concentration initiale** : il ne dépend que de $k$. Chaque durée $t_{1/2}$ écoulée divise la concentration par 2, quel que soit le point de départ.',
+        text: '**Propriété caractéristique.** Pour une loi d\'ordre 1, $t_{1/2}$ est **indépendant de la concentration initiale** : il ne dépend que de $k$. Chaque durée $t_{1/2}$ écoulée divise la concentration par 2, quel que soit le point de départ.',
       },
       {
         type: 'exemple',
@@ -6268,7 +6268,7 @@ const CINETIQUE_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: 'Après $n\\,t_{1/2}$, il reste $\\tfrac{[\\text{A}]_0}{2^n}$ — et **non** $0$ ! La réaction n\'est jamais « terminée » mathématiquement : l\'exponentielle tend vers zéro sans jamais l\'atteindre.',
+        text: 'Après $n\\,t_{1/2}$, il reste $\\tfrac{[\\text{A}]_0}{2^n}$ — et **non** $0$ ! La réaction n\'est jamais « terminée » mathématiquement : l\'exponentielle tend vers zéro sans jamais l\'atteindre.',
       },
     ],
   },
@@ -6289,7 +6289,7 @@ const CINETIQUE_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Les deux facteurs principaux.** **Température** : une élévation de $T$ augmente la vitesse — les entités sont plus agitées, les chocs sont plus fréquents et surtout plus énergétiques, donc plus souvent efficaces. **Concentration** : une concentration plus élevée augmente la vitesse, car les chocs entre réactifs sont plus fréquents.',
+        text: '**Les deux facteurs principaux.** **Température** : une élévation de $T$ augmente la vitesse — les entités sont plus agitées, les chocs sont plus fréquents et surtout plus énergétiques, donc plus souvent efficaces. **Concentration** : une concentration plus élevée augmente la vitesse, car les chocs entre réactifs sont plus fréquents.',
       },
       {
         type: 'exemple',
@@ -6301,7 +6301,7 @@ const CINETIQUE_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '**L\'essentiel en une phrase.** Les facteurs cinétiques agissent sur la **durée du trajet**, jamais sur la destination : l\'état final d\'un système est fixé par la thermodynamique, pas par la cinétique.',
+        text: '**L\'essentiel en une phrase.** Les facteurs cinétiques agissent sur la **durée du trajet**, jamais sur la destination : l\'état final d\'un système est fixé par la thermodynamique, pas par la cinétique.',
       },
     ],
   },
@@ -6317,7 +6317,7 @@ const CINETIQUE_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Propriétés essentielles.** Le catalyseur agit en **petite quantité**. Il ne modifie ni l\'état final, ni le sens d\'évolution : il n\'accélère que l\'atteinte de cet état. Il est **sélectif** : un catalyseur donné n\'agit que sur certaines réactions.',
+        text: '**Propriétés essentielles.** Le catalyseur agit en **petite quantité**. Il ne modifie ni l\'état final, ni le sens d\'évolution : il n\'accélère que l\'atteinte de cet état. Il est **sélectif** : un catalyseur donné n\'agit que sur certaines réactions.',
       },
       {
         type: 'formules',
@@ -6340,7 +6340,7 @@ const CINETIQUE_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**Piège fréquent.** Ne pas confondre **cinétique** (« à quelle vitesse ? ») et **thermodynamique** (« jusqu\'où ? »). Une réaction peut être totale mais infiniment lente, ou très rapide mais très limitée. Un catalyseur ne rend jamais possible une réaction qui ne l\'était pas.',
+        text: '**Piège fréquent.** Ne pas confondre **cinétique** (« à quelle vitesse ? ») et **thermodynamique** (« jusqu\'où ? »). Une réaction peut être totale mais infiniment lente, ou très rapide mais très limitée. Un catalyseur ne rend jamais possible une réaction qui ne l\'était pas.',
       },
     ],
   },
@@ -6512,11 +6512,11 @@ const OXYDO_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '**Le parallèle à retenir.** L\'oxydoréduction est à l\'électron ce que l\'acido-basique est au proton : même logique de couple, même méthode des demi-équations, même principe de transfert. Acide ↔ réducteur (donneur), base ↔ oxydant (accepteur).',
+        text: '**Le parallèle à retenir.** L\'oxydoréduction est à l\'électron ce que l\'acido-basique est au proton : même logique de couple, même méthode des demi-équations, même principe de transfert. Acide ↔ réducteur (donneur), base ↔ oxydant (accepteur).',
       },
       {
         type: 'piege',
-        content: '**Piège de vocabulaire.** L\'oxydant subit la **réduction**, le réducteur subit l\'**oxydation**. Les noms désignent le rôle joué, pas la transformation subie — c\'est contre-intuitif, mais il faut le savoir par cœur.',
+        text: '**Piège de vocabulaire.** L\'oxydant subit la **réduction**, le réducteur subit l\'**oxydation**. Les noms désignent le rôle joué, pas la transformation subie — c\'est contre-intuitif, mais il faut le savoir par cœur.',
       },
     ],
   },
@@ -6550,7 +6550,7 @@ const OXYDO_COURS: Section[] = [
       },
       {
         type: 'reflex',
-        content: '**Le contrôle des charges.** La vérification des charges est le meilleur garde-fou : une demi-équation dont les charges ne s\'équilibrent pas est nécessairement fausse. Faites-la systématiquement.',
+        text: '**Le contrôle des charges.** La vérification des charges est le meilleur garde-fou : une demi-équation dont les charges ne s\'équilibrent pas est nécessairement fausse. Faites-la systématiquement.',
       },
     ],
   },
@@ -6614,11 +6614,11 @@ const OXYDO_COURS: Section[] = [
       },
       {
         type: 'propriete',
-        content: '**Les règles à connaître.** **Anode** : siège de l\'oxydation — dans une pile, c\'est le pôle −. **Cathode** : siège de la réduction — dans une pile, c\'est le pôle +. Les électrons circulent de l\'anode vers la cathode dans le circuit extérieur ; le courant, de sens conventionnel opposé, va de la cathode vers l\'anode.',
+        text: '**Les règles à connaître.** **Anode** : siège de l\'oxydation — dans une pile, c\'est le pôle −. **Cathode** : siège de la réduction — dans une pile, c\'est le pôle +. Les électrons circulent de l\'anode vers la cathode dans le circuit extérieur ; le courant, de sens conventionnel opposé, va de la cathode vers l\'anode.',
       },
       {
         type: 'propriete',
-        content: '**Rôle du pont salin.** La demi-pile où a lieu l\'oxydation accumule des cations, l\'autre en perd : sans compensation, la réaction s\'arrêterait. Le pont salin laisse migrer les ions et assure l\'électroneutralité des deux solutions, fermant ainsi le circuit.',
+        text: '**Rôle du pont salin.** La demi-pile où a lieu l\'oxydation accumule des cations, l\'autre en perd : sans compensation, la réaction s\'arrêterait. Le pont salin laisse migrer les ions et assure l\'électroneutralité des deux solutions, fermant ainsi le circuit.',
       },
       {
         type: 'definition',
@@ -6669,7 +6669,7 @@ const OXYDO_COURS: Section[] = [
       },
       {
         type: 'piege',
-        content: '**Piège.** Le facteur $n$ de la demi-équation est indispensable : oublier le $2$ de $\\text{Zn} = \\text{Zn}^{2+} + 2\\,e^-$ divise la capacité par deux. Et $\\Delta t$ doit être en **secondes** — convertir les heures !',
+        text: '**Piège.** Le facteur $n$ de la demi-équation est indispensable : oublier le $2$ de $\\text{Zn} = \\text{Zn}^{2+} + 2\\,e^-$ divise la capacité par deux. Et $\\Delta t$ doit être en **secondes** — convertir les heures !',
       },
     ],
   },
@@ -6700,7 +6700,7 @@ const OXYDO_COURS: Section[] = [
       },
       {
         type: 'reflex',
-        content: '**La règle qui ne change jamais.** L\'anode est toujours le siège de l\'oxydation, la cathode toujours celui de la réduction. Seule la polarité s\'inverse. Retenez la règle par la transformation, jamais par le signe.',
+        text: '**La règle qui ne change jamais.** L\'anode est toujours le siège de l\'oxydation, la cathode toujours celui de la réduction. Seule la polarité s\'inverse. Retenez la règle par la transformation, jamais par le signe.',
       },
       {
         type: 'exemple',
@@ -6714,7 +6714,7 @@ const OXYDO_COURS: Section[] = [
       },
       {
         type: 'idee_cle',
-        content: '**Applications.** L\'électrolyse permet la **galvanoplastie** (chromage, dorure), la **production d\'aluminium** et de dichlore, et la **recharge des accumulateurs** : une batterie qui se recharge n\'est rien d\'autre qu\'une pile fonctionnant en électrolyse.',
+        text: '**Applications.** L\'électrolyse permet la **galvanoplastie** (chromage, dorure), la **production d\'aluminium** et de dichlore, et la **recharge des accumulateurs** : une batterie qui se recharge n\'est rien d\'autre qu\'une pile fonctionnant en électrolyse.',
       },
     ],
   },
