@@ -34,6 +34,7 @@ import { SPECTRO_QCM, SPECTRO_EXERCISES, SPECTRO_CORRECTIONS } from '@/lib/spect
 import { MECA_QCM, MECA_EXERCISES, MECA_CORRECTIONS } from '@/lib/meca-content';
 import { FLUIDES_QCM, FLUIDES_EXERCISES, FLUIDES_CORRECTIONS } from '@/lib/fluides-content';
 import { FONCTIONS2NDE_QCM, FONCTIONS2NDE_EXERCISES, FONCTIONS2NDE_CORRECTIONS } from '@/lib/fonctions2nde-content';
+import { NOMBRES2NDE_QCM, NOMBRES2NDE_EXERCISES, NOMBRES2NDE_CORRECTIONS } from '@/lib/nombres2nde-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -92,14 +93,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isMeca = module.id === 'chim-meca';
     const isFluides = module.id === 'phys-fluides';
     const isFonctions2nde = module.id === 'math-fonctions-2nde';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm' || activeLevel.id === 'fonctions2nde-qcm') {
-      const questions = isFonctions2nde ? FONCTIONS2NDE_QCM : isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isNombres2nde = module.id === 'math-nombres-2nde';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm' || activeLevel.id === 'fonctions2nde-qcm' || activeLevel.id === 'nombres2nde-qcm') {
+      const questions = isNombres2nde ? NOMBRES2NDE_QCM : isFonctions2nde ? FONCTIONS2NDE_QCM : isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isFonctions2nde ? FONCTIONS2NDE_EXERCISES : isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isFonctions2nde ? FONCTIONS2NDE_CORRECTIONS : isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isNombres2nde ? NOMBRES2NDE_EXERCISES : isFonctions2nde ? FONCTIONS2NDE_EXERCISES : isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isNombres2nde ? NOMBRES2NDE_CORRECTIONS : isFonctions2nde ? FONCTIONS2NDE_CORRECTIONS : isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4591,6 +4593,385 @@ const ENERGIE_COURS: Section[] = [
         ],
       },
       { type: 'lien_ex', text: '→ Exercices 14, 15 : descente avec frottements, énergie dissipée — puis sujets bac 16, 17' },
+    ],
+  },
+];
+
+// ── Contenu Nombres & intervalles (Maths, Seconde) ────────────────────────────
+const NOMBRES2NDE_OBJECTIFS = [
+  'Situer un nombre dans les **ensembles emboîtés** $\\mathbb{N}\\subset\\mathbb{Z}\\subset\\mathbb{D}\\subset\\mathbb{Q}\\subset\\mathbb{R}$.',
+  'Distinguer **rationnel** et **irrationnel**, et reconnaître un **décimal** à son dénominateur.',
+  'Traduire une **inégalité** en **intervalle** et maîtriser les crochets (l\'infini est toujours ouvert).',
+  'Déterminer une **intersection** ($\\cap$, « ET ») et une **réunion** ($\\cup$, « OU »).',
+  'Encadrer un nombre, calculer une **amplitude**, distinguer **arrondi** et **troncature**.',
+  'Interpréter une **valeur absolue** comme une **distance** et résoudre $|x-a|=r$.',
+];
+
+const NOMBRES2NDE_FICHE_DATA = [
+  {
+    title: '1  Ensembles de nombres',
+    rows: [
+      {
+        label: 'Emboîtement',
+        tex: '\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{D} \\subset \\mathbb{Q} \\subset \\mathbb{R}',
+        vars: 'Chaque ensemble contient tous les précédents',
+      },
+      {
+        label: 'Qui est qui',
+        tex: '\\mathbb{N} : 0,1,2\\ldots \\;;\\; \\mathbb{Z} : \\ldots,-1,0,1 \\;;\\; \\mathbb{D} : \\text{virgule finie}',
+        vars: '$\\mathbb{Q}$ : fractions · $\\mathbb{R}$ : tous les nombres de la droite graduée',
+      },
+      {
+        label: '⚠ Appartenance',
+        tex: '-3 \\in \\mathbb{Z} \\text{ mais aussi } \\mathbb{D}, \\mathbb{Q}, \\mathbb{R}',
+        vars: 'La question attend le **plus petit**, mais le nombre est dans tous les plus grands',
+      },
+    ],
+  },
+  {
+    title: '2  Rationnels & irrationnels',
+    rows: [
+      {
+        label: 'Rationnel',
+        tex: '\\dfrac{p}{q} \\text{ avec } p, q \\text{ entiers, } q \\neq 0',
+        vars: 'Tous les entiers et tous les décimaux sont rationnels',
+      },
+      {
+        label: 'Irrationnel',
+        tex: '\\sqrt{2}, \\; \\sqrt{5}, \\; \\pi',
+        vars: 'Décimales infinies **ET** sans période qui se répète',
+      },
+      {
+        label: '⚠ Décimal ?',
+        tex: '\\text{dénominateur = seulement des } 2 \\text{ et des } 5',
+        vars: '$\\tfrac{3}{8}$ oui ($8=2^3$) · $\\tfrac{1}{7}$ non — mais reste **rationnel** (infini périodique)',
+      },
+    ],
+  },
+  {
+    title: '3  Intervalles',
+    rows: [
+      {
+        label: 'Crochets',
+        tex: '[\\ \\text{fermé} = \\text{incluse} \\;(\\leqslant, \\geqslant) \\;;\\; ]\\ \\text{ouvert} = \\text{exclue} \\;(<, >)',
+        vars: 'Crochet ouvert représenté par un rond vide sur la droite graduée',
+      },
+      {
+        label: 'Correspondance',
+        tex: '2 \\leqslant x \\leqslant 5 \\to [2\\,;5] \\;;\\; 2 < x < 5 \\to \\,]2\\,;5[',
+        vars: '$2\\leqslant x<5 \\to [2\\,;5[$ · $x\\leqslant 3 \\to \\,]-\\infty\\,;3]$ · $x>1 \\to \\,]1\\,;+\\infty[$',
+      },
+      {
+        label: '⚠ L\'infini',
+        tex: '\\text{toujours ouvert : } ]-\\infty\\,;3] \\text{ et jamais } [-\\infty\\,;3]',
+        vars: '$\\infty$ n\'est pas un nombre : il ne peut pas être « atteint » ni inclus',
+      },
+    ],
+  },
+  {
+    title: '4  Intersection & réunion',
+    rows: [
+      {
+        label: 'Intersection ∩',
+        tex: 'A \\cap B = \\text{la partie COMMUNE}',
+        vars: '« ET » **rétrécit** : $A\\cap B\\subset A$ et $A\\cap B\\subset B$',
+      },
+      {
+        label: 'Réunion ∪',
+        tex: 'A \\cup B = \\text{TOUT ce qui est dans } A \\text{ OU } B',
+        vars: '« OU » **élargit** : $A\\subset A\\cup B$ · le $\\cup$ a la forme du **u** de réunion',
+      },
+      {
+        label: 'Cas disjoints',
+        tex: 'A \\cap B = \\varnothing \\;;\\; A \\cup B \\text{ en deux morceaux}',
+        vars: 'Si les intervalles ne se touchent pas, la réunion ne se « fusionne » pas',
+      },
+    ],
+  },
+  {
+    title: '5  Encadrement & approximation',
+    rows: [
+      {
+        label: 'Encadrement',
+        tex: 'a \\leqslant x \\leqslant b \\;;\\; \\text{amplitude} = b - a',
+        vars: 'Plus l\'amplitude est petite, plus l\'encadrement est précis',
+      },
+      {
+        label: 'Valeur approchée',
+        tex: '\\text{défaut : en dessous} \\;;\\; \\text{excès : au-dessus}',
+        vars: 'Par défaut à $10^{-n}$ : on **tronque** après $n$ décimales',
+      },
+      {
+        label: '⚠ Arrondi ≠ troncature',
+        tex: '\\text{décimale suivante} \\geqslant 5 \\;\\Rightarrow\\; \\text{on augmente}',
+        vars: '$3{,}167$ arrondi à $10^{-2}$ donne $3{,}17$ (tronqué : $3{,}16$)',
+      },
+    ],
+  },
+  {
+    title: '6  Valeur absolue',
+    rows: [
+      {
+        label: 'Définition',
+        tex: '|x| = x \\text{ sans le signe} \\;;\\; |-7| = 7',
+        vars: 'Toujours $\\geqslant 0$',
+      },
+      {
+        label: '|x| = distance',
+        tex: '|x - a| = \\text{distance entre } x \\text{ et } a',
+        vars: 'L\'ordre ne change rien : $|a-b|=|b-a|$',
+      },
+      {
+        label: 'Équations & centre-rayon',
+        tex: '|x - a| = r \\iff x = a + r \\text{ ou } x = a - r',
+        vars: '$|x-a|\\leqslant r \\iff [a-r\\,;a+r]$ · ⚠ $|x|=-3$ : **aucune solution**',
+      },
+    ],
+  },
+];
+
+const NOMBRES2NDE_COURS: Section[] = [
+  {
+    id: 'ensembles',
+    num: '1',
+    title: 'Les ensembles de nombres',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'CINQ ENSEMBLES EMBOÎTÉS',
+        content: 'On classe les nombres en ensembles de plus en plus larges : $\\mathbb{N}$ les **entiers naturels** ($0$, $1$, $2$…) ; $\\mathbb{Z}$ les **entiers relatifs** (…, $-2$, $-1$, $0$, $1$…) ; $\\mathbb{D}$ les **décimaux**, nombres à virgule finie comme $0{,}25$ ou $-3{,}7$ ; $\\mathbb{Q}$ les **rationnels**, quotients de deux entiers comme $\\tfrac{2}{3}$ ; $\\mathbb{R}$ les **réels**, tous les nombres de la droite graduée.',
+      },
+      {
+        type: 'figure',
+        caption: 'Les ensembles sont emboîtés : $\\mathbb{N}\\subset\\mathbb{Z}\\subset\\mathbb{D}\\subset\\mathbb{Q}\\subset\\mathbb{R}$. Chacun contient tous les précédents — un entier naturel comme $7$ est aussi un entier relatif, un décimal, un rationnel et un réel : il appartient aux cinq. En revanche $\\sqrt{2}$ n\'est que réel.',
+        src: '/modules/math-nombres-2nde/fig-ensembles.png',
+      },
+      {
+        type: 'definition',
+        badge: 'LA CHAÎNE D\'INCLUSIONS',
+        content: 'Le symbole $\\subset$ se lit « est inclus dans ». « $x\\in\\mathbb{Z}$ » se lit « $x$ appartient à $\\mathbb{Z}$ ».',
+        formulas: ['\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{D} \\subset \\mathbb{Q} \\subset \\mathbb{R}'],
+      },
+      {
+        type: 'methode',
+        title: 'À quel ensemble appartient un nombre ?',
+        steps: [
+          'On cherche le **plus petit** ensemble qui le contient.',
+          'Entier positif → $\\mathbb{N}$ ; entier négatif → $\\mathbb{Z}$.',
+          'Virgule qui s\'arrête → $\\mathbb{D}$.',
+          'Fraction non décimale (comme $\\tfrac{1}{3}$) → $\\mathbb{Q}$.',
+          'Racine non exacte, $\\pi$ → $\\mathbb{R}$ seulement.',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: '« APPARTIENT » N\'EST PAS « EST LE SEUL »',
+        text: 'Dire que $-3\\in\\mathbb{Z}$ est vrai, mais $-3$ appartient aussi à $\\mathbb{D}$, $\\mathbb{Q}$, $\\mathbb{R}$. La question « à quel ensemble appartient-il ? » attend en général le **plus petit**, mais il faut savoir qu\'il est dans tous les plus grands.',
+      },
+    ],
+  },
+  {
+    id: 'rationnels',
+    num: '2',
+    title: 'Rationnels & irrationnels',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'NOMBRE RATIONNEL',
+        content: 'Un nombre est **rationnel** s\'il peut s\'écrire comme un quotient de deux entiers $\\tfrac{p}{q}$ (avec $q\\neq 0$). Tous les entiers, tous les décimaux sont rationnels. $\\tfrac{2}{3}$, $-\\tfrac{7}{4}$, $0{,}25$ le sont aussi.',
+      },
+      {
+        type: 'definition',
+        badge: 'NOMBRE IRRATIONNEL',
+        content: 'Un nombre **irrationnel** est un réel qui n\'est **pas** rationnel : il ne peut s\'écrire comme aucun quotient d\'entiers. Les plus connus : $\\sqrt{2}$, $\\sqrt{3}$, $\\pi$. Leur écriture décimale est infinie et sans motif qui se répète.',
+      },
+      {
+        type: 'reflex',
+        text: '**Reconnaître un décimal parmi les rationnels.** Un rationnel $\\tfrac{p}{q}$ (fraction irréductible) est décimal **si et seulement si** son dénominateur ne contient, en facteurs premiers, que des $2$ et des $5$. Ainsi $\\tfrac{3}{8}$ est décimal ($8=2^3$, et $\\tfrac{3}{8}=0{,}375$), tandis que $\\tfrac{1}{7}$ ne l\'est pas (dénominateur $7$) : son écriture est illimitée, mais il reste rationnel car c\'est bien un quotient d\'entiers.',
+      },
+      {
+        type: 'propriete',
+        text: '**$\\sqrt{2}$ est irrationnel.** On peut démontrer que $\\sqrt{2}$ n\'est le quotient d\'aucun couple d\'entiers. C\'est un résultat classique, connu depuis l\'Antiquité, qui prouve que $\\mathbb{Q}\\neq\\mathbb{R}$ : il « manque » des nombres entre les rationnels, et les irrationnels comblent ces trous.',
+      },
+      {
+        type: 'piege',
+        badge: 'ÉCRITURE DÉCIMALE INFINIE ≠ IRRATIONNEL',
+        text: 'Attention : $\\tfrac{1}{3}=0{,}333\\ldots$ a une écriture décimale infinie, et pourtant il est **rationnel**. Ce qui distingue un irrationnel, c\'est que ses décimales sont infinies **ET** sans période qui se répète. Une écriture infinie périodique reste rationnelle.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Pourquoi ça compte.** Distinguer rationnel et irrationnel, c\'est comprendre que la calculatrice ne donne qu\'une **valeur approchée** de $\\sqrt{2}$ ou $\\pi$. La vraie valeur ne « tient » dans aucun affichage fini — d\'où la nécessité des valeurs approchées.',
+      },
+    ],
+  },
+  {
+    id: 'intervalles',
+    num: '3',
+    title: 'Les intervalles',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'INTERVALLE',
+        content: 'Un **intervalle** est un « morceau » continu de la droite des réels, décrit par ses deux **bornes**. Un crochet indique si chaque borne est **incluse** ou **exclue**.',
+      },
+      {
+        type: 'figure',
+        caption: 'Un crochet fermé ($[$ ou $]$ tourné vers l\'intérieur) signifie que la borne appartient à l\'intervalle. Un crochet ouvert (représenté par un rond vide) signifie qu\'elle en est exclue. On repère l\'inclusion à l\'inégalité : $\\leqslant$ et $\\geqslant$ ferment, $<$ et $>$ ouvrent.',
+        src: '/modules/math-nombres-2nde/fig-intervalles.png',
+      },
+      {
+        type: 'formules',
+        label: 'Correspondance inégalité ↔ intervalle',
+        rows: [
+          { desc: 'Fermé, bornes incluses', tex: '2 \\leqslant x \\leqslant 5 \\;\\longleftrightarrow\\; [2\\,;5]' },
+          { desc: 'Ouvert, bornes exclues', tex: '2 < x < 5 \\;\\longleftrightarrow\\; ]2\\,;5[' },
+          { desc: '$2$ inclus, $5$ exclu', tex: '2 \\leqslant x < 5 \\;\\longleftrightarrow\\; [2\\,;5[' },
+          { desc: '$3$ inclus', tex: 'x \\leqslant 3 \\;\\longleftrightarrow\\; ]-\\infty\\,;3]' },
+          { desc: '$1$ exclu', tex: 'x > 1 \\;\\longleftrightarrow\\; ]1\\,;+\\infty[' },
+        ],
+      },
+      {
+        type: 'piege',
+        badge: 'L\'INFINI EST TOUJOURS OUVERT',
+        text: 'On écrit toujours un crochet **ouvert** du côté de $-\\infty$ ou $+\\infty$ : $]-\\infty\\,;3]$, jamais $[-\\infty\\,;3]$. L\'infini n\'est pas un nombre : il ne peut donc pas être « atteint » ni inclus. Un crochet fermé sur l\'infini est une faute.',
+      },
+      {
+        type: 'methode',
+        title: 'Tester l\'appartenance d\'un nombre',
+        steps: [
+          'Vérifier que le nombre est entre les bornes.',
+          'Regarder les crochets pour les cas d\'égalité.',
+          'Exemple : $5\\in[2\\,;5[$ ? Non, car $5$ est exclu (crochet ouvert). Mais $5\\in[2\\,;5]$ ? Oui, car il est inclus.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'inter-union',
+    num: '4',
+    title: 'Intersection & réunion',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'INTERSECTION ∩',
+        content: 'L\'**intersection** de deux intervalles $A$ et $B$, notée $A\\cap B$, est l\'ensemble des nombres qui sont **à la fois** dans $A$ et dans $B$ — la partie commune.',
+      },
+      {
+        type: 'definition',
+        badge: 'RÉUNION ∪',
+        content: 'La **réunion** de $A$ et $B$, notée $A\\cup B$, est l\'ensemble des nombres qui sont dans $A$ **ou** dans $B$ (ou les deux) — tout ce qui est couvert par l\'un au moins.',
+      },
+      {
+        type: 'figure',
+        caption: 'Avec $A=[-2\\,;3]$ et $B=[1\\,;5]$ : l\'intersection $A\\cap B=[1\\,;3]$ est la zone où les deux barres se superposent. La réunion $A\\cup B=[-2\\,;5]$ couvre l\'ensemble des deux barres. « $\\cap$ » va avec « ET », « $\\cup$ » va avec « OU ».',
+        src: '/modules/math-nombres-2nde/fig-inter-union.png',
+      },
+      {
+        type: 'idee_cle',
+        text: '**« ET » rétrécit, « OU » élargit.** Une intersection est plus petite (ou égale) que chaque intervalle : exiger deux conditions à la fois est plus restrictif. Une réunion est plus grande : accepter l\'une ou l\'autre condition élargit.',
+      },
+      {
+        type: 'exemple',
+        title: 'Intervalles disjoints',
+        lines: [
+          'Avec $A=[-2\\,;1]$ et $B=[3\\,;5]$, qui ne se touchent pas :',
+          '$A\\cap B=\\varnothing$ (ensemble vide) : aucun nombre n\'est dans les deux.',
+          '$A\\cup B=[-2\\,;1]\\cup[3\\,;5]$ : la réunion reste en deux morceaux, on ne peut pas la « fusionner » en un seul intervalle.',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: 'NE PAS CONFONDRE LES SYMBOLES',
+        text: '$\\cap$ (intersection, « ET ») ressemble à un chapeau ; $\\cup$ (réunion, « OU ») ressemble à une coupe. Les inverser change tout le résultat. Astuce : le $\\cup$ de réunion a la même forme que le **u**.',
+      },
+    ],
+  },
+  {
+    id: 'encadrement',
+    num: '5',
+    title: 'Encadrement & valeur approchée',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'ENCADREMENT, AMPLITUDE',
+        content: '**Encadrer** un nombre $x$, c\'est trouver deux nombres $a$ et $b$ tels que $a\\leqslant x\\leqslant b$. L\'**amplitude** de l\'encadrement est la différence $b-a$ : plus elle est petite, plus l\'encadrement est précis.',
+      },
+      {
+        type: 'exemple',
+        title: 'Encadrer $\\sqrt{10}$',
+        lines: [
+          '$3{,}16\\leqslant\\sqrt{10}\\leqslant 3{,}17$ est un encadrement d\'amplitude $0{,}01$.',
+          'On dit que $3{,}16$ est une valeur approchée de $\\sqrt{10}$ **par défaut** (en dessous) et $3{,}17$ une valeur approchée **par excès** (au-dessus), toutes deux à $10^{-2}$ près.',
+        ],
+      },
+      {
+        type: 'definition',
+        badge: 'VALEUR APPROCHÉE, ARRONDI',
+        content: 'Une valeur approchée **par défaut** à $10^{-n}$ près est obtenue en **tronquant** après $n$ décimales. L\'**arrondi** à $10^{-n}$ près choisit la valeur approchée (par défaut ou par excès) la plus proche.',
+      },
+      {
+        type: 'exemple',
+        title: 'Avec $\\sqrt{10}=3{,}16227\\ldots$',
+        lines: [
+          'Valeur approchée par défaut à $10^{-2}$ : $3{,}16$.',
+          'Valeur approchée par excès à $10^{-2}$ : $3{,}17$.',
+          'Arrondi à $10^{-2}$ : $3{,}16$ (car la 3ᵉ décimale est $2<5$, on arrondit vers le bas).',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: 'TRONCATURE N\'EST PAS ARRONDI',
+        text: 'Tronquer $3{,}167$ à $10^{-2}$ donne $3{,}16$ (on coupe). Mais l\'arrondi donne $3{,}17$ (car la décimale suivante est $7\\geqslant 5$). Les deux procédés diffèrent dès que la décimale coupée est $\\geqslant 5$.',
+      },
+      {
+        type: 'methode',
+        title: 'Arrondir à $10^{-n}$ près',
+        steps: [
+          'Regarder la $(n+1)$-ème décimale.',
+          'Si elle est $\\geqslant 5$, on augmente de $1$ la $n$-ème décimale (par excès).',
+          'Si elle est $<5$, on garde la $n$-ème décimale (par défaut).',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'valeur-absolue',
+    num: '6',
+    title: 'Valeur absolue & distance',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'VALEUR ABSOLUE',
+        content: 'La **valeur absolue** d\'un nombre $x$, notée $|x|$, est sa valeur « sans le signe » : $|5|=5$ et $|-5|=5$. Une valeur absolue est toujours **positive ou nulle**.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Une distance.** $|x|$ est la distance entre $x$ et $0$ sur la droite graduée. Plus généralement, $|x-a|$ est la distance entre $x$ et $a$. C\'est l\'interprétation la plus utile : une valeur absolue mesure un **écart**, et un écart n\'a pas de signe.',
+      },
+      {
+        type: 'definition',
+        badge: 'DISTANCE ENTRE DEUX NOMBRES',
+        content: 'La distance entre deux réels $a$ et $b$ est $|a-b|$. L\'ordre ne change rien : la distance de $a$ à $b$ est la même que de $b$ à $a$.',
+        formulas: ['d(a\\,;b) = |a - b| = |b - a|'],
+      },
+      {
+        type: 'exemple',
+        title: 'Résoudre $|x-3|=2$',
+        lines: [
+          'On lit : « la distance entre $x$ et $3$ vaut $2$ ». Deux points sont à distance $2$ de $3$ : celui à droite ($3+2=5$) et celui à gauche ($3-2=1$).',
+          'Les solutions sont $x=1$ et $x=5$.',
+          'Par le calcul : $|x-3|=2$ équivaut à $x-3=2$ ou $x-3=-2$, soit $x=5$ ou $x=1$. Même réponse.',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: 'UNE VALEUR ABSOLUE N\'EST JAMAIS NÉGATIVE',
+        text: 'L\'équation $|x|=-3$ n\'a **aucune solution** : une valeur absolue, étant une distance, ne peut pas valoir un nombre négatif. Avant de résoudre, un simple coup d\'œil au signe du second membre suffit à conclure.',
+      },
+      {
+        type: 'reflex',
+        text: '**Centre et rayon.** Un intervalle $[a-r\\,;a+r]$ peut se décrire par $|x-a|\\leqslant r$ : « les $x$ dont la distance au centre $a$ ne dépasse pas le rayon $r$ ». Par exemple $|x-2|\\leqslant 3$ décrit $[-1\\,;5]$, centré en $2$.',
+      },
     ],
   },
 ];
@@ -10090,8 +10471,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isMecaCours = module.id === 'chim-meca';
   const isFluidesCours = module.id === 'phys-fluides';
   const isFonctions2ndeCours = module.id === 'math-fonctions-2nde';
-  const sections = isFonctions2ndeCours ? FONCTIONS2NDE_COURS : isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isFonctions2ndeCours ? FONCTIONS2NDE_OBJECTIFS : isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isNombres2ndeCours = module.id === 'math-nombres-2nde';
+  const sections = isNombres2ndeCours ? NOMBRES2NDE_COURS : isFonctions2ndeCours ? FONCTIONS2NDE_COURS : isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isNombres2ndeCours ? NOMBRES2NDE_OBJECTIFS : isFonctions2ndeCours ? FONCTIONS2NDE_OBJECTIFS : isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -10282,8 +10664,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isMecaFiche = module.id === 'chim-meca';
   const isFluidesFiche = module.id === 'phys-fluides';
   const isFonctions2ndeFiche = module.id === 'math-fonctions-2nde';
-  const ficheData = isFonctions2ndeFiche ? FONCTIONS2NDE_FICHE_DATA : isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isFonctions2ndeFiche ? 'Fonctions — généralités' : isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isNombres2ndeFiche = module.id === 'math-nombres-2nde';
+  const ficheData = isNombres2ndeFiche ? NOMBRES2NDE_FICHE_DATA : isFonctions2ndeFiche ? FONCTIONS2NDE_FICHE_DATA : isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isNombres2ndeFiche ? 'Nombres & intervalles' : isFonctions2ndeFiche ? 'Fonctions — généralités' : isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
