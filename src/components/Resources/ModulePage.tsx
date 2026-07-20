@@ -33,6 +33,7 @@ import { EQUILIBRE_QCM, EQUILIBRE_EXERCISES, EQUILIBRE_CORRECTIONS } from '@/lib
 import { SPECTRO_QCM, SPECTRO_EXERCISES, SPECTRO_CORRECTIONS } from '@/lib/spectro-content';
 import { MECA_QCM, MECA_EXERCISES, MECA_CORRECTIONS } from '@/lib/meca-content';
 import { FLUIDES_QCM, FLUIDES_EXERCISES, FLUIDES_CORRECTIONS } from '@/lib/fluides-content';
+import { FONCTIONS2NDE_QCM, FONCTIONS2NDE_EXERCISES, FONCTIONS2NDE_CORRECTIONS } from '@/lib/fonctions2nde-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -90,14 +91,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isSpectro = module.id === 'chim-spectro';
     const isMeca = module.id === 'chim-meca';
     const isFluides = module.id === 'phys-fluides';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm') {
-      const questions = isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isFonctions2nde = module.id === 'math-fonctions-2nde';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm' || activeLevel.id === 'fonctions2nde-qcm') {
+      const questions = isFonctions2nde ? FONCTIONS2NDE_QCM : isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isFonctions2nde ? FONCTIONS2NDE_EXERCISES : isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isFonctions2nde ? FONCTIONS2NDE_CORRECTIONS : isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4589,6 +4591,386 @@ const ENERGIE_COURS: Section[] = [
         ],
       },
       { type: 'lien_ex', text: '→ Exercices 14, 15 : descente avec frottements, énergie dissipée — puis sujets bac 16, 17' },
+    ],
+  },
+];
+
+// ── Contenu Fonctions — généralités (Maths, Seconde) ──────────────────────────
+const FONCTIONS2NDE_OBJECTIFS = [
+  'Définir une **fonction** et distinguer **image** (toujours unique) et **antécédent** (0, 1 ou plusieurs).',
+  'Calculer une image et déterminer des antécédents en résolvant $f(x)=b$.',
+  'Déterminer un **ensemble de définition** : dénominateur $\\neq 0$, sous une racine $\\geqslant 0$.',
+  'Lire une image, des antécédents et des variations sur une **courbe représentative**.',
+  'Décrire le **sens de variation** et dresser un **tableau de variation** ; identifier les **extremums**.',
+  'Étudier une **fonction affine** : coefficient directeur, ordonnée à l\'origine, taux de variation.',
+];
+
+const FONCTIONS2NDE_FICHE_DATA = [
+  {
+    title: '1  Fonction, image & antécédent',
+    rows: [
+      {
+        label: 'Fonction',
+        tex: 'f : x \\longmapsto f(x)',
+        vars: 'À $x$ on associe **UN SEUL** $f(x)$ · comme une machine : une entrée → une sortie',
+      },
+      {
+        label: 'Image & antécédent',
+        tex: 'f(a) = b \\;:\\; b \\text{ image de } a \\;;\\; a \\text{ antécédent de } b',
+        vars: '⚠ **Différence clé** : image → toujours **une seule** · antécédent → $0$, $1$ ou plusieurs',
+      },
+      {
+        label: 'Calculer',
+        tex: '\\text{image de } a : \\text{remplacer } x \\text{ par } a',
+        vars: 'Antécédents de $b$ : **résoudre** $f(x)=b$ (c\'est un calcul, parfois plusieurs solutions)',
+      },
+    ],
+  },
+  {
+    title: '2  Ensemble de définition',
+    rows: [
+      {
+        label: 'Définition',
+        tex: 'D_f = \\{x \\;/\\; f(x) \\text{ existe}\\}',
+        vars: '⚠ Deux interdits : **diviser par $0$**, **racine d\'un négatif**',
+      },
+      {
+        label: 'Les deux conditions',
+        tex: '\\text{dénominateur} \\neq 0 \\;;\\; \\text{sous une racine} \\geqslant 0',
+        vars: 'Sous la racine : $\\geqslant$ (et non $>$), car $\\sqrt{0}=0$ existe',
+      },
+      {
+        label: 'Cas simple',
+        tex: '\\text{polynôme} \\;\\Rightarrow\\; D_f = \\mathbb{R}',
+        vars: 'Ni division, ni racine : tout est permis',
+      },
+    ],
+  },
+  {
+    title: '3  Courbe & lecture graphique',
+    rows: [
+      {
+        label: 'Courbe',
+        tex: 'M(x\\,;y) \\in \\mathcal{C}_f \\iff y = f(x)',
+        vars: 'Ensemble des points $(x\\,;f(x))$ pour $x$ parcourant $D_f$',
+      },
+      {
+        label: 'Lecture',
+        tex: '\\text{image : de } x \\text{ (bas) vers } f(x) \\text{ (gauche)}',
+        vars: 'Antécédent : dans l\'autre sens — partir de l\'axe vertical',
+      },
+      {
+        label: '⚠ Test de la verticale',
+        tex: '\\text{1 point d\'intersection au maximum}',
+        vars: 'Un cercle n\'est pas une fonction : une verticale le coupe en deux points',
+      },
+    ],
+  },
+  {
+    title: '4  Sens de variation',
+    rows: [
+      {
+        label: 'Croissante',
+        tex: 'a < b \\;\\Rightarrow\\; f(a) \\leqslant f(b)',
+        vars: 'La courbe **monte** (lecture de gauche à droite) · conserve l\'ordre',
+      },
+      {
+        label: 'Décroissante',
+        tex: 'a < b \\;\\Rightarrow\\; f(a) \\geqslant f(b)',
+        vars: 'La courbe **descend** · inverse l\'ordre',
+      },
+      {
+        label: '⚠ Ne pas confondre',
+        tex: '\\text{« croissante »} \\neq \\text{« positive »}',
+        vars: 'Croissante = **sens** (monte) · positive = **signe** (au-dessus de l\'axe)',
+      },
+    ],
+  },
+  {
+    title: '5  Tableau & extremums',
+    rows: [
+      {
+        label: 'Tableau de variation',
+        tex: '\\nearrow \\;=\\; \\text{croît} \\;;\\; \\searrow \\;=\\; \\text{décroît}',
+        vars: 'Résume la courbe en une ligne',
+      },
+      {
+        label: 'Maximum',
+        tex: 'f(x) \\leqslant f(x_0) \\text{ pour tout } x',
+        vars: 'La plus grande valeur atteinte',
+      },
+      {
+        label: 'Minimum',
+        tex: 'f(x) \\geqslant f(x_0) \\text{ pour tout } x',
+        vars: '⚠ Donner la **valeur** ET l\'**endroit** où elle est atteinte',
+      },
+    ],
+  },
+  {
+    title: '6  Fonctions affines',
+    rows: [
+      {
+        label: 'Forme',
+        tex: 'f(x) = ax + b',
+        vars: 'Courbe = **droite** · $a$ coefficient directeur · $b$ ordonnée à l\'origine',
+      },
+      {
+        label: 'Variation',
+        tex: 'a > 0 \\to \\text{croissante} \\;;\\; a < 0 \\to \\text{décroissante} \\;;\\; a = 0 \\to \\text{constante}',
+        vars: 'Le sens ne dépend **que** du signe de $a$',
+      },
+      {
+        label: 'Taux de variation',
+        tex: '\\dfrac{f(x_2)-f(x_1)}{x_2-x_1} = a',
+        vars: 'Constant pour une affine · linéaire = affine avec $b=0$ (passe par l\'origine)',
+      },
+    ],
+  },
+];
+
+const FONCTIONS2NDE_COURS: Section[] = [
+  {
+    id: 'fonction',
+    num: '1',
+    title: 'Qu\'est-ce qu\'une fonction ?',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'FONCTION',
+        content: 'Une fonction $f$ est un procédé qui, à un nombre $x$, associe **un seul** nombre, noté $f(x)$. On note $f : x \\longmapsto f(x)$. Cela se lit « $f$ qui à $x$ associe $f(x)$ ».',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Une machine.** On peut voir une fonction comme une machine : on entre un nombre $x$, la machine le transforme, et elle ressort un résultat $f(x)$. Pour une même entrée, elle donne **toujours la même sortie** — c\'est ce qui fait d\'elle une fonction.',
+      },
+      {
+        type: 'definition',
+        badge: 'IMAGE & ANTÉCÉDENT',
+        content: 'Soit $f$ une fonction et $a$ un nombre. $f(a)$ est l\'**image** de $a$ par $f$. Si $f(a)=b$, alors $a$ est un **antécédent** de $b$ par $f$.',
+      },
+      {
+        type: 'piege',
+        badge: 'IMAGE ET ANTÉCÉDENT NE JOUENT PAS LE MÊME RÔLE',
+        text: 'Un nombre a toujours **une seule image** (c\'est la définition même d\'une fonction). Mais un nombre peut avoir **plusieurs antécédents, un seul, ou aucun**. La question « quelle est l\'image de $a$ ? » a une réponse unique ; « quels sont les antécédents de $b$ ? » peut en avoir plusieurs.',
+      },
+      {
+        type: 'exemple',
+        title: 'Avec $f(x)=x^2-2x-3$',
+        lines: [
+          '**Image de $2$** : $f(2)=4-4-3=-3$. L\'image de $2$ est $-3$.',
+          '**Antécédents de $5$** : on résout $f(x)=5$, soit $x^2-2x-3=5$, c\'est-à-dire $x^2-2x-8=0$, soit $(x-4)(x+2)=0$.',
+          'Les antécédents de $5$ sont $4$ et $-2$.',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'Calculer une image, chercher un antécédent',
+        steps: [
+          '**Image de $a$** : on remplace $x$ par $a$ dans l\'expression et on calcule. C\'est direct.',
+          '**Antécédents de $b$** : on résout l\'équation $f(x)=b$. C\'est un calcul, parfois avec plusieurs solutions.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'definition',
+    num: '2',
+    title: 'Ensemble de définition',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'ENSEMBLE DE DÉFINITION',
+        content: 'L\'**ensemble de définition** d\'une fonction $f$, noté $D_f$, est l\'ensemble de tous les nombres $x$ pour lesquels $f(x)$ existe (peut être calculé).',
+      },
+      {
+        type: 'propriete',
+        text: '**Les deux interdits du lycée.** En Seconde, deux opérations sont impossibles et restreignent l\'ensemble de définition : **diviser par zéro** — le dénominateur ne doit jamais s\'annuler ; **prendre la racine carrée d\'un nombre négatif** — sous une racine, l\'expression doit être $\\geqslant 0$.',
+      },
+      {
+        type: 'exemple',
+        title: 'Un quotient',
+        lines: [
+          '$f(x)=\\dfrac{1}{x-3}$.',
+          'Le dénominateur s\'annule pour $x-3=0$, soit $x=3$. Cette valeur est interdite.',
+          '$D_f=]-\\infty\\,;3[\\;\\cup\\;]3\\,;+\\infty[$, autrement dit tous les réels sauf $3$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'Une racine carrée',
+        lines: [
+          '$g(x)=\\sqrt{x-2}$.',
+          'Il faut $x-2\\geqslant 0$, soit $x\\geqslant 2$.',
+          '$D_g=[2\\,;+\\infty[$. Le crochet est **fermé** en $2$, car $\\sqrt{0}=0$ existe.',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: 'LA RACINE, CE N\'EST PAS « STRICTEMENT POSITIF »',
+        text: 'Sous une racine carrée, on demande $\\geqslant 0$ (positif **ou nul**), car $\\sqrt{0}=0$ est parfaitement défini. En revanche, au dénominateur, on demande $\\neq 0$ (le zéro est la seule valeur exclue, qu\'elle vienne d\'un positif ou d\'un négatif).',
+      },
+      {
+        type: 'reflex',
+        text: '**Le plus souvent, tout est permis.** Une fonction polynôme (comme $x^2-2x-3$ ou $3x+1$) est définie pour tout réel : ni division, ni racine ne viennent la gêner. Dans ce cas $D_f=\\mathbb{R}$.',
+      },
+    ],
+  },
+  {
+    id: 'graphique',
+    num: '3',
+    title: 'Représentation graphique',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'COURBE REPRÉSENTATIVE',
+        content: 'La **courbe représentative** de $f$, notée $\\mathcal{C}_f$, est l\'ensemble des points de coordonnées $(x\\,;f(x))$, pour $x$ parcourant $D_f$. Autrement dit : un point de coordonnées $(x\\,;y)$ appartient à $\\mathcal{C}_f$ si et seulement si $y=f(x)$.',
+      },
+      {
+        type: 'figure',
+        caption: 'Sur le graphique, l\'image se lit « de bas en haut » : on part de $x$ sur l\'axe horizontal, on monte jusqu\'à la courbe, on lit $f(x)$ sur l\'axe vertical. L\'antécédent se lit dans l\'autre sens : on part d\'une valeur sur l\'axe vertical, et on regarde en quel(s) $x$ la courbe l\'atteint.',
+        src: '/modules/math-fonctions-2nde/fig-lecture.png',
+      },
+      {
+        type: 'methode',
+        title: 'Lire une image graphiquement',
+        steps: [
+          'Repérer $x$ sur l\'axe horizontal.',
+          'Monter (ou descendre) verticalement jusqu\'à la courbe.',
+          'Lire l\'ordonnée du point atteint horizontalement sur l\'axe vertical : c\'est $f(x)$.',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'Lire les antécédents graphiquement',
+        steps: [
+          'Repérer la valeur $b$ sur l\'axe vertical.',
+          'Tracer la droite horizontale d\'ordonnée $b$.',
+          'Repérer tous les points où elle coupe la courbe.',
+          'Lire leurs abscisses : ce sont les antécédents de $b$. Il peut y en avoir zéro, un, ou plusieurs.',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: 'LE TEST DE LA DROITE VERTICALE',
+        text: 'Toute courbe n\'est pas celle d\'une fonction. Comme un $x$ n\'a qu\'une seule image, une droite verticale ne peut couper la courbe qu\'en **un seul point au maximum**. Un cercle, par exemple, n\'est pas la courbe d\'une fonction : une verticale le coupe en deux points.',
+      },
+    ],
+  },
+  {
+    id: 'variation',
+    num: '4',
+    title: 'Sens de variation',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'FONCTION CROISSANTE, DÉCROISSANTE',
+        content: 'Soit $f$ définie sur un intervalle $I$. $f$ est **croissante** sur $I$ si elle **conserve l\'ordre** : pour tous $a<b$ de $I$, $f(a)\\leqslant f(b)$. $f$ est **décroissante** sur $I$ si elle **inverse l\'ordre** : pour tous $a<b$ de $I$, $f(a)\\geqslant f(b)$.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Monter ou descendre.** En parcourant la courbe de gauche à droite : si elle **monte**, la fonction est croissante ; si elle **descend**, elle est décroissante. Le sens de lecture est toujours celui des $x$ croissants.',
+      },
+      {
+        type: 'piege',
+        badge: 'CROISSANTE N\'EST PAS « POSITIVE »',
+        text: 'Une fonction peut être croissante tout en prenant des valeurs **négatives** (elle monte, mais reste sous l\'axe). « Croissante » décrit le **sens de variation**, pas le **signe** des valeurs. Ce sont deux questions totalement distinctes.',
+      },
+      {
+        type: 'definition',
+        badge: 'TABLEAU DE VARIATION',
+        content: 'Un **tableau de variation** résume, en une seule ligne, le comportement de $f$ : les intervalles où elle croît (flèche qui monte $\\nearrow$) ou décroît (flèche qui descend $\\searrow$), et les valeurs atteintes aux bornes.',
+      },
+      {
+        type: 'figure',
+        caption: 'La courbe et le tableau disent la même chose. La fonction $f(x)=x^2-2x-3$ décroît jusqu\'à son minimum en $x=1$ (où $f(1)=-4$), puis croît. Le tableau condense cette information : une flèche $\\searrow$ puis une flèche $\\nearrow$, avec la valeur $-4$ au creux.',
+        src: '/modules/math-fonctions-2nde/fig-variation.png',
+      },
+      {
+        type: 'methode',
+        title: 'Dresser un tableau de variation depuis une courbe',
+        steps: [
+          'Repérer les abscisses où la courbe change de sens (sommets, creux).',
+          'Les placer dans l\'ordre croissant sur la ligne des $x$.',
+          'Entre deux, tracer une flèche $\\nearrow$ si ça monte, $\\searrow$ si ça descend.',
+          'Indiquer les valeurs de $f$ au bout de chaque flèche.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'extremums',
+    num: '5',
+    title: 'Extremums',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'MAXIMUM, MINIMUM',
+        content: 'Soit $f$ définie sur un intervalle $I$. $f$ admet un **maximum** en $x_0$ si $f(x)\\leqslant f(x_0)$ pour tout $x$ de $I$. $f$ admet un **minimum** en $x_0$ si $f(x)\\geqslant f(x_0)$ pour tout $x$ de $I$. Un **extremum** désigne un maximum ou un minimum.',
+      },
+      {
+        type: 'piege',
+        badge: 'LA VALEUR ET L\'ENDROIT',
+        text: 'Un extremum, ce sont **deux informations** : la **valeur** atteinte (sur l\'axe vertical) et l\'**endroit** où elle est atteinte ($x_0$, sur l\'axe horizontal). « Le maximum est $3$ » est incomplet : il faut dire « le maximum vaut $3$, atteint en $x=2$ ».',
+      },
+      {
+        type: 'exemple',
+        title: 'Avec $f(x)=x^2-2x-3$',
+        lines: [
+          'La forme canonique $f(x)=(x-1)^2-4$ montre que $(x-1)^2\\geqslant 0$, donc $f(x)\\geqslant -4$, avec égalité pour $x=1$.',
+          '$f$ admet donc un **minimum** égal à $-4$, atteint en $x=1$. Elle n\'a pas de maximum : elle monte indéfiniment.',
+        ],
+      },
+      {
+        type: 'figure',
+        caption: 'Sur ce graphique, tout se lit directement : l\'image de $0$ (l\'ordonnée à l\'origine), les intervalles de croissance et de décroissance, le maximum (valeur $3$, atteint en $x=2$), et les antécédents de $0$ (là où la courbe croise l\'axe horizontal).',
+        src: '/modules/math-fonctions-2nde/fig-synthese.png',
+      },
+      {
+        type: 'reflex',
+        text: '**Lire un extremum sur un tableau de variation.** Sur un tableau, un extremum apparaît là où une flèche change de sens : un **maximum** au sommet d\'un $\\nearrow\\searrow$, un **minimum** au creux d\'un $\\searrow\\nearrow$. La valeur est écrite à cet endroit, l\'abscisse se lit juste au-dessus.',
+      },
+    ],
+  },
+  {
+    id: 'affines',
+    num: '6',
+    title: 'Le cas des fonctions affines',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'FONCTION AFFINE',
+        content: 'Une **fonction affine** est de la forme $f(x)=ax+b$ où $a$ et $b$ sont deux nombres fixés. $a$ est le **coefficient directeur**, $b$ l\'**ordonnée à l\'origine**. Sa courbe est une **droite**.',
+      },
+      {
+        type: 'propriete',
+        text: '**Sens de variation d\'une fonction affine.** Le sens de variation ne dépend que du **signe de $a$** : si $a>0$, $f$ est croissante (la droite monte) ; si $a<0$, $f$ est décroissante (la droite descend) ; si $a=0$, $f$ est constante (droite horizontale).',
+      },
+      {
+        type: 'definition',
+        badge: 'TAUX DE VARIATION',
+        content: 'Pour une fonction affine, le **taux de variation** entre deux nombres distincts $x_1$ et $x_2$ est constant et égal au coefficient directeur — c\'est ce qui caractérise une fonction affine.',
+        formulas: ['\\dfrac{f(x_2)-f(x_1)}{x_2-x_1} = a'],
+      },
+      {
+        type: 'exemple',
+        title: 'Avec $f(x)=2x-3$',
+        lines: [
+          '$a=2>0$ : la fonction est **croissante**. $b=-3$ : la droite coupe l\'axe vertical en $-3$.',
+          'Taux de variation entre $1$ et $4$ : $\\dfrac{f(4)-f(1)}{4-1}=\\dfrac{5-(-1)}{3}=\\dfrac{6}{3}=2$. On retrouve bien $a=2$.',
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'Déterminer une fonction affine à partir de deux points',
+        steps: [
+          'Calculer $a$ comme taux de variation : $a=\\dfrac{f(x_2)-f(x_1)}{x_2-x_1}$.',
+          'Trouver $b$ en remplaçant l\'un des points dans $f(x)=ax+b$.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Pourquoi la droite est « affine » et pas « linéaire ».** Une fonction **linéaire** $f(x)=ax$ est un cas particulier de fonction affine, avec $b=0$ : sa droite passe par l\'origine. Une fonction affine « décale » cette droite verticalement de $b$. Toute fonction linéaire est affine, mais l\'inverse est faux.',
+      },
     ],
   },
 ];
@@ -9707,8 +10089,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isSpectroCours = module.id === 'chim-spectro';
   const isMecaCours = module.id === 'chim-meca';
   const isFluidesCours = module.id === 'phys-fluides';
-  const sections = isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isFonctions2ndeCours = module.id === 'math-fonctions-2nde';
+  const sections = isFonctions2ndeCours ? FONCTIONS2NDE_COURS : isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isFonctions2ndeCours ? FONCTIONS2NDE_OBJECTIFS : isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -9898,8 +10281,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isSpectroFiche = module.id === 'chim-spectro';
   const isMecaFiche = module.id === 'chim-meca';
   const isFluidesFiche = module.id === 'phys-fluides';
-  const ficheData = isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isFonctions2ndeFiche = module.id === 'math-fonctions-2nde';
+  const ficheData = isFonctions2ndeFiche ? FONCTIONS2NDE_FICHE_DATA : isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isFonctions2ndeFiche ? 'Fonctions — généralités' : isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
