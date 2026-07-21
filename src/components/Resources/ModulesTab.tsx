@@ -323,6 +323,9 @@ export function ModulesTab({ onXpGain }: Props) {
                 // Sous-groupement par classe, de la plus simple à la plus avancée
                 const classes = [...new Set(group.modules.map(m => m.level))]
                   .sort((a, b) => classRank(a) - classRank(b));
+                // Module recommandé pour cette spé : le premier non terminé, dans l'ordre de difficulté
+                const recommendedId =
+                  group.modules.find(m => doneCount(m) < m.levels.length)?.id ?? null;
                 return (
                   <div key={group.subject}>
                     <div className="flex items-center gap-2.5 mb-3">
@@ -358,6 +361,7 @@ export function ModulesTab({ onXpGain }: Props) {
                                   key={mod.id}
                                   mod={mod}
                                   step={i + 1}
+                                  recommended={mod.id === recommendedId}
                                   completedIds={completedByModule[mod.id] ?? new Set()}
                                   onOpen={() => setSelected(mod)}
                                 />
@@ -606,11 +610,13 @@ function ModuleCard({
   completedIds,
   onOpen,
   step,
+  recommended,
 }: {
   mod: PhysicsModule;
   completedIds: Set<string>;
   onOpen: () => void;
   step?: number;
+  recommended?: boolean;
 }) {
   const totalXp = mod.levels.reduce((s, l) => s + l.xpReward, 0);
   const earnedXp = mod.levels.filter(l => completedIds.has(l.id)).reduce((s, l) => s + l.xpReward, 0);
@@ -623,7 +629,19 @@ function ModuleCard({
   return (
     <motion.button
       onClick={onOpen}
-      className="w-full bg-white/5 hover:bg-white/8 border border-white/10 hover:border-white/20 rounded-2xl p-5 text-left transition-all"
+      className={`w-full rounded-2xl p-5 text-left transition-all ${
+        recommended
+          ? 'bg-white/[0.07]'
+          : 'bg-white/5 hover:bg-white/8 border border-white/10 hover:border-white/20'
+      }`}
+      style={
+        recommended
+          ? {
+              border: `1.5px solid ${accentColor}`,
+              boxShadow: `0 0 0 3px ${accentColor}1a, 0 10px 34px -12px ${accentColor}80`,
+            }
+          : undefined
+      }
       whileTap={{ scale: 0.985 }}
     >
       <div className="flex items-start justify-between gap-3 mb-4">
@@ -643,6 +661,13 @@ function ModuleCard({
               style={{ background: `${accentColor}22`, border: `1px solid ${accentColor}44` }}>
               {mod.subject}
             </span>
+            {recommended && (
+              <span className="flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide"
+                style={{ background: `${accentColor}26`, color: accentColor, border: `1px solid ${accentColor}66` }}>
+                <Sparkles size={10} />
+                {completedIds.size > 0 ? 'À continuer' : 'Recommandé'}
+              </span>
+            )}
             {pct === 100 && (
               <span className="flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full"
                 style={{ background: 'hsl(43 90% 55% / 0.15)', color: 'hsl(43 90% 55%)', border: '1px solid hsl(43 90% 55% / 0.35)' }}>
