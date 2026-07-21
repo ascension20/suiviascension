@@ -15,6 +15,12 @@ interface Props {
 
 // Ordre d'affichage des matières (programme + progression logique)
 const SUBJECT_ORDER = ['Physique', 'Chimie', 'Maths'];
+// Ordre des classes par difficulté croissante (catalogue : Seconde avant Terminale)
+const CLASS_ORDER = ['3ème', 'Seconde', 'Première', 'Terminale'];
+const classRank = (level: string) => {
+  const i = CLASS_ORDER.indexOf(level);
+  return i === -1 ? 99 : i;
+};
 // Couleur associée à chaque matière (accent des modules)
 const subjectHsl = (subject: string) =>
   subject === 'Maths' ? '270 65% 62%'
@@ -314,6 +320,9 @@ export function ModulesTab({ onXpGain }: Props) {
                 const subjHsl = subjectHsl(group.subject);
                 const subjDone = group.modules.reduce((s, m) => s + doneCount(m), 0);
                 const subjTotal = group.modules.reduce((s, m) => s + m.levels.length, 0);
+                // Sous-groupement par classe, de la plus simple à la plus avancée
+                const classes = [...new Set(group.modules.map(m => m.level))]
+                  .sort((a, b) => classRank(a) - classRank(b));
                 return (
                   <div key={group.subject}>
                     <div className="flex items-center gap-2.5 mb-3">
@@ -326,15 +335,37 @@ export function ModulesTab({ onXpGain }: Props) {
                       </span>
                       <div className="flex-1 h-px" style={{ background: `hsl(${subjHsl} / 0.15)` }} />
                     </div>
-                    <div className="grid md:grid-cols-2 gap-3">
-                      {group.modules.map(mod => (
-                        <ModuleCard
-                          key={mod.id}
-                          mod={mod}
-                          completedIds={completedByModule[mod.id] ?? new Set()}
-                          onOpen={() => setSelected(mod)}
-                        />
-                      ))}
+                    <div className="space-y-4">
+                      {classes.map(cls => {
+                        const mods = group.modules.filter(m => m.level === cls);
+                        return (
+                          <div key={cls}>
+                            {/* Séparateur de classe */}
+                            <div className="flex items-center gap-2 mb-2.5 ml-0.5">
+                              <GraduationCap size={12} style={{ color: `hsl(${subjHsl} / 0.75)` }} />
+                              <span className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-white/45">
+                                {cls}
+                              </span>
+                              <span className="text-[9.5px] font-semibold text-white/20 tabular-nums">
+                                {mods.length} chapitre{mods.length > 1 ? 's' : ''}
+                              </span>
+                              <div className="flex-1 h-px bg-white/[0.06]" />
+                            </div>
+                            {/* Modules ordonnés par difficulté croissante — le numéro indique la progression conseillée */}
+                            <div className="grid md:grid-cols-2 gap-3">
+                              {mods.map((mod, i) => (
+                                <ModuleCard
+                                  key={mod.id}
+                                  mod={mod}
+                                  step={i + 1}
+                                  completedIds={completedByModule[mod.id] ?? new Set()}
+                                  onOpen={() => setSelected(mod)}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -574,10 +605,12 @@ function ModuleCard({
   mod,
   completedIds,
   onOpen,
+  step,
 }: {
   mod: PhysicsModule;
   completedIds: Set<string>;
   onOpen: () => void;
+  step?: number;
 }) {
   const totalXp = mod.levels.reduce((s, l) => s + l.xpReward, 0);
   const earnedXp = mod.levels.filter(l => completedIds.has(l.id)).reduce((s, l) => s + l.xpReward, 0);
@@ -594,11 +627,21 @@ function ModuleCard({
       whileTap={{ scale: 0.985 }}
     >
       <div className="flex items-start justify-between gap-3 mb-4">
-        <div>
+        <div className="flex items-start gap-3 min-w-0">
+          {step !== undefined && (
+            <span
+              className="mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center shrink-0 text-[12px] font-black tabular-nums"
+              style={{ background: `${accentColor}1f`, color: accentColor, border: `1px solid ${accentColor}3d` }}
+              title={`Chapitre ${step} — progression conseillée`}
+            >
+              {step}
+            </span>
+          )}
+          <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white/70"
               style={{ background: `${accentColor}22`, border: `1px solid ${accentColor}44` }}>
-              {mod.subject} · {mod.level}
+              {mod.subject}
             </span>
             {pct === 100 && (
               <span className="flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full"
@@ -610,6 +653,7 @@ function ModuleCard({
           </div>
           <h3 className="font-bold text-white text-base">{mod.title}</h3>
           <p className="text-sm text-white/50">{mod.subtitle}</p>
+          </div>
         </div>
         <ChevronRight size={20} className="text-white/30 shrink-0 mt-1" />
       </div>
