@@ -36,6 +36,7 @@ import { FLUIDES_QCM, FLUIDES_EXERCISES, FLUIDES_CORRECTIONS } from '@/lib/fluid
 import { FONCTIONS2NDE_QCM, FONCTIONS2NDE_EXERCISES, FONCTIONS2NDE_CORRECTIONS } from '@/lib/fonctions2nde-content';
 import { NOMBRES2NDE_QCM, NOMBRES2NDE_EXERCISES, NOMBRES2NDE_CORRECTIONS } from '@/lib/nombres2nde-content';
 import { CALCULLITTERAL_QCM, CALCULLITTERAL_EXERCISES, CALCULLITTERAL_CORRECTIONS } from '@/lib/calcul-litteral-content';
+import { REPERAGE_QCM, REPERAGE_EXERCISES, REPERAGE_CORRECTIONS } from '@/lib/reperage-vecteurs-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -96,14 +97,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isFonctions2nde = module.id === 'math-fonctions-2nde';
     const isNombres2nde = module.id === 'math-nombres-2nde';
     const isCalculLitteral = module.id === 'math-calcul-litteral-2nde';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm' || activeLevel.id === 'fonctions2nde-qcm' || activeLevel.id === 'nombres2nde-qcm' || activeLevel.id === 'calcul-litteral-qcm') {
-      const questions = isCalculLitteral ? CALCULLITTERAL_QCM : isNombres2nde ? NOMBRES2NDE_QCM : isFonctions2nde ? FONCTIONS2NDE_QCM : isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isReperage = module.id === 'math-reperage-2nde';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm' || activeLevel.id === 'fonctions2nde-qcm' || activeLevel.id === 'nombres2nde-qcm' || activeLevel.id === 'calcul-litteral-qcm' || activeLevel.id === 'reperage-qcm') {
+      const questions = isReperage ? REPERAGE_QCM : isCalculLitteral ? CALCULLITTERAL_QCM : isNombres2nde ? NOMBRES2NDE_QCM : isFonctions2nde ? FONCTIONS2NDE_QCM : isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isCalculLitteral ? CALCULLITTERAL_EXERCISES : isNombres2nde ? NOMBRES2NDE_EXERCISES : isFonctions2nde ? FONCTIONS2NDE_EXERCISES : isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isCalculLitteral ? CALCULLITTERAL_CORRECTIONS : isNombres2nde ? NOMBRES2NDE_CORRECTIONS : isFonctions2nde ? FONCTIONS2NDE_CORRECTIONS : isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isReperage ? REPERAGE_EXERCISES : isCalculLitteral ? CALCULLITTERAL_EXERCISES : isNombres2nde ? NOMBRES2NDE_EXERCISES : isFonctions2nde ? FONCTIONS2NDE_EXERCISES : isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isReperage ? REPERAGE_CORRECTIONS : isCalculLitteral ? CALCULLITTERAL_CORRECTIONS : isNombres2nde ? NOMBRES2NDE_CORRECTIONS : isFonctions2nde ? FONCTIONS2NDE_CORRECTIONS : isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4595,6 +4597,351 @@ const ENERGIE_COURS: Section[] = [
         ],
       },
       { type: 'lien_ex', text: '→ Exercices 14, 15 : descente avec frottements, énergie dissipée — puis sujets bac 16, 17' },
+    ],
+  },
+];
+
+// ── Contenu Repérage & vecteurs (Maths, Seconde) ──────────────────────────────
+const REPERAGE_OBJECTIFS = [
+  'Lire et placer des points par leurs **coordonnées** (abscisse d\'abord, ordonnée ensuite).',
+  'Calculer le **milieu** d\'un segment (un point) et la **distance** entre deux points (un nombre).',
+  'Définir un **vecteur** (déplacement) et calculer ses **coordonnées** (arrivée moins départ).',
+  'Additionner des vecteurs, multiplier par un réel, et utiliser la **relation de Chasles**.',
+  'Tester la **colinéarité** par le **déterminant** ($xy\'-yx\'=0$).',
+  'Prouver un **alignement**, un **parallélisme**, ou la nature d\'une **configuration** par le calcul.',
+];
+
+const REPERAGE_FICHE_DATA = [
+  {
+    title: '1  Repère & coordonnées',
+    rows: [
+      {
+        label: 'Coordonnées',
+        tex: 'M(x\\,;y)',
+        vars: '$x$ abscisse (horizontal), $y$ ordonnée (vertical) · **abscisse d\'abord**',
+      },
+      {
+        label: 'Repère orthonormé',
+        tex: '\\text{axes} \\perp + \\text{même unité}',
+        vars: 'Nécessaire pour la formule de distance',
+      },
+    ],
+  },
+  {
+    title: '2  Milieu & distance',
+    rows: [
+      {
+        label: 'Milieu de $[AB]$',
+        tex: 'M\\left(\\dfrac{x_A+x_B}{2}\\,;\\dfrac{y_A+y_B}{2}\\right)',
+        vars: 'Moyenne des coordonnées · c\'est un **point**',
+      },
+      {
+        label: 'Distance $AB$',
+        tex: 'AB=\\sqrt{(x_B-x_A)^2+(y_B-y_A)^2}',
+        vars: 'C\'est Pythagore (repère orthonormé) · c\'est un **nombre**',
+      },
+      {
+        label: '⚠ Milieu ≠ distance',
+        tex: '\\text{milieu : on additionne} \\;;\\; \\text{distance : on soustrait}',
+        vars: 'Milieu → point · distance → longueur',
+      },
+    ],
+  },
+  {
+    title: '3  Vecteurs',
+    rows: [
+      {
+        label: 'Coordonnées de $\\vec{AB}$',
+        tex: '\\vec{AB}\\,(x_B-x_A\\,;y_B-y_A)',
+        vars: 'Arrivée moins départ · inverser donne $\\vec{BA}$ (vecteur **opposé**)',
+      },
+      {
+        label: 'Égalité',
+        tex: '\\vec{AB}=\\vec{CD} \\iff \\text{mêmes coordonnées}',
+        vars: '$\\vec{AB}=\\vec{DC}$ ⟹ $ABCD$ parallélogramme',
+      },
+      {
+        label: '⚠ Vecteur ≠ position',
+        tex: '\\text{un vecteur = un déplacement}',
+        vars: 'Deux flèches placées ailleurs peuvent être égales',
+      },
+    ],
+  },
+  {
+    title: '4  Somme & multiple',
+    rows: [
+      {
+        label: 'Opérations',
+        tex: '\\vec{u}+\\vec{v} \\;;\\; k\\vec{u} \\text{ (coordonnée par coordonnée)}',
+        vars: 'Somme : on additionne · multiple : on multiplie chaque coordonnée',
+      },
+      {
+        label: 'Relation de Chasles',
+        tex: '\\vec{AB}+\\vec{BC}=\\vec{AC}',
+        vars: 'On « enchaîne » les déplacements',
+      },
+    ],
+  },
+  {
+    title: '5  Colinéarité',
+    rows: [
+      {
+        label: 'Test du déterminant',
+        tex: '\\vec{u}(x\\,;y),\\ \\vec{v}(x\'\\,;y\') \\text{ colinéaires} \\iff xy\'-yx\'=0',
+        vars: 'Colinéaires ⟺ **parallèles**',
+      },
+      {
+        label: 'Alignement',
+        tex: 'A,B,C \\text{ alignés} \\iff \\vec{AB},\\vec{AC} \\text{ colinéaires}',
+        vars: 'Déterminant $=0$',
+      },
+      {
+        label: 'Parallélisme',
+        tex: '(AB)\\parallel(CD) \\iff \\vec{AB},\\vec{CD} \\text{ colinéaires}',
+        vars: 'Déterminant $=0$',
+      },
+    ],
+  },
+  {
+    title: '6  Configurations',
+    rows: [
+      {
+        label: 'Parallélogramme',
+        tex: 'ABCD \\text{ parall.} \\iff \\vec{AB}=\\vec{DC}',
+        vars: 'De façon équivalente : diagonales $[AC]$ et $[BD]$ de même milieu',
+      },
+      {
+        label: '4ᵉ sommet',
+        tex: '\\text{écrire } \\vec{AB}=\\vec{DC}, \\text{ résoudre pour } D',
+        vars: 'Donne les coordonnées du point manquant',
+      },
+      {
+        label: 'Nature d\'un triangle',
+        tex: '\\text{3 côtés} \\;:\\; \\text{égaux} \\to \\text{isocèle} \\;;\\; a^2+b^2=c^2 \\to \\text{rectangle}',
+        vars: 'Réciproque de Pythagore',
+      },
+    ],
+  },
+];
+
+const REPERAGE_COURS: Section[] = [
+  {
+    id: 'repere',
+    num: '1',
+    title: 'Repère & coordonnées',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'REPÈRE DU PLAN',
+        content: 'Un **repère du plan** est formé d\'un point origine $O$ et de deux axes gradués (l\'axe des abscisses, horizontal, et l\'axe des ordonnées, vertical). Tout point $M$ du plan est alors repéré par un couple de nombres $(x\\,;y)$, ses **coordonnées** : $x$ est l\'abscisse, $y$ l\'ordonnée.',
+      },
+      {
+        type: 'figure',
+        caption: 'Pour lire les coordonnées d\'un point, on projette sur chaque axe : l\'abscisse se lit sur l\'axe horizontal, l\'ordonnée sur l\'axe vertical. Le milieu de $[AB]$ et la distance $AB$ se calculent ensuite directement à partir des coordonnées.',
+        src: '/modules/math-reperage-2nde/fig-coordonnees.png',
+      },
+      {
+        type: 'piege',
+        badge: 'L\'ORDRE DES COORDONNÉES',
+        text: 'On écrit toujours l\'abscisse d\'abord, puis l\'ordonnée : $(x\\,;y)$. Le point $(2\\,;3)$ n\'est pas le point $(3\\,;2)$. Moyen mnémotechnique : « on rentre dans le couloir (horizontal) avant de prendre l\'ascenseur (vertical) ».',
+      },
+      {
+        type: 'methode',
+        title: 'Lire les coordonnées d\'un point',
+        steps: [
+          'Depuis le point, descendre (ou monter) verticalement jusqu\'à l\'axe des abscisses : on lit $x$.',
+          'Depuis le point, aller horizontalement jusqu\'à l\'axe des ordonnées : on lit $y$.',
+          'Écrire le couple $(x\\,;y)$.',
+        ],
+      },
+      {
+        type: 'reflex',
+        text: '**Repère orthonormé.** Un repère est orthonormé quand ses deux axes sont perpendiculaires et gradués avec la même unité. C\'est le cadre habituel — et le seul où la formule de distance ci-après est valable.',
+      },
+    ],
+  },
+  {
+    id: 'milieu-distance',
+    num: '2',
+    title: 'Milieu & distance',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'COORDONNÉES DU MILIEU',
+        content: 'Le milieu $M$ du segment $[AB]$, avec $A(x_A\\,;y_A)$ et $B(x_B\\,;y_B)$, a pour coordonnées la moyenne des abscisses et la moyenne des ordonnées :',
+        formulas: ['M\\left(\\dfrac{x_A+x_B}{2}\\,;\\dfrac{y_A+y_B}{2}\\right)'],
+      },
+      {
+        type: 'definition',
+        badge: 'DISTANCE ENTRE DEUX POINTS',
+        content: 'Dans un repère **orthonormé**, la distance $AB$ est :',
+        formulas: ['AB=\\sqrt{(x_B-x_A)^2+(y_B-y_A)^2}'],
+      },
+      {
+        type: 'idee_cle',
+        text: '**La distance, c\'est Pythagore.** La formule de distance n\'est que le théorème de Pythagore. En reliant $A$ et $B$, on forme un triangle rectangle dont les côtés horizontaux et verticaux mesurent $|x_B-x_A|$ et $|y_B-y_A|$. L\'hypoténuse $AB$ vérifie $AB^2=(x_B-x_A)^2+(y_B-y_A)^2$.',
+      },
+      {
+        type: 'exemple',
+        title: 'Avec $A(-2\\,;1)$ et $B(4\\,;3)$',
+        lines: [
+          'Milieu : $\\left(\\dfrac{-2+4}{2}\\,;\\dfrac{1+3}{2}\\right)=(1\\,;2)$.',
+          'Distance : $AB=\\sqrt{(4-(-2))^2+(3-1)^2}=\\sqrt{6^2+2^2}=\\sqrt{40}=2\\sqrt{10}$.',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: 'NE PAS CONFONDRE MILIEU ET DISTANCE',
+        text: 'Le **milieu** est un point (deux coordonnées) ; on additionne et on divise par $2$. La **distance** est un nombre (une longueur) ; on soustrait, on élève au carré, on ajoute, puis on prend la racine. Confondre les deux (soustraire pour le milieu, ou faire la moyenne pour la distance) est une erreur fréquente.',
+      },
+    ],
+  },
+  {
+    id: 'vecteur',
+    num: '3',
+    title: 'Notion de vecteur',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'VECTEUR',
+        content: 'Un **vecteur** $\\vec{AB}$ est défini par un déplacement : il a une **direction** (celle de la droite $(AB)$), un **sens** (de $A$ vers $B$) et une **longueur** (la distance $AB$, appelée **norme**).',
+      },
+      {
+        type: 'definition',
+        badge: 'COORDONNÉES D\'UN VECTEUR',
+        content: 'Les coordonnées du vecteur $\\vec{AB}$ sont obtenues en soustrayant les coordonnées du point de départ à celles du point d\'arrivée :',
+        formulas: ['\\vec{AB}\\,(x_B-x_A\\,;y_B-y_A)'],
+      },
+      {
+        type: 'figure',
+        caption: 'Un vecteur se lit comme un déplacement : $\\vec{AB}$ va de $A$ à $B$, soit $3$ vers la droite et $2$ vers le haut : ses coordonnées sont $(3\\,;2)$. Le vecteur $\\vec{CD}$ a les mêmes coordonnées : c\'est le même vecteur, simplement placé ailleurs.',
+        src: '/modules/math-reperage-2nde/fig-vecteur.png',
+      },
+      {
+        type: 'propriete',
+        text: '**Égalité de deux vecteurs.** Deux vecteurs sont égaux si et seulement s\'ils ont les mêmes coordonnées — c\'est-à-dire même direction, même sens et même longueur. $\\vec{AB}=\\vec{DC}$ signifie que $ABCD$ est un parallélogramme (attention à l\'ordre des lettres).',
+      },
+      {
+        type: 'piege',
+        badge: 'UN VECTEUR N\'EST PAS « ATTACHÉ » À UN POINT',
+        text: 'Deux flèches situées à des endroits différents peuvent représenter le même vecteur, si elles ont même direction, sens et longueur. Un vecteur décrit un **déplacement**, pas une position : on peut le « translater » librement.',
+      },
+      {
+        type: 'piege',
+        badge: 'L\'ORDRE ARRIVÉE − DÉPART',
+        text: 'Pour $\\vec{AB}$, on calcule arrivée moins départ : $(x_B-x_A\\,;y_B-y_A)$. Inverser donne $\\vec{BA}$, le vecteur **opposé** (mêmes longueur et direction, sens contraire).',
+      },
+    ],
+  },
+  {
+    id: 'somme-multiple',
+    num: '4',
+    title: 'Somme & multiple',
+    blocks: [
+      {
+        type: 'formules',
+        label: 'Opérations sur les coordonnées (avec $\\vec{u}(x\\,;y)$ et $\\vec{v}(x\'\\,;y\')$)',
+        rows: [
+          { desc: 'Somme : on additionne coordonnée par coordonnée', tex: '\\vec{u}+\\vec{v}\\,(x+x\'\\,;y+y\')' },
+          { desc: 'Multiple : on multiplie chaque coordonnée par $k$', tex: 'k\\vec{u}\\,(kx\\,;ky)' },
+        ],
+      },
+      {
+        type: 'figure',
+        caption: 'À gauche : la somme $\\vec{u}+\\vec{v}$ s\'obtient en plaçant les vecteurs bout à bout (ou en construisant un parallélogramme). Ses coordonnées sont la somme des coordonnées. À droite : le test de colinéarité par le déterminant, qui décide si deux vecteurs sont parallèles.',
+        src: '/modules/math-reperage-2nde/fig-somme.png',
+      },
+      {
+        type: 'definition',
+        badge: 'RELATION DE CHASLES',
+        content: 'Pour trois points $A$, $B$, $C$ : $\\vec{AB}+\\vec{BC}=\\vec{AC}$. On « enchaîne » les déplacements : aller de $A$ à $B$ puis de $B$ à $C$ revient à aller directement de $A$ à $C$.',
+      },
+      {
+        type: 'exemple',
+        title: 'Avec $\\vec{u}(3\\,;-2)$ et $\\vec{v}(1\\,;5)$',
+        lines: [
+          '$\\vec{u}+\\vec{v}=(3+1\\,;-2+5)=(4\\,;3)$.',
+          '$\\vec{u}-\\vec{v}=(3-1\\,;-2-5)=(2\\,;-7)$.',
+          '$2\\vec{u}+\\vec{v}=(2\\times 3+1\\,;2\\times(-2)+5)=(7\\,;1)$.',
+        ],
+      },
+      {
+        type: 'reflex',
+        text: '**Multiplier par un nombre : étirer ou retourner.** $k\\vec{u}$ garde la même direction que $\\vec{u}$. Si $k>0$, même sens ; si $k<0$, sens opposé. La longueur est multipliée par $|k|$. Ainsi $2\\vec{u}$ est deux fois plus long, $-\\vec{u}$ est l\'opposé.',
+      },
+    ],
+  },
+  {
+    id: 'colinearite',
+    num: '5',
+    title: 'Colinéarité',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'VECTEURS COLINÉAIRES',
+        content: 'Deux vecteurs $\\vec{u}$ et $\\vec{v}$ sont **colinéaires** s\'il existe un nombre $k$ tel que $\\vec{v}=k\\vec{u}$. Géométriquement, cela signifie qu\'ils ont la même direction : ils sont **parallèles**.',
+      },
+      {
+        type: 'definition',
+        badge: 'TEST PAR LE DÉTERMINANT',
+        content: '$\\vec{u}(x\\,;y)$ et $\\vec{v}(x\'\\,;y\')$ sont colinéaires si et seulement si $xy\'-yx\'=0$. Le nombre $xy\'-yx\'$ s\'appelle le **déterminant** de $\\vec{u}$ et $\\vec{v}$.',
+        formulas: ['\\det(\\vec{u},\\vec{v})=xy\'-yx\''],
+      },
+      {
+        type: 'exemple',
+        title: 'Deux tests',
+        lines: [
+          '$\\vec{u}(2\\,;3)$ et $\\vec{v}(4\\,;6)$ : $2\\times 6-3\\times 4=0$ → **colinéaires** (ici $\\vec{v}=2\\vec{u}$).',
+          '$\\vec{u}(2\\,;3)$ et $\\vec{v}(4\\,;7)$ : $2\\times 7-3\\times 4=2\\neq 0$ → **non colinéaires**.',
+        ],
+      },
+      {
+        type: 'propriete',
+        text: '**Deux usages essentiels.** *Prouver que trois points sont alignés* : $A$, $B$, $C$ sont alignés si $\\vec{AB}$ et $\\vec{AC}$ sont colinéaires. *Prouver que deux droites sont parallèles* : $(AB)\\parallel(CD)$ si $\\vec{AB}$ et $\\vec{CD}$ sont colinéaires.',
+      },
+      {
+        type: 'methode',
+        title: 'Montrer que $A$, $B$, $C$ sont alignés',
+        steps: [
+          'Calculer les coordonnées de $\\vec{AB}$ et $\\vec{AC}$.',
+          'Calculer le déterminant $x_{AB}\\,y_{AC}-y_{AB}\\,x_{AC}$.',
+          'S\'il vaut $0$, les vecteurs sont colinéaires, donc les points sont alignés.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'configurations',
+    num: '6',
+    title: 'Vecteurs & configurations',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'CARACTÉRISATION DU PARALLÉLOGRAMME',
+        content: '$ABCD$ est un parallélogramme si et seulement si $\\vec{AB}=\\vec{DC}$. De façon équivalente, ses diagonales $[AC]$ et $[BD]$ ont le même milieu.',
+      },
+      {
+        type: 'methode',
+        title: 'Trouver le quatrième sommet d\'un parallélogramme',
+        steps: [
+          'Pour que $ABCD$ soit un parallélogramme, on écrit $\\vec{AB}=\\vec{DC}$.',
+          'On développe : $\\vec{DC}\\,(x_C-x_D\\,;y_C-y_D)$ doit être égal à $\\vec{AB}$.',
+          'On résout pour trouver les coordonnées de $D$.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'Reconnaître la nature d\'un triangle',
+        lines: [
+          'Soit $A(4\\,;3)$, $B(1\\,;1)$, $C(-1\\,;4)$. On calcule les carrés des longueurs :',
+          '$BA^2=(4-1)^2+(3-1)^2=13$ ; $BC^2=(-1-1)^2+(4-1)^2=13$ ; $AC^2=(-1-4)^2+(4-3)^2=26$.',
+          'Comme $BA=BC=\\sqrt{13}$, le triangle est **isocèle en $B$**. De plus $BA^2+BC^2=26=AC^2$ : d\'après la réciproque de Pythagore, il est **rectangle en $B$**. C\'est un triangle rectangle isocèle.',
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: '**Les vecteurs, un outil de preuve.** Coordonnées, distances et déterminants transforment la géométrie en calcul. Pour prouver un alignement, un parallélisme, une nature de quadrilatère, on n\'a plus besoin de « voir » sur la figure : on calcule, et le résultat est certain. C\'est la grande force du repérage.',
+      },
     ],
   },
 ];
@@ -10859,8 +11206,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isFonctions2ndeCours = module.id === 'math-fonctions-2nde';
   const isNombres2ndeCours = module.id === 'math-nombres-2nde';
   const isCalculLitteralCours = module.id === 'math-calcul-litteral-2nde';
-  const sections = isCalculLitteralCours ? CALCULLITTERAL_COURS : isNombres2ndeCours ? NOMBRES2NDE_COURS : isFonctions2ndeCours ? FONCTIONS2NDE_COURS : isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isCalculLitteralCours ? CALCULLITTERAL_OBJECTIFS : isNombres2ndeCours ? NOMBRES2NDE_OBJECTIFS : isFonctions2ndeCours ? FONCTIONS2NDE_OBJECTIFS : isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isReperageCours = module.id === 'math-reperage-2nde';
+  const sections = isReperageCours ? REPERAGE_COURS : isCalculLitteralCours ? CALCULLITTERAL_COURS : isNombres2ndeCours ? NOMBRES2NDE_COURS : isFonctions2ndeCours ? FONCTIONS2NDE_COURS : isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isReperageCours ? REPERAGE_OBJECTIFS : isCalculLitteralCours ? CALCULLITTERAL_OBJECTIFS : isNombres2ndeCours ? NOMBRES2NDE_OBJECTIFS : isFonctions2ndeCours ? FONCTIONS2NDE_OBJECTIFS : isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -11053,8 +11401,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isFonctions2ndeFiche = module.id === 'math-fonctions-2nde';
   const isNombres2ndeFiche = module.id === 'math-nombres-2nde';
   const isCalculLitteralFiche = module.id === 'math-calcul-litteral-2nde';
-  const ficheData = isCalculLitteralFiche ? CALCULLITTERAL_FICHE_DATA : isNombres2ndeFiche ? NOMBRES2NDE_FICHE_DATA : isFonctions2ndeFiche ? FONCTIONS2NDE_FICHE_DATA : isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isCalculLitteralFiche ? 'Calcul littéral & équations' : isNombres2ndeFiche ? 'Nombres & intervalles' : isFonctions2ndeFiche ? 'Fonctions — généralités' : isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isReperageFiche = module.id === 'math-reperage-2nde';
+  const ficheData = isReperageFiche ? REPERAGE_FICHE_DATA : isCalculLitteralFiche ? CALCULLITTERAL_FICHE_DATA : isNombres2ndeFiche ? NOMBRES2NDE_FICHE_DATA : isFonctions2ndeFiche ? FONCTIONS2NDE_FICHE_DATA : isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isReperageFiche ? 'Repérage & vecteurs' : isCalculLitteralFiche ? 'Calcul littéral & équations' : isNombres2ndeFiche ? 'Nombres & intervalles' : isFonctions2ndeFiche ? 'Fonctions — généralités' : isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
