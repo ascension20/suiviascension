@@ -35,6 +35,7 @@ import { MECA_QCM, MECA_EXERCISES, MECA_CORRECTIONS } from '@/lib/meca-content';
 import { FLUIDES_QCM, FLUIDES_EXERCISES, FLUIDES_CORRECTIONS } from '@/lib/fluides-content';
 import { FONCTIONS2NDE_QCM, FONCTIONS2NDE_EXERCISES, FONCTIONS2NDE_CORRECTIONS } from '@/lib/fonctions2nde-content';
 import { NOMBRES2NDE_QCM, NOMBRES2NDE_EXERCISES, NOMBRES2NDE_CORRECTIONS } from '@/lib/nombres2nde-content';
+import { CALCULLITTERAL_QCM, CALCULLITTERAL_EXERCISES, CALCULLITTERAL_CORRECTIONS } from '@/lib/calcul-litteral-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -94,14 +95,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isFluides = module.id === 'phys-fluides';
     const isFonctions2nde = module.id === 'math-fonctions-2nde';
     const isNombres2nde = module.id === 'math-nombres-2nde';
-    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm' || activeLevel.id === 'fonctions2nde-qcm' || activeLevel.id === 'nombres2nde-qcm') {
-      const questions = isNombres2nde ? NOMBRES2NDE_QCM : isFonctions2nde ? FONCTIONS2NDE_QCM : isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+    const isCalculLitteral = module.id === 'math-calcul-litteral-2nde';
+    if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm' || activeLevel.id === 'fonctions2nde-qcm' || activeLevel.id === 'nombres2nde-qcm' || activeLevel.id === 'calcul-litteral-qcm') {
+      const questions = isCalculLitteral ? CALCULLITTERAL_QCM : isNombres2nde ? NOMBRES2NDE_QCM : isFonctions2nde ? FONCTIONS2NDE_QCM : isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isNombres2nde ? NOMBRES2NDE_EXERCISES : isFonctions2nde ? FONCTIONS2NDE_EXERCISES : isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isNombres2nde ? NOMBRES2NDE_CORRECTIONS : isFonctions2nde ? FONCTIONS2NDE_CORRECTIONS : isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isCalculLitteral ? CALCULLITTERAL_EXERCISES : isNombres2nde ? NOMBRES2NDE_EXERCISES : isFonctions2nde ? FONCTIONS2NDE_EXERCISES : isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isCalculLitteral ? CALCULLITTERAL_CORRECTIONS : isNombres2nde ? NOMBRES2NDE_CORRECTIONS : isFonctions2nde ? FONCTIONS2NDE_CORRECTIONS : isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4593,6 +4595,390 @@ const ENERGIE_COURS: Section[] = [
         ],
       },
       { type: 'lien_ex', text: '→ Exercices 14, 15 : descente avec frottements, énergie dissipée — puis sujets bac 16, 17' },
+    ],
+  },
+];
+
+// ── Contenu Calcul littéral & équations (Maths, Seconde) ──────────────────────
+const CALCULLITTERAL_OBJECTIFS = [
+  '**Développer** un produit (distributivité simple et double) et **réduire**.',
+  'Maîtriser les trois **identités remarquables** et l\'erreur $n°1$ sur $(a+b)^2$.',
+  '**Factoriser** : facteur commun, identités lues à l\'envers, et savoir choisir la méthode.',
+  'Résoudre une **équation du premier degré** et une **équation produit / quotient** nul.',
+  'Résoudre une **inéquation** (changement de sens) et exploiter un **tableau de signes**.',
+  'Mettre un **problème en équation** et vérifier que le résultat a un sens.',
+];
+
+const CALCULLITTERAL_FICHE_DATA = [
+  {
+    title: '1  Développer & factoriser',
+    rows: [
+      {
+        label: 'Deux opérations inverses',
+        tex: '\\text{développer : produit} \\to \\text{somme}',
+        vars: 'Factoriser : somme → produit',
+      },
+      {
+        label: 'Distributivité',
+        tex: '(a+b)(c+d)=ac+ad+bc+bd',
+        vars: 'Toujours **4 produits** avant réduction',
+      },
+      {
+        label: '⚠ Moins devant parenthèse',
+        tex: '-(a-b)=-a+b',
+        vars: 'Le $-$ change **tous** les signes, pas seulement le premier',
+      },
+    ],
+  },
+  {
+    title: '2  Identités remarquables',
+    rows: [
+      {
+        label: 'Les trois',
+        tex: '(a+b)^2=a^2+2ab+b^2 \\;;\\; (a-b)^2=a^2-2ab+b^2',
+        vars: '$(a+b)(a-b)=a^2-b^2$',
+      },
+      {
+        label: '⚠ L\'erreur n°1',
+        tex: '(a+b)^2 \\neq a^2+b^2',
+        vars: 'Il manque $2ab$ ! Test : $(1+3)^2=16$ mais $1^2+3^2=10$',
+      },
+      {
+        label: 'Carrés',
+        tex: '(3x)^2=9x^2 \\;\\text{(pas } 3x^2\\text{)}',
+        vars: '$x^2+9$ (somme de carrés) **ne se factorise pas**',
+      },
+    ],
+  },
+  {
+    title: '3  Factoriser : la méthode',
+    rows: [
+      {
+        label: 'Réflexe',
+        tex: '\\text{1. facteur commun d\'abord}',
+        vars: 'Toujours le premier réflexe',
+      },
+      {
+        label: 'Selon le nombre de termes',
+        tex: '2 \\text{ termes} \\to a^2-b^2 \\;;\\; 3 \\text{ termes} \\to (a\\pm b)^2',
+        vars: 'Vérifier que le terme du milieu vaut $2ab$',
+      },
+      {
+        label: 'Vérification',
+        tex: '\\text{redévelopper}',
+        vars: 'Une factorisation se vérifie toujours en redéveloppant',
+      },
+    ],
+  },
+  {
+    title: '4  Équations',
+    rows: [
+      {
+        label: '1er degré',
+        tex: '\\text{rassembler les } x, \\text{ puis diviser}',
+        vars: 'Toujours vérifier à la fin',
+      },
+      {
+        label: 'Produit nul',
+        tex: 'A\\times B=0 \\iff A=0 \\text{ ou } B=0',
+        vars: '⚠ Ne marche qu\'avec **0** · $A\\times B=6$ : on ne peut rien dire',
+      },
+      {
+        label: 'Quotient nul',
+        tex: '\\dfrac{A}{B}=0 \\iff A=0 \\text{ et } B\\neq 0',
+        vars: 'Chercher les **valeurs interdites** (qui annulent $B$) en premier',
+      },
+    ],
+  },
+  {
+    title: '5  Inéquations',
+    rows: [
+      {
+        label: '⚠ Le piège',
+        tex: '\\times \\text{ ou } \\div \\text{ par un négatif} \\Rightarrow \\text{changer le sens}',
+        vars: 'Ajouter/retrancher ne change rien',
+      },
+      {
+        label: 'Inéquation produit',
+        tex: '(x-2)(x+3)>0',
+        vars: 'Ne se « coupe » **pas** en ou/et → **tableau de signes** obligatoire',
+      },
+      {
+        label: 'Crochets',
+        tex: '\\text{strict } (<,>) : \\text{ouvert} \\;;\\; \\text{large } (\\leqslant,\\geqslant) : \\text{fermé}',
+        vars: 'Une valeur interdite reste **toujours exclue**',
+      },
+    ],
+  },
+  {
+    title: '6  Tableau de signes',
+    rows: [
+      {
+        label: 'La méthode',
+        tex: '\\text{ramener à } 0 \\to \\text{factoriser} \\to \\text{racines croissantes}',
+        vars: 'Signe de chaque facteur, puis multiplier les colonnes',
+      },
+      {
+        label: 'Signe d\'un facteur',
+        tex: 'ax+b \\;:\\; \\text{signe de } -a, \\text{ puis de } a',
+        vars: 'Racine en $x=-\\tfrac{b}{a}$',
+      },
+      {
+        label: 'Règle des signes',
+        tex: '- \\times - = + \\;;\\; + \\times - = -',
+        vars: 'Le produit est positif quand les deux facteurs ont le **même signe**',
+      },
+    ],
+  },
+];
+
+const CALCULLITTERAL_COURS: Section[] = [
+  {
+    id: 'developper',
+    num: '1',
+    title: 'Développer & réduire',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'DÉVELOPPER',
+        content: '**Développer**, c\'est transformer un produit en une somme. **Réduire**, c\'est ensuite regrouper les termes semblables (les $x^2$ ensemble, les $x$ ensemble, les nombres ensemble).',
+      },
+      {
+        type: 'formules',
+        label: 'Les deux distributivités',
+        rows: [
+          { desc: 'Simple : le facteur multiplie chaque terme', tex: 'k(a+b)=ka+kb' },
+          { desc: 'Double : chaque terme multiplie chaque terme ($2\\times 2=4$ produits)', tex: '(a+b)(c+d)=ac+ad+bc+bd' },
+        ],
+      },
+      {
+        type: 'figure',
+        caption: 'La double distributivité, c\'est simplement le calcul de l\'aire d\'un rectangle. On peut la voir d\'un coup — longueur $(a+b)$ fois largeur $(c+d)$ — ou morceau par morceau : $ac+ad+bc+bd$. Comme c\'est la même aire, les deux écritures sont égales.',
+        src: '/modules/math-calcul-litteral-2nde/fig-distributivite.png',
+      },
+      {
+        type: 'exemple',
+        title: 'Exemple détaillé',
+        lines: [
+          'On fait les quatre produits, dans l\'ordre : $(x+3)(x+7)=x^2+7x+3x+21$.',
+          'On réduit ($7x+3x=10x$) : $x^2+10x+21$.',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: 'LE SIGNE « MOINS » DEVANT UNE PARENTHÈSE',
+        text: 'Un signe $-$ devant une parenthèse change **tous** les signes à l\'intérieur, pas seulement le premier : $-(3x-8)=-3x+8$, et non $-3x-8$. Le $-$ est en réalité un $\\times(-1)$, qui se distribue à chaque terme.',
+      },
+      {
+        type: 'reflex',
+        text: '**Compter les produits.** Pour vérifier qu\'on n\'a rien oublié : $(a+b)(c+d)$ doit donner $4$ termes avant réduction, $(a+b+c)(d+e)$ en donne $6$. Si le compte n\'y est pas, il manque un produit.',
+      },
+    ],
+  },
+  {
+    id: 'identites',
+    num: '2',
+    title: 'Les identités remarquables',
+    blocks: [
+      {
+        type: 'formules',
+        label: 'Les trois identités (pour tous nombres $a$ et $b$)',
+        rows: [
+          { desc: 'Carré d\'une somme', tex: '(a+b)^2=a^2+2ab+b^2' },
+          { desc: 'Carré d\'une différence', tex: '(a-b)^2=a^2-2ab+b^2' },
+          { desc: 'Somme × différence', tex: '(a+b)(a-b)=a^2-b^2' },
+        ],
+      },
+      {
+        type: 'figure',
+        caption: 'Le carré de côté $(a+b)$ se découpe en quatre morceaux : un carré $a^2$, un carré $b^2$, et deux rectangles $ab$ identiques. C\'est là qu\'est le $2ab$ — et on voit du même coup pourquoi $(a+b)^2\\neq a^2+b^2$.',
+        src: '/modules/math-calcul-litteral-2nde/fig-identite.png',
+      },
+      {
+        type: 'piege',
+        badge: 'L\'ERREUR NUMÉRO UN DE SECONDE',
+        text: '$(a+b)^2\\neq a^2+b^2$ : il manque $2ab$. Sur la figure, cela revient à oublier les deux rectangles. **Test imparable** : avec $a=1$ et $b=3$, $(1+3)^2=16$ alors que $1^2+3^2=10$. Ce n\'est pas pareil. En cas de doute, testez avec des nombres.',
+      },
+      {
+        type: 'exemple',
+        title: 'Exemples',
+        lines: [
+          '$(2x+3)^2=(2x)^2+2\\times 2x\\times 3+3^2=4x^2+12x+9$.',
+          '$(x-5)^2=x^2-10x+25$ ; $(x+4)(x-4)=x^2-16$.',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: 'LE CARRÉ PORTE SUR TOUT LE TERME',
+        text: 'Dans $(3x)^2$, le carré s\'applique au $3$ **et** au $x$ : $(3x)^2=9x^2$, et non $3x^2$. De même $(-2)^2=4$ : un carré est toujours positif.',
+      },
+      {
+        type: 'methode',
+        title: 'Reconnaître l\'identité à utiliser',
+        steps: [
+          'Deux termes au carré, séparés par un $-$, sous forme de produit somme × différence → $a^2-b^2$.',
+          'Une parenthèse au carré avec un $+$ → $(a+b)^2$.',
+          'Une parenthèse au carré avec un $-$ → $(a-b)^2$.',
+          'Toujours identifier qui est $a$ et qui est $b$ avant de se lancer.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'factoriser',
+    num: '3',
+    title: 'Factoriser',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'FACTORISER',
+        content: '**Factoriser**, c\'est l\'opération inverse de développer : transformer une somme en un produit.',
+      },
+      {
+        type: 'idee_cle',
+        text: '**Pourquoi factoriser ?** Parce qu\'un produit permet de résoudre des équations : si un produit est nul, l\'un de ses facteurs est nul. Une somme, elle, ne dit rien. Factoriser n\'est donc pas un exercice gratuit : c\'est la clé de la résolution d\'équations.',
+      },
+      {
+        type: 'formules',
+        label: 'Les deux méthodes',
+        rows: [
+          { desc: 'Facteur commun (présent dans tous les termes)', tex: '5x^2+15x=5x(x+3)' },
+          { desc: 'Facteur commun : une parenthèse entière', tex: '(x-2)(x+5)+(x-2)\\times 4=(x-2)(x+9)' },
+          { desc: 'Identité remarquable, lue à l\'envers', tex: 'x^2-9=(x+3)(x-3)' },
+        ],
+      },
+      {
+        type: 'methode',
+        title: 'Comment savoir quelle méthode utiliser',
+        steps: [
+          'Chercher d\'abord un facteur commun — c\'est toujours le premier réflexe.',
+          'Sinon, compter les termes : deux termes avec un $-$ → penser à $a^2-b^2$.',
+          'Trois termes → penser à $(a\\pm b)^2$, et vérifier que le terme du milieu vaut bien $2ab$.',
+        ],
+      },
+      {
+        type: 'piege',
+        badge: '$a^2+b^2$ NE SE FACTORISE PAS',
+        text: '$a^2-b^2$ se factorise en $(a+b)(a-b)$, mais $a^2+b^2$ ne se factorise pas (au lycée). Il n\'existe pas d\'identité pour $a^2+b^2$. Une somme de deux carrés ne se casse pas.',
+      },
+      {
+        type: 'reflex',
+        text: '**La vérification gratuite.** Une factorisation se vérifie toujours : il suffit de redévelopper. Si l\'on retombe sur l\'expression de départ, c\'est juste. Aucune raison de rendre une factorisation fausse.',
+      },
+    ],
+  },
+  {
+    id: 'equations',
+    num: '4',
+    title: 'Équations du premier degré',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'ÉQUATION, SOLUTION',
+        content: 'Une **équation** est une égalité contenant une inconnue (souvent $x$). **Résoudre** l\'équation, c\'est trouver toutes les valeurs de $x$ qui rendent l\'égalité vraie. Ces valeurs sont les **solutions**.',
+      },
+      {
+        type: 'propriete',
+        text: '**Les deux règles autorisées.** On ne change pas les solutions d\'une équation si l\'on : ajoute (ou retranche) un même nombre aux deux membres ; multiplie (ou divise) les deux membres par un même nombre **non nul**.',
+      },
+      {
+        type: 'methode',
+        title: 'Résoudre une équation du premier degré',
+        steps: [
+          'Développer et réduire chaque membre s\'il y a des parenthèses.',
+          'Rassembler les $x$ d\'un côté, les nombres de l\'autre.',
+          'Diviser par le coefficient de $x$.',
+          'Vérifier en remplaçant dans l\'équation de départ.',
+        ],
+      },
+      {
+        type: 'exemple',
+        title: 'Mettre un problème en équation',
+        lines: [
+          'Un rectangle a une longueur de $3\\,\\text{cm}$ de plus que sa largeur. Son périmètre vaut $26\\,\\text{cm}$. Soit $x$ la largeur en cm ; la longueur vaut $x+3$.',
+          'Périmètre : $2(x+(x+3))=26$, puis $2(2x+3)=26$, donc $4x+6=26$, soit $4x=20$ et $x=5$.',
+          'Conclusion : la largeur est de $5\\,\\text{cm}$ et la longueur de $8\\,\\text{cm}$. Vérification : $2(5+8)=26$ ✓, et les deux dimensions sont positives — cohérent.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'produit-quotient',
+    num: '5',
+    title: 'Équations produit & quotient',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'L\'ÉQUATION PRODUIT NUL',
+        content: 'Un produit de facteurs est nul si et seulement si l\'un au moins de ses facteurs est nul : $A\\times B=0 \\iff A=0$ ou $B=0$.',
+      },
+      {
+        type: 'piege',
+        badge: 'ÇA MARCHE SEULEMENT AVEC 0',
+        text: 'Zéro est le seul nombre à avoir cette propriété. Si $A\\times B=6$, on ne peut rien dire de $A$ ni de $B$ : ce peut être $1\\times 6$, $2\\times 3$, $12\\times 0{,}5$… C\'est pour cela qu\'on ramène toujours l\'équation à « $=0$ » avant de factoriser. Une équation $A\\times B=6$ ne se résout pas ainsi.',
+      },
+      {
+        type: 'methode',
+        title: 'Résoudre une équation produit',
+        steps: [
+          'Tout ramener du même côté, pour avoir $\\ldots=0$.',
+          'Factoriser le membre de gauche.',
+          'Appliquer le théorème : chaque facteur nul donne une équation simple.',
+          'Résoudre chacune et rassembler les solutions.',
+        ],
+      },
+      {
+        type: 'definition',
+        badge: 'ÉQUATION QUOTIENT',
+        content: 'Un quotient est nul si et seulement si son numérateur est nul, et que le dénominateur ne l\'est pas : $\\dfrac{A}{B}=0 \\iff A=0$ **et** $B\\neq 0$.',
+      },
+      {
+        type: 'piege',
+        badge: 'LES VALEURS INTERDITES',
+        text: 'Avant toute chose, il faut chercher les valeurs qui annulent le dénominateur : ce sont les **valeurs interdites**, à exclure d\'office. Exemple : $\\dfrac{3x-12}{x+2}=0$. Le dénominateur s\'annule en $x=-2$ : valeur interdite. Le numérateur s\'annule en $x=4$. Comme $4\\neq -2$, la solution est $x=4$.',
+      },
+    ],
+  },
+  {
+    id: 'inequations',
+    num: '6',
+    title: 'Inéquations & tableaux de signes',
+    blocks: [
+      {
+        type: 'definition',
+        badge: 'INÉQUATION',
+        content: 'Une **inéquation** utilise $<$, $\\leqslant$, $>$ ou $\\geqslant$ au lieu de $=$. Ses solutions forment en général un **intervalle** ou une réunion d\'intervalles — et non quelques valeurs isolées.',
+      },
+      {
+        type: 'piege',
+        badge: 'LA RÈGLE À NE JAMAIS OUBLIER',
+        text: 'On peut ajouter ou retrancher un même nombre aux deux membres sans rien changer. Mais si l\'on **multiplie ou divise par un nombre NÉGATIF**, il faut **CHANGER LE SENS** de l\'inégalité. Exemple : $-3x+6>0$ donne $-3x>-6$, puis en divisant par $-3$ : $x<2$ (le sens s\'est inversé).',
+      },
+      {
+        type: 'piege',
+        badge: 'UNE INÉQUATION PRODUIT NE SE « COUPE » PAS',
+        text: 'Face à $(x-2)(x+3)>0$, on ne peut **pas** écrire « $x-2>0$ ou $x+3>0$ ». Le théorème du produit nul vaut pour $=0$, pas pour $>0$. Il faut passer par un **tableau de signes**.',
+      },
+      {
+        type: 'figure',
+        caption: 'On étudie le signe de chaque facteur séparément, puis on applique la règle des signes ligne par ligne. Le produit est positif là où les deux facteurs ont le même signe : $(x-2)(x+3)>0$ pour $x\\in]-\\infty\\,;-3[\\cup]2\\,;+\\infty[$.',
+        src: '/modules/math-calcul-litteral-2nde/fig-tableau.png',
+      },
+      {
+        type: 'methode',
+        title: 'Le tableau de signes',
+        steps: [
+          'Se ramener à « $\\ldots>0$ » (ou $<0$) et factoriser.',
+          'Chercher les racines de chaque facteur : elles découpent la droite réelle.',
+          'Les placer dans l\'ordre croissant sur la première ligne.',
+          'Ligne par ligne, donner le signe de chaque facteur (un facteur $ax+b$ est du signe de $-a$ avant sa racine, puis de $a$).',
+          'Multiplier les signes colonne par colonne, puis lire la solution en intervalles.',
+        ],
+      },
+      {
+        type: 'reflex',
+        text: '**Crochets ouverts ou fermés ?** Pour une inégalité stricte ($<$ ou $>$), les racines sont exclues : crochets ouverts. Pour une inégalité large ($\\leqslant$ ou $\\geqslant$), elles sont incluses : crochets fermés — sauf s\'il s\'agit d\'une valeur interdite, qui reste toujours exclue.',
+      },
     ],
   },
 ];
@@ -10472,8 +10858,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isFluidesCours = module.id === 'phys-fluides';
   const isFonctions2ndeCours = module.id === 'math-fonctions-2nde';
   const isNombres2ndeCours = module.id === 'math-nombres-2nde';
-  const sections = isNombres2ndeCours ? NOMBRES2NDE_COURS : isFonctions2ndeCours ? FONCTIONS2NDE_COURS : isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isNombres2ndeCours ? NOMBRES2NDE_OBJECTIFS : isFonctions2ndeCours ? FONCTIONS2NDE_OBJECTIFS : isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isCalculLitteralCours = module.id === 'math-calcul-litteral-2nde';
+  const sections = isCalculLitteralCours ? CALCULLITTERAL_COURS : isNombres2ndeCours ? NOMBRES2NDE_COURS : isFonctions2ndeCours ? FONCTIONS2NDE_COURS : isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isCalculLitteralCours ? CALCULLITTERAL_OBJECTIFS : isNombres2ndeCours ? NOMBRES2NDE_OBJECTIFS : isFonctions2ndeCours ? FONCTIONS2NDE_OBJECTIFS : isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -10665,8 +11052,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isFluidesFiche = module.id === 'phys-fluides';
   const isFonctions2ndeFiche = module.id === 'math-fonctions-2nde';
   const isNombres2ndeFiche = module.id === 'math-nombres-2nde';
-  const ficheData = isNombres2ndeFiche ? NOMBRES2NDE_FICHE_DATA : isFonctions2ndeFiche ? FONCTIONS2NDE_FICHE_DATA : isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isNombres2ndeFiche ? 'Nombres & intervalles' : isFonctions2ndeFiche ? 'Fonctions — généralités' : isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isCalculLitteralFiche = module.id === 'math-calcul-litteral-2nde';
+  const ficheData = isCalculLitteralFiche ? CALCULLITTERAL_FICHE_DATA : isNombres2ndeFiche ? NOMBRES2NDE_FICHE_DATA : isFonctions2ndeFiche ? FONCTIONS2NDE_FICHE_DATA : isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isCalculLitteralFiche ? 'Calcul littéral & équations' : isNombres2ndeFiche ? 'Nombres & intervalles' : isFonctions2ndeFiche ? 'Fonctions — généralités' : isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
