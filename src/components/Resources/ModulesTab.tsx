@@ -86,6 +86,20 @@ export function ModulesTab({ onXpGain }: Props) {
 
   const LEVEL_ORDER = ['Terminale', 'Première', 'Seconde', '3ème'];
   const availableLevels = LEVEL_ORDER.filter(l => ALL_MODULES.some(m => m.level === l));
+
+  // Filtre par défaut sur le niveau de l'élève (renseigné à l'onboarding).
+  // Un élève de Seconde ne voit que les modules de Seconde. Appliqué une seule
+  // fois au chargement du profil ; l'élève peut ensuite ajuster le filtre.
+  const defaultLevelApplied = useRef(false);
+  useEffect(() => {
+    if (defaultLevelApplied.current || !profile) return;
+    defaultLevelApplied.current = true;
+    const lvl = profile.class_level;
+    // On ne filtre que si des modules existent pour ce niveau (sinon : tout afficher)
+    if (lvl && ALL_MODULES.some(m => m.level === lvl)) {
+      setFilterLevel(lvl);
+    }
+  }, [profile]);
   const availableSubjects = [...new Set(ALL_MODULES.map(m => m.subject))]
     .sort((a, b) => SUBJECT_ORDER.indexOf(a) - SUBJECT_ORDER.indexOf(b));
 
@@ -119,9 +133,15 @@ export function ModulesTab({ onXpGain }: Props) {
     .sort((a, b) => b.done / b.m.levels.length - a.done / a.m.levels.length)
     .slice(0, 3);
 
-  // Suggestion de démarrage si rien n'est en cours
+  // Suggestion de démarrage si rien n'est en cours — scopée au niveau de l'élève
+  // (un élève de Seconde est orienté vers un module de Seconde, pas de Terminale).
+  const studentLevel = profile?.class_level ?? null;
+  const startPool =
+    studentLevel && ALL_MODULES.some(m => m.level === studentLevel)
+      ? ALL_MODULES.filter(m => m.level === studentLevel)
+      : ALL_MODULES;
   const suggested = inProgress.length === 0
-    ? ALL_MODULES.find(m => doneCount(m) === 0) ?? null
+    ? startPool.find(m => doneCount(m) === 0) ?? null
     : null;
 
   if (selected) {
@@ -320,9 +340,12 @@ export function ModulesTab({ onXpGain }: Props) {
                 const subjHsl = subjectHsl(group.subject);
                 const subjDone = group.modules.reduce((s, m) => s + doneCount(m), 0);
                 const subjTotal = group.modules.reduce((s, m) => s + m.levels.length, 0);
-                // Sous-groupement par classe, de la plus simple à la plus avancée
+                // Sous-groupement par classe, de la plus simple à la plus avancée.
+                // Le séparateur n'apparaît que si plusieurs classes sont affichées
+                // (donc jamais dans la vue par défaut, filtrée sur le niveau de l'élève).
                 const classes = [...new Set(group.modules.map(m => m.level))]
                   .sort((a, b) => classRank(a) - classRank(b));
+                const multiClass = classes.length > 1;
                 // Module recommandé pour cette spé : le premier non terminé, dans l'ordre de difficulté
                 const recommendedId =
                   group.modules.find(m => doneCount(m) < m.levels.length)?.id ?? null;
@@ -343,17 +366,19 @@ export function ModulesTab({ onXpGain }: Props) {
                         const mods = group.modules.filter(m => m.level === cls);
                         return (
                           <div key={cls}>
-                            {/* Séparateur de classe */}
-                            <div className="flex items-center gap-2 mb-2.5 ml-0.5">
-                              <GraduationCap size={12} style={{ color: `hsl(${subjHsl} / 0.75)` }} />
-                              <span className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-white/45">
-                                {cls}
-                              </span>
-                              <span className="text-[9.5px] font-semibold text-white/20 tabular-nums">
-                                {mods.length} chapitre{mods.length > 1 ? 's' : ''}
-                              </span>
-                              <div className="flex-1 h-px bg-white/[0.06]" />
-                            </div>
+                            {/* Séparateur de classe — visible seulement en vue multi-niveaux */}
+                            {multiClass && (
+                              <div className="flex items-center gap-2 mb-2.5 ml-0.5">
+                                <GraduationCap size={12} style={{ color: `hsl(${subjHsl} / 0.75)` }} />
+                                <span className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-white/45">
+                                  {cls}
+                                </span>
+                                <span className="text-[9.5px] font-semibold text-white/20 tabular-nums">
+                                  {mods.length} chapitre{mods.length > 1 ? 's' : ''}
+                                </span>
+                                <div className="flex-1 h-px bg-white/[0.06]" />
+                              </div>
+                            )}
                             {/* Modules ordonnés par difficulté croissante — le numéro indique la progression conseillée */}
                             <div className="grid md:grid-cols-2 gap-3">
                               {mods.map((mod, i) => (

@@ -9,6 +9,8 @@ interface Profile {
   user_id: string;
   pseudo: string;
   avatar: string;
+  /** Niveau scolaire renseigné à l'onboarding : 'Collège' | 'Seconde' | 'Première' | 'Terminale' */
+  class_level?: string | null;
   total_xp: number;
   streak: number;
   last_activity_date: string | null;
