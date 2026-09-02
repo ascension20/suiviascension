@@ -132,7 +132,7 @@ export const NEWTON_QCM: QcmQuestion[] = [
 // ── Corrections ──────────────────────────────────────────────────────────────
 export interface CorrectionStep {
   n?: string;      // "1", "2", "A.1" — omit for remark/non-numbered lines
-  text: string;    // MixedText: $...$ for inline LaTeX, **...** for bold
+  text?: string;   // MixedText: $...$ for inline LaTeX, **...** for bold (omit for tex-only steps)
   tex?: string;    // optional display-mode block formula
 }
 
