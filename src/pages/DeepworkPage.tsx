@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, ArrowLeft, Music, Music2, Swords, Moon, Zap } from 'lucide-react';
+import { Play, Pause, ArrowLeft, Music, Music2, SkipForward, Swords, Moon, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDeepworkXp, DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
 import { TierProgressBar } from '@/components/Deepwork/DeepworkWidget';
