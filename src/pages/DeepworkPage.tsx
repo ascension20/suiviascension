@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, ArrowLeft, Music, Music2, Swords, Moon, Zap } from 'lucide-react';
+import { Play, Pause, ArrowLeft, Music, Music2, SkipForward, Swords, Moon, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { computeDeepworkXp, DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
 import { TierProgressBar } from '@/components/Deepwork/DeepworkWidget';
-import { playXpSound, useLofiMusic } from '@/hooks/useXpAudio';
+import { playXpSound, playCheckinSound, useLofiMusic } from '@/hooks/useXpAudio';
 import { useAuth } from '@/hooks/useAuth';
 import { updateStreak } from '@/hooks/useOnlineTracker';
 import { useDeepworkPresence } from '@/hooks/useDeepworkPresence';
@@ -36,7 +36,7 @@ function xpRateInfo(seconds: number) {
 export default function DeepworkPage() {
   const navigate = useNavigate();
   const { user, profile, refreshProfile } = useAuth();
-  const { enabled: lofiOn, toggle: toggleLofi } = useLofiMusic();
+  const { enabled: lofiOn, toggle: toggleLofi, track: lofiTrack, next: nextTrack } = useLofiMusic();
   const peers = useDeepworkPresence();
 
   const [startedAt, setStartedAt] = useState<number | null>(() => {
@@ -139,6 +139,7 @@ export default function DeepworkPage() {
       setCheckinDeadline(deadline);
       setCheckinCountdown(CHECKIN_WINDOW);
       setShowCheckin(true);
+      playCheckinSound();
       // Notify if tab is hidden or browser notifications are granted
       if (Notification.permission === 'granted') {
         new Notification('Deepwork — Tu es toujours là ?', {
@@ -368,8 +369,23 @@ export default function DeepworkPage() {
             }}
           >
             {lofiOn ? <Music2 size={15} /> : <Music size={15} />}
-            <span>{lofiOn ? 'Lofi ON' : 'Lofi OFF'}</span>
+            <span>{lofiOn ? lofiTrack.label : 'Musique OFF'}</span>
           </button>
+
+          {/* Piste suivante */}
+          <button
+            onClick={nextTrack}
+            title="Piste suivante"
+            className="flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-sm hover:brightness-125 active:scale-95"
+            style={{
+              borderColor: 'hsl(222 16% 22%)',
+              color: 'hsl(220 10% 65%)',
+            }}
+          >
+            <SkipForward size={15} />
+            <span>Suivant</span>
+          </button>
+
 
           {/* Discord voice channel */}
           <a
