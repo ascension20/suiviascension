@@ -139,6 +139,7 @@ export default function DeepworkPage() {
       setCheckinDeadline(deadline);
       setCheckinCountdown(CHECKIN_WINDOW);
       setShowCheckin(true);
+      playCheckinSound();
       // Notify if tab is hidden or browser notifications are granted
       if (Notification.permission === 'granted') {
         new Notification('Deepwork — Tu es toujours là ?', {
