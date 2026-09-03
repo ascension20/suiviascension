@@ -36,7 +36,7 @@ function xpRateInfo(seconds: number) {
 export default function DeepworkPage() {
   const navigate = useNavigate();
   const { user, profile, refreshProfile } = useAuth();
-  const { enabled: lofiOn, toggle: toggleLofi } = useLofiMusic();
+  const { enabled: lofiOn, toggle: toggleLofi, track: lofiTrack, next: nextTrack } = useLofiMusic();
   const peers = useDeepworkPresence();
 
   const [startedAt, setStartedAt] = useState<number | null>(() => {
