@@ -5,7 +5,7 @@ import { Play, Pause, ArrowLeft, Music, Music2, Swords, Moon, Zap } from 'lucide
 import { supabase } from '@/integrations/supabase/client';
 import { computeDeepworkXp, DEEPWORK_STORAGE_KEY } from '@/lib/planning-utils';
 import { TierProgressBar } from '@/components/Deepwork/DeepworkWidget';
-import { playXpSound, useLofiMusic } from '@/hooks/useXpAudio';
+import { playXpSound, playCheckinSound, useLofiMusic } from '@/hooks/useXpAudio';
 import { useAuth } from '@/hooks/useAuth';
 import { updateStreak } from '@/hooks/useOnlineTracker';
 import { useDeepworkPresence } from '@/hooks/useDeepworkPresence';
