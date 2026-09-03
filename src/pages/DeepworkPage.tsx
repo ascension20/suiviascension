@@ -369,8 +369,23 @@ export default function DeepworkPage() {
             }}
           >
             {lofiOn ? <Music2 size={15} /> : <Music size={15} />}
-            <span>{lofiOn ? 'Lofi ON' : 'Lofi OFF'}</span>
+            <span>{lofiOn ? lofiTrack.label : 'Musique OFF'}</span>
           </button>
+
+          {/* Piste suivante */}
+          <button
+            onClick={nextTrack}
+            title="Piste suivante"
+            className="flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-sm hover:brightness-125 active:scale-95"
+            style={{
+              borderColor: 'hsl(222 16% 22%)',
+              color: 'hsl(220 10% 65%)',
+            }}
+          >
+            <SkipForward size={15} />
+            <span>Suivant</span>
+          </button>
+
 
           {/* Discord voice channel */}
           <a
