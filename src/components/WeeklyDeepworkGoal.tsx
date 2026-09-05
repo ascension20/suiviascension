@@ -73,7 +73,9 @@ export function WeeklyDeepworkGoal({ userId, onXpGain }: Props) {
       const byDay: Record<string, number> = {};
       wd.forEach(d => { byDay[formatDateISO(d)] = 0; });
       sessions?.forEach(s => {
-        const key = (s.started_at ?? '').slice(0, 10);
+        // Clé de jour LOCALE (pas UTC) sinon les sessions du soir/nuit tombent
+        // sur le mauvais jour de la semaine.
+        const key = formatDateISO(new Date(s.started_at));
         if (byDay[key] !== undefined) byDay[key] += Math.floor((s.duration_seconds ?? 0) / 60);
       });
 

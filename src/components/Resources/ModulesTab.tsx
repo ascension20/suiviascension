@@ -10,7 +10,7 @@ import { ALL_MODULES, type PhysicsModule, type ModuleLevel } from '@/lib/modules
 import { ModulePage } from './ModulePage';
 
 interface Props {
-  onXpGain?: (amount: number) => void;
+  onXpGain?: (amount: number, source?: string) => void;
 }
 
 // Ordre d'affichage des matières (programme + progression logique)
@@ -62,17 +62,8 @@ export function ModulesTab({ onXpGain }: Props) {
       level_id: level.id,
     });
 
-    // Mettre à jour XP profil
-    const newXp = (profile.total_xp ?? 0) + level.xpReward;
-    await supabase.from('profiles').update({ total_xp: newXp }).eq('id', user.id);
-    await supabase.from('xp_history').insert({
-      user_id: user.id,
-      amount: level.xpReward,
-      source: `module:${mod.id}:${level.id}`,
-    });
-
-    updateProfile({ total_xp: newXp });
-    onXpGain?.(level.xpReward);
+    // XP : une seule source de vérité → addXp (profil + xp_history)
+    onXpGain?.(level.xpReward, `module:${mod.id}:${level.id}`);
 
     setCompletedByModule(prev => {
       const next = { ...prev };

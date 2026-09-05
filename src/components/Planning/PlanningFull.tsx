@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, CalendarDays, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays, Plus, CalendarPlus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   PlanningEvent, getWeekStart, getWeekDays, formatDateISO, formatWeekLabel,
@@ -8,6 +8,7 @@ import {
 import { fetchICal, parseICal, icalToPlanningEvent } from '@/lib/ical-parser';
 import { EventFormModal } from './EventFormModal';
 import { QuestValidationModal } from './QuestValidationModal';
+import { IcalSettingsModal } from './IcalSettingsModal';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 // ── Grille horaire ────────────────────────────────────────────────────────
@@ -55,6 +56,7 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
   const [converting, setConverting] = useState<PlanningEvent | null>(null);
   const [suppressedSlots, setSuppressedSlots] = useState<Set<string>>(new Set());
   const [icalError, setIcalError] = useState(false);
+  const [icalSettings, setIcalSettings] = useState(false);
   const [selectedDay, setSelectedDay] = useState(0);
   const loadCounter = useRef(0);
   const isMobile = useIsMobile();
@@ -212,8 +214,24 @@ export function PlanningFull({ userId, onXpGain, onChanged, initialWeekStart, re
           >
             <Plus size={11} /> Ajouter
           </button>
+          <button
+            onClick={() => setIcalSettings(true)}
+            title={icalUrl ? 'Modifier mon emploi du temps iCal' : 'Ajouter mon emploi du temps iCal'}
+            className="px-2.5 py-1 rounded text-[10px] font-medium flex items-center gap-1 border border-border hover:bg-secondary"
+          >
+            <CalendarPlus size={11} /> {icalUrl ? 'Emploi du temps' : 'Ajouter iCal'}
+          </button>
         </div>
       </header>
+
+      {icalSettings && (
+        <IcalSettingsModal
+          userId={userId}
+          currentUrl={icalUrl}
+          onClose={() => setIcalSettings(false)}
+          onSaved={(u) => { setIcalUrl(u); setIcalError(false); load(); }}
+        />
+      )}
 
       {/* ── Bandeau erreur iCal ── */}
       {icalError && (
