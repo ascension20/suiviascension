@@ -42,7 +42,6 @@ export function IcalSettingsModal({ userId, currentUrl, onClose, onSaved }: Prop
 
       if (parsed.length > 0) {
         await supabase.from('planning_events').delete().eq('user_id', userId).eq('source', 'ical');
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const rows = parsed.map(e => { const { id: _id, ...rest } = icalToPlanningEvent(e, userId); return rest; });
         await supabase.from('planning_events').insert(rows);
       }
