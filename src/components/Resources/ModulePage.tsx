@@ -38,6 +38,7 @@ import { NOMBRES2NDE_QCM, NOMBRES2NDE_EXERCISES, NOMBRES2NDE_CORRECTIONS } from 
 import { CALCULLITTERAL_QCM, CALCULLITTERAL_EXERCISES, CALCULLITTERAL_CORRECTIONS } from '@/lib/calcul-litteral-content';
 import { REPERAGE_QCM, REPERAGE_EXERCISES, REPERAGE_CORRECTIONS } from '@/lib/reperage-vecteurs-content';
 import { STATS2NDE_QCM, STATS2NDE_EXERCISES, STATS2NDE_CORRECTIONS } from '@/lib/stats2nde-content';
+import { PROBA2NDE_QCM, PROBA2NDE_EXERCISES, PROBA2NDE_CORRECTIONS } from '@/lib/proba2nde-content';
 import { BlockMath, InlineMath, MixedText } from './Math';
 import { QcmView } from './QcmView';
 import { ExerciseView } from './ExerciseView';
@@ -100,14 +101,15 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
     const isCalculLitteral = module.id === 'math-calcul-litteral-2nde';
     const isReperage = module.id === 'math-reperage-2nde';
     const isStats2nde = module.id === 'math-statistiques-2nde';
+    const isProba2nde = module.id === 'math-probabilites-2nde';
     if (activeLevel.id === 'newton-qcm' || activeLevel.id === 'suites-qcm' || activeLevel.id === 'fonctions-qcm' || activeLevel.id === 'logarithme-qcm' || activeLevel.id === 'probabilites-qcm' || activeLevel.id === 'geometrie-qcm' || activeLevel.id === 'primitives-qcm' || activeLevel.id === 'exponentielle-qcm' || activeLevel.id === 'equadiff-qcm' || activeLevel.id === 'trigo-qcm' || activeLevel.id === 'combinatoire-qcm' || activeLevel.id === 'gravitation-qcm' || activeLevel.id === 'energie-qcm' || activeLevel.id === 'bilans-qcm' || activeLevel.id === 'ondes-qcm' || activeLevel.id === 'diffraction-qcm' || activeLevel.id === 'doppler-qcm' || activeLevel.id === 'photon-qcm' || activeLevel.id === 'rc-qcm' || activeLevel.id === 'lunette-qcm' || activeLevel.id === 'acide-qcm' || activeLevel.id === 'titrages-qcm' || activeLevel.id === 'oxydo-qcm' || activeLevel.id === 'cinetique-qcm' || activeLevel.id === 'equilibre-qcm' || activeLevel.id === 'spectro-qcm' || activeLevel.id === 'meca-qcm' || activeLevel.id === 'fluides-qcm' || activeLevel.id === 'fonctions2nde-qcm' || activeLevel.id === 'nombres2nde-qcm' || activeLevel.id === 'calcul-litteral-qcm' || activeLevel.id === 'reperage-qcm') {
-      const questions = isStats2nde ? STATS2NDE_QCM : isReperage ? REPERAGE_QCM : isCalculLitteral ? CALCULLITTERAL_QCM : isNombres2nde ? NOMBRES2NDE_QCM : isFonctions2nde ? FONCTIONS2NDE_QCM : isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
+      const questions = isProba2nde ? PROBA2NDE_QCM : isStats2nde ? STATS2NDE_QCM : isReperage ? REPERAGE_QCM : isCalculLitteral ? CALCULLITTERAL_QCM : isNombres2nde ? NOMBRES2NDE_QCM : isFonctions2nde ? FONCTIONS2NDE_QCM : isFluides ? FLUIDES_QCM : isMeca ? MECA_QCM : isSpectro ? SPECTRO_QCM : isEquilibre ? EQUILIBRE_QCM : isCinetique ? CINETIQUE_QCM : isOxydo ? OXYDO_QCM : isTitrages ? TITRAGES_QCM : isAcide ? ACIDE_QCM : isLunette ? LUNETTE_QCM : isRC ? RC_QCM : isPhoton ? PHOTON_QCM : isDoppler ? DOPPLER_QCM : isDiffraction ? DIFFRACTION_QCM : isOndes ? ONDES_QCM : isBilans ? BILANS_QCM : isEnergie ? ENERGIE_QCM : isGravitation ? GRAVITATION_QCM : isCombinatoire ? COMBINATOIRE_QCM : isTrigo ? TRIGO_QCM : isEquadiff ? EQUADIFF_QCM : isExponentielle ? EXPONENTIELLE_QCM : isPrimitives ? PRIMITIVES_QCM : isGeometrie ? GEOMETRIE_QCM : isProbabilites ? PROBABILITES_QCM : isLogarithme ? LOGARITHME_QCM : isFonctions ? FONCTIONS_QCM : isMaths ? SUITES_QCM : NEWTON_QCM;
       return <QcmView questions={questions} xpReward={activeLevel.xpReward}
         onComplete={() => { onComplete(activeLevel); setActiveLevel(null); }}
         onBack={() => setActiveLevel(null)} />;
     }
-    const exercises = isStats2nde ? STATS2NDE_EXERCISES : isReperage ? REPERAGE_EXERCISES : isCalculLitteral ? CALCULLITTERAL_EXERCISES : isNombres2nde ? NOMBRES2NDE_EXERCISES : isFonctions2nde ? FONCTIONS2NDE_EXERCISES : isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
-    const corrections = isStats2nde ? STATS2NDE_CORRECTIONS : isReperage ? REPERAGE_CORRECTIONS : isCalculLitteral ? CALCULLITTERAL_CORRECTIONS : isNombres2nde ? NOMBRES2NDE_CORRECTIONS : isFonctions2nde ? FONCTIONS2NDE_CORRECTIONS : isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
+    const exercises = isProba2nde ? PROBA2NDE_EXERCISES : isStats2nde ? STATS2NDE_EXERCISES : isReperage ? REPERAGE_EXERCISES : isCalculLitteral ? CALCULLITTERAL_EXERCISES : isNombres2nde ? NOMBRES2NDE_EXERCISES : isFonctions2nde ? FONCTIONS2NDE_EXERCISES : isFluides ? FLUIDES_EXERCISES : isMeca ? MECA_EXERCISES : isSpectro ? SPECTRO_EXERCISES : isEquilibre ? EQUILIBRE_EXERCISES : isCinetique ? CINETIQUE_EXERCISES : isOxydo ? OXYDO_EXERCISES : isTitrages ? TITRAGES_EXERCISES : isAcide ? ACIDE_EXERCISES : isLunette ? LUNETTE_EXERCISES : isRC ? RC_EXERCISES : isPhoton ? PHOTON_EXERCISES : isDoppler ? DOPPLER_EXERCISES : isDiffraction ? DIFFRACTION_EXERCISES : isOndes ? ONDES_EXERCISES : isBilans ? BILANS_EXERCISES : isEnergie ? ENERGIE_EXERCISES : isGravitation ? GRAVITATION_EXERCISES : isCombinatoire ? COMBINATOIRE_EXERCISES : isTrigo ? TRIGO_EXERCISES : isEquadiff ? EQUADIFF_EXERCISES : isExponentielle ? EXPONENTIELLE_EXERCISES : isPrimitives ? PRIMITIVES_EXERCISES : isGeometrie ? GEOMETRIE_EXERCISES : isProbabilites ? PROBABILITES_EXERCISES : isLogarithme ? LOGARITHME_EXERCISES : isFonctions ? FONCTIONS_EXERCISES : isMaths ? SUITES_EXERCISES : NEWTON_EXERCISES;
+    const corrections = isProba2nde ? PROBA2NDE_CORRECTIONS : isStats2nde ? STATS2NDE_CORRECTIONS : isReperage ? REPERAGE_CORRECTIONS : isCalculLitteral ? CALCULLITTERAL_CORRECTIONS : isNombres2nde ? NOMBRES2NDE_CORRECTIONS : isFonctions2nde ? FONCTIONS2NDE_CORRECTIONS : isFluides ? FLUIDES_CORRECTIONS : isMeca ? MECA_CORRECTIONS : isSpectro ? SPECTRO_CORRECTIONS : isEquilibre ? EQUILIBRE_CORRECTIONS : isCinetique ? CINETIQUE_CORRECTIONS : isOxydo ? OXYDO_CORRECTIONS : isTitrages ? TITRAGES_CORRECTIONS : isAcide ? ACIDE_CORRECTIONS : isLunette ? LUNETTE_CORRECTIONS : isRC ? RC_CORRECTIONS : isPhoton ? PHOTON_CORRECTIONS : isDoppler ? DOPPLER_CORRECTIONS : isDiffraction ? DIFFRACTION_CORRECTIONS : isOndes ? ONDES_CORRECTIONS : isBilans ? BILANS_CORRECTIONS : isEnergie ? ENERGIE_CORRECTIONS : isGravitation ? GRAVITATION_CORRECTIONS : isCombinatoire ? COMBINATOIRE_CORRECTIONS : isTrigo ? TRIGO_CORRECTIONS : isEquadiff ? EQUADIFF_CORRECTIONS : isExponentielle ? EXPONENTIELLE_CORRECTIONS : isPrimitives ? PRIMITIVES_CORRECTIONS : isGeometrie ? GEOMETRIE_CORRECTIONS : isProbabilites ? PROBABILITES_CORRECTIONS : isLogarithme ? LOGARITHME_CORRECTIONS : isFonctions ? FONCTIONS_CORRECTIONS : isMaths ? SUITES_CORRECTIONS : NEWTON_CORRECTIONS;
     const nextLevel = module.levels.find(l => l.number === activeLevel.number + 1);
     const correctionUnlocked = nextLevel
       ? completedIds.has(nextLevel.id)
@@ -4605,13 +4607,13 @@ const ENERGIE_COURS: Section[] = [
 
 // ── Contenu Statistiques (Maths, Seconde) ─────────────────────────────────────
 const STATS2NDE_OBJECTIFS = [
+  'Lire et construire un tableau effectifs / fréquences / ECC',
   'Calculer moyenne simple, pondérée et avec coefficients',
-  'Construire effectifs cumulés croissants et fréquences',
   'Déterminer médiane, $Q_1$ et $Q_3$ selon la parité de $N$',
   "Calculer l'étendue et l'écart interquartile",
   'Construire et lire un diagramme en boîte (5 nombres)',
   'Utiliser la linéarité : $ax+b \\Rightarrow a\\bar{x}+b$',
-  'Travailler avec des séries regroupées en classes (histogramme)',
+  'Travailler avec des séries regroupées en classes et tracer l\'histogramme',
   'Choisir le bon indicateur de position selon le contexte',
 ];
 
@@ -4664,46 +4666,61 @@ const STATS2NDE_COURS: Section[] = [
   {
     id: 'stats2nde-s1',
     num: '1',
-    title: 'Vocabulaire : séries, effectifs, fréquences',
+    title: 'Une série statistique, deux présentations',
     blocks: [
       {
         type: 'definition',
-        content: 'Un **caractère** est la grandeur étudiée. Une **série statistique** regroupe les valeurs $x_i$ et leurs effectifs $n_i$ ; $N = \\sum n_i$ est l\'effectif total.',
-      },
-      {
-        type: 'formula',
-        label: 'Fréquence',
-        tex: 'f_i = \\dfrac{n_i}{N} \\qquad (\\text{en \\%} : f_i \\times 100) \\qquad \\sum f_i = 1',
+        content: 'La **population** est le groupe étudié ; chaque membre est un **individu**. Le **caractère** est ce qu\'on observe (quantitatif si les valeurs sont des nombres). L\'**effectif total** $N$ est le nombre d\'individus. La **série statistique** est la liste de toutes les données relevées.',
       },
       {
         type: 'para',
-        text: 'Les **effectifs cumulés croissants** (ECC) : $N_k = n_1 + n_2 + \\cdots + n_k$. Ils sont croissants et finissent à $N$.',
+        text: 'On peut écrire la série de deux façons : (1) la **liste brute** $x_1, x_2, \\ldots, x_N$ (une donnée par individu, répétitions incluses) ; (2) le **tableau valeur / effectif** : valeurs distinctes $v_1 < v_2 < \\cdots < v_k$ et effectifs $n_1, n_2, \\ldots, n_k$.',
       },
       {
-        type: 'idee_cle',
-        text: 'Le **mode** est la valeur d\'effectif maximal. Sur un diagramme en bâtons, la hauteur de chaque bâton est proportionnelle à l\'effectif.',
+        type: 'piege',
+        text: 'Ne pas confondre $N$ (nombre d\'individus) et $k$ (nombre de valeurs distinctes). Diviser la somme par $N$, jamais par $k$.',
       },
     ],
   },
   {
     id: 'stats2nde-s2',
     num: '2',
+    title: 'Effectifs, fréquences, cumuls',
+    blocks: [
+      {
+        type: 'formula',
+        label: 'Fréquence',
+        tex: 'f_i = \\dfrac{n_i}{N} \\qquad \\text{(en \\%} : f_i \\times 100\\text{)} \\qquad \\sum_{i=1}^k f_i = 1',
+      },
+      {
+        type: 'para',
+        text: 'Les **effectifs cumulés croissants** (ECC) : $\\text{ECC}(v_k) = n_1 + n_2 + \\cdots + n_k$. Ils sont croissants et se terminent à $N$. Le dernier cumul vaut $N$ : c\'est le contrôle.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Le **mode** est la valeur d\'effectif maximal : il se lit sur le tableau, il ne se calcule pas. Le **diagramme en bâtons** représente chaque valeur par un bâton de hauteur $n_i$.',
+      },
+    ],
+  },
+  {
+    id: 'stats2nde-s3',
+    num: '3',
     title: 'La moyenne',
     blocks: [
       {
         type: 'formula',
-        label: 'Moyenne simple',
-        tex: '\\bar{x} = \\dfrac{x_1 + x_2 + \\cdots + x_n}{n}',
+        label: 'À partir de la liste brute',
+        tex: '\\bar{x} = \\dfrac{x_1 + x_2 + \\cdots + x_N}{N}',
       },
       {
         type: 'formula',
-        label: 'Moyenne pondérée',
-        tex: '\\bar{x} = \\dfrac{\\displaystyle\\sum_{i=1}^k n_i\\, x_i}{N}',
+        label: 'À partir du tableau',
+        tex: '\\bar{x} = \\dfrac{n_1 v_1 + n_2 v_2 + \\cdots + n_k v_k}{N} = \\dfrac{\\displaystyle\\sum_{i=1}^k n_i v_i}{N}',
       },
       {
         type: 'formula',
         label: 'Linéarité',
-        tex: 'y = ax+b \\;\\Rightarrow\\; \\bar{y} = a\\bar{x}+b',
+        tex: 'y = av+b \\;\\Rightarrow\\; \\bar{y} = a\\bar{v}+b',
       },
       {
         type: 'formula',
@@ -4712,44 +4729,44 @@ const STATS2NDE_COURS: Section[] = [
       },
       {
         type: 'reflex',
-        text: '**Valeur manquante :** somme totale $= N\\bar{x}$. On retrouve la valeur inconnue par soustraction.',
-      },
-    ],
-  },
-  {
-    id: 'stats2nde-s3',
-    num: '3',
-    title: 'Médiane et quartiles',
-    blocks: [
-      {
-        type: 'para',
-        text: '**Étape préalable :** toujours ordonner la série avant de chercher la médiane ou les quartiles.',
-      },
-      {
-        type: 'formules',
-        label: 'Médiane',
-        rows: [
-          { desc: '$N$ impair', tex: 'Me = \\text{valeur de rang } \\dfrac{N+1}{2}' },
-          { desc: '$N$ pair', tex: 'Me = \\text{moyenne des rangs } \\dfrac{N}{2} \\text{ et } \\dfrac{N}{2}+1' },
-        ],
-      },
-      {
-        type: 'formules',
-        label: 'Quartiles',
-        rows: [
-          { desc: '$Q_1$', tex: '\\text{rang } \\dfrac{N}{4} \\;(\\text{entier sup. si non entier})' },
-          { desc: '$Q_3$', tex: '\\text{rang } \\dfrac{3N}{4} \\;(\\text{entier sup. si non entier})' },
-        ],
-      },
-      {
-        type: 'idee_cle',
-        text: 'La médiane partage la série en deux moitiés égales. $Q_1$ (resp. $Q_3$) est la médiane de la première (resp. deuxième) moitié.',
+        text: '**Valeur manquante :** la somme totale est $N\\bar{x}$. Si $N-1$ valeurs sont connues, on retrouve la dernière par soustraction.',
       },
     ],
   },
   {
     id: 'stats2nde-s4',
     num: '4',
+    title: 'Médiane et quartiles',
+    blocks: [
+      {
+        type: 'para',
+        text: '**Règle d\'or :** ordonner la série avant toute chose.',
+      },
+      {
+        type: 'formules',
+        label: 'Médiane',
+        rows: [
+          { desc: '$N$ impair', tex: 'Me = \\text{valeur de rang } \\dfrac{N+1}{2}' },
+          { desc: '$N$ pair', tex: 'Me = \\tfrac{1}{2}\\left(\\text{rang }\\dfrac{N}{2}+\\text{rang }\\dfrac{N}{2}{+}1\\right)' },
+        ],
+      },
+      {
+        type: 'formules',
+        label: 'Quartiles',
+        rows: [
+          { desc: '$Q_1$', tex: '\\text{rang } \\tfrac{N}{4} \\;(\\text{entier supérieur si non entier})' },
+          { desc: '$Q_3$', tex: '\\text{rang } \\tfrac{3N}{4} \\;(\\text{entier supérieur si non entier})' },
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: 'La médiane partage la série en deux moitiés égales. $Q_1$ est la médiane de la première moitié, $Q_3$ celle de la seconde.',
+      },
+    ],
+  },
+  {
+    id: 'stats2nde-s5',
+    num: '5',
     title: 'Mesurer la dispersion',
     blocks: [
       {
@@ -4765,36 +4782,36 @@ const STATS2NDE_COURS: Section[] = [
       {
         type: 'definition',
         title: 'Diagramme en boîte (boîte à moustaches)',
-        content: 'Défini par les 5 nombres : $\\min$, $Q_1$, $Me$, $Q_3$, $\\max$. La boîte centrale contient les 50 % des valeurs du milieu.',
+        content: 'Construit à partir des **5 nombres** : $\\min$, $Q_1$, $Me$, $Q_3$, $\\max$. La boîte contient les 50 % centraux de la série. Les moustaches s\'étendent jusqu\'aux valeurs extrêmes.',
       },
       {
         type: 'piege',
-        text: 'L\'étendue est très sensible aux valeurs extrêmes : une seule valeur aberrante peut l\'augmenter considérablement. L\'EQI est robuste.',
-      },
-    ],
-  },
-  {
-    id: 'stats2nde-s5',
-    num: '5',
-    title: 'Moyenne ou médiane ?',
-    blocks: [
-      {
-        type: 'para',
-        text: 'La **moyenne** est sensible aux valeurs extrêmes : elle peut être très éloignée de la valeur typique si la série contient des valeurs aberrantes.',
-      },
-      {
-        type: 'para',
-        text: 'La **médiane** est robuste : elle ne dépend que de l\'ordre des valeurs, pas de leur magnitude. La moitié des individus est en-dessous, l\'autre moitié au-dessus.',
-      },
-      {
-        type: 'idee_cle',
-        text: 'Pour les salaires, on publie souvent la **médiane** : la moyenne est tirée vers le haut par les très hauts salaires et ne représente plus le salarié ordinaire.',
+        text: 'L\'étendue est sensible aux valeurs aberrantes : une seule valeur extrême peut la faire exploser. L\'EQI est robuste car il ne dépend que des 50 % centraux.',
       },
     ],
   },
   {
     id: 'stats2nde-s6',
     num: '6',
+    title: 'Moyenne ou médiane ? Choisir son indicateur',
+    blocks: [
+      {
+        type: 'para',
+        text: 'La **moyenne** tient compte de toutes les valeurs : une seule valeur très élevée peut la tirer loin du centre réel de la série.',
+      },
+      {
+        type: 'para',
+        text: 'La **médiane** est robuste : elle ne change pas si on remplace la valeur maximale par une valeur encore plus grande. Elle décrit mieux la situation d\'un individu « typique ».',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Salaires, loyers, temps d\'attente aux urgences → **médiane**. Notes d\'une classe homogène, mesures scientifiques → **moyenne**. La série contient-elle des valeurs aberrantes ou extrêmes ? Si oui, préférer la médiane.',
+      },
+    ],
+  },
+  {
+    id: 'stats2nde-s7',
+    num: '7',
     title: 'Séries regroupées en classes',
     blocks: [
       {
@@ -4818,7 +4835,202 @@ const STATS2NDE_COURS: Section[] = [
       },
       {
         type: 'reflex',
-        text: 'Si les classes ont des amplitudes différentes, la hauteur n\'est PAS proportionnelle à l\'effectif — c\'est l\'aire qui l\'est. C\'est pourquoi on divise par l\'amplitude.',
+        text: 'Si les amplitudes sont inégales, la hauteur n\'est PAS proportionnelle à l\'effectif — c\'est l\'**aire** qui l\'est. Diviser par l\'amplitude garantit cette proportionnalité.',
+      },
+    ],
+  },
+];
+
+// ── Contenu Probabilités (Maths, Seconde) ──────────────────────────────────────
+const PROBA2NDE_OBJECTIFS = [
+  'Décrire une expérience aléatoire : univers, issues, événements',
+  'Construire et vérifier une loi de probabilité ($\\sum p_i = 1$)',
+  'Calculer $P(\\bar{A})$, $P(A\\cap B)$, $P(A\\cup B)$ et identifier l\'incompatibilité',
+  'Lire et compléter un tableau à double entrée, construire et lire un arbre',
+  'Comprendre la fluctuation d\'échantillonnage',
+  'Calculer un intervalle de fluctuation au seuil de 95 %',
+  'Tester une hypothèse et rédiger une conclusion au seuil de 95 %',
+  'Analyser l\'effet de la taille de l\'échantillon sur l\'intervalle',
+];
+
+const PROBA2NDE_FICHE_DATA = [
+  {
+    title: '1  Loi de probabilité',
+    rows: [
+      { label: 'Issue / Univers', tex: '\\Omega = \\{\\omega_1, \\omega_2, \\ldots\\}', vars: 'Tous les résultats possibles' },
+      { label: 'Loi valide', tex: '\\sum_{i} p_i = 1 \\;,\\; 0 \\le p_i \\le 1', vars: 'Contrôle systématique' },
+      { label: 'Équiprobabilité', tex: 'P(A) = \\dfrac{\\text{cas favorables}}{\\text{nb d\'issues}}', vars: 'Seulement si toutes équiprobables' },
+    ],
+  },
+  {
+    title: '2  Opérations sur les événements',
+    rows: [
+      { label: 'Contraire', tex: 'P(\\bar{A}) = 1 - P(A)', vars: '' },
+      { label: 'Réunion', tex: 'P(A\\cup B) = P(A)+P(B)-P(A\\cap B)', vars: '' },
+      { label: 'Incompatibles', tex: 'A\\cap B=\\emptyset \\Rightarrow P(A\\cup B)=P(A)+P(B)', vars: '' },
+      { label: 'Arbre', tex: 'P(\\text{chemin}) = \\prod \\text{prob. des branches}', vars: 'Additionner les chemins favorables' },
+    ],
+  },
+  {
+    title: '3  Échantillonnage',
+    rows: [
+      { label: 'Fréquence observée', tex: 'f = \\dfrac{\\text{nb du caractère}}{n}', vars: '$n$ = taille de l\'échantillon' },
+      { label: 'Intervalle 95 %', tex: '\\left[p - \\dfrac{1}{\\sqrt{n}}\\,;\\; p + \\dfrac{1}{\\sqrt{n}}\\right]', vars: '$p$ = proportion hypothétique' },
+    ],
+  },
+  {
+    title: '4  Décision au seuil 95 %',
+    rows: [
+      { label: 'Méthode', tex: '1.\\;H:p=p_0 \\quad 2.\\;\\text{Intervalle} \\quad 3.\\;f\\;?', vars: '$f$ dedans → ne pas rejeter · $f$ dehors → rejeter' },
+      { label: 'Effet de $n$', tex: '\\text{rayon} = \\dfrac{1}{\\sqrt{n}}', vars: 'Multiplier $n$ par $k^2$ divise le rayon par $k$' },
+    ],
+  },
+];
+
+const PROBA2NDE_COURS: Section[] = [
+  {
+    id: 'proba2nde-s1',
+    num: '1',
+    title: 'Expérience aléatoire, univers, événements',
+    blocks: [
+      {
+        type: 'definition',
+        content: 'Une **expérience aléatoire** est une expérience dont on connaît tous les résultats possibles, mais dont on ne peut pas prévoir lequel se produira. Chaque résultat possible s\'appelle une **issue**. L\'ensemble de toutes les issues est l\'**univers**, noté $\\Omega$.',
+      },
+      {
+        type: 'definition',
+        title: 'Événement',
+        content: 'Un **événement** est un sous-ensemble de $\\Omega$. Il est **réalisé** quand l\'issue obtenue lui appartient. L\'**événement certain** $\\Omega$ est toujours réalisé ; l\'**événement impossible** $\\emptyset$ ne l\'est jamais.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Méthode : (1) identifier ce qu\'on observe ; (2) lister toutes les issues sans doublon ; (3) écrire $\\Omega$ entre accolades ; (4) traduire chaque événement par la liste des issues qui le réalisent.',
+      },
+    ],
+  },
+  {
+    id: 'proba2nde-s2',
+    num: '2',
+    title: 'Probabilité d\'un événement',
+    blocks: [
+      {
+        type: 'definition',
+        content: 'Une **loi de probabilité** associe à chaque issue $\\omega_i$ un nombre $p_i$ tel que $0 \\le p_i \\le 1$ et $\\sum p_i = 1$. La **probabilité d\'un événement** est la somme des probabilités des issues qui le composent.',
+      },
+      {
+        type: 'formula',
+        label: 'Équiprobabilité',
+        tex: 'P(A) = \\dfrac{\\text{nombre d\'issues de } A}{\\text{nombre d\'issues de } \\Omega}',
+      },
+      {
+        type: 'piege',
+        text: 'La formule d\'équiprobabilité n\'est valable que si **toutes** les issues ont la même probabilité. Un dé truqué, une roue à secteurs inégaux, une urne à boules de tailles différentes : cette formule est interdite.',
+      },
+    ],
+  },
+  {
+    id: 'proba2nde-s3',
+    num: '3',
+    title: 'Opérations sur les événements',
+    blocks: [
+      {
+        type: 'formules',
+        label: 'Définitions',
+        rows: [
+          { desc: 'Contraire $\\bar{A}$', tex: '\\text{issues de } \\Omega \\text{ n\'appartenant pas à } A' },
+          { desc: 'Intersection $A\\cap B$', tex: '\\text{issues réalisant } A \\text{ ET } B' },
+          { desc: 'Réunion $A\\cup B$', tex: '\\text{issues réalisant } A \\text{ OU } B \\text{ (ou les deux)}' },
+        ],
+      },
+      {
+        type: 'formula',
+        label: 'Formules',
+        tex: 'P(\\bar{A}) = 1-P(A) \\qquad P(A\\cup B) = P(A)+P(B)-P(A\\cap B)',
+      },
+      {
+        type: 'para',
+        text: '$A$ et $B$ sont **incompatibles** si $A\\cap B=\\emptyset$. On obtient alors $P(A\\cup B)=P(A)+P(B)$.',
+      },
+      {
+        type: 'reflex',
+        text: '**Astuce « au moins un » :** passer par le contraire est presque toujours plus rapide. $P(\\text{au moins un}) = 1 - P(\\text{aucun})$.',
+      },
+    ],
+  },
+  {
+    id: 'proba2nde-s4',
+    num: '4',
+    title: 'Tableaux et arbres',
+    blocks: [
+      {
+        type: 'para',
+        text: 'Le **tableau à double entrée** est adapté quand deux caractères se croisent. L\'intersection se lit dans une case, un événement simple dans un total de ligne ou de colonne.',
+      },
+      {
+        type: 'para',
+        text: 'L\'**arbre des possibles** est adapté quand l\'expérience se déroule en plusieurs étapes. Chaque chemin complet correspond à une issue.',
+      },
+      {
+        type: 'formula',
+        label: 'Règle de l\'arbre',
+        tex: 'P(\\text{chemin}) = \\prod \\text{probabilités des branches du chemin}',
+      },
+      {
+        type: 'idee_cle',
+        text: 'La probabilité d\'un événement s\'obtient en **additionnant** les probabilités de tous les chemins qui le réalisent.',
+      },
+      {
+        type: 'piege',
+        text: '$(R_1, V_2)$ et $(V_1, R_2)$ sont deux issues distinctes. L\'ordre compte dans l\'arbre : c\'est pourquoi « un rouge et un vert » est deux fois plus probable que « deux rouges ».',
+      },
+    ],
+  },
+  {
+    id: 'proba2nde-s5',
+    num: '5',
+    title: 'Échantillonnage et fluctuation',
+    blocks: [
+      {
+        type: 'definition',
+        content: 'Dans une population où une proportion $p$ possède un caractère, un **échantillon de taille $n$** est un groupe de $n$ individus choisis au hasard. La **fréquence observée** $f$ est le quotient (nb d\'individus ayant le caractère) / $n$.',
+      },
+      {
+        type: 'para',
+        text: 'Deux échantillons de même taille prélevés dans la même population donnent presque jamais la même fréquence : c\'est la **fluctuation d\'échantillonnage**. Ce n\'est pas une erreur de mesure, c\'est une conséquence du hasard.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Plus $n$ est grand, moins la fréquence fluctue. Un grand échantillon donne une estimation plus précise de $p$.',
+      },
+    ],
+  },
+  {
+    id: 'proba2nde-s6',
+    num: '6',
+    title: 'Intervalle de fluctuation et prise de décision',
+    blocks: [
+      {
+        type: 'formula',
+        label: 'Intervalle de fluctuation au seuil de 95 %',
+        tex: '\\left[\\,p - \\dfrac{1}{\\sqrt{n}}\\;\\,;\\;\\, p + \\dfrac{1}{\\sqrt{n}}\\,\\right]',
+      },
+      {
+        type: 'para',
+        text: 'Dans environ 95 % des échantillons de taille $n$, la fréquence observée $f$ appartient à cet intervalle.',
+      },
+      {
+        type: 'application',
+        title: 'Méthode — Tester une hypothèse au seuil de 95 %',
+        steps: [
+          { n: '1', bold: 'Poser', rest: 'l\'hypothèse $H : p = p_0$.' },
+          { n: '2', bold: 'Calculer', rest: 'l\'intervalle $[p_0 - 1/\\sqrt{n}\\,;\\,p_0 + 1/\\sqrt{n}]$.' },
+          { n: '3', bold: 'Calculer', rest: 'la fréquence observée $f$.' },
+          { n: '4', bold: 'Conclure', rest: '$f$ dans l\'intervalle → on ne rejette pas $H$. $f$ hors de l\'intervalle → on rejette $H$ au seuil de 95 %.' },
+        ],
+      },
+      {
+        type: 'reflex',
+        text: 'Le rayon vaut $1/\\sqrt{n}$. Diviser le rayon par $k$ revient à multiplier $n$ par $k^2$. Pour passer de rayon 0,1 (n=100) à rayon 0,02, il faut n=2500.',
       },
     ],
   },
@@ -11431,8 +11643,9 @@ function CourseTab({ module }: { module: PhysicsModule }) {
   const isCalculLitteralCours = module.id === 'math-calcul-litteral-2nde';
   const isReperageCours = module.id === 'math-reperage-2nde';
   const isStats2ndeCours = module.id === 'math-statistiques-2nde';
-  const sections = isStats2ndeCours ? STATS2NDE_COURS : isReperageCours ? REPERAGE_COURS : isCalculLitteralCours ? CALCULLITTERAL_COURS : isNombres2ndeCours ? NOMBRES2NDE_COURS : isFonctions2ndeCours ? FONCTIONS2NDE_COURS : isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
-  const objectifs = isStats2ndeCours ? STATS2NDE_OBJECTIFS : isReperageCours ? REPERAGE_OBJECTIFS : isCalculLitteralCours ? CALCULLITTERAL_OBJECTIFS : isNombres2ndeCours ? NOMBRES2NDE_OBJECTIFS : isFonctions2ndeCours ? FONCTIONS2NDE_OBJECTIFS : isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
+  const isProba2ndeCours = module.id === 'math-probabilites-2nde';
+  const sections = isProba2ndeCours ? PROBA2NDE_COURS : isStats2ndeCours ? STATS2NDE_COURS : isReperageCours ? REPERAGE_COURS : isCalculLitteralCours ? CALCULLITTERAL_COURS : isNombres2ndeCours ? NOMBRES2NDE_COURS : isFonctions2ndeCours ? FONCTIONS2NDE_COURS : isFluidesCours ? FLUIDES_COURS : isMecaCours ? MECA_COURS : isSpectroCours ? SPECTRO_COURS : isEquilibreCours ? EQUILIBRE_COURS : isCinetiqueCours ? CINETIQUE_COURS : isOxydoCours ? OXYDO_COURS : isTitragesCours ? TITRAGES_COURS : isAcideCours ? ACIDE_COURS : isLunetteCours ? LUNETTE_COURS : isRCCours ? RC_COURS : isPhotonCours ? PHOTON_COURS : isDopplerCours ? DOPPLER_COURS : isDiffractionCours ? DIFFRACTION_COURS : isOndesCours ? ONDES_COURS : isBilansCours ? BILANS_COURS : isEnergieCours ? ENERGIE_COURS : isGravitationCours ? GRAVITATION_COURS : isCombinatoireCours ? COMBINATOIRE_COURS : isTrigoCours ? TRIGO_COURS : isEquadiffCours ? EQUADIFF_COURS : isExponentielleCours ? EXPONENTIELLE_COURS : isPrimitivesCours ? PRIMITIVES_COURS : isGeometrieCours ? GEOMETRIE_COURS : isProbabilitesCours ? PROBABILITES_COURS : isLogarithmeCours ? LOGARITHME_COURS : isFonctions ? FONCTIONS_COURS : isMaths ? SUITES_COURS : COURS;
+  const objectifs = isProba2ndeCours ? PROBA2NDE_OBJECTIFS : isStats2ndeCours ? STATS2NDE_OBJECTIFS : isReperageCours ? REPERAGE_OBJECTIFS : isCalculLitteralCours ? CALCULLITTERAL_OBJECTIFS : isNombres2ndeCours ? NOMBRES2NDE_OBJECTIFS : isFonctions2ndeCours ? FONCTIONS2NDE_OBJECTIFS : isFluidesCours ? FLUIDES_OBJECTIFS : isMecaCours ? MECA_OBJECTIFS : isSpectroCours ? SPECTRO_OBJECTIFS : isEquilibreCours ? EQUILIBRE_OBJECTIFS : isCinetiqueCours ? CINETIQUE_OBJECTIFS : isOxydoCours ? OXYDO_OBJECTIFS : isTitragesCours ? TITRAGES_OBJECTIFS : isAcideCours ? ACIDE_OBJECTIFS : isLunetteCours ? LUNETTE_OBJECTIFS : isRCCours ? RC_OBJECTIFS : isPhotonCours ? PHOTON_OBJECTIFS : isDopplerCours ? DOPPLER_OBJECTIFS : isDiffractionCours ? DIFFRACTION_OBJECTIFS : isOndesCours ? ONDES_OBJECTIFS : isBilansCours ? BILANS_OBJECTIFS : isEnergieCours ? ENERGIE_OBJECTIFS : isGravitationCours ? GRAVITATION_OBJECTIFS : isCombinatoireCours ? COMBINATOIRE_OBJECTIFS : isTrigoCours ? TRIGO_OBJECTIFS : isEquadiffCours ? EQUADIFF_OBJECTIFS : isExponentielleCours ? EXPONENTIELLE_OBJECTIFS : isPrimitivesCours ? PRIMITIVES_OBJECTIFS : isGeometrieCours ? GEOMETRIE_OBJECTIFS : isProbabilitesCours ? PROBABILITES_OBJECTIFS : isLogarithmeCours ? LOGARITHME_OBJECTIFS : isFonctions ? FONCTIONS_OBJECTIFS : isMaths ? SUITES_OBJECTIFS : OBJECTIFS;
   const firstId = sections[0]?.id ?? '';
   const [open, setOpen] = useState<Set<string>>(new Set([firstId]));
   const toggle = (id: string) =>
@@ -11627,8 +11840,9 @@ function FicheTab({ module }: { module: PhysicsModule }) {
   const isCalculLitteralFiche = module.id === 'math-calcul-litteral-2nde';
   const isReperageFiche = module.id === 'math-reperage-2nde';
   const isStats2ndeFiche = module.id === 'math-statistiques-2nde';
-  const ficheData = isStats2ndeFiche ? STATS2NDE_FICHE_DATA : isReperageFiche ? REPERAGE_FICHE_DATA : isCalculLitteralFiche ? CALCULLITTERAL_FICHE_DATA : isNombres2ndeFiche ? NOMBRES2NDE_FICHE_DATA : isFonctions2ndeFiche ? FONCTIONS2NDE_FICHE_DATA : isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
-  const ficheTitle = isStats2ndeFiche ? 'Statistiques descriptives' : isReperageFiche ? 'Repérage & vecteurs' : isCalculLitteralFiche ? 'Calcul littéral & équations' : isNombres2ndeFiche ? 'Nombres & intervalles' : isFonctions2ndeFiche ? 'Fonctions — généralités' : isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
+  const isProba2ndeFiche = module.id === 'math-probabilites-2nde';
+  const ficheData = isProba2ndeFiche ? PROBA2NDE_FICHE_DATA : isStats2ndeFiche ? STATS2NDE_FICHE_DATA : isReperageFiche ? REPERAGE_FICHE_DATA : isCalculLitteralFiche ? CALCULLITTERAL_FICHE_DATA : isNombres2ndeFiche ? NOMBRES2NDE_FICHE_DATA : isFonctions2ndeFiche ? FONCTIONS2NDE_FICHE_DATA : isFluidesFiche ? FLUIDES_FICHE_DATA : isMecaFiche ? MECA_FICHE_DATA : isSpectroFiche ? SPECTRO_FICHE_DATA : isEquilibreFiche ? EQUILIBRE_FICHE_DATA : isCinetiqueFiche ? CINETIQUE_FICHE_DATA : isOxydoFiche ? OXYDO_FICHE_DATA : isTitragesFiche ? TITRAGES_FICHE_DATA : isAcideFiche ? ACIDE_FICHE_DATA : isLunetteFiche ? LUNETTE_FICHE_DATA : isRCFiche ? RC_FICHE_DATA : isPhotonFiche ? PHOTON_FICHE_DATA : isDopplerFiche ? DOPPLER_FICHE_DATA : isDiffractionFiche ? DIFFRACTION_FICHE_DATA : isOndesFiche ? ONDES_FICHE_DATA : isBilansFiche ? BILANS_FICHE_DATA : isEnergieFiche ? ENERGIE_FICHE_DATA : isGravitationFiche ? GRAVITATION_FICHE_DATA : isCombinatoireFiche ? COMBINATOIRE_FICHE_DATA : isTrigoFiche ? TRIGO_FICHE_DATA : isEquadiffFiche ? EQUADIFF_FICHE_DATA : isExponentielleFiche ? EXPONENTIELLE_FICHE_DATA : isPrimitivesFiche ? PRIMITIVES_FICHE_DATA : isGeometrieFiche ? GEOMETRIE_FICHE_DATA : isProbabilitesFiche ? PROBABILITES_FICHE_DATA : isLogarithmeFiche ? LOGARITHME_FICHE_DATA : isFonctions ? FONCTIONS_FICHE_DATA : isMaths ? SUITES_FICHE_DATA : FICHE_DATA;
+  const ficheTitle = isProba2ndeFiche ? 'Probabilités et échantillonnage' : isStats2ndeFiche ? 'Statistiques descriptives' : isReperageFiche ? 'Repérage & vecteurs' : isCalculLitteralFiche ? 'Calcul littéral & équations' : isNombres2ndeFiche ? 'Nombres & intervalles' : isFonctions2ndeFiche ? 'Fonctions — généralités' : isFluidesFiche ? 'La mécanique des fluides' : isMecaFiche ? 'Mécanismes & synthèse' : isSpectroFiche ? 'Analyse spectroscopique' : isEquilibreFiche ? 'L\'équilibre chimique' : isCinetiqueFiche ? 'La cinétique chimique' : isOxydoFiche ? 'L\'oxydoréduction' : isTitragesFiche ? 'Les titrages' : isAcideFiche ? 'Réactions acide-base' : isLunetteFiche ? 'La lunette astronomique' : isRCFiche ? 'Le circuit RC' : isPhotonFiche ? 'Le photon' : isDopplerFiche ? 'L\'effet Doppler' : isDiffractionFiche ? 'Diffraction & interférences' : isOndesFiche ? 'Ondes mécaniques' : isBilansFiche ? 'Bilans thermiques' : isEnergieFiche ? 'Énergie mécanique' : isGravitationFiche ? 'Champ de gravitation' : isCombinatoireFiche ? 'Combinatoire & dénombrement' : isTrigoFiche ? 'Fonctions sinus & cosinus' : isEquadiffFiche ? 'Équations différentielles' : isExponentielleFiche ? 'Fonction exponentielle' : isPrimitivesFiche ? 'Primitives & intégrales' : isGeometrieFiche ? 'Géométrie dans l\'espace' : isProbabilitesFiche ? 'Probabilités & loi binomiale' : isLogarithmeFiche ? 'Le logarithme népérien' : isFonctions ? 'Les fonctions' : isMaths ? 'Suites & Récurrence' : 'Newton & Champ uniforme';
   const pal = isMaths ? V : A;
   const divider = isMaths ? 'divide-violet-500/20' : 'divide-amber-900/30';
   const borderR  = isMaths ? 'border-violet-500/20' : 'border-amber-900/30';
