@@ -4617,44 +4617,45 @@ const STATS2NDE_OBJECTIFS = [
 
 const STATS2NDE_FICHE_DATA = [
   {
-    category: 'Fréquence',
-    items: [
-      { label: 'Fréquence', formula: '$f_i = n_i / N$', note: '$\\sum f_i = 1$' },
-      { label: 'ECC', formula: 'Somme des $n_i$ jusqu\'à la valeur', note: 'Croissant, finit en $N$' },
+    title: '1  Fréquences & ECC',
+    rows: [
+      { label: 'Fréquence', tex: 'f_i = n_i / N', vars: 'Décimal. $\\sum f_i = 1$' },
+      { label: 'ECC', tex: 'N_k = n_1 + \\cdots + n_k', vars: 'Croissant, se termine en $N$' },
+      { label: 'Mode', tex: '\\text{valeur d\'effectif maximal}', vars: '' },
     ],
   },
   {
-    category: 'Moyenne',
-    items: [
-      { label: 'Simple', formula: '$\\bar{x} = \\frac{x_1+\\cdots+x_n}{n}$', note: '' },
-      { label: 'Pondérée', formula: '$\\bar{x} = \\frac{\\sum n_i x_i}{N}$', note: '' },
-      { label: 'Linéarité', formula: '$ax+b \\Rightarrow a\\bar{x}+b$', note: '' },
-      { label: 'Réunion', formula: '$\\bar{x} = \\frac{N_A\\bar{x}_A + N_B\\bar{x}_B}{N_A+N_B}$', note: '' },
+    title: '2  Moyenne',
+    rows: [
+      { label: 'Simple', tex: '\\bar{x} = \\dfrac{\\sum x_i}{n}', vars: '' },
+      { label: 'Pondérée', tex: '\\bar{x} = \\dfrac{\\sum n_i x_i}{N}', vars: '' },
+      { label: 'Linéarité', tex: 'y=ax+b \\Rightarrow \\bar{y}=a\\bar{x}+b', vars: '' },
+      { label: 'Réunion', tex: '\\bar{x} = \\dfrac{N_A\\bar{x}_A + N_B\\bar{x}_B}{N_A+N_B}', vars: 'Ne pas faire la moyenne des moyennes' },
     ],
   },
   {
-    category: 'Médiane & quartiles',
-    items: [
-      { label: 'N impair', formula: 'Rang $(N+1)/2$', note: '' },
-      { label: 'N pair', formula: 'Moyenne rangs $N/2$ et $N/2+1$', note: '' },
-      { label: '$Q_1$', formula: 'Rang $N/4$ (entier sup. si non entier)', note: '' },
-      { label: '$Q_3$', formula: 'Rang $3N/4$ (entier sup. si non entier)', note: '' },
+    title: '3  Médiane & quartiles',
+    rows: [
+      { label: 'N impair', tex: 'Me = \\text{rang } \\tfrac{N+1}{2}', vars: '' },
+      { label: 'N pair', tex: 'Me = \\text{moy. rangs } \\tfrac{N}{2} \\text{ et } \\tfrac{N}{2}+1', vars: '' },
+      { label: '$Q_1$', tex: '\\text{rang } N/4 \\text{ (entier sup. si } \\notin\\mathbb{N})', vars: '' },
+      { label: '$Q_3$', tex: '\\text{rang } 3N/4 \\text{ (entier sup. si } \\notin\\mathbb{N})', vars: '' },
     ],
   },
   {
-    category: 'Dispersion',
-    items: [
-      { label: 'Étendue', formula: '$e = x_{\\max} - x_{\\min}$', note: 'Sensible aux extrêmes' },
-      { label: 'EQI', formula: '$Q_3 - Q_1$', note: 'Robuste' },
-      { label: 'Boîte', formula: 'Min · $Q_1$ · Me · $Q_3$ · Max', note: '5 nombres' },
+    title: '4  Dispersion',
+    rows: [
+      { label: 'Étendue', tex: 'e = x_{\\max} - x_{\\min}', vars: 'Sensible aux valeurs extrêmes' },
+      { label: 'EQI', tex: 'Q_3 - Q_1', vars: 'Robuste · 50 % central' },
+      { label: 'Boîte', tex: '\\min \\;|\\; Q_1 \\;[\\;Me\\;]\\; Q_3 \\;|\\; \\max', vars: '5 nombres' },
     ],
   },
   {
-    category: 'Série en classes',
-    items: [
-      { label: 'Centre', formula: '$c_i = (a_i + b_i)/2$', note: '' },
-      { label: 'Moy. approchée', formula: '$\\bar{x} \\approx \\frac{\\sum n_i c_i}{N}$', note: '' },
-      { label: 'Histogramme', formula: 'Hauteur $= n_i / $ amplitude', note: 'Aire $\\propto$ effectif' },
+    title: '5  Séries en classes',
+    rows: [
+      { label: 'Centre', tex: 'c_i = (a_i+b_i)/2', vars: '' },
+      { label: 'Moy. approchée', tex: '\\bar{x} \\approx \\sum n_i c_i / N', vars: '' },
+      { label: 'Histogramme', tex: '\\text{hauteur} = n_i / \\text{amplitude}', vars: 'Aire $\\propto$ effectif' },
     ],
   },
 ];
@@ -4662,180 +4663,162 @@ const STATS2NDE_FICHE_DATA = [
 const STATS2NDE_COURS: Section[] = [
   {
     id: 'stats2nde-s1',
-    title: '1. Vocabulaire : séries, effectifs, fréquences',
-    subsections: [
+    num: '1',
+    title: 'Vocabulaire : séries, effectifs, fréquences',
+    blocks: [
       {
-        subtitle: 'Définitions',
-        items: [
-          {
-            type: 'definition' as const,
-            content: 'Un **caractère** (qualitatif ou quantitatif) est la grandeur étudiée sur une population. Une **série statistique** regroupe les valeurs $x_1, x_2, \\ldots$ et leurs effectifs $n_i$, avec $N = \\sum n_i$ l\'effectif total.',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Fréquence',
-            content: '$f_i = \\dfrac{n_i}{N}$ (décimal), en % $= f_i \\times 100$. On a toujours $\\displaystyle\\sum f_i = 1$.',
-          },
-          {
-            type: 'text' as const,
-            content: 'Les **effectifs cumulés croissants** (ECC) : $N_k = n_1 + n_2 + \\cdots + n_k$. Ils sont croissants et se terminent à $N$.',
-          },
-          {
-            type: 'tip' as const,
-            content: 'Le **mode** est la valeur d\'effectif maximal. Le **diagramme en bâtons** représente chaque valeur par un bâton proportionnel à son effectif.',
-          },
-        ],
+        type: 'definition',
+        content: 'Un **caractère** est la grandeur étudiée. Une **série statistique** regroupe les valeurs $x_i$ et leurs effectifs $n_i$ ; $N = \\sum n_i$ est l\'effectif total.',
+      },
+      {
+        type: 'formula',
+        label: 'Fréquence',
+        tex: 'f_i = \\dfrac{n_i}{N} \\qquad (\\text{en \\%} : f_i \\times 100) \\qquad \\sum f_i = 1',
+      },
+      {
+        type: 'para',
+        text: 'Les **effectifs cumulés croissants** (ECC) : $N_k = n_1 + n_2 + \\cdots + n_k$. Ils sont croissants et finissent à $N$.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Le **mode** est la valeur d\'effectif maximal. Sur un diagramme en bâtons, la hauteur de chaque bâton est proportionnelle à l\'effectif.',
       },
     ],
   },
   {
     id: 'stats2nde-s2',
-    title: '2. La moyenne',
-    subsections: [
+    num: '2',
+    title: 'La moyenne',
+    blocks: [
       {
-        subtitle: 'Formules',
-        items: [
-          {
-            type: 'formula' as const,
-            label: 'Moyenne simple',
-            content: '$\\bar{x} = \\dfrac{x_1 + x_2 + \\cdots + x_n}{n}$',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Moyenne pondérée',
-            content: '$\\bar{x} = \\dfrac{n_1 x_1 + n_2 x_2 + \\cdots + n_k x_k}{N} = \\dfrac{\\displaystyle\\sum_{i=1}^k n_i x_i}{N}$',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Linéarité',
-            content: 'Si on transforme chaque valeur par $y = ax + b$, alors $\\bar{y} = a\\bar{x} + b$.',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Réunion de deux groupes',
-            content: '$\\bar{x} = \\dfrac{N_A \\bar{x}_A + N_B \\bar{x}_B}{N_A + N_B}$ (on ne fait pas la moyenne des moyennes, sauf si $N_A = N_B$)',
-          },
-          {
-            type: 'tip' as const,
-            content: '**Valeur manquante** : si $\\bar{x}$ et $N$ sont connus, la somme totale est $N\\bar{x}$. On retrouve la valeur inconnue par soustraction.',
-          },
-        ],
+        type: 'formula',
+        label: 'Moyenne simple',
+        tex: '\\bar{x} = \\dfrac{x_1 + x_2 + \\cdots + x_n}{n}',
+      },
+      {
+        type: 'formula',
+        label: 'Moyenne pondérée',
+        tex: '\\bar{x} = \\dfrac{\\displaystyle\\sum_{i=1}^k n_i\\, x_i}{N}',
+      },
+      {
+        type: 'formula',
+        label: 'Linéarité',
+        tex: 'y = ax+b \\;\\Rightarrow\\; \\bar{y} = a\\bar{x}+b',
+      },
+      {
+        type: 'formula',
+        label: 'Réunion de deux groupes',
+        tex: '\\bar{x} = \\dfrac{N_A\\,\\bar{x}_A + N_B\\,\\bar{x}_B}{N_A + N_B}',
+      },
+      {
+        type: 'reflex',
+        text: '**Valeur manquante :** somme totale $= N\\bar{x}$. On retrouve la valeur inconnue par soustraction.',
       },
     ],
   },
   {
     id: 'stats2nde-s3',
-    title: '3. Médiane et quartiles',
-    subsections: [
+    num: '3',
+    title: 'Médiane et quartiles',
+    blocks: [
       {
-        subtitle: 'Méthode',
-        items: [
-          {
-            type: 'text' as const,
-            content: '**Étape 0 :** Toujours ordonner la série avant de chercher la médiane ou les quartiles.',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Médiane (N impair)',
-            content: 'La médiane $Me$ est la valeur de rang $\\dfrac{N+1}{2}$.',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Médiane (N pair)',
-            content: '$Me$ est la moyenne des valeurs de rangs $\\dfrac{N}{2}$ et $\\dfrac{N}{2}+1$.',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Quartiles',
-            content: '$Q_1$ : rang $\\dfrac{N}{4}$ (arrondi à l\'entier supérieur si non entier).\n$Q_3$ : rang $\\dfrac{3N}{4}$ (arrondi à l\'entier supérieur si non entier).',
-          },
-          {
-            type: 'tip' as const,
-            content: 'La médiane partage la série en deux moitiés égales. $Q_1$ (resp. $Q_3$) est la médiane de la première (resp. seconde) moitié.',
-          },
+        type: 'para',
+        text: '**Étape préalable :** toujours ordonner la série avant de chercher la médiane ou les quartiles.',
+      },
+      {
+        type: 'formules',
+        label: 'Médiane',
+        rows: [
+          { desc: '$N$ impair', tex: 'Me = \\text{valeur de rang } \\dfrac{N+1}{2}' },
+          { desc: '$N$ pair', tex: 'Me = \\text{moyenne des rangs } \\dfrac{N}{2} \\text{ et } \\dfrac{N}{2}+1' },
         ],
+      },
+      {
+        type: 'formules',
+        label: 'Quartiles',
+        rows: [
+          { desc: '$Q_1$', tex: '\\text{rang } \\dfrac{N}{4} \\;(\\text{entier sup. si non entier})' },
+          { desc: '$Q_3$', tex: '\\text{rang } \\dfrac{3N}{4} \\;(\\text{entier sup. si non entier})' },
+        ],
+      },
+      {
+        type: 'idee_cle',
+        text: 'La médiane partage la série en deux moitiés égales. $Q_1$ (resp. $Q_3$) est la médiane de la première (resp. deuxième) moitié.',
       },
     ],
   },
   {
     id: 'stats2nde-s4',
-    title: '4. Mesurer la dispersion',
-    subsections: [
+    num: '4',
+    title: 'Mesurer la dispersion',
+    blocks: [
       {
-        subtitle: 'Indicateurs',
-        items: [
-          {
-            type: 'formula' as const,
-            label: 'Étendue',
-            content: '$e = x_{\\max} - x_{\\min}$ — simple mais très sensible aux valeurs extrêmes.',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Écart interquartile',
-            content: '$EQI = Q_3 - Q_1$ — robuste aux valeurs extrêmes.',
-          },
-          {
-            type: 'definition' as const,
-            content: 'Le **diagramme en boîte** (boîte à moustaches) est défini par les 5 nombres : $\\min$, $Q_1$, $Me$, $Q_3$, $\\max$. La boîte contient les 50 % centraux de la série.',
-          },
-        ],
+        type: 'formula',
+        label: 'Étendue',
+        tex: 'e = x_{\\max} - x_{\\min}',
+      },
+      {
+        type: 'formula',
+        label: 'Écart interquartile',
+        tex: 'EQI = Q_3 - Q_1',
+      },
+      {
+        type: 'definition',
+        title: 'Diagramme en boîte (boîte à moustaches)',
+        content: 'Défini par les 5 nombres : $\\min$, $Q_1$, $Me$, $Q_3$, $\\max$. La boîte centrale contient les 50 % des valeurs du milieu.',
+      },
+      {
+        type: 'piege',
+        text: 'L\'étendue est très sensible aux valeurs extrêmes : une seule valeur aberrante peut l\'augmenter considérablement. L\'EQI est robuste.',
       },
     ],
   },
   {
     id: 'stats2nde-s5',
-    title: '5. Moyenne ou médiane ?',
-    subsections: [
+    num: '5',
+    title: 'Moyenne ou médiane ?',
+    blocks: [
       {
-        subtitle: 'Quand utiliser quoi ?',
-        items: [
-          {
-            type: 'text' as const,
-            content: 'La **moyenne** tient compte de toutes les valeurs : elle est sensible aux valeurs extrêmes (aberrantes ou exceptionnelles). Elle peut être très éloignée de la valeur «~typique~».',
-          },
-          {
-            type: 'text' as const,
-            content: 'La **médiane** est robuste : la moitié des individus est en dessous, l\'autre moitié au-dessus. Elle n\'est pas affectée par une valeur très élevée ou très faible.',
-          },
-          {
-            type: 'tip' as const,
-            content: 'Exemple classique : les salaires dans une entreprise. Si un cadre dirigeant gagne 10× plus que les employés, la moyenne tire vers le haut alors que la médiane reste représentative du salarié «~ordinaire~».',
-          },
-        ],
+        type: 'para',
+        text: 'La **moyenne** est sensible aux valeurs extrêmes : elle peut être très éloignée de la valeur typique si la série contient des valeurs aberrantes.',
+      },
+      {
+        type: 'para',
+        text: 'La **médiane** est robuste : elle ne dépend que de l\'ordre des valeurs, pas de leur magnitude. La moitié des individus est en-dessous, l\'autre moitié au-dessus.',
+      },
+      {
+        type: 'idee_cle',
+        text: 'Pour les salaires, on publie souvent la **médiane** : la moyenne est tirée vers le haut par les très hauts salaires et ne représente plus le salarié ordinaire.',
       },
     ],
   },
   {
     id: 'stats2nde-s6',
-    title: '6. Séries regroupées en classes',
-    subsections: [
+    num: '6',
+    title: 'Séries regroupées en classes',
+    blocks: [
       {
-        subtitle: 'Méthodes',
-        items: [
-          {
-            type: 'formula' as const,
-            label: 'Centre de classe',
-            content: 'Pour la classe $[a\\,;\\,b[$, le centre est $c = \\dfrac{a+b}{2}$. L\'amplitude est $b-a$.',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Moyenne approchée',
-            content: '$\\bar{x} \\approx \\dfrac{\\displaystyle\\sum n_i c_i}{N}$ (on remplace chaque valeur par le centre de sa classe).',
-          },
-          {
-            type: 'text' as const,
-            content: '**Classe médiane :** c\'est la première classe dont l\'ECC atteint ou dépasse $N/2$.',
-          },
-          {
-            type: 'formula' as const,
-            label: 'Histogramme',
-            content: 'La **hauteur** de chaque rectangle vaut $\\dfrac{n_i}{\\text{amplitude}}$. L\'aire est proportionnelle à l\'effectif (et non la hauteur si les amplitudes diffèrent).',
-          },
-          {
-            type: 'tip' as const,
-            content: 'La moyenne obtenue est approchée car on ignore la distribution exacte des valeurs à l\'intérieur de chaque classe.',
-          },
-        ],
+        type: 'formula',
+        label: 'Centre de classe',
+        tex: 'c_i = \\dfrac{a_i + b_i}{2} \\qquad \\text{amplitude} = b_i - a_i',
+      },
+      {
+        type: 'formula',
+        label: 'Moyenne approchée',
+        tex: '\\bar{x} \\approx \\dfrac{\\displaystyle\\sum n_i\\,c_i}{N}',
+      },
+      {
+        type: 'para',
+        text: '**Classe médiane :** première classe dont l\'ECC atteint ou dépasse $N/2$.',
+      },
+      {
+        type: 'formula',
+        label: 'Histogramme',
+        tex: '\\text{hauteur du rectangle} = \\dfrac{n_i}{\\text{amplitude}}',
+      },
+      {
+        type: 'reflex',
+        text: 'Si les classes ont des amplitudes différentes, la hauteur n\'est PAS proportionnelle à l\'effectif — c\'est l\'aire qui l\'est. C\'est pourquoi on divise par l\'amplitude.',
       },
     ],
   },
