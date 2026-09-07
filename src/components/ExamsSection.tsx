@@ -196,6 +196,15 @@ export function ExamsSection({ userId }: { userId: string }) {
                           </div>
                         </div>
 
+                        <button
+                          onClick={() => deleteExam(exam)}
+                          title="Supprimer ce DS"
+                          className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+
+
                         {/* Grade zone */}
                         {editingId === exam.id ? (
                           /* ── édition active ── */
