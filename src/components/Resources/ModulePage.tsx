@@ -186,8 +186,8 @@ export function ModulePage({ module, completedIds, onComplete, onBack }: ModuleP
 type BlockType =
   | { type: 'para';      text: string }
   | { type: 'subsection'; num: string; title: string }
-  | { type: 'formula';   tex: string; label?: string }
-  | { type: 'formules';  label?: string; rows: { desc?: string; tex: string }[] }
+  | { type: 'formula';   tex: string; label?: string; vars?: string }
+  | { type: 'formules';  label?: string; rows: { desc?: string; tex: string; vars?: string }[] }
   | { type: 'vocabulaire'; title: string; intro?: string; items: string[] }
   | { type: 'definition'; badge?: string; title?: string; content: string; formulas?: string[] }
   | { type: 'propriete'; text: string }
@@ -594,6 +594,11 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
             </span>
           )}
           <BlockMath tex={b.tex} />
+          {b.vars && (
+            <p className={`mt-1.5 text-[11px] ${pal.bodyTxt} opacity-80 leading-snug`}>
+              <MixedText text={b.vars} />
+            </p>
+          )}
         </div>
       );
 
@@ -613,6 +618,11 @@ function Block({ b, pal = A }: { b: BlockType; pal?: Palette }) {
                   <p className={`text-[12px] ${pal.bodyTxt} mb-0.5`}><MixedText text={r.desc} /></p>
                 )}
                 <div className="overflow-x-auto"><BlockMath tex={r.tex} /></div>
+                {r.vars && (
+                  <p className={`mt-1 text-[11px] ${pal.bodyTxt} opacity-80 leading-snug`}>
+                    <MixedText text={r.vars} />
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -4691,6 +4701,7 @@ const STATS2NDE_COURS: Section[] = [
         type: 'formula',
         label: 'Fréquence',
         tex: 'f_i = \\dfrac{n_i}{N} \\qquad \\text{(en \\%} : f_i \\times 100\\text{)} \\qquad \\sum_{i=1}^k f_i = 1',
+        vars: '$n_i$ : effectif de la valeur $i$ · $N$ : effectif total · $k$ : nombre de valeurs distinctes',
       },
       {
         type: 'para',
@@ -4711,21 +4722,25 @@ const STATS2NDE_COURS: Section[] = [
         type: 'formula',
         label: 'À partir de la liste brute',
         tex: '\\bar{x} = \\dfrac{x_1 + x_2 + \\cdots + x_N}{N}',
+        vars: '$x_1, \\ldots, x_N$ : les $N$ données (répétitions comprises) · $N$ : effectif total',
       },
       {
         type: 'formula',
         label: 'À partir du tableau',
         tex: '\\bar{x} = \\dfrac{n_1 v_1 + n_2 v_2 + \\cdots + n_k v_k}{N} = \\dfrac{\\displaystyle\\sum_{i=1}^k n_i v_i}{N}',
+        vars: '$v_i$ : valeur distincte · $n_i$ : son effectif · $N = \\sum n_i$ : effectif total · $k$ : nb de valeurs distinctes',
       },
       {
         type: 'formula',
         label: 'Linéarité',
         tex: 'y = av+b \\;\\Rightarrow\\; \\bar{y} = a\\bar{v}+b',
+        vars: '$a, b$ : constantes de la transformation · $\\bar{v}$ : moyenne de la série initiale · $\\bar{y}$ : moyenne transformée',
       },
       {
         type: 'formula',
         label: 'Réunion de deux groupes',
         tex: '\\bar{x} = \\dfrac{N_A\\,\\bar{x}_A + N_B\\,\\bar{x}_B}{N_A + N_B}',
+        vars: '$N_A, N_B$ : effectifs des deux groupes · $\\bar{x}_A, \\bar{x}_B$ : leurs moyennes · Attention : valide seulement si l\'on connaît les effectifs',
       },
       {
         type: 'reflex',
@@ -4746,16 +4761,16 @@ const STATS2NDE_COURS: Section[] = [
         type: 'formules',
         label: 'Médiane',
         rows: [
-          { desc: '$N$ impair', tex: 'Me = \\text{valeur de rang } \\dfrac{N+1}{2}' },
-          { desc: '$N$ pair', tex: 'Me = \\tfrac{1}{2}\\left(\\text{rang }\\dfrac{N}{2}+\\text{rang }\\dfrac{N}{2}{+}1\\right)' },
+          { desc: '$N$ impair', tex: 'Me = \\text{valeur de rang } \\dfrac{N+1}{2}', vars: '$N$ : effectif total · Le rang est un entier, c\'est la valeur directement.' },
+          { desc: '$N$ pair', tex: 'Me = \\tfrac{1}{2}\\left(\\text{rang }\\dfrac{N}{2}+\\text{rang }\\dfrac{N}{2}{+}1\\right)', vars: 'On fait la moyenne des deux valeurs centrales. La médiane n\'appartient pas forcément à la série.' },
         ],
       },
       {
         type: 'formules',
         label: 'Quartiles',
         rows: [
-          { desc: '$Q_1$', tex: '\\text{rang } \\tfrac{N}{4} \\;(\\text{entier supérieur si non entier})' },
-          { desc: '$Q_3$', tex: '\\text{rang } \\tfrac{3N}{4} \\;(\\text{entier supérieur si non entier})' },
+          { desc: '$Q_1$', tex: '\\text{rang } \\tfrac{N}{4} \\;(\\text{entier supérieur si non entier})', vars: '$N/4$ non entier : prendre l\'entier immédiatement supérieur. $N/4$ entier : prendre ce rang directement.' },
+          { desc: '$Q_3$', tex: '\\text{rang } \\tfrac{3N}{4} \\;(\\text{entier supérieur si non entier})', vars: 'Même règle que $Q_1$. L\'EQI = $Q_3 - Q_1$ mesure la dispersion des 50 % centraux.' },
         ],
       },
       {
@@ -4773,11 +4788,13 @@ const STATS2NDE_COURS: Section[] = [
         type: 'formula',
         label: 'Étendue',
         tex: 'e = x_{\\max} - x_{\\min}',
+        vars: '$x_{\\max}$ : valeur maximale · $x_{\\min}$ : valeur minimale · Sensible aux valeurs extrêmes',
       },
       {
         type: 'formula',
         label: 'Écart interquartile',
         tex: 'EQI = Q_3 - Q_1',
+        vars: '$Q_1$ : premier quartile · $Q_3$ : troisième quartile · Robuste aux valeurs extrêmes car ne dépend que des 50 % centraux',
       },
       {
         type: 'definition',
@@ -4818,11 +4835,13 @@ const STATS2NDE_COURS: Section[] = [
         type: 'formula',
         label: 'Centre de classe',
         tex: 'c_i = \\dfrac{a_i + b_i}{2} \\qquad \\text{amplitude} = b_i - a_i',
+        vars: '$a_i$ : borne inférieure de la classe · $b_i$ : borne supérieure · L\'amplitude est la largeur de la classe',
       },
       {
         type: 'formula',
         label: 'Moyenne approchée',
         tex: '\\bar{x} \\approx \\dfrac{\\displaystyle\\sum n_i\\,c_i}{N}',
+        vars: '$c_i$ : centre de la $i$-ème classe · $n_i$ : effectif de cette classe · $N$ : effectif total · Valeur approchée car on suppose toutes les données au centre',
       },
       {
         type: 'para',
@@ -4832,6 +4851,7 @@ const STATS2NDE_COURS: Section[] = [
         type: 'formula',
         label: 'Histogramme',
         tex: '\\text{hauteur du rectangle} = \\dfrac{n_i}{\\text{amplitude}}',
+        vars: '$n_i$ : effectif de la classe · amplitude = $b_i - a_i$ · L\'aire du rectangle (hauteur × amplitude) est proportionnelle à l\'effectif',
       },
       {
         type: 'reflex',
@@ -4921,6 +4941,7 @@ const PROBA2NDE_COURS: Section[] = [
         type: 'formula',
         label: 'Équiprobabilité',
         tex: 'P(A) = \\dfrac{\\text{nombre d\'issues de } A}{\\text{nombre d\'issues de } \\Omega}',
+        vars: '$A$ : événement dont on calcule la probabilité · $\\Omega$ : univers (ensemble de toutes les issues) · Valable **uniquement** si toutes les issues ont la même probabilité',
       },
       {
         type: 'piege',
@@ -4946,6 +4967,7 @@ const PROBA2NDE_COURS: Section[] = [
         type: 'formula',
         label: 'Formules',
         tex: 'P(\\bar{A}) = 1-P(A) \\qquad P(A\\cup B) = P(A)+P(B)-P(A\\cap B)',
+        vars: '$\\bar{A}$ : événement contraire (toutes les issues sauf celles de $A$) · $A\\cup B$ : au moins l\'un des deux · $A\\cap B$ : les deux simultanément · Si $A$ et $B$ incompatibles ($A\\cap B=\\emptyset$) : $P(A\\cup B)=P(A)+P(B)$',
       },
       {
         type: 'para',
@@ -4974,6 +4996,7 @@ const PROBA2NDE_COURS: Section[] = [
         type: 'formula',
         label: 'Règle de l\'arbre',
         tex: 'P(\\text{chemin}) = \\prod \\text{probabilités des branches du chemin}',
+        vars: 'On **multiplie** les probabilités sur toutes les branches d\'un même chemin. On **additionne** ensuite les probabilités des chemins favorables à l\'événement souhaité.',
       },
       {
         type: 'idee_cle',
@@ -5013,6 +5036,7 @@ const PROBA2NDE_COURS: Section[] = [
         type: 'formula',
         label: 'Intervalle de fluctuation au seuil de 95 %',
         tex: '\\left[\\,p - \\dfrac{1}{\\sqrt{n}}\\;\\,;\\;\\, p + \\dfrac{1}{\\sqrt{n}}\\,\\right]',
+        vars: '$p$ : proportion hypothétique testée (valeur de l\'hypothèse $H$) · $n$ : taille de l\'échantillon · $f$ : fréquence observée dans l\'échantillon · Si $f$ appartient à l\'intervalle → ne pas rejeter $H$ ; si $f$ en sort → rejeter $H$ au seuil 95 %',
       },
       {
         type: 'para',
