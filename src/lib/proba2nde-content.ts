@@ -1,6 +1,6 @@
 import type { QcmQuestion, Correction, ExerciseContent } from './newton-content';
 
-// ── QCM Flash (Partie E du poly) ──────────────────────────────────────────────
+// ── QCM Flash ─────────────────────────────────────────────────────────────────
 export const PROBA2NDE_QCM: QcmQuestion[] = [
   {
     n: 1,
@@ -44,7 +44,7 @@ export const PROBA2NDE_QCM: QcmQuestion[] = [
       { label: 'c', text: '$0{,}25$' },
       { label: 'd', text: '$0{,}85$' },
     ],
-    answer: 'd',
+    answer: 'b',
   },
   {
     n: 5,
@@ -116,7 +116,7 @@ export const PROBA2NDE_QCM: QcmQuestion[] = [
 
 // ── Exercices ──────────────────────────────────────────────────────────────────
 export const PROBA2NDE_EXERCISES: ExerciseContent[] = [
-  // ── TIER 1 — Automatismes ★ ────────────────────────────────────────────────
+  // ── Partie A — Automatismes ★ ─────────────────────────────────────────────
   {
     id: 'proba2nde-1',
     title: 'Univers et loi',
@@ -199,7 +199,7 @@ export const PROBA2NDE_EXERCISES: ExerciseContent[] = [
       { n: 4, text: 'Calculer la probabilité qu\'elle soit une femme ou abonnée, puis vérifier.' },
     ],
   },
-  // ── TIER 2 — Méthodes ★★ ──────────────────────────────────────────────────
+  // ── Partie B — Méthodes ★★ ────────────────────────────────────────────────
   {
     id: 'proba2nde-9',
     title: 'Calculer un intervalle de fluctuation',
@@ -213,7 +213,7 @@ export const PROBA2NDE_EXERCISES: ExerciseContent[] = [
   {
     id: 'proba2nde-10',
     title: 'Prendre une décision',
-    subject: 'Une machine produit 5 % de pièces défectueuses. Sur un échantillon de 400 pièces, on en trouve 26 défectueuses.',
+    subject: 'Un candidat à une élection affirme représenter la moitié des électeurs. Lors d\'un sondage, 61 personnes sur 100 interrogées se déclarent favorables à sa candidature.',
     questions: [
       { n: 1, text: 'Poser l\'hypothèse $H$ sur $p$.' },
       { n: 2, text: 'Calculer l\'intervalle de fluctuation au seuil de 95 %.' },
@@ -263,12 +263,13 @@ export const PROBA2NDE_EXERCISES: ExerciseContent[] = [
   },
   {
     id: 'proba2nde-15',
-    title: 'Tableau — Sondage',
-    subject: 'Dans un lycée de 240 élèves de Seconde : 84 choisissent spé maths parmi les 180 espagnolistes, 36 parmi les 60 germanistes.',
+    title: 'Loi non uniforme — dé truqué',
+    subject: 'Un dé truqué suit la loi de probabilité suivante. Face : 1, 2, 3, 4, 5, 6. Probabilités : $0{,}1$; $0{,}1$; $0{,}15$; $0{,}15$; $0{,}2$; $p_6$.',
     questions: [
-      { n: 1, text: 'Construire le tableau à double entrée complet.' },
-      { n: 2, text: 'Calculer $P(\\text{spé maths})$ et $P(\\text{espagnol})$.' },
-      { n: 3, text: 'Calculer $P(\\text{spé maths}\\cap\\text{espagnol})$ et vérifier avec le tableau.' },
+      { n: 1, text: 'Déterminer la probabilité manquante $p_6$.' },
+      { n: 2, text: 'Ce dé est-il équitable ? Justifier.' },
+      { n: 3, text: 'Calculer $P(\\text{face paire})$ et $P(\\text{face} \\geq 4)$.' },
+      { n: 4, text: 'Calculer $P(\\text{face} \\neq 1)$ de deux façons différentes.' },
     ],
   },
   {
@@ -282,7 +283,7 @@ export const PROBA2NDE_EXERCISES: ExerciseContent[] = [
       { n: 4, text: 'Vérifier $P(\\text{sucre ou café})$ par un dénombrement direct.' },
     ],
   },
-  // ── TIER 3 — Situations complètes ★★★ ─────────────────────────────────────
+  // ── Partie C — Situations complètes ★★★ ──────────────────────────────────
   {
     id: 'proba2nde-17',
     title: 'Deux tours de roue',
@@ -310,11 +311,11 @@ export const PROBA2NDE_EXERCISES: ExerciseContent[] = [
   {
     id: 'proba2nde-19',
     title: 'Lire une simulation',
-    subject: 'On simule 30 sondages de 100 personnes dans une population où $p=0{,}5$.',
+    subject: 'On simule 30 sondages de 100 personnes dans une population où $p=0{,}5$. Les fréquences observées s\'étalent de $0{,}38$ à $0{,}63$, et 29 sondages sur 30 donnent une fréquence dans $[0{,}4\\,;\\,0{,}6]$.',
     questions: [
       { n: 1, text: 'Calculer l\'intervalle de fluctuation théorique au seuil de 95 %.' },
-      { n: 2, text: 'Si 2 sondages sur 30 sortent de l\'intervalle, est-ce cohérent ? Justifier.' },
-      { n: 3, text: 'Un sondage donne $f=0{,}62$. Peut-on conclure que $p\\neq 0{,}5$ ?' },
+      { n: 2, text: '1 sondage sur 30 sort de l\'intervalle. Est-ce cohérent avec le seuil de 95 % ? Justifier.' },
+      { n: 3, text: 'Un sondage donne $f=0{,}62$. Peut-on conclure que $p\\neq 0{,}5$ ? Nuancer la réponse.' },
     ],
   },
   {
@@ -351,11 +352,11 @@ export const PROBA2NDE_EXERCISES: ExerciseContent[] = [
       { n: 4, text: 'On lance 100 fois et on obtient 66 Piles. Tester $H : p=2/3$ au seuil 95 %.' },
     ],
   },
-  // ── TIER 4 — Problème de synthèse ◆ ──────────────────────────────────────
+  // ── Partie D — Problèmes ◆ ────────────────────────────────────────────────
   {
-    id: 'proba2nde-23',
-    title: 'Problème — Ce dé est-il truqué ?',
-    subject: 'Dé lancé 300 fois : effectifs 42, 48, 51, 47, 53, 59.',
+    id: 'proba2nde-pb1',
+    title: 'Problème 1 — Ce dé est-il truqué ?',
+    subject: 'Un dé est lancé 300 fois : on obtient les effectifs 42, 48, 51, 47, 53, 59 pour les faces 1 à 6.',
     questions: [
       { n: 1, text: 'Probabilité de chaque face si le dé est équilibré (décimale arrondie au millième).' },
       { n: 2, text: 'Calculer la fréquence observée de chaque face.' },
@@ -363,6 +364,32 @@ export const PROBA2NDE_EXERCISES: ExerciseContent[] = [
       { n: 4, text: 'Peut-on affirmer au seuil 95 % que le dé est truqué ?' },
       { n: 5, text: 'Même calcul avec 3 000 lancers (mêmes fréquences). Conclure.' },
       { n: 6, text: 'Pourquoi les conclusions diffèrent alors que les fréquences sont identiques ?' },
+    ],
+  },
+  {
+    id: 'proba2nde-pb2',
+    title: 'Problème 2 — Sondage au lycée',
+    subject: 'Un lycée accueille 400 élèves. Un sondage sur l\'adhésion à un nouveau projet donne le tableau suivant.\n\nFavorable : Secondes 80, Premières 52, Terminales 28.\nDéfavorable : Secondes 60, Premières 98, Terminales 82.',
+    questions: [
+      { n: 1, text: 'Recopier et compléter le tableau avec les totaux de chaque ligne et colonne.' },
+      { n: 2, text: 'On choisit un élève au hasard. Calculer $P(\\text{favorable au projet})$.' },
+      { n: 3, text: 'Calculer $P(\\text{élève de Terminale})$.' },
+      { n: 4, text: 'Calculer $P(\\text{Terminale et défavorable})$.' },
+      { n: 5, text: 'Comparer la proportion d\'élèves favorables en Terminale à celle de l\'ensemble du lycée. Conclure.' },
+      { n: 6, text: 'Comparer la proportion de favorables dans chaque niveau. Que peut-on observer ?' },
+    ],
+  },
+  {
+    id: 'proba2nde-pb3',
+    title: 'Problème 3 — Le taux de germination',
+    subject: 'Un semencier garantit un taux de germination de 80 %. Deux contrôles sont effectués : contrôle A sur 100 graines (84 ont germé), contrôle B sur 900 graines (756 ont germé).',
+    questions: [
+      { n: 1, text: 'Calculer la fréquence de germination pour chaque contrôle.' },
+      { n: 2, text: 'Poser l\'hypothèse $H$ testée lors d\'un contrôle.' },
+      { n: 3, text: 'Calculer l\'intervalle de fluctuation pour le contrôle A ($n=100$) et conclure.' },
+      { n: 4, text: 'Calculer l\'intervalle de fluctuation pour le contrôle B ($n=900$) et conclure.' },
+      { n: 5, text: 'Les deux contrôles donnent la même fréquence. Pourquoi les conclusions peuvent-elles différer ?' },
+      { n: 6, text: 'Quelle taille d\'échantillon permettrait d\'avoir un intervalle de rayon $0{,}01$ ?' },
     ],
   },
 ];
@@ -437,9 +464,9 @@ export const PROBA2NDE_CORRECTIONS: Record<string, Correction> = {
   },
   'proba2nde-10': {
     steps: [
-      { title: 'Hypothèse', text: '$H : p = 0{,}05$ (5 % de défectueuses).' },
-      { title: 'Intervalle', tex: '\\left[0{,}05 - \\tfrac{1}{\\sqrt{400}};\\; 0{,}05 + \\tfrac{1}{\\sqrt{400}}\\right] = [0{,}05-0{,}05\\,;\\,0{,}05+0{,}05] = [0\\,;\\,0{,}1]' },
-      { title: 'Conclusion', tex: 'f = \\tfrac{26}{400} = 0{,}065 \\in [0\\,;\\,0{,}1] \\Rightarrow \\text{on ne rejette pas } H', text: 'Le résultat est compatible avec $p=5\\%$ au seuil de 95 %.' },
+      { title: 'Hypothèse', text: '$H : p = 0{,}5$ (la moitié des électeurs lui sont favorables).' },
+      { title: 'Intervalle', tex: '\\left[0{,}5 - \\tfrac{1}{\\sqrt{100}};\\; 0{,}5 + \\tfrac{1}{\\sqrt{100}}\\right] = [0{,}5-0{,}1\\,;\\,0{,}5+0{,}1] = [0{,}4\\,;\\,0{,}6]' },
+      { title: 'Conclusion', tex: 'f = \\tfrac{61}{100} = 0{,}61 \\notin [0{,}4\\,;\\,0{,}6] \\Rightarrow \\text{on rejette } H', text: 'La fréquence 0,61 dépasse la borne supérieure 0,6. Les données ne sont pas compatibles avec l\'hypothèse que la moitié des électeurs lui sont favorables.' },
     ],
   },
   'proba2nde-11': {
@@ -471,13 +498,45 @@ export const PROBA2NDE_CORRECTIONS: Record<string, Correction> = {
       { title: 'Vérification', tex: '\\tfrac{1}{9}+\\tfrac{4}{9}+\\tfrac{4}{9}=\\tfrac{9}{9}=1 \\checkmark' },
     ],
   },
+  'proba2nde-15': {
+    steps: [
+      { title: 'Probabilité manquante', tex: 'p_6 = 1-(0{,}1+0{,}1+0{,}15+0{,}15+0{,}2) = 1-0{,}7 = 0{,}3' },
+      { title: 'Dé équitable ?', text: 'Non : pour un dé équitable, chaque face aurait $P=1/6\\approx0{,}167$. Ici $P(1)=P(2)=0{,}1<1/6$ et $P(6)=0{,}3>1/6$ → les faces n\'ont pas la même probabilité → le dé est truqué.' },
+      { title: 'P(face paire) et P(≥4)', tex: 'P(\\text{pair}) = P(2)+P(4)+P(6) = 0{,}1+0{,}15+0{,}3 = 0{,}55', text: 'P(face ≥ 4) = P(4)+P(5)+P(6) = 0,15+0,20+0,30 = 0,65.' },
+      { title: 'P(face ≠ 1)', tex: '\\text{Méthode 1 (contraire) : } P(\\neq 1) = 1-P(1) = 1-0{,}1 = 0{,}9', text: 'Méthode 2 (directe) : somme des 5 autres = 0,1+0,15+0,15+0,2+0,3 = 0,9 ✓' },
+    ],
+  },
+  'proba2nde-16': {
+    steps: [
+      { title: 'Tableau complet', text: 'Café avec sucre 54, sans sucre 36, total 90. Thé avec sucre 21, sans sucre 39, total 60. Total avec sucre 75, sans sucre 75, total 150.' },
+      { title: 'P(sucre)', tex: 'P(\\text{sucre}) = \\tfrac{75}{150} = 0{,}5' },
+      { title: 'P(café) et P(sans sucre)', tex: 'P(\\text{café}) = \\tfrac{90}{150} = 0{,}6 \\qquad P(\\text{sans sucre}) = \\tfrac{75}{150} = 0{,}5' },
+      { title: 'P(sucre ou café)', text: 'Par dénombrement : café sans sucre + café avec sucre + thé avec sucre = 36+54+21 = 111 boissons.', tex: 'P(\\text{sucre ou café}) = \\tfrac{111}{150} \\approx 0{,}74' },
+    ],
+  },
   'proba2nde-17': {
     steps: [
-      { title: 'P(rouge)', tex: 'P(R) = \\tfrac{3}{8}$ (3 secteurs sur 8 équiprobables)' },
+      { title: 'P(rouge)', tex: 'P(R) = \\tfrac{3}{8} \\text{ (3 secteurs sur 8 équiprobables)}' },
       { title: '2 rouges', tex: 'P(RR) = \\tfrac{3}{8}\\times\\tfrac{3}{8} = \\tfrac{9}{64}' },
       { title: 'Aucun rouge', tex: 'P(\\bar{R}\\bar{R}) = \\tfrac{5}{8}\\times\\tfrac{5}{8} = \\tfrac{25}{64}' },
       { title: 'Au moins un rouge', tex: 'P = 1-\\tfrac{25}{64} = \\tfrac{39}{64}' },
-      { title: 'Erreur', text: 'Les tours sont indépendants mais les probabilités ne s\'additionnent pas. Il faut $1-(1-3/8)^2 = 39/64 \\neq 6/8$.' },
+      { title: 'Erreur', text: 'Les tours sont indépendants mais les probabilités ne s\'additionnent pas. La bonne formule donne $1-(1-3/8)^2 = 39/64 \\neq 6/8$.' },
+    ],
+  },
+  'proba2nde-18': {
+    steps: [
+      { title: 'Issues de A et B', text: 'A={somme≥10}={(4,6),(5,5),(5,6),(6,4),(6,5),(6,6)} → 6 issues, P(A)=6/36=1/6. B={même valeur}={(1,1),(2,2),(3,3),(4,4),(5,5),(6,6)} → 6 issues, P(B)=6/36=1/6.' },
+      { title: 'Intersection', text: 'A∩B : couples à la fois dans A et B : (5,5) et (6,6). Donc P(A∩B)=2/36=1/18.' },
+      { title: 'Réunion par formule', tex: 'P(A\\cup B) = \\tfrac{1}{6}+\\tfrac{1}{6}-\\tfrac{1}{18} = \\tfrac{3+3-1}{18} = \\tfrac{5}{18}' },
+      { title: 'Vérification directe', text: 'A∪B={(1,1),(2,2),(3,3),(4,4),(4,6),(5,5),(5,6),(6,4),(6,5),(6,6)} → 10 issues.', tex: 'P = \\tfrac{10}{36} = \\tfrac{5}{18} \\checkmark' },
+      { title: 'Incompatibilité', text: 'Non : P(A∩B)=1/18≠0, donc A et B ont des issues communes.' },
+    ],
+  },
+  'proba2nde-19': {
+    steps: [
+      { title: 'Intervalle théorique', tex: '\\left[0{,}5 - \\tfrac{1}{\\sqrt{100}}\\,;\\, 0{,}5 + \\tfrac{1}{\\sqrt{100}}\\right] = [0{,}4\\,;\\,0{,}6]' },
+      { title: 'Cohérence', text: 'Au seuil de 95 %, environ 5 % des sondages sortent de l\'intervalle par hasard, soit 5%×30=1,5 → 1 ou 2 sondages. Avoir 1 sondage hors intervalle est donc parfaitement cohérent.' },
+      { title: 'f=0,62', text: '0,62 > 0,6 → hors de l\'intervalle. On peut rejeter H:p=0,5 au seuil 95 %. Cependant, en simulation, 1 sondage sur 20 sort de l\'intervalle par pure fluctuation : un seul résultat hors intervalle n\'est pas une certitude.' },
     ],
   },
   'proba2nde-20': {
@@ -488,7 +547,24 @@ export const PROBA2NDE_CORRECTIONS: Record<string, Correction> = {
       { title: 'n=100', tex: '\\text{Intervalle : }[0{,}4\\,;\\,0{,}6].\\; f=0{,}544\\in[0{,}4\\,;\\,0{,}6] \\Rightarrow \\text{on ne rejette plus } H.' },
     ],
   },
-  'proba2nde-23': {
+  'proba2nde-21': {
+    steps: [
+      { title: 'Tableau complet', text: 'Interne+sport=84, interne+sans sport=36, externe+sport=96, externe+sans sport=84. Total sport=180, sans sport=120, total=300.' },
+      { title: 'P(sport)', tex: 'P(\\text{sport}) = \\tfrac{180}{300} = 0{,}6' },
+      { title: 'P(interne) et P(sport)', tex: 'P(\\text{interne}) = \\tfrac{120}{300} = 0{,}4 \\qquad P(\\text{sport}) = 0{,}6' },
+      { title: 'P(externe et sans sport)', tex: 'P = \\tfrac{84}{300} = 0{,}28' },
+      { title: 'Vérification', tex: '\\tfrac{84}{300}+\\tfrac{96}{300}+\\tfrac{36}{300}+\\tfrac{84}{300} = \\tfrac{300}{300} = 1 \\checkmark' },
+    ],
+  },
+  'proba2nde-22': {
+    steps: [
+      { title: 'Arbre pondéré', tex: 'P(P)=\\tfrac{2}{3},\\; P(F)=\\tfrac{1}{3}. \\text{ Arbre : PP, PF, FP, FF.}' },
+      { title: 'P(PP) et P(FF)', tex: 'P(PP)=\\tfrac{2}{3}\\times\\tfrac{2}{3}=\\tfrac{4}{9} \\quad P(FF)=\\tfrac{1}{3}\\times\\tfrac{1}{3}=\\tfrac{1}{9}' },
+      { title: 'Exactement 1 Pile', tex: 'P(PF)+P(FP)=\\tfrac{2}{9}+\\tfrac{2}{9}=\\tfrac{4}{9}', text: 'Vérif : 4/9+4/9+1/9 = 1 ✓' },
+      { title: 'Test H:p=2/3, n=100', tex: '\\left[\\tfrac{2}{3}-\\tfrac{1}{10}\\,;\\,\\tfrac{2}{3}+\\tfrac{1}{10}\\right]\\approx[0{,}567\\,;\\,0{,}767]', text: 'f=66/100=0,66 ∈ [0,567;0,767] → on ne rejette pas H.' },
+    ],
+  },
+  'proba2nde-pb1': {
     steps: [
       { title: 'p équilibré', tex: 'p = 1/6 \\approx 0{,}167' },
       { title: 'Fréquences', text: 'Face 1 : 42/300=0,140; 2 : 0,160; 3 : 0,170; 4 : 0,157; 5 : 0,177; 6 : 0,197.' },
@@ -496,7 +572,27 @@ export const PROBA2NDE_CORRECTIONS: Record<string, Correction> = {
       { title: 'Conclusion n=300', text: 'Toutes les fréquences appartiennent à l\'intervalle → on ne peut pas affirmer que le dé est truqué.' },
       { title: 'Intervalle n=3000', tex: '\\approx[0{,}149\\,;\\,0{,}184]' },
       { title: 'Conclusion n=3000', text: 'La fréquence de la face 6 (0,197) sort de l\'intervalle → on rejette l\'hypothèse au seuil 95 %.' },
-      { title: 'Explication', text: 'L\'intervalle de fluctuation se rétrécit quand $n$ augmente. La même fréquence aberrante qui passait inaperçue avec 300 lancers devient significative avec 3 000 lancers.' },
+      { title: 'Explication', text: 'L\'intervalle de fluctuation se rétrécit quand $n$ augmente ($r=1/\\sqrt{n}$). La même fréquence aberrante qui passait inaperçue avec 300 lancers devient significative avec 3 000 lancers.' },
+    ],
+  },
+  'proba2nde-pb2': {
+    steps: [
+      { title: 'Tableau complet', text: 'Favorable : Sec 80, Pre 52, Term 28, Total 160. Défavorable : Sec 60, Pre 98, Term 82, Total 240. Totaux par niveau : Sec 140, Pre 150, Term 110, Total 400.' },
+      { title: 'P(favorable)', tex: 'P(\\text{favorable}) = \\tfrac{160}{400} = 0{,}4' },
+      { title: 'P(Terminale)', tex: 'P(\\text{Terminale}) = \\tfrac{110}{400} = 0{,}275' },
+      { title: 'P(Terminale et défavorable)', tex: 'P = \\tfrac{82}{400} = 0{,}205' },
+      { title: 'Comparaison Terminale / ensemble', text: 'En Terminale : 28/110 ≈ 25,5 % de favorables. Ensemble : 40 %. Les Terminales sont moins favorables au projet que les autres niveaux.' },
+      { title: 'Par niveau', text: 'Secondes : 80/140 ≈ 57,1 % · Premières : 52/150 ≈ 34,7 % · Terminales : 28/110 ≈ 25,5 %. La proportion de favorables diminue régulièrement à mesure que les élèves avancent dans leurs études.' },
+    ],
+  },
+  'proba2nde-pb3': {
+    steps: [
+      { title: 'Fréquences', tex: 'f_A = \\tfrac{84}{100} = 0{,}84 \\qquad f_B = \\tfrac{756}{900} = 0{,}84' },
+      { title: 'Hypothèse', text: '$H : p = 0{,}8$ (taux de germination garanti par le semencier).' },
+      { title: 'Contrôle A (n=100)', tex: '\\left[0{,}8-\\tfrac{1}{10}\\,;\\,0{,}8+\\tfrac{1}{10}\\right] = [0{,}7\\,;\\,0{,}9]', text: '$f_A=0{,}84 \\in [0{,}7\\,;\\,0{,}9]$ → on ne rejette pas $H$ : le résultat est compatible avec un taux de 80 %.' },
+      { title: 'Contrôle B (n=900)', tex: '\\left[0{,}8-\\tfrac{1}{30}\\,;\\,0{,}8+\\tfrac{1}{30}\\right] \\approx [0{,}767\\,;\\,0{,}833]', text: '$f_B=0{,}84 \\notin [0{,}767\\,;\\,0{,}833]$ → on rejette $H$ : le taux réel semble supérieur à 80 %.' },
+      { title: 'Pourquoi des conclusions différentes ?', text: 'L\'intervalle de fluctuation a pour rayon $1/\\sqrt{n}$. Avec $n=100$, le rayon est 0,1 ; avec $n=900$, il est 1/30≈0,033. Le même écart (0,04) entre $f$ et $p$ est insignifiant dans le premier cas mais significatif dans le second.' },
+      { title: 'Rayon = 0,01', tex: '\\tfrac{1}{\\sqrt{n}} = 0{,}01 \\Rightarrow \\sqrt{n} = 100 \\Rightarrow n = 10\\,000 \\text{ graines}' },
     ],
   },
 };
