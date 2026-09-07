@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, AlertCircle, MessageCircle, Check } from 'lucide-react';
+import { BookOpen, AlertCircle, MessageCircle, Check, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Subject, SUBJECT_CSS_VAR } from '@/lib/game-utils';
 import { Input } from '@/components/ui/input';
@@ -89,6 +89,12 @@ export function ExamsSection({ userId }: { userId: string }) {
     setEditingId(exam.id);
     setEditingVal(exam.grade !== null ? String(exam.grade) : '');
     setEditingCoeff(exam.coefficient ?? 1);
+  };
+
+  const deleteExam = async (exam: Exam) => {
+    if (!window.confirm(`Supprimer le DS de ${exam.custom_subject || exam.subject} du ${new Date(exam.exam_date).toLocaleDateString('fr-FR')} ?`)) return;
+    await supabase.from('exams').delete().eq('id', exam.id);
+    loadExams();
   };
 
   const now = new Date();
